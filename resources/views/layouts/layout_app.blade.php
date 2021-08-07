@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Sistem Informasi Sertifikasi Balai Besar Kulit dan Karet">
+    <meta name="keywords" content="BBKKP SIS">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>@yield('title') | BBKKP SIS</title>
+
+    <!-- Site favicon -->
+    <link rel="shortcut icon" href="{{ asset('images/icon/favicon-16x16-manifest-31222.png') }}">
+    <!-- /site favicon -->
+
+    <!-- Font Icon Styles -->
+    <link rel="stylesheet" href="{{ asset('/node_modules/flag-icon-css/css/flag-icon.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/vendors/gaxon-icon/style.css') }}">
+    <!-- /font icon Styles -->
+
+    <!-- Perfect Scrollbar stylesheet -->
+    <link rel="stylesheet" href="{{ asset('/node_modules/perfect-scrollbar/css/perfect-scrollbar.css') }}">
+    <!-- /perfect scrollbar stylesheet -->
+
+    <!-- Load Styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/lite-style-1.min.css') }}">
+
+    <link href="{{ asset('plugins/easyui/themes/material/easyui.css')}}" rel="stylesheet">
+
+    <style>
+        .table-responsive {
+            overflow-x: hidden !important;
+        }
+    </style>
+
+    @stack('css')
+</head>
+
+
+<body class="dt-sidebar--fixed dt-header--fixed">
+<!-- Loader -->
+<div class="dt-loader-container">
+    <div class="dt-loader">
+        <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10">
+            </circle>
+        </svg>
+    </div>
+</div>
+<!-- /loader -->
+
+<!-- Root -->
+<div class="dt-root">
+
+    <!-- Header -->
+    <header class="dt-header">
+        <!-- Header container -->
+        <div class="dt-header__container">
+            <!-- Brand -->
+            <div class="dt-brand">
+
+                <!-- Brand tool -->
+                <div class="dt-brand__tool" data-toggle="main-sidebar">
+                    <i class="icon icon-xl icon-menu-fold d-none d-lg-inline-block"></i>
+                    <i class="icon icon-xl icon-menu d-lg-none"></i>
+                </div>
+                <!-- /brand tool -->
+
+                <!-- Brand logo -->
+                <span class="dt-brand__logo">
+                        <a class="dt-brand__logo-link" href="{{ route('dashboard') }}">
+                            <img class="dt-brand__logo-img d-none d-lg-inline-block"
+                                 src="{{asset('images/logos/sis_logo.png')}}"
+                                 alt="BBKKP SIS">
+                            <img class="dt-brand__logo-symbol d-lg-none"
+                                 src="{{asset('images/logos/sis_logo.png')}}"
+                                 alt="Eduparx Afiliate" style="width: 100px">
+                        </a>
+                    </span>
+                <!-- /brand logo -->
+
+            </div>
+            <!-- /brand -->
+
+            <!-- Header toolbar-->
+            <div class="dt-header__toolbar">
+
+            {{-- <!-- Search box --> --}}
+            {{-- <form class="search-box d-none d-lg-block"> --}}
+            {{-- <input class="form-control border-0" placeholder="Search in app..." value="" type="search"> --}}
+            {{-- <span class="search-icon text-light-gray"><i class="icon icon-search icon-lg"></i></span> --}}
+            {{-- </form> --}}
+            {{-- <!-- /search box --> --}}
+
+            <!-- Header Menu Wrapper -->
+                <div class="dt-nav-wrapper">
+                    <!-- Header Menu -->
+                    <ul class="dt-nav d-lg-none">
+                        <li class="dt-nav__item dropdown">
+
+                            <!-- Dropdown Link -->
+                            <a href="#" class="dt-nav__link dropdown-toggle no-arrow dt-avatar-wrapper"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img class="dt-avatar size-40" src="{{ auth()->user()->getImage() }}"
+                                     alt="{{ auth()->user()->user_fullname }}">
+                            </a>
+                            <!-- /dropdown link -->
+
+                            <!-- Dropdown Option -->
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="javascript:void(0)">
+                                    <i class="icon fas fa-user"></i> Profile
+                                </a>
+                                <a class="dropdown-item" href="{{ route('auth.logout') }}">
+                                    <i class="icon fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+
+                            <!-- /dropdown option -->
+                        </li>
+                    </ul>
+                    <!-- /header menu -->
+                </div>
+                <!-- Header Menu Wrapper -->
+            </div>
+            <!-- /header toolbar -->
+        </div>
+        <!-- /header container -->
+    </header>
+    <!-- /header -->
+
+    <!-- Site Main -->
+    <main class="dt-main">
+        <!-- Sidebar -->
+        <aside id="main-sidebar" class="dt-sidebar">
+            <div class="dt-sidebar__container">
+
+                <!-- Sidebar Notification -->
+                <div class="dt-sidebar__notification  d-none d-lg-block">
+                    <!-- Dropdown -->
+                    <div class="dropdown mb-6" id="user-menu-dropdown">
+
+                        <!-- Dropdown Link -->
+                        <a href="#" class="dropdown-toggle dt-avatar-wrapper text-body" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">
+                            <span class="dt-avatar-info"><span class="dt-avatar-name">
+                                        {{ auth()->user()->user_fullname }}
+                                    </span></span>
+                        </a>
+                        <!-- /dropdown link -->
+
+                        <!-- Dropdown Option -->
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div
+                                class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
+                                <img class="dt-avatar" src="{{ auth()->user()->getImage() }}"
+                                     alt="Domnic Harris">
+                                <span class="dt-avatar-info">
+                                        <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
+                                        <span class="f-12">{{ auth()->user()->user_fullname }}</span>
+                                    </span>
+                            </div>
+                            <a class="dropdown-item" href="javascript:void(0)">
+                                <i class="icon fas fa-user"></i> Profile
+                            </a>
+                            <a class="dropdown-item" href="{{ route('auth.logout') }}">
+                                <i class="icon fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                        <!-- /dropdown option -->
+
+                    </div>
+                    <!-- /dropdown -->
+
+
+                </div>
+                <!-- /sidebar notification -->
+
+                <!-- Sidebar Navigation -->
+                <ul class="dt-side-nav">
+
+                    <!-- Menu Item -->
+                    <li class="dt-side-nav__item">
+                        <a href="{{ route('dashboard') }}" class="dt-side-nav__link" title="Dashboard">
+                            <i class="icon fas fa-tachometer-alt"></i>
+                            <span class="dt-side-nav__text">Dashboard</span> </a>
+                    </li>
+                    <!-- /menu item -->
+
+
+                    <!-- Menu Item -->
+                    @foreach(session('menu') as $menu)
+                        @if(!empty($menu->children))
+                            @if(count($menu->children) > 0)
+                                <li class="dt-side-nav__item">
+                                    <a href="javascript:void(0)" class="dt-side-nav__link dt-side-nav__arrow"
+                                       title="{{$menu->menu_name}}">
+                                        <i class="icon fas {{$menu->menu_icon}}"></i>
+                                        <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
+                                    </a>
+
+                                    <!-- Sub-menu -->
+                                    <ul class="dt-side-nav__sub-menu">
+                                        @foreach($menu->children as $child)
+                                            <li class="dt-side-nav__item">
+                                                <a href="{{action($child->action_controller)}}"
+                                                   class="dt-side-nav__link"
+                                                   style="padding-left: 50px"
+                                                   title="{{$child->menu_name}}">
+                                                    <i class="icon fas {{$child->menu_icon}}"></i>
+                                                    <span class="dt-side-nav__text">{{$child->menu_name}}</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    <!-- /sub-menu -->
+                                </li>
+                            @endif
+                        @else
+                        <!-- Menu single -->
+                            <li class="dt-side-nav__item">
+                                <a href="{{ action($menu->action_controller) }}" class="dt-side-nav__link"
+                                   title="{{$menu->menu_name}}">
+                                    <i class="icon fas {{$menu->menu_icon}}"></i>
+                                    <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
+                                </a>
+                            </li>
+                            <!-- /menu single -->
+                        @endif
+                    @endforeach
+                </ul>
+                <!-- /sidebar navigation -->
+
+            </div>
+        </aside>
+        <!-- /sidebar -->
+        <!-- Site Content Wrapper -->
+        <div class="dt-content-wrapper">
+        @yield('content')
+
+        <!-- Footer -->
+            <footer class="dt-footer">
+                © Hak Cipta PT Balai Besar Kulit dan Karet {{ date('Y') }}
+            </footer>
+            <!-- /footer -->
+        </div>
+        <!-- /site content wrapper -->
+
+        <!-- Theme Chooser -->
+        <div class="dt-customizer-toggle">
+            <a href="javascript:void(0)" data-toggle="customizer"> <i class="icon icon-spin icon-setting"></i> </a>
+        </div>
+        <!-- /theme chooser -->
+
+        <!-- Customizer Sidebar -->
+        <aside class="dt-customizer dt-drawer position-right">
+            <div class="dt-customizer__inner">
+
+                <!-- Customizer Header -->
+                <div class="dt-customizer__header">
+
+                    <!-- Customizer Title -->
+                    <div class="dt-customizer__title">
+                        <h3 class="mb-0">Theme Settings</h3>
+                    </div>
+                    <!-- /customizer title -->
+
+                    <!-- Close Button -->
+                    <button type="button" class="close" data-toggle="customizer">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <!-- /close button -->
+
+                </div>
+                <!-- /customizer header -->
+
+                <!-- Customizer Body -->
+                <div class="dt-customizer__body ps-custom-scrollbar">
+                    <!-- Customizer Body Inner  -->
+                    <div class="dt-customizer__body-inner">
+
+                        <!-- Section -->
+                        <section id="theme-chooser">
+                            <h6 class="text-uppercase">Theme</h6>
+
+                            <!-- Button Group -->
+                            <div class="dt-customizer__btn-group btn-group btn-group-toggle btn-group mb-1"
+                                 data-toggle="buttons"><label class="btn btn-outline-light"><input
+                                        class="theme-option" type="radio" name="options" id="theme-option-lite"
+                                        value="lite">Lite</label>
+                                <label class="btn btn-outline-light"><input class="theme-option" type="radio"
+                                                                            name="options" id="theme-option-semidark"
+                                                                            value="semidark">Semi Dark</label>
+                                <label class="btn btn-outline-light"><input class="theme-option" type="radio"
+                                                                            name="options" id="theme-option-dark"
+                                                                            value="dark">Dark</label>
+                            </div>
+                            <!-- /button group -->
+
+                        </section>
+                        <!-- /section -->
+
+                        <!-- Section -->
+                        <section id="theme-style-chooser">
+                            <h6 class="text-uppercase">Colors</h6>
+
+                            <!-- List -->
+                            <ul class="dt-list dt-list-sm dt-color-options">
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-1"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-2"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-3"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-4"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-5"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-6"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-7"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-8"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-9"></span>
+                                </li>
+                                <li class="dt-list__item">
+                                    <span class="dt-color-option" data-style="style-10"></span>
+                                </li>
+                            </ul>
+                            <!-- /list -->
+
+                        </section>
+                        <!-- /section -->
+
+                        <!-- Section -->
+                        <section id="layout-chooser">
+                            <h6 class="text-uppercase">Layout</h6>
+
+                            <!-- List -->
+                            <ul class="dt-list dt-list-sm">
+                                <li class="dt-list__item">
+                                    <div class="choose-option">
+                                        <a href="javascript:void(0)" class="choose-option__icon"
+                                           data-layout="framed">
+                                            <img src="{{ asset('assets/images/layouts/framed.png') }}"
+                                                 alt="Framed">
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="dt-list__item">
+                                    <div class="choose-option">
+                                        <a href="javascript:void(0)" class="choose-option__icon"
+                                           data-layout="full-width">
+                                            <img src="{{ asset('assets/images/layouts/full-width.png') }}"
+                                                 alt="Full Width">
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="dt-list__item">
+                                    <div class="choose-option">
+                                        <a href="javascript:void(0)" class="choose-option__icon"
+                                           data-layout="boxed">
+                                            <img src="{{ asset('assets/images/layouts/boxed.png') }}" alt="Boxed">
+                                        </a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <!-- /list -->
+
+                        </section>
+                        <!-- /section -->
+
+                    </div>
+                    <!-- /customizer body inner -->
+                </div>
+                <!-- /customizer body -->
+
+            </div>
+        </aside>
+        <!-- /customizer sidebar -->
+    </main>
+</div>
+<!-- /root -->
+
+<script src="{{ asset('/node_modules/jquery/dist/jquery.min.js') }}"></script>
+<script src="{{ asset('/node_modules/moment/moment.js') }}"></script>
+<script src="{{ asset('/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+<!-- Perfect Scrollbar jQuery -->
+<script src="{{ asset('/node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js') }}"></script>
+<!-- /perfect scrollbar jQuery -->
+
+<!-- masonry script -->
+<script src="{{ asset('/node_modules/masonry-layout/dist/masonry.pkgd.min.js') }}"></script>
+<script src="{{ asset('/node_modules/sweetalert2/dist/sweetalert2.js') }}"></script>
+
+<script src="{{ asset('/node_modules/chart.js/dist/Chart.min.js') }}"></script>
+
+<!-- Resources -->
+<script src="{{ asset('/node_modules/ammap3/ammap/ammap.js') }}"></script>
+<script src="{{ asset('/node_modules/ammap3/ammap/maps/js/continentsLow.js') }}"></script>
+<script src="{{ asset('/node_modules/ammap3/ammap/themes/light.js') }}"></script>
+
+<script src="{{ asset('/node_modules/amcharts3/amcharts/amcharts.js') }}"></script>
+<script src="{{ asset('/node_modules/amcharts3/amcharts/gauge.js') }}"></script>
+
+<!-- Custom JavaScript -->
+<script src="{{ asset('assets/js/script.js') }}"></script>
+
+<script src="https://kit.fontawesome.com/68c3e4b5b2.js"></script>
+
+<script src="{{asset('plugins/easyui/jquery.easyui.min.js')}}"></script>
+<script src="{{asset('plugins/easyui/datagrid-filter.js')}}"></script>
+<script src="{{asset('plugins/easyui/datagrid-export.js')}}"></script>
+<script src="{{asset('plugins/easyui/jquery.edatagrid.js')}}"></script>
+
+<script>
+    const toast = swal.mixin({
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 3000
+    });
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
+
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI",
+        authDomain: "balaikulit-yogya.firebaseapp.com",
+        projectId: "balaikulit-yogya",
+        storageBucket: "balaikulit-yogya.appspot.com",
+        messagingSenderId: "54843566382",
+        appId: "1:54843566382:web:76eb5779a911d71d6d72bf"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+</script>
+
+@stack('javascript')
+</body>
+
+</html>

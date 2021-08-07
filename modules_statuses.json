@@ -1,0 +1,8 @@
+{
+    "Auth": true,
+    "Dashboard": true,
+    "Home": true,
+    "DashboardController": true,
+    "System": true,
+    "Certification": true
+}
