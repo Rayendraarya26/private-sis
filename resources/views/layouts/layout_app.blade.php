@@ -161,7 +161,7 @@
                                      alt="Domnic Harris">
                                 <span class="dt-avatar-info">
                                         <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
-                                        <span class="f-12">{{ auth()->user()->user_fullname }}</span>
+                                        <span class="f-12">{{ session('group_selected_name') }}</span>
                                     </span>
                             </div>
                             <a class="dropdown-item" href="javascript:void(0)">
@@ -172,11 +172,8 @@
                             </a>
                         </div>
                         <!-- /dropdown option -->
-
                     </div>
                     <!-- /dropdown -->
-
-
                 </div>
                 <!-- /sidebar notification -->
 

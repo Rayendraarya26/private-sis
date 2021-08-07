@@ -86,6 +86,39 @@ class LoginController extends Controller
             $findUser = SysUser::where('user_email', $user->email)->first();
             if ($findUser) {
                 Auth::login($findUser);
+
+                Auth::user()->user_last_login = date("Y-m-d H:i:s");
+                Auth::user()->save();
+
+                $group_selected = Auth::user()->user_group->where("ug_is_default", "yes")->first()->ug_group_id;
+                $group_selected_name = Auth::user()->user_group->where("ug_is_default", "yes")->first()->group->group_name;
+                $dataMenu = DB::select(DB::RAW("
+                SELECT DISTINCT menu_name, menu_id, menu_parent_id, menu_icon, sma.action_controller
+                FROM sys_menu
+                         JOIN sys_menu_action sma ON sys_menu.menu_id = sma.actiON_menu_id AND sma.action_name = 'index'
+                         JOIN sys_group_permission sgp ON sma.action_id = sgp.action_id
+                WHERE sgp.group_id = '$group_selected' AND menu_is_active = 'yes'
+                ORDER BY menu_parent_id, menu_order, menu_name
+            "));
+                $menuAction = [];
+                $permission = DB::select(DB::RAW("
+                SELECT action_controller FROM sys_group_permission
+                JOIN sys_menu_action sma ON sys_group_permission.action_id = sma.action_id
+                WHERE group_id = '$group_selected'
+            "));
+                foreach ($permission as $p) {
+                    array_push($menuAction, $p->action_controller);
+                }
+                $dataSession = [
+                    'group_selected' => $group_selected,
+                    'group_selected_name' => $group_selected_name,
+                    'group_available' => Auth::user()->user_group,
+                    'permission' => $menuAction,
+                    'menu' => $this->buildTree($dataMenu),
+                ];
+
+                session($dataSession);
+
                 return redirect()->intended(route('dashboard'));
             } else {
                 return redirect(route('auth.login'))->withErrors(['status' => "Akun kamu belum terdaftar di BBKKP SIS"]);
@@ -133,6 +166,7 @@ class LoginController extends Controller
 
     public function logout()
     {
+        session()->flush();
         Auth::logout();
         return redirect(route("auth.login"));
     }
