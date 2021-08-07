@@ -26,7 +26,7 @@ class ForgetPasswordController extends Controller
             return redirect()->back()->withErrors(['message' => "Email tidak terdaftar"]);
         } else {
             $dataUser->user_token = Str::random(20);
-            $dataUser = $dataUser->save();
+            $dataUser->save();
             Mail::to($dataUser->user_email)->send(new ForgetPassword($dataUser));
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
         }
