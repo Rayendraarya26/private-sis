@@ -139,7 +139,6 @@ class LoginController extends Controller
 
     public function handleResendValidation()
     {
-
         Mail::to(auth()->user()->user_email)->send(new ResendValidation(auth()->user()));
         return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
     }

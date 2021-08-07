@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Modules\Auth\Emails\ForgetPassword;
 
 class ForgetPasswordController extends Controller
@@ -24,6 +25,8 @@ class ForgetPasswordController extends Controller
         if (!$dataUser) {
             return redirect()->back()->withErrors(['message' => "Email tidak terdaftar"]);
         } else {
+            $dataUser->user_token = Str::random(20);
+            $dataUser = $dataUser->save();
             Mail::to($dataUser->user_email)->send(new ForgetPassword($dataUser));
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
         }
