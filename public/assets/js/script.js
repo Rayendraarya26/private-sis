@@ -758,17 +758,17 @@ function changeTheme($theme, $style, $themeStylesheet, $init) {
 
     $('#theme-style-chooser').show();
     if ($theme === 'lite') {
-        $logo.attr('src', 'http://localhost:8000/images/logos/sis_logo_white.png');
+        $logo.attr('src', `/images/logos/sis_logo_white.png`);
         $body.removeClass('theme-dark theme-semidark');
         $themeStylesheet.href = '/assets/css/' + $theme + '-' + $style + '.min.css';
     } else if ($theme === 'dark') {
-        $logo.attr('src', 'http://localhost:8000/images/logos/sis_logo_white.png');
+        $logo.attr('src', `/images/logos/sis_logo_white.png`);
         $body.removeClass('theme-semidark').addClass('theme-dark');
         $themeStylesheet.href = '/assets/css/' + $theme + '-style-1.min.css';
         $('#theme-style-chooser').hide();
     } else if ($theme === 'semidark') {
-        $body.find('.dt-header .dt-brand__logo-img').attr('src', 'http://localhost:8000/images/logos/sis_logo_white.png');
-        $body.find('.dt-login__content-inner .dt-brand__logo-img').attr('src', 'http://localhost:8000/images/logos/sis_logo_white.png');
+        $body.find('.dt-header .dt-brand__logo-img').attr('src', `/images/logos/sis_logo_white.png`);
+        $body.find('.dt-login__content-inner .dt-brand__logo-img').attr('src', `/images/logos/sis_logo_white.png`);
         $body.removeClass('theme-dark').addClass('theme-semidark');
         $themeStylesheet.href = '/assets/css/' + $theme + '-' + $style + '.min.css';
     }
