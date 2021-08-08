@@ -7,13 +7,6 @@ use Illuminate\Http\Request;
 
 class Authenticate
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
-     * @return mixed
-     */
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check()) {
@@ -26,7 +19,7 @@ class Authenticate
                 return redirect(route('auth.resend_validation'));
             }
         } else {
-            return redirect(route('auth.login'));
+            return redirect()->guest(route('auth.login'));
         }
     }
 }
