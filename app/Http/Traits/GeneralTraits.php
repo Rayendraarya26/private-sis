@@ -61,10 +61,10 @@ trait GeneralTraits
 
             foreach ($dataToken as $token) {
                 // add token penerima
-                array_push($registrationIds, $token->token_token);
+                array_push($registrationIds, $token->fbtoken_token);
             }
 
-            $API_ACCESS_KEY = 'AAAADMTuaS4:APA91bEKb5VRnWm5B_XJxpKtFmkGMAls1RMudXUZsylmUVd2zYiG095wZxV35MGQKS2yVCaV25jpQtSiW030U8_O4du9Qmppek_MzuqEJIybIwy_GBt77zcajOl2YE8Pj8v35AQhWJ0p';
+            $API_ACCESS_KEY = env("GOOGLE_PUSH_KEY");
 
             $url = 'https://fcm.googleapis.com/fcm/send';
 

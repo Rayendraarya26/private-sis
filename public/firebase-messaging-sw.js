@@ -1,4 +1,5 @@
 self.addEventListener('push', function (event) {
+    console.log(event)
     var a = event.data.json();
     const title = a.data.title;
     const options = {

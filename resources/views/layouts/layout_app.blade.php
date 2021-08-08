@@ -626,6 +626,11 @@
             FIREBASE_MESSAGING.getToken().then(token => {
                 syncToken(token)
             })
+
+            FIREBASE_MESSAGING.onMessage(payload => {
+                // console.log(payload)
+                alert("new notif");
+            });
         })
         .catch((err) => {
             console.log(err);
