@@ -27,6 +27,7 @@
 
     <!-- Load Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/lite-style-1.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/fontawesome/css/all.min.css')}}">
 
     <link href="{{ asset('plugins/easyui/themes/material/easyui.css')}}" rel="stylesheet">
 
@@ -97,6 +98,12 @@
 
             <!-- Header toolbar-->
             <div class="dt-header__toolbar">
+                <!-- Search box -->
+                <form class="search-box d-none d-lg-block">
+                    <div class="pt-4"></div>
+                    <h2>@yield('title')</h2>
+                </form>
+                <!-- /search box -->
 
                 <!-- Header Menu Wrapper -->
                 <div class="dt-nav-wrapper">
@@ -193,11 +200,11 @@
                                         <i class="fas fa-exchange-alt"></i> Switch Role
                                     </a>
                                 @endif
-                                <a class="dropdown-item" href="javascript:void(0)">
-                                    <i class="icon fas fa-user"></i> Profile
+                                <a class="dropdown-item" href="{{route('profile')}}">
+                                    <i class="icon far fa-user"></i> Profile
                                 </a>
                                 <a class="dropdown-item" href="{{ route('auth.logout') }}">
-                                    <i class="icon fas fa-sign-out-alt"></i> Logout
+                                    <i class="icon far fa-sign-out-alt"></i> Logout
                                 </a>
                             </div>
 
@@ -335,7 +342,7 @@
 
         <!-- Footer -->
             <footer class="dt-footer">
-                © Hak Cipta PT Balai Besar Kulit dan Karet {{ date('Y') }}
+                © Hak Cipta Balai Besar Kulit dan Karet {{ date('Y') }}
             </footer>
             <!-- /footer -->
         </div>
@@ -561,12 +568,12 @@
 <script src="{{ asset('assets/js/script.js') }}"></script>
 <script src="{{ asset('assets/js/vue.min.js') }}"></script>
 
-<script src="https://kit.fontawesome.com/68c3e4b5b2.js"></script>
+<script src="{{ asset('assets/fontawesome/js/all.min.js') }}"></script>
 
-<script src="{{asset('plugins/easyui/jquery.easyui.min.js')}}"></script>
-<script src="{{asset('plugins/easyui/datagrid-filter.js')}}"></script>
-<script src="{{asset('plugins/easyui/datagrid-export.js')}}"></script>
-<script src="{{asset('plugins/easyui/jquery.edatagrid.js')}}"></script>
+<script src="{{ asset('plugins/easyui/jquery.easyui.min.js') }}"></script>
+<script src="{{ asset('plugins/easyui/datagrid-filter.js') }}"></script>
+<script src="{{ asset('plugins/easyui/datagrid-export.js') }}"></script>
+<script src="{{ asset('plugins/easyui/jquery.edatagrid.js') }}"></script>
 
 <script>
     const toast = swal.mixin({

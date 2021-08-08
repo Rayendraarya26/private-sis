@@ -59,14 +59,15 @@
                 </div>
             @enderror
             <!-- Form -->
-                <form action="{{route('auth.processLogin')}}" method="post">
+                <form action="{{route('auth.processLogin')}}" method="post"
+                      onsubmit="$('#btn-submit').attr('disabled', 'true')">
                 @csrf
                 {{--Email--}}
                 <!-- Form Group -->
                     <div class="input-group input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="icon icon-email"></i>
+                                <i class="fal fa-envelope"></i>
                             </span>
                         </div>
                         <input type="text" class="form-control" aria-label="Small" name="email" value="{{old('email')}}"
@@ -79,14 +80,13 @@
 
                     <!-- Form Group -->
                     {{--Password--}}
-                    <div class="input-group
-                    input-group mb-3">
+                    <div class="input-group input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="icon icon-forgot-password"></i>
+                                <i class="fal fa-lock-alt"></i>
                             </span>
                         </div>
-                        <input type="password" class="form-control" aria-label="password" placeholder="Password"
+                        <input type="password" class="form-control" aria-label="password" placeholder="Masukkan kata sandi (password)"
                                name="password" required>
                     </div>
                     @error('password')
@@ -97,7 +97,8 @@
 
                     <!-- Form Group -->
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-block text-uppercase">Login</button>
+                        <button type="submit" id="btn-submit" class="btn btn-primary btn-block text-uppercase">Login
+                        </button>
                     </div>
                     <!-- /form group -->
                     <div style="text-align: center; font-weight: bold;font-size: 16px">

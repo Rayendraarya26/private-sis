@@ -28,6 +28,7 @@
     <!-- Load Styles -->
 
     <link rel="stylesheet" href="{{asset('assets/css/lite-style-1.min.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/fontawesome/css/all.min.css')}}">
     <!-- /load styles -->
 
     @stack("css")
@@ -70,8 +71,9 @@
 
 <!-- Custom JavaScript -->
 <script src="{{asset('assets/js/script.js')}}"></script>
+<script src="{{asset('assets/fontawesome/js/all.min.js')}}"></script>
 
-<script src="https://kit.fontawesome.com/68c3e4b5b2.js"></script>
+{{--<script src="https://kit.fontawesome.com/68c3e4b5b2.js"></script>--}}
 @stack('javascript')
 </body>
 </html>

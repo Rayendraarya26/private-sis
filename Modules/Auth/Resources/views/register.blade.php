@@ -67,7 +67,7 @@
                     <div class="input-group input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="icon icon-user"></i>
+                                <i class="fal fa-user"></i>
                             </span>
                         </div>
                         <input type="text" class="form-control" aria-label="Small"
@@ -83,13 +83,13 @@
                     <div class="input-group input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="icon icon-email"></i>
+                                <i class="fal fa-envelope"></i>
                             </span>
                         </div>
                         <input type="text" class="form-control" aria-label="Small"
                                aria-describedby="inputGroup-sizing-sm" name="email"
                                value="{{old('email')}}" required
-                               placeholder="Masukkan surel(email)...">
+                               placeholder="Masukkan surel (email)...">
                     </div>
                     @error('email')
                     <span class="text-danger">{{$message}}</span>
@@ -100,11 +100,11 @@
                     input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="icon icon-forgot-password"></i>
+                                <i class="fal fa-lock-alt"></i>
                             </span>
                         </div>
                         <input type="password" class="form-control" aria-label="password" required
-                               placeholder="Masukkan kata sandi..." name="password">
+                               placeholder="Masukkan kata sandi (password)..." name="password">
                     </div>
                     @error('password')
                     <span class="text-danger">{{$message}}</span>
@@ -114,7 +114,7 @@
                     <div class="input-group input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="icon icon-forgot-password"></i>
+                                <i class="fal fa-lock-alt"></i>
                             </span>
                         </div>
                         <input type="password" class="form-control" aria-label="password_confirmation" required

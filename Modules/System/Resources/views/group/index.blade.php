@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Manage User')
+@section('title', 'Manage Group')
 
 @section('content')
     <div class="dt-content">

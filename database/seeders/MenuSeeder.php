@@ -56,7 +56,7 @@ class MenuSeeder extends Seeder
                 'icon' => 'fa-user-friends',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageGroupController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageGroupController@add'],
+                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageGroupController@create'],
                     ['name' => 'store', 'controller' => $prefixSystem . '\ManageGroupController@store'],
                     ['name' => 'detail', 'controller' => $prefixSystem . '\ManageGroupController@detail'],
                     ['name' => 'edit', 'controller' => $prefixSystem . '\ManageGroupController@edit'],
@@ -76,7 +76,7 @@ class MenuSeeder extends Seeder
                 'icon' => 'fa-bars',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuController@add'],
+                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuController@create'],
                     ['name' => 'store', 'controller' => $prefixSystem . '\ManageMenuController@store'],
                     ['name' => 'detail', 'controller' => $prefixSystem . '\ManageMenuController@detail'],
                     ['name' => 'edit', 'controller' => $prefixSystem . '\ManageMenuController@edit'],
@@ -95,7 +95,7 @@ class MenuSeeder extends Seeder
                 'icon' => NULL,
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuActionController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuActionController@add'],
+                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuActionController@create'],
                     ['name' => 'store', 'controller' => $prefixSystem . '\ManageMenuActionController@store'],
                     ['name' => 'detail', 'controller' => $prefixSystem . '\ManageMenuActionController@detail'],
                     ['name' => 'edit', 'controller' => $prefixSystem . '\ManageMenuActionController@edit'],

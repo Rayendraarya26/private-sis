@@ -2,78 +2,37 @@
 
 namespace Modules\Home\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
+
     public function index()
     {
-        return view('home::index');
+        return view('home::account.profile');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+    public function editPassword()
     {
-        return view('home::create');
+        return view("home::account.change_password");
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+    public function updatePassword(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'current_password' => 'required|min:4',
+            'new_password' => 'required|min:4|confirmed',
+        ]);
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('home::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('home::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        if (Hash::check($request['current_password'], Auth::user()->user_password)) {
+            Auth::user()->user_password = bcrypt($request['new_password']);
+            Auth::user()->save();
+            return redirect()->back()->with("message", "Kata sandi berhasil diperbarui");
+        } else {
+            return redirect()->back()->withErrors(['message' => "Kata sandi sekarang tidak sesuai"]);
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
+use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -130,7 +131,7 @@ class LoginController extends Controller
                 $group_selected = $group_id;
                 $group_selected_name = $exist->group->group_name;
                 $this->setAccess($group_selected, $group_selected_name);
-                return redirect()->back()->with('message', "Berhasil ganti role");
+                return redirect(RouteServiceProvider::HOME)->with('message', "Berhasil ganti role");
             }
         }
         abort(401);

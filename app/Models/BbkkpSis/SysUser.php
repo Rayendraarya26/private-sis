@@ -32,6 +32,7 @@ class SysUser extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'user_last_login' => 'datetime',
     ];
 
     public function getAuthPassword()
