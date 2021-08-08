@@ -15,7 +15,8 @@ class NotificationController extends Controller
 
     public function index()
     {
-        return view('home::index');
+        $dataNotif = SysUserNotif::where("notif_user_id", auth()->id())->orderBy('notif_is_read', 'desc')->orderBy('notif_created_at', 'desc')->paginate(20);
+        return view('home::notification.index')->with(['dataNotif' => $dataNotif]);
     }
 
     public function open($id)

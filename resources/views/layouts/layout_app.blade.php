@@ -124,7 +124,7 @@
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-media">
                                 <!-- Dropdown Menu Header -->
                                 <div class="dropdown-menu-header">
-                                    <h4 class="title">Pemberitahuan ({{$total->total}})</h4>
+                                    <h4 class="title">Notifikasi ({{$total->total}})</h4>
 
                                     <div class="ml-auto action-area">
                                         <a href="{{url('notification/mark-all-as-read')}}">Baca Semua</a>
@@ -138,8 +138,13 @@
                                     @foreach($notif as $n)
                                         <!-- Media -->
                                             <a href="{{url('notification/open/'.$n->notif_id)}}" class="media">
-                                                <i class="fas fa-bell mr-3 fa-2x" {!! $n->notif_is_read == "yes" ? "style='color: grey'" : "" !!}></i>
-                                                <!-- avatar -->
+                                                @if($n->notif_is_read == "yes")
+                                                    <i class="fal fa-bell mr-3 fa-2x" style='color: grey'></i>
+                                                @else
+                                                    <i class="fas fa-bell mr-3 fa-2x"></i>
+                                            @endif
+
+                                            <!-- avatar -->
 
                                                 <!-- Media Body -->
                                                 <span class="media-body">
@@ -161,8 +166,8 @@
 
                                 <!-- Dropdown Menu Footer -->
                                 <div class="dropdown-menu-footer">
-                                    <a href="javascript:void(0)" class="card-link"> See All <i
-                                            class="icon icon-arrow-right icon-fw"></i>
+                                    <a href="{{route('notification')}}" class="card-link"> Selengkapnya
+                                        <i class="fal fa-arrow-right"></i>
                                     </a>
                                 </div>
                                 <!-- /dropdown menu footer -->
