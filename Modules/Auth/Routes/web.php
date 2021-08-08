@@ -22,6 +22,7 @@ Route::prefix('auth')->name("auth.")->group(function () {
         Route::post('new-password', [ForgetPasswordController::class, 'handleNewPassword'])->name('new_password');
     });
 
+    Route::post('switch-role', [LoginController::class, 'switchRole'])->name('switch_role');
     Route::get('validation/resend', [LoginController::class, 'resendValidation'])->name('resend_validation');
     Route::post('validation/resend', [LoginController::class, 'handleResendValidation']);
     Route::get('validation/verify/{token}', [LoginController::class, 'verifyValidation'])->name('verify');

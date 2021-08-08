@@ -34,6 +34,16 @@
         .table-responsive {
             overflow-x: hidden !important;
         }
+
+        .dt-side-nav__header {
+            padding-top: 0 !important;
+        }
+
+        @media screen and (max-width: 991px) {
+            .dt-side-nav__header {
+                padding-top: 20px !important;
+            }
+        }
     </style>
 
     @stack('css')
@@ -77,7 +87,7 @@
                                  alt="BBKKP SIS">
                             <img class="dt-brand__logo-symbol d-lg-none"
                                  src="{{asset('images/logos/sis_logo.png')}}"
-                                 alt="Eduparx Afiliate" style="width: 100px">
+                                 alt="BBKKP SIS" style="width: 70px">
                         </a>
                     </span>
                 <!-- /brand logo -->
@@ -88,17 +98,75 @@
             <!-- Header toolbar-->
             <div class="dt-header__toolbar">
 
-            {{-- <!-- Search box --> --}}
-            {{-- <form class="search-box d-none d-lg-block"> --}}
-            {{-- <input class="form-control border-0" placeholder="Search in app..." value="" type="search"> --}}
-            {{-- <span class="search-icon text-light-gray"><i class="icon icon-search icon-lg"></i></span> --}}
-            {{-- </form> --}}
-            {{-- <!-- /search box --> --}}
-
-            <!-- Header Menu Wrapper -->
+                <!-- Header Menu Wrapper -->
                 <div class="dt-nav-wrapper">
+                    <ul class="dt-nav">
+                        @php
+                            $notif = \App\Models\BbkkpSis\SysUserNotif::where("notif_user_id", auth()->id())->orderBy('notif_is_read', 'desc')->orderBy('notif_created_at', 'desc')->take(10)->get();
+                            $total = \App\Models\BbkkpSis\SysUserNotif::where("notif_user_id", auth()->id())->where("notif_is_read", 'no')->select(\Illuminate\Support\Facades\DB::RAW("count(*) total"))->first();
+                        @endphp
+                        <li class="dt-nav__item dt-notification dropdown">
+                            <!-- Dropdown Link -->
+                            <a href="#" class="dt-nav__link dropdown-toggle no-arrow" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="icon icon-notification icon-fw {{$total->total > 0 ? 'dt-icon-alert' : ''}}"></i>
+                            </a>
+                            <!-- /dropdown link -->
+
+                            <!-- Dropdown Option -->
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-media">
+                                <!-- Dropdown Menu Header -->
+                                <div class="dropdown-menu-header">
+                                    <h4 class="title">Pemberitahuan ({{$total->total}})</h4>
+
+                                    <div class="ml-auto action-area">
+                                        <a href="{{url('notification/mark-all-as-read')}}">Baca Semua</a>
+                                    </div>
+                                </div>
+                                <!-- /dropdown menu header -->
+
+                                <!-- Dropdown Menu Body -->
+                                <div class="dropdown-menu-body ps-custom-scrollbar">
+                                    <div class="h-auto">
+                                    @foreach($notif as $n)
+                                        <!-- Media -->
+                                            <a href="{{url('notification/open/'.$n->notif_id)}}" class="media">
+                                                <i class="fas fa-bell mr-3 fa-2x" {!! $n->notif_is_read == "yes" ? "style='color: grey'" : "" !!}></i>
+                                                <!-- avatar -->
+
+                                                <!-- Media Body -->
+                                                <span class="media-body">
+                                                <span class="message">
+                                                    <span class="user-name">{{$n->notif_title}}</span>
+                                                    <br>
+                                                    {{$n->notif_content}}
+                                                </span>
+                                                <span class="meta-date">{{$n->notif_created_at->diffForHumans()}}</span>
+                                            </span>
+                                                <!-- /media body -->
+                                            </a>
+                                            <!-- /media -->
+                                        @endforeach
+                                    </div>
+
+                                </div>
+                                <!-- /dropdown menu body -->
+
+                                <!-- Dropdown Menu Footer -->
+                                <div class="dropdown-menu-footer">
+                                    <a href="javascript:void(0)" class="card-link"> See All <i
+                                            class="icon icon-arrow-right icon-fw"></i>
+                                    </a>
+                                </div>
+                                <!-- /dropdown menu footer -->
+                            </div>
+                            <!-- /dropdown option -->
+                        </li>
+                    </ul>
+                    <!-- /header menu -->
+
                     <!-- Header Menu -->
-                    <ul class="dt-nav d-lg-none">
+                    <ul class="dt-nav">
                         <li class="dt-nav__item dropdown">
 
                             <!-- Dropdown Link -->
@@ -110,7 +178,21 @@
                             <!-- /dropdown link -->
 
                             <!-- Dropdown Option -->
-                            <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-menu dropdown-menu-right" style="width: 200px">
+                                <div
+                                    class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
+                                    <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">
+                                    <span class="dt-avatar-info">
+                                          <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
+                                          <span class="f-12">{{ ucwords(session('group_selected_name')) }}</span>
+                                        </span>
+                                </div>
+                                @if(count(session('group_available')) > 1)
+                                    <a class="dropdown-item" href="javascript:void(0)"
+                                       onclick="$('#modalSwitchRole').modal('show')">
+                                        <i class="fas fa-exchange-alt"></i> Switch Role
+                                    </a>
+                                @endif
                                 <a class="dropdown-item" href="javascript:void(0)">
                                     <i class="icon fas fa-user"></i> Profile
                                 </a>
@@ -139,46 +221,58 @@
             <div class="dt-sidebar__container">
 
                 <!-- Sidebar Notification -->
-                <div class="dt-sidebar__notification  d-none d-lg-block">
-                    <!-- Dropdown -->
-                    <div class="dropdown mb-6" id="user-menu-dropdown">
+            {{--                <div class="dt-sidebar__notification  d-none d-lg-block">--}}
+            {{--                    <!-- Dropdown -->--}}
+            {{--                    <div class="dropdown mb-6" id="user-menu-dropdown">--}}
 
-                        <!-- Dropdown Link -->
-                        <a href="#" class="dropdown-toggle dt-avatar-wrapper text-body" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">
-                            <span class="dt-avatar-info"><span class="dt-avatar-name">
-                                        {{ auth()->user()->user_fullname }}
-                                    </span></span>
-                        </a>
-                        <!-- /dropdown link -->
+            {{--                        <!-- Dropdown Link -->--}}
+            {{--                        <a href="#" class="dropdown-toggle dt-avatar-wrapper text-body" data-toggle="dropdown"--}}
+            {{--                           aria-haspopup="true" aria-expanded="false">--}}
+            {{--                            <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">--}}
+            {{--                            <span class="dt-avatar-info"><span class="dt-avatar-name">--}}
+            {{--                                        {{ auth()->user()->user_fullname }}--}}
+            {{--                                    </span></span>--}}
+            {{--                        </a>--}}
+            {{--                        <!-- /dropdown link -->--}}
 
-                        <!-- Dropdown Option -->
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div
-                                class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
-                                <img class="dt-avatar" src="{{ auth()->user()->getImage() }}"
-                                     alt="Domnic Harris">
-                                <span class="dt-avatar-info">
-                                        <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
-                                        <span class="f-12">{{ session('group_selected_name') }}</span>
-                                    </span>
-                            </div>
-                            <a class="dropdown-item" href="javascript:void(0)">
-                                <i class="icon fas fa-user"></i> Profile
-                            </a>
-                            <a class="dropdown-item" href="{{ route('auth.logout') }}">
-                                <i class="icon fas fa-sign-out-alt"></i> Logout
-                            </a>
-                        </div>
-                        <!-- /dropdown option -->
-                    </div>
-                    <!-- /dropdown -->
-                </div>
-                <!-- /sidebar notification -->
+            {{--                        <!-- Dropdown Option -->--}}
+            {{--                        <div class="dropdown-menu dropdown-menu-right">--}}
+            {{--                            <div--}}
+            {{--                                class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">--}}
+            {{--                                <img class="dt-avatar" src="{{ auth()->user()->getImage() }}"--}}
+            {{--                                     alt="Domnic Harris">--}}
+            {{--                                <span class="dt-avatar-info">--}}
+            {{--                                        <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>--}}
+            {{--                                        <span class="f-12">{{ ucwords(session('group_selected_name')) }}</span>--}}
+            {{--                                    </span>--}}
+            {{--                            </div>--}}
+            {{--                            @if(count(session('group_available')) > 1)--}}
+            {{--                                <a class="dropdown-item" href="javascript:void(0)"--}}
+            {{--                                   onclick="$('#modalSwitchRole').modal('show')">--}}
+            {{--                                    <i class="fas fa-exchange-alt"></i> Switch Role--}}
+            {{--                                </a>--}}
+            {{--                            @endif--}}
+            {{--                            <a class="dropdown-item" href="javascript:void(0)">--}}
+            {{--                                <i class="icon fas fa-user"></i> Profile--}}
+            {{--                            </a>--}}
+            {{--                            <a class="dropdown-item" href="{{ route('auth.logout') }}">--}}
+            {{--                                <i class="icon fas fa-sign-out-alt"></i> Logout--}}
+            {{--                            </a>--}}
+            {{--                        </div>--}}
+            {{--                        <!-- /dropdown option -->--}}
+            {{--                    </div>--}}
+            {{--                    <!-- /dropdown -->--}}
+            {{--                </div>--}}
+            <!-- /sidebar notification -->
 
                 <!-- Sidebar Navigation -->
                 <ul class="dt-side-nav">
+
+                    <!-- Menu Header -->
+                    <li class="dt-side-nav__item dt-side-nav__header">
+                        <span class="dt-side-nav__text">Menu</span>
+                    </li>
+                    <!-- /menu header -->
 
                     <!-- Menu Item -->
                     <li class="dt-side-nav__item">
@@ -390,6 +484,55 @@
         </aside>
         <!-- /customizer sidebar -->
     </main>
+
+
+@if(count(session('group_available')) > 1)
+    <!-- Modal Switch Role-->
+        <div class="modal fade" id="modalSwitchRole" tabindex="-1" role="dialog"
+             aria-labelledby="modalSwitchRole" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+
+                <!-- Modal Content -->
+                <div class="modal-content">
+                    <form action="{{route('auth.switch_role')}}" method="post">
+                    @csrf
+                    <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="modalSwitchRoleTitle">
+                                Switch Role ({{ucwords(session('group_selected_name'))}})
+                            </h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <!-- /modal header -->
+
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <label for="modal_group_id">Pilih Role</label>
+
+
+                            <select name="modal_group_id" id="modal_group_id" class="form form-control">
+                                @foreach(session('group_available') as $group)
+                                    <option
+                                        value="{{$group['group_id']}}" {{$group['group_id'] == session('group_selected') ? 'selected' : ''}}>
+                                        {{ucwords($group['group_name'])}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <!-- /modal body -->
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary btn-sm">UBAH</button>
+                        </div>
+                        <!-- /modal footer -->
+                    </form>
+                </div>
+                <!-- /modal content -->
+            </div>
+        </div>
+    @endif
 </div>
 <!-- /root -->
 
@@ -416,6 +559,7 @@
 
 <!-- Custom JavaScript -->
 <script src="{{ asset('assets/js/script.js') }}"></script>
+<script src="{{ asset('assets/js/vue.min.js') }}"></script>
 
 <script src="https://kit.fontawesome.com/68c3e4b5b2.js"></script>
 
@@ -443,8 +587,15 @@
 <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
 
 <script>
+    function syncToken(token) {
+        $.post(`{{url('notification/ajax/sync-token')}}`, {token})
+            .then(response => {
+                console.log(response)
+            });
+    }
+
     // Your web app's Firebase configuration
-    var firebaseConfig = {
+    const firebaseConfig = {
         apiKey: "AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI",
         authDomain: "balaikulit-yogya.firebaseapp.com",
         projectId: "balaikulit-yogya",
@@ -454,6 +605,32 @@
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
+
+    window.FIREBASE_MESSAGING = firebase.messaging();
+
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
+            .then(function (swReg) {
+                // console.log('Service Worker is registered', swReg);
+                // console.log('ServiceWorker registration successful with scope: ', swReg.scope);
+                FIREBASE_MESSAGING.useServiceWorker(swReg);
+            })
+            .catch(function (error) {
+                console.error('Service Worker Error', error);
+            });
+    }
+
+    // meminta perizinan allow pop up
+    FIREBASE_MESSAGING.requestPermission()
+        .then(() => {
+            FIREBASE_MESSAGING.getToken().then(token => {
+                syncToken(token)
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+            console.log("error getting permission :(");
+        });
 </script>
 
 @stack('javascript')

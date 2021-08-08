@@ -3,12 +3,12 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Models\BbkkpSis\SysUser;
+use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Auth\Emails\ResendValidation;
@@ -41,32 +41,7 @@ class LoginController extends Controller
 
             $group_selected = Auth::user()->user_group->where("ug_is_default", "yes")->first()->ug_group_id;
             $group_selected_name = Auth::user()->user_group->where("ug_is_default", "yes")->first()->group->group_name;
-            $dataMenu = DB::select(DB::RAW("
-                SELECT DISTINCT menu_name, menu_id, menu_parent_id, menu_icon, sma.action_controller
-                FROM sys_menu
-                         JOIN sys_menu_action sma ON sys_menu.menu_id = sma.actiON_menu_id AND sma.action_name = 'index'
-                         JOIN sys_group_permission sgp ON sma.action_id = sgp.action_id
-                WHERE sgp.group_id = '$group_selected' AND menu_is_active = 'yes'
-                ORDER BY menu_parent_id, menu_order, menu_name
-            "));
-            $menuAction = [];
-            $permission = DB::select(DB::RAW("
-                SELECT action_controller FROM sys_group_permission
-                JOIN sys_menu_action sma ON sys_group_permission.action_id = sma.action_id
-                WHERE group_id = '$group_selected'
-            "));
-            foreach ($permission as $p) {
-                array_push($menuAction, $p->action_controller);
-            }
-            $dataSession = [
-                'group_selected' => $group_selected,
-                'group_selected_name' => $group_selected_name,
-                'group_available' => Auth::user()->user_group,
-                'permission' => $menuAction,
-                'menu' => $this->buildTree($dataMenu),
-            ];
-
-            session($dataSession);
+            $this->setAccess($group_selected, $group_selected_name);
 
             return redirect()->intended(route('dashboard'));
         } else {
@@ -92,32 +67,7 @@ class LoginController extends Controller
 
                 $group_selected = Auth::user()->user_group->where("ug_is_default", "yes")->first()->ug_group_id;
                 $group_selected_name = Auth::user()->user_group->where("ug_is_default", "yes")->first()->group->group_name;
-                $dataMenu = DB::select(DB::RAW("
-                SELECT DISTINCT menu_name, menu_id, menu_parent_id, menu_icon, sma.action_controller
-                FROM sys_menu
-                         JOIN sys_menu_action sma ON sys_menu.menu_id = sma.actiON_menu_id AND sma.action_name = 'index'
-                         JOIN sys_group_permission sgp ON sma.action_id = sgp.action_id
-                WHERE sgp.group_id = '$group_selected' AND menu_is_active = 'yes'
-                ORDER BY menu_parent_id, menu_order, menu_name
-            "));
-                $menuAction = [];
-                $permission = DB::select(DB::RAW("
-                SELECT action_controller FROM sys_group_permission
-                JOIN sys_menu_action sma ON sys_group_permission.action_id = sma.action_id
-                WHERE group_id = '$group_selected'
-            "));
-                foreach ($permission as $p) {
-                    array_push($menuAction, $p->action_controller);
-                }
-                $dataSession = [
-                    'group_selected' => $group_selected,
-                    'group_selected_name' => $group_selected_name,
-                    'group_available' => Auth::user()->user_group,
-                    'permission' => $menuAction,
-                    'menu' => $this->buildTree($dataMenu),
-                ];
-
-                session($dataSession);
+                $this->setAccess($group_selected, $group_selected_name);
 
                 return redirect()->intended(route('dashboard'));
             } else {
@@ -131,16 +81,23 @@ class LoginController extends Controller
 
     public function resendValidation()
     {
-        if (auth()->user()->user_is_active == "yes"){
-            return redirect(route('dashboard'));
+        if (auth()->check()) {
+            if (auth()->user()->user_is_active == "yes") {
+                return redirect(route('dashboard'));
+            }
+            return view("auth::resend_validation");
         }
-        return view("auth::resend_validation");
+        return redirect(route('auth.login'));
     }
 
     public function handleResendValidation()
     {
-        Mail::to(auth()->user()->user_email)->send(new ResendValidation(auth()->user()));
-        return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
+        if (auth()->check()) {
+            Mail::to(auth()->user()->user_email)->send(new ResendValidation(auth()->user()));
+            return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
+        } else {
+            abort(401);
+        }
     }
 
     public function verifyValidation($token)
@@ -163,7 +120,24 @@ class LoginController extends Controller
         }
     }
 
-    public function logout()
+    public function switchRole(Request $request) // Khusus yang sudah login
+    {
+        if (Auth::check()) {
+            $request->validate(['modal_group_id' => 'required']);
+            $group_id = $request['modal_group_id'];
+            $exist = SysUserGroup::where("ug_user_id", Auth::id())->where("ug_group_id", $group_id)->first();
+            if ($exist) {
+                $group_selected = $group_id;
+                $group_selected_name = $exist->group->group_name;
+                $this->setAccess($group_selected, $group_selected_name);
+                return redirect()->back()->with('message', "Berhasil ganti role");
+            }
+        }
+        abort(401);
+
+    }
+
+    public function logout()  // Khusus yang sudah login
     {
         session()->flush();
         Auth::logout();

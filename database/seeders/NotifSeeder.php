@@ -18,7 +18,7 @@ class NotifSeeder extends Seeder
         $faker = Factory::create('id_ID');
 
         for ($i = 0; $i <= 50; $i++):
-            DB::table('sys_notif')
+            DB::table('sys_user_notif')
                 ->insert([
                     'notif_user_id' => 1,
                     'notif_title' => $faker->sentence,

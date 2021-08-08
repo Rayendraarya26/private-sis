@@ -2,15 +2,16 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSysNotifTable extends Migration
+class CreateSysUserNotifTable extends Migration
 {
     /**
      * Schema table name to migrate
      * @var string
      */
-    public $tableName = 'sys_notif';
+    public $tableName = 'sys_user_notif';
 
     /**
      * Run the migrations.
@@ -32,7 +33,6 @@ class CreateSysNotifTable extends Migration
             $table->timestamp('notif_updated_at')->nullable()->default(null);
 
             $table->index(["notif_user_id"], 'notif_user_id');
-
 
             $table->foreign('notif_user_id', 'notif_user_id')
                 ->references('user_id')->on('sys_user')

@@ -2,78 +2,54 @@
 
 namespace Modules\Home\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
+use App\Http\Traits\GeneralTraits;
+use App\Models\BbkkpSis\SysUserFbToken;
+use App\Models\BbkkpSis\SysUserNotif;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class NotificationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
+    use GeneralTraits;
+
     public function index()
     {
         return view('home::index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+    public function open($id)
     {
-        return view('home::create');
+        $dataNotif = SysUserNotif::where('notif_user_id', auth()->id())->findOrFail($id);
+        if ($dataNotif) {
+            $dataNotif->notif_is_read = "yes";
+            $dataNotif->notif_updated_at = Carbon::now();
+            $dataNotif->save();
+
+            return redirect(url($dataNotif->notif_link));
+        } else {
+            abort(404);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+    public function markAllAsRead()
     {
-        //
+        SysUserNotif::where('notif_user_id', auth()->id())->update(['notif_is_read' => 'yes']);
+        return redirect()->back();
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+    public function ajaxSyncToken(Request $request)
     {
-        return view('home::show');
+        SysUserFbtoken::firstOrCreate(
+            ['fbtoken_token' => $request['token'], 'fbtoken_user_id' => auth()->id()],
+            ['fbtoken_agent' => $request->header('User-agent'), 'fbtoken_ip' => $request->getClientIp()]
+        );
+
+        return $this->responseJSON(200, null, "sinkronisasi berhasil");
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
+    public function tes()
     {
-        return view('home::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        $this->sendNotification("Helo Hgeys", "Wowowow", auth()->id(), url('/dashboard'));
     }
 }

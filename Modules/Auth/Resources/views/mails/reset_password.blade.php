@@ -27,8 +27,8 @@
             Halo {{$name}}
         </h2>
         <div style="color: #636363; font-size: 14px;">
-            Kami kirimkan ulang link untuk mengatur ulang kata sandi kamu melalui link berikut, abaikan pesan ini jika
-            kamu tidak ingin mengatur ulang kata sandi
+            Berikut adalah link untuk mengatur ulang kata sandi, abaikan pesan ini jika
+            bukan anda yang melakukan permintaan ini
             <br>
             <div style="color: #636363; font-size: 14px;">
                 <a href="{{$link}}"

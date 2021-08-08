@@ -17,7 +17,10 @@ class Authenticate
     public function handle(Request $request, Closure $next)
     {
         if (auth()->check()) {
-            if (auth()->user()->user_is_active == "yes" && auth()->user()->user_is_banned == "no") {
+            if (auth()->user()->user_is_banned == "yes") {
+                auth()->logout();
+                return redirect(route('auth.login'))->withErrors(['status' => "Akun anda telah di blokir oleh admin"]);
+            } else if (auth()->user()->user_is_active == "yes") {
                 return $next($request);
             } else {
                 return redirect(route('auth.resend_validation'));

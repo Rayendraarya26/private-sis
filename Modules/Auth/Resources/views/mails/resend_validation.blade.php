@@ -27,7 +27,7 @@
             Halo {{$name}}
         </h2>
         <div style="color: #636363; font-size: 14px;">
-            Kami kirimkan ulang link validasi email kamu, klik link dibawah
+            berikut adalah link validasi email kamu, klik link dibawah
 
             <br>
             <div style="color: #636363; font-size: 14px;">
