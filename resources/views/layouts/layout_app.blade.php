@@ -204,7 +204,7 @@
                                 @if(count(session('group_available')) > 1)
                                     <a class="dropdown-item" href="javascript:void(0)"
                                        onclick="$('#modalSwitchRole').modal('show')">
-                                        <i class="fas fa-exchange-alt"></i> Switch Role
+                                        <i class="far fa-exchange-alt"></i> Switch Role
                                     </a>
                                 @endif
                                 <a class="dropdown-item" href="{{route('profile')}}">

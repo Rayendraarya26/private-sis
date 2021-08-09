@@ -250,8 +250,8 @@
                                                     <!-- Media Body -->
                                                     <div class="media-body">
                                                         <span
-                                                            class="d-block text-light-gray f-12 mb-1">Lives in London</span>
-                                                        <h5 class="mb-0">From Switzerland</h5>
+                                                            class="d-block text-light-gray f-12 mb-1">Negara</span>
+                                                        <h5 class="mb-0">Indonesia</h5>
                                                     </div>
                                                     <!-- /media body -->
 
