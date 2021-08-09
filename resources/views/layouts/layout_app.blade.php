@@ -40,6 +40,10 @@
             padding-top: 0 !important;
         }
 
+        /*.dt-side-nav__item.open>a{*/
+        /*    color: #fa8c16;*/
+        /*}*/
+
         @media screen and (max-width: 991px) {
             .dt-side-nav__header {
                 padding-top: 20px !important;
@@ -299,43 +303,59 @@
 
                     <!-- Menu Item -->
                     @foreach(session('menu') as $menu)
-                        @if(!empty($menu->children))
-                            @if(count($menu->children) > 0)
-                                <li class="dt-side-nav__item">
-                                    <a href="javascript:void(0)" class="dt-side-nav__link dt-side-nav__arrow"
-                                       title="{{$menu->menu_name}}">
-                                        <i class="icon {{$menu->menu_icon}}"></i>
-                                        <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
-                                    </a>
+                        <li class="dt-side-nav__item">
+                            <a href="{{ count($menu->children) ? 'javascript:void(0)' : action($menu->action_controller) }}"
+                               class="dt-side-nav__link {{count($menu->children) ? 'dt-side-nav__arrow' :''}}"
+                               title="{{$menu->menu_name}}">
+                                <i class="icon {{$menu->menu_icon}}"></i>
+                                <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
+                            </a>
 
-                                    <!-- Sub-menu -->
-                                    <ul class="dt-side-nav__sub-menu">
-                                        @foreach($menu->children as $child)
-                                            <li class="dt-side-nav__item">
-                                                <a href="{{action($child->action_controller)}}"
-                                                   class="dt-side-nav__link"
-                                                   style="padding-left: 50px"
-                                                   title="{{$child->menu_name}}">
-                                                    <i class="icon {{$child->menu_icon}}"></i>
-                                                    <span class="dt-side-nav__text">{{$child->menu_name}}</span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                    <!-- /sub-menu -->
-                                </li>
+
+                            @if(count($menu->children))
+                                <ul class="dt-side-nav__sub-menu">
+                                    @include('layouts.component.renderMenu', ['children' => $menu->children])
+                                </ul>
                             @endif
-                        @else
-                        <!-- Menu single -->
-                            <li class="dt-side-nav__item">
-                                <a href="{{ action($menu->action_controller) }}" class="dt-side-nav__link"
-                                   title="{{$menu->menu_name}}">
-                                    <i class="icon {{$menu->menu_icon}}"></i>
-                                    <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
-                                </a>
-                            </li>
-                            <!-- /menu single -->
-                        @endif
+
+                        </li>
+
+
+{{--                        @if(count($menu->children) > 0)--}}
+{{--                            <li class="dt-side-nav__item">--}}
+{{--                                <a href="javascript:void(0)" class="dt-side-nav__link dt-side-nav__arrow"--}}
+{{--                                   title="{{$menu->menu_name}}">--}}
+{{--                                    <i class="icon {{$menu->menu_icon}}"></i>--}}
+{{--                                    <span class="dt-side-nav__text">{{$menu->menu_name}}</span>--}}
+{{--                                </a>--}}
+
+{{--                                <!-- Sub-menu -->--}}
+{{--                                <ul class="dt-side-nav__sub-menu">--}}
+{{--                                    @foreach($menu->children as $child)--}}
+{{--                                        <li class="dt-side-nav__item">--}}
+{{--                                            <a href="{{action($child->action_controller)}}"--}}
+{{--                                               class="dt-side-nav__link"--}}
+{{--                                               style="padding-left: 50px"--}}
+{{--                                               title="{{$child->menu_name}}">--}}
+{{--                                                <i class="icon {{$child->menu_icon}}"></i>--}}
+{{--                                                <span class="dt-side-nav__text">{{$child->menu_name}}</span>--}}
+{{--                                            </a>--}}
+{{--                                        </li>--}}
+{{--                                    @endforeach--}}
+{{--                                </ul>--}}
+{{--                                <!-- /sub-menu -->--}}
+{{--                            </li>--}}
+{{--                        @else--}}
+{{--                        <!-- Menu single -->--}}
+{{--                            <li class="dt-side-nav__item">--}}
+{{--                                <a href="{{ action($menu->action_controller) }}" class="dt-side-nav__link"--}}
+{{--                                   title="{{$menu->menu_name}}">--}}
+{{--                                    <i class="icon {{$menu->menu_icon}}"></i>--}}
+{{--                                    <span class="dt-side-nav__text">{{$menu->menu_name}}</span>--}}
+{{--                                </a>--}}
+{{--                            </li>--}}
+{{--                            <!-- /menu single -->--}}
+{{--                        @endif--}}
                     @endforeach
                 </ul>
                 <!-- /sidebar navigation -->

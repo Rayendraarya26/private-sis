@@ -16,6 +16,8 @@ trait AuthTraits
                 $children = $this->buildTree($elements, $element->menu_id);
                 if ($children) {
                     $element->children = $children;
+                } else {
+                    $element->children = [];
                 }
                 $branch[] = $element;
             }
