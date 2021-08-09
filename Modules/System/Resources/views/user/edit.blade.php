@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{ url("$module") }}" style="margin-bottom: 20px">
-                    <i class="fa fa-arrow-left"></i> Kembali
+                    <i class="fad fa-arrow-left"></i> Kembali
                 </a>
                 <div class="dt-card">
                     <div class="dt-card__header">

@@ -72,7 +72,7 @@ class LoginController extends Controller
 
                 return redirect()->intended(route('dashboard'));
             } else {
-                return redirect(route('auth.login'))->withErrors(['status' => "Akun kamu belum terdaftar di BBKKP SIS"]);
+                return redirect(route('auth.login'))->withErrors(['status' => "Akun kamu belum terdaftar di " . env('APP_NAME')]);
             }
         } catch (Exception $e) {
             echo $e->getMessage();

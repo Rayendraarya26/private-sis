@@ -7,10 +7,10 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="description" content="Sistem Informasi Sertifikasi Balai Besar Kulit dan Karet">
-    <meta name="keywords" content="BBKKP SIS">
+    <meta name="keywords" content="{{env('APP_NAME')}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') | BBKKP SIS</title>
+    <title>@yield('title') | {{env('APP_NAME')}}</title>
 
     <!-- Site favicon -->
     <link rel="shortcut icon" href="{{ asset('images/icon/favicon-16x16-manifest-31222.png') }}">
@@ -85,10 +85,10 @@
                         <a class="dt-brand__logo-link" href="{{ route('dashboard') }}">
                             <img class="dt-brand__logo-img d-none d-lg-inline-block"
                                  src="{{asset('images/logos/sis_logo.png')}}"
-                                 alt="BBKKP SIS">
+                                 alt="Logo {{env('app_name')}}">
                             <img class="dt-brand__logo-symbol d-lg-none"
                                  src="{{asset('images/logos/sis_logo.png')}}"
-                                 alt="BBKKP SIS" style="width: 70px">
+                                 alt="Logo {{env('app_name')}}" style="width: 70px">
                         </a>
                     </span>
                 <!-- /brand logo -->
