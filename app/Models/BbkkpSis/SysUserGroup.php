@@ -11,6 +11,11 @@ class SysUserGroup extends Model
     const CREATED_AT = 'ug_created_at';
     const UPDATED_AT = 'ug_updated_at';
 
+    protected $casts = [
+        'ug_created_at' => 'datetime',
+        'ug_updated_at' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(SysUser::class, "ug_user_id", "user_id");

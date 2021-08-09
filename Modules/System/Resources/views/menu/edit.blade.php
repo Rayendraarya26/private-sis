@@ -102,10 +102,7 @@
                                             Icon
                                         </label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control"
-                                                   value="{{old('menu_icon') ?? $data->menu_icon}}"
-                                                   placeholder="Masukkan kode icon..."
-                                                   name="menu_icon" id="menu_icon">
+                                            <input id="menu_icon" name="menu_icon" style="width: 100%" value="{{old('menu_icon') ?? $data->menu_icon}}">
                                         </div>
                                     </div>
 
@@ -142,6 +139,33 @@
         @endif
 
         $(function () {
+            $('#menu_icon').combobox({
+                method: 'get',
+                mode:'remote',
+                remoteFilter: true,
+                clientPaging: false,
+                url: '{{url("$module/ajax/data-icon?q=" . (old('menu_icon') ?? $data->menu_icon))}}',
+                valueField: 'icon_code',
+                textField: 'icon_name',
+                icons: [{
+                    iconCls: 'fas fa-close',
+                    handler: function (e) {
+                        $(e.data.target).combobox('clear').combobox('textbox').focus();
+                    }
+                }],
+                onChange: function (value) {
+                    if (value) {
+                        $(this).combobox('getIcon', 0).css('visibility', 'visible')
+                    } else {
+                        $(this).combobox('getIcon', 0).css('visibility', 'hidden')
+                    }
+                },
+                formatter: function (row) {
+                    let iconData = `<i class="${row.icon_code}"></i>`;
+                    return iconData + " " + row.icon_code;
+                }
+            });
+
             $('#menu_parent_id').combotreegrid({
                 method: 'get',
                 width: "100%",

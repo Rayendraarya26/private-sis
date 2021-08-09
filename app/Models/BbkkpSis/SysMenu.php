@@ -12,6 +12,11 @@ class SysMenu extends Model
     const CREATED_AT = 'menu_created_at';
     const UPDATED_AT = 'menu_updated_at';
 
+    protected $casts = [
+        'menu_created_at' => 'datetime',
+        'menu_updated_at' => 'datetime',
+    ];
+
     function action(){
         return $this->hasMany(SysMenuAction::class, "action_menu_id", "menu_id");
     }

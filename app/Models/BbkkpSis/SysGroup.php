@@ -12,6 +12,11 @@ class SysGroup extends Model
     const CREATED_AT = 'group_created_at';
     const UPDATED_AT = 'group_updated_at';
 
+    protected $casts = [
+        'group_created_at' => 'datetime',
+        'group_updated_at' => 'datetime',
+    ];
+
     function permission()
     {
         return $this->hasMany(SysGroupPermission::class, "group_id", "group_id");

@@ -78,7 +78,16 @@
                 treeField: 'menu_name',
                 columns: [[
                     {field: 'ck', checkbox: true, sortable: false},
-                    {field: 'menu_name', title: 'Nama Menu', width: 100},
+                    {
+                        field: 'menu_name', title: 'Nama Menu', width: 100, formatter: function (val, row) {
+                            if (row.hasOwnProperty('children')) {
+                                return `<i class="${row.menu_icon}">&nbsp;${val}</i>`
+                            } else {
+                                return val;
+                            }
+
+                        }
+                    },
                     // {field: 'menu_desc', title: 'Deskripsi', width: 200},
                     {field: 'menu_order', title: 'Urutan', width: 10},
                     {field: 'menu_is_active', title: 'Aktif ?', width: 20},

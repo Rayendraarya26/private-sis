@@ -23,7 +23,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Management System',
                 'active' => 'yes',
                 'order' => '99',
-                'icon' => 'fa-cog',
+                'icon' => 'fas fa-cog',
                 'action' => [
                     ['name' => 'index', 'controller' => '#'],
                 ]
@@ -34,7 +34,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Mengatur crud user',
                 'active' => 'yes',
                 'order' => '1',
-                'icon' => 'fa-users',
+                'icon' => 'fas fa-users',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageUserController@index'],
                     ['name' => 'add', 'controller' => $prefixSystem . '\ManageUserController@create'],
@@ -53,7 +53,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Mengatur Group dan permission',
                 'active' => 'yes',
                 'order' => '2',
-                'icon' => 'fa-user-friends',
+                'icon' => 'fas fa-user-friends',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageGroupController@index'],
                     ['name' => 'add', 'controller' => $prefixSystem . '\ManageGroupController@create'],
@@ -73,7 +73,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Mengatur Menu',
                 'active' => 'yes',
                 'order' => '3',
-                'icon' => 'fa-layer-minus',
+                'icon' => 'fas fa-layer-minus',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuController@index'],
                     ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuController@create'],
@@ -83,6 +83,7 @@ class MenuSeeder extends Seeder
                     ['name' => 'update', 'controller' => $prefixSystem . '\ManageMenuController@update'],
                     ['name' => 'delete', 'controller' => $prefixSystem . '\ManageMenuController@delete'],
                     ['name' => 'ajax_treegrid', 'controller' => $prefixSystem . '\ManageMenuController@ajaxTreegrid'],
+                    ['name' => 'ajax_data_icon', 'controller' => $prefixSystem . '\ManageMenuController@ajaxDataIcon'],
                     ['name' => 'ajax_active', 'controller' => $prefixSystem . '\ManageMenuController@ajaxActive'],
                 ]
             ],
@@ -92,7 +93,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Mengatur Menu Aksi controller',
                 'active' => 'no',
                 'order' => '3',
-                'icon' => 'fa-bars',
+                'icon' => 'fas fa-bars',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuActionController@index'],
                     ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuActionController@create'],
@@ -111,7 +112,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Modul Sertifikasi',
                 'active' => 'yes',
                 'order' => '20',
-                'icon' => 'fa-certificate',
+                'icon' => 'fas fa-certificate',
                 'action' => [
                     ['name' => 'index', 'controller' => '#'],
                 ]
@@ -122,7 +123,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Untuk User',
                 'active' => 'yes',
                 'order' => '1',
-                'icon' => 'fa-newspaper',
+                'icon' => 'fas fa-newspaper',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixCertification . '\RequestCertificateController@index'],
                 ]
@@ -133,7 +134,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Untuk Verifikator',
                 'active' => 'yes',
                 'order' => '2',
-                'icon' => 'fa-check-circle',
+                'icon' => 'fas fa-check-circle',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixCertification . '\VerifCertificateController@index'],
                 ]

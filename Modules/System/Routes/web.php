@@ -19,6 +19,7 @@ Route::prefix('system')->middleware(['auth', 'restrict'])->name("system")->group
     Route::post('group/ajax/active', [ManageGroupController::class, 'ajaxDeactive']);
 
     Route::resource("menu", ManageMenuController::class);
+    Route::get('menu/ajax/data-icon', [ManageMenuController::class, 'ajaxDataIcon']);
     Route::get('menu/ajax/treegrid', [ManageMenuController::class, 'ajaxTreegrid']);
     Route::post('menu/ajax/active', [ManageMenuController::class, 'ajaxDeactive']);
 

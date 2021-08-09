@@ -3,6 +3,7 @@
 namespace Modules\System\Http\Controllers;
 
 use App\Http\Traits\GeneralTraits;
+use App\Models\BbkkpSis\MasterIcons;
 use App\Models\BbkkpSis\SysMenu;
 use Exception;
 use Illuminate\Http\Request;
@@ -120,5 +121,17 @@ class ManageMenuController extends Controller
         }
 
         return $this->responseJSON(200, [], "Deactive berhasil");
+    }
+
+    public function ajaxDataIcon(Request $request)
+    {
+        $dataIcons = MasterIcons::when($request['q'], function ($query, $search) {
+            return $query->where('icon_name', 'like', '%' . $search . '%');
+        })->limit(10)->get();
+        $response = [];
+        foreach ($dataIcons as $icon) {
+            $response[] = ['icon_name' => $icon->icon_name, 'icon_code' => $icon->icon_name];
+        }
+        return response()->json($response);
     }
 }

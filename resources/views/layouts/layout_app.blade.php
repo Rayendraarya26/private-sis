@@ -304,7 +304,7 @@
                                 <li class="dt-side-nav__item">
                                     <a href="javascript:void(0)" class="dt-side-nav__link dt-side-nav__arrow"
                                        title="{{$menu->menu_name}}">
-                                        <i class="icon fas {{$menu->menu_icon}}"></i>
+                                        <i class="icon {{$menu->menu_icon}}"></i>
                                         <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
                                     </a>
 
@@ -316,7 +316,7 @@
                                                    class="dt-side-nav__link"
                                                    style="padding-left: 50px"
                                                    title="{{$child->menu_name}}">
-                                                    <i class="icon fas {{$child->menu_icon}}"></i>
+                                                    <i class="icon {{$child->menu_icon}}"></i>
                                                     <span class="dt-side-nav__text">{{$child->menu_name}}</span>
                                                 </a>
                                             </li>
@@ -330,7 +330,7 @@
                             <li class="dt-side-nav__item">
                                 <a href="{{ action($menu->action_controller) }}" class="dt-side-nav__link"
                                    title="{{$menu->menu_name}}">
-                                    <i class="icon fas {{$menu->menu_icon}}"></i>
+                                    <i class="icon {{$menu->menu_icon}}"></i>
                                     <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
                                 </a>
                             </li>
