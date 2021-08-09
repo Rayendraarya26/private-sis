@@ -124,11 +124,13 @@
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-media">
                                 <!-- Dropdown Menu Header -->
                                 <div class="dropdown-menu-header">
-                                    <h4 class="title">Notifikasi ({{$total->total}})</h4>
+                                    <h4 class="title">Notifikasi @if($total->total) {{$total->total}}) @endif</h4>
 
+                                    @if($total->total)
                                     <div class="ml-auto action-area">
                                         <a href="{{url('notification/mark-all-as-read')}}">Baca Semua</a>
                                     </div>
+                                    @endif
                                 </div>
                                 <!-- /dropdown menu header -->
 

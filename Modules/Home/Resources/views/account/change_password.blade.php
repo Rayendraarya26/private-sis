@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', "Ubah Kata Sandi")
+@section('title', "Perbarui Kata Sandi")
 
 @section('content')
     <!-- Site Content -->

@@ -50,13 +50,13 @@
 
                         <!-- Dropdown Menu -->
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="javascript:void(0)">
+                            <a class="dropdown-item" href="{{route('update_profile')}}">
                                 <i class="far fa-user"></i>
-                                Ubah profile
+                                Perbarui profile
                             </a>
                             <a class="dropdown-item" href="{{route('change_password')}}">
                                 <i class="far fa-unlock-alt"></i>
-                                Ubah kata sandi
+                                Perbarui kata sandi
                             </a>
                             {{--                            <a class="dropdown-item" href="javascript:void(0)">Something else here</a>--}}
                             {{--                            <div class="dropdown-divider"></div>--}}

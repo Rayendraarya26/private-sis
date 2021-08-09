@@ -20,7 +20,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('account')->group(function () {
         Route::redirect("/", "account/profile");
         Route::get('profile', [AccountController::class, 'index'])->name('profile');
-        Route::get('change-password', [AccountController::class, 'editPassword'])->name('change_password');
-        Route::post('change-password', [AccountController::class, 'updatePassword']);
+        Route::get('update/profile', [AccountController::class, 'editProfile'])->name('update_profile');
+        Route::post('update/profile', [AccountController::class, 'updateProfile']);
+        Route::get('update/password', [AccountController::class, 'editPassword'])->name('change_password');
+        Route::post('update/password', [AccountController::class, 'updatePassword']);
     });
 });

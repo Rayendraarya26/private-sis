@@ -35,4 +35,22 @@ class AccountController extends Controller
             return redirect()->back()->withErrors(['message' => "Kata sandi sekarang tidak sesuai"]);
         }
     }
+
+    public function editProfile()
+    {
+        return view("home::account.update_profile");
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'fullname' => 'required',
+        ]);
+
+        $dataUser = Auth::user();
+        $dataUser->user_fullname = $request['fullname'];
+        $dataUser->save();
+
+        return redirect()->back()->with('message', "Profil berhasil diperbarui");
+    }
 }
