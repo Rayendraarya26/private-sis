@@ -7,6 +7,7 @@ use App\Models\BbkkpSis\SysMenu;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\System\Http\Traits\MenuTraits;
 
 class ManageMenuController extends Controller
@@ -99,6 +100,7 @@ class ManageMenuController extends Controller
             "menu_name",
             "menu_desc",
             "menu_icon",
+            DB::raw("concat('fas ', menu_icon) as iconCls"),
             "menu_is_active",
             "menu_order"
         )->orderBy("menu_parent_id")->orderBy("menu_order")->orderBy("menu_name")

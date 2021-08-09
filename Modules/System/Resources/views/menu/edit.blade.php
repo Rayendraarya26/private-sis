@@ -2,6 +2,26 @@
 
 @section('title', 'Ubah Menu')
 
+@push('css')
+    <style>
+        .fas{
+            background-image: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fas::before{
+            font-size: 14px;
+        }
+        .fas.tree-folder:not(.tree-file)::before{
+            content: "\f105"
+        }
+        .fas.tree-folder-open:not(.tree-file)::before{
+            content: "\f107"
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="dt-content">
         <div class="row">

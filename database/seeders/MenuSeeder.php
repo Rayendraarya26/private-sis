@@ -73,7 +73,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Mengatur Menu',
                 'active' => 'yes',
                 'order' => '3',
-                'icon' => 'fa-bars',
+                'icon' => 'fa-layer-minus',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuController@index'],
                     ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuController@create'],
@@ -92,7 +92,7 @@ class MenuSeeder extends Seeder
                 'desc' => 'Mengatur Menu Aksi controller',
                 'active' => 'no',
                 'order' => '3',
-                'icon' => NULL,
+                'icon' => 'fa-bars',
                 'action' => [
                     ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuActionController@index'],
                     ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuActionController@create'],
