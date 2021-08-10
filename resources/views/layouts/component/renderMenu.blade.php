@@ -1,5 +1,4 @@
 @foreach($children as $menu)
-
     <li class="dt-side-nav__item" style="padding-left: 20px">
         <a href="{{ count($menu->children) ? 'javascript:void(0)' : action($menu->action_controller) }}"
            class="dt-side-nav__link {{count($menu->children) ? 'dt-side-nav__arrow' :''}}"
@@ -9,13 +8,13 @@
             <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
         </a>
 
-        <ul class="dt-side-nav__sub-menu">
-            @if(!empty($menu->children))
-                @if(count($menu->children))
-                    @include('layouts.component.renderMenu',['children' => $menu->children])
-                @endif
-            @endif
-        </ul>
+        @if(count($menu->children))
+            <ul class="dt-side-nav__sub-menu">
+                @include('layouts.component.renderMenu',['children' => $menu->children])
+            </ul>
+        @endif
     </li>
 @endforeach
+
+
 

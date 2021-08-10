@@ -286,6 +286,7 @@
                 <!-- Sidebar Navigation -->
                 <ul class="dt-side-nav">
 
+
                     <!-- Menu Header -->
                     <li class="dt-side-nav__item dt-side-nav__header">
                         <span class="dt-side-nav__text">Menu</span>
@@ -311,51 +312,13 @@
                                 <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
                             </a>
 
-
-                            @if(count($menu->children))
+                            @if(count($menu->children) > 0)
                                 <ul class="dt-side-nav__sub-menu">
                                     @include('layouts.component.renderMenu', ['children' => $menu->children])
                                 </ul>
                             @endif
 
                         </li>
-
-
-{{--                        @if(count($menu->children) > 0)--}}
-{{--                            <li class="dt-side-nav__item">--}}
-{{--                                <a href="javascript:void(0)" class="dt-side-nav__link dt-side-nav__arrow"--}}
-{{--                                   title="{{$menu->menu_name}}">--}}
-{{--                                    <i class="icon {{$menu->menu_icon}}"></i>--}}
-{{--                                    <span class="dt-side-nav__text">{{$menu->menu_name}}</span>--}}
-{{--                                </a>--}}
-
-{{--                                <!-- Sub-menu -->--}}
-{{--                                <ul class="dt-side-nav__sub-menu">--}}
-{{--                                    @foreach($menu->children as $child)--}}
-{{--                                        <li class="dt-side-nav__item">--}}
-{{--                                            <a href="{{action($child->action_controller)}}"--}}
-{{--                                               class="dt-side-nav__link"--}}
-{{--                                               style="padding-left: 50px"--}}
-{{--                                               title="{{$child->menu_name}}">--}}
-{{--                                                <i class="icon {{$child->menu_icon}}"></i>--}}
-{{--                                                <span class="dt-side-nav__text">{{$child->menu_name}}</span>--}}
-{{--                                            </a>--}}
-{{--                                        </li>--}}
-{{--                                    @endforeach--}}
-{{--                                </ul>--}}
-{{--                                <!-- /sub-menu -->--}}
-{{--                            </li>--}}
-{{--                        @else--}}
-{{--                        <!-- Menu single -->--}}
-{{--                            <li class="dt-side-nav__item">--}}
-{{--                                <a href="{{ action($menu->action_controller) }}" class="dt-side-nav__link"--}}
-{{--                                   title="{{$menu->menu_name}}">--}}
-{{--                                    <i class="icon {{$menu->menu_icon}}"></i>--}}
-{{--                                    <span class="dt-side-nav__text">{{$menu->menu_name}}</span>--}}
-{{--                                </a>--}}
-{{--                            </li>--}}
-{{--                            <!-- /menu single -->--}}
-{{--                        @endif--}}
                     @endforeach
                 </ul>
                 <!-- /sidebar navigation -->

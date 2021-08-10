@@ -4,19 +4,38 @@
 
 @push('css')
     <style>
-        .fas{
+        .fas,
+        .fab,
+        .fad,
+        .fal,
+        .far {
             background-image: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
         }
-        .fas::before{
+
+        .fas::before,
+        .fab::before,
+        .fad::before,
+        .fal::before,
+        .far::before {
             font-size: 14px;
         }
-        .fas.tree-folder:not(.tree-file)::before{
+
+        .fas.tree-folder:not(.tree-file)::before,
+        .fab.tree-folder:not(.tree-file)::before,
+        .fad.tree-folder:not(.tree-file)::before,
+        .fal.tree-folder:not(.tree-file)::before,
+        .far.tree-folder:not(.tree-file)::before {
             content: "\f105"
         }
-        .fas.tree-folder-open:not(.tree-file)::before{
+
+        .fas.tree-folder-open:not(.tree-file)::before,
+        .fab.tree-folder-open:not(.tree-file)::before,
+        .fad.tree-folder-open:not(.tree-file)::before,
+        .fal.tree-folder-open:not(.tree-file)::before,
+        .far.tree-folder-open:not(.tree-file)::before {
             content: "\f107"
         }
     </style>

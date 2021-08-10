@@ -1,18 +1,18 @@
 "use strict";
 
-var wieldy = {
+let wieldy = {
     docBody: $('body'),
     customStyle: null,
     addClass: function (eleRef, eleID, className) {
-        jQuery(eleRef).parents(eleID).addClass(className);
+        $(eleRef).parents(eleID).addClass(className);
     },
     removeClass: function (eleRef, eleID, className) {
-        jQuery(eleRef).parents(eleID).removeClass(className);
+        $(eleRef).parents(eleID).removeClass(className);
     },
     sidebar: {
         window: $(window),
         docBody: $('body'),
-        drawerRef: jQuery('.dt-sidebar'),
+        drawerRef: $('.dt-sidebar'),
         sidebarToggleHandle: $('[data-toggle=main-sidebar]'),
         foldedHandle: $('[data-handle=folded]'),
         overlay: null,
@@ -20,13 +20,13 @@ var wieldy = {
         enabledFoldedSidebar: false,
         enabledDrawer: false,
         init: function () {
-            var sidebar = this;
+            const sidebar = this;
 
             if (this.drawerRef.hasClass('dt-drawer')) {
                 this.enabledDrawer = true;
             }
 
-            var bodyWidth = sidebar.docBody.innerWidth();
+            let bodyWidth = sidebar.docBody.innerWidth();
             if (bodyWidth < 992) {
                 sidebar.initDrawer();
             } else {
@@ -116,8 +116,8 @@ var wieldy = {
             this.overlay.className = 'dt-backdrop';
             this.drawerRef.after(this.overlay);
 
-            var drawer = this;
-            var overlayContainer = $(this.overlay);
+            const drawer = this;
+            const overlayContainer = $(this.overlay);
             overlayContainer.on('click', function (event) {
                 event.stopPropagation();
                 drawer.toggle();
@@ -130,7 +130,7 @@ var wieldy = {
         handleRef: null,
         thumbCard: null,
         init: function () {
-            var $this = this;
+            const $this = this;
             this.createHoverCard();
 
             this.hoverHndle.hover(function () {
@@ -141,15 +141,15 @@ var wieldy = {
             });
         },
         showThumb: function () {
-            var bodyWidth = this.docBody.outerWidth(true);
+            const bodyWidth = this.docBody.outerWidth(true);
 
             if (bodyWidth > 767) {
-                var $this = this;
-                var offset = this.handleRef.offset();
-                var handleWidth = this.handleRef.outerWidth(true);
-                var name = (this.handleRef.data('name')) ? this.handleRef.data('name') : '';
+                const $this = this;
+                const offset = this.handleRef.offset();
+                const handleWidth = this.handleRef.outerWidth(true);
+                const name = (this.handleRef.data('name')) ? this.handleRef.data('name') : '';
 
-                var innerHtml = '<span class="user-bg-card__info"><span class="dt-avatar-name text-center">' + name + '</span></span>';
+                const innerHtml = '<span class="user-bg-card__info"><span class="dt-avatar-name text-center">' + name + '</span></span>';
 
                 $this.thumbCard.html(innerHtml);
 
@@ -177,7 +177,7 @@ var wieldy = {
             this.thumbCard.fadeOut();
         },
         createHoverCard: function () {
-            var tc = document.createElement('div');
+            const tc = document.createElement('div');
             tc.className = 'card user-bg-card position-absolute bg-primary';
             tc.style.display = 'none';
             this.docBody.append(tc);
@@ -189,7 +189,7 @@ var wieldy = {
         containerPanel: $('.dt-customizer'),
         overlay: null,
         init: function () {
-            var $this = this;
+            const $this = this;
 
             $this.toggleHandle.on('click', function () {
                 $this.toggle();
@@ -215,8 +215,8 @@ var wieldy = {
             this.overlay.className = 'dt-backdrop';
             this.containerPanel.after(this.overlay);
 
-            var $this = this;
-            var overlayContainer = $(this.overlay);
+            const $this = this;
+            const overlayContainer = $(this.overlay);
             overlayContainer.on('click', function (event) {
                 event.stopPropagation();
                 $this.toggle();
@@ -228,7 +228,7 @@ var wieldy = {
         containerPanel: $('.dt-quick-drawer'),
         overlay: null,
         init: function () {
-            var $this = this;
+            const $this = this;
 
             $this.toggleHandle.on('click', function () {
                 $this.toggle();
@@ -254,8 +254,8 @@ var wieldy = {
             this.overlay.className = 'dt-backdrop';
             this.containerPanel.after(this.overlay);
 
-            var $this = this;
-            var overlayContainer = $(this.overlay);
+            const $this = this;
+            const overlayContainer = $(this.overlay);
             overlayContainer.on('click', function (event) {
                 event.stopPropagation();
                 $this.toggle();
@@ -278,13 +278,13 @@ var wieldy = {
     }
 };
 
-var hoverEventExcuted = false;
-var clickEventExcuted = false;
+let hoverEventExcuted = false;
+let clickEventExcuted = false;
 
 (function ($) {
-    var $body = $('body');
-    var $loader = $('.dt-loader-container');
-    var $root = $('.dt-root');
+    const $body = $('body');
+    const $loader = $('.dt-loader-container');
+    const $root = $('.dt-root');
 
     if ($loader.length) {
         $loader.delay(300).fadeOut('noraml', function () {
@@ -304,7 +304,7 @@ var clickEventExcuted = false;
     });
 
     if ($.isFunction($.fn.masonry)) {
-        var $grid = $('.dt-masonry');
+        const $grid = $('.dt-masonry');
         $grid.masonry({
             // options
             itemSelector: '.dt-masonry__item',
@@ -327,7 +327,7 @@ var clickEventExcuted = false;
 
     // init Drawer
     wieldy.init();
-
+    //
     // var current_path = window.location.href.split('/').pop();
     let current_path = window.location.href; // modif by kemal
     current_path = current_path.replace("#", "");
@@ -339,13 +339,21 @@ var clickEventExcuted = false;
     }
 
     let $current_menu = $('a[href="' + current_path + '"]');
-    $current_menu.addClass('active').parents('.nav-item').find('> .nav-link').addClass('active');
+    $current_menu.addClass('active').parents('.dt-side-nav__item').find('> .dt-side-nav__link').addClass('active'); // modif by kemal
+    setTimeout(() => {
+        if ($current_menu.children("ul").length === 0) {
+            $current_menu.parents().click();
+        } else {
+            $current_menu.parent().parent().click();
+            $current_menu.parent().parent().click();
+        }
+    }, 500)
 
     if ($current_menu.length > 0) {
         $('.dt-side-nav__item').removeClass('open');
 
         if ($current_menu.parents().hasClass('dt-side-nav__item')) {
-            $current_menu.parents('.dt-side-nav__item').addClass('open selected');
+            $current_menu.parents('.dt-side-nav__item').addClass('active open selected');
         } else {
             $current_menu.parent().addClass('active').parents('.dt-side-nav__item').addClass('open selected');
         }
@@ -365,7 +373,7 @@ var clickEventExcuted = false;
     });
 
     /* toggle-button */
-    var $toggleBtn = $('.toggle-button');
+    const $toggleBtn = $('.toggle-button');
     if ($toggleBtn.length > 0) {
         $toggleBtn.on('click', function (event) {
             event.preventDefault();
@@ -378,18 +386,18 @@ var clickEventExcuted = false;
     /* /Sidebar */
 
     /* customizer settings */
-    var $dtTheme = localStorage.getItem('dt-theme');
-    var $dtLayout = localStorage.getItem('dt-layout');
-    var $dtStyle = localStorage.getItem('dt-style');
-    var $currentTheme = ($dtTheme) ? $dtTheme : 'semidark';
-    var $currentThemeStyle = ($dtStyle) ? $dtStyle : 'style-1';
-    var $currentLayout = ($dtLayout) ? $dtLayout : 'full-width';
+    const $dtTheme = localStorage.getItem('dt-theme');
+    const $dtLayout = localStorage.getItem('dt-layout');
+    const $dtStyle = localStorage.getItem('dt-style');
+    let $currentTheme = ($dtTheme) ? $dtTheme : 'semidark';
+    let $currentThemeStyle = ($dtStyle) ? $dtStyle : 'style-1';
+    let $currentLayout = ($dtLayout) ? $dtLayout : 'full-width';
 
-    var $themeChooser = $('#theme-chooser').find('.theme-option');
-    var $themeStyleChooser = $('#theme-style-chooser').find('.dt-color-option');
-    var $layoutChooser = $('#layout-chooser').find('.choose-option__icon');
+    const $themeChooser = $('#theme-chooser').find('.theme-option');
+    const $themeStyleChooser = $('#theme-style-chooser').find('.dt-color-option');
+    const $layoutChooser = $('#layout-chooser').find('.choose-option__icon');
 
-    var $themeStylesheet = document.createElement('link');
+    const $themeStylesheet = document.createElement('link');
     $themeStylesheet.rel = 'stylesheet';
     $themeStylesheet.href = '';
     $('head').append($themeStylesheet);
@@ -424,10 +432,10 @@ var clickEventExcuted = false;
         changeLayout($currentLayout);
     });
 
-    var $toggleFixedHeader = $('#toggle-fixed-header');
-    var $toggleFixedSidebar = $('#toggle-fixed-sidebar');
-    var $layoutContainer = $('#sidebar-layout');
-    var $sidebarLayoutHandle = $layoutContainer.find('.choose-option__icon');
+    const $toggleFixedHeader = $('#toggle-fixed-header');
+    const $toggleFixedSidebar = $('#toggle-fixed-sidebar');
+    const $layoutContainer = $('#sidebar-layout');
+    const $sidebarLayoutHandle = $layoutContainer.find('.choose-option__icon');
 
     activeFixedStyle();
 
@@ -466,7 +474,7 @@ var clickEventExcuted = false;
 
     $sidebarLayoutHandle.on('click', function () {
         $sidebarLayoutHandle.parent().removeClass('active');
-        var layout = $(this).data('value');
+        const layout = $(this).data('value');
         $(this).parent().addClass('active');
 
         if (layout === 'folded') {
@@ -513,8 +521,8 @@ var clickEventExcuted = false;
     init_indecator();
 
     // Displaying user info card on contact hover
-    var $mailContacts = $('.contacts-list .dt-contact');
-    var $userInfoCard = $('.user-info-card');
+    const $mailContacts = $('.contacts-list .dt-contact');
+    const $userInfoCard = $('.user-info-card');
 
     $userInfoCard.hover(function () {
         $userInfoCard.addClass('active').show();
@@ -523,17 +531,17 @@ var clickEventExcuted = false;
     });
 
     $mailContacts.each(function () {
-        var $contact = $(this);
+        const $contact = $(this);
 
         $contact.hover(function () {
-            var contactWidth = $contact.outerWidth(true);
-            var positionValue = $contact.offset();
-            var bodyHeight = $body.outerHeight(true);
-            var bodyWidth = $body.outerWidth(true);
+            const contactWidth = $contact.outerWidth(true);
+            const positionValue = $contact.offset();
+            const bodyHeight = $body.outerHeight(true);
+            const bodyWidth = $body.outerWidth(true);
 
             if (bodyWidth > 767) {
-                var userPic = $('.dt-avatar', $contact).attr('src');
-                var userName = $('.dt-contact__title', $contact).text();
+                const userPic = $('.dt-avatar', $contact).attr('src');
+                const userName = $('.dt-contact__title', $contact).text();
 
                 if (userPic) {
                     $('.profile-placeholder', $userInfoCard).hide();
@@ -545,8 +553,8 @@ var clickEventExcuted = false;
 
                 $('.dt-avatar-name', $userInfoCard).text(userName);
 
-                var infoCardHeight = $userInfoCard.outerHeight(true);
-                var offsetTop = positionValue.top;
+                const infoCardHeight = $userInfoCard.outerHeight(true);
+                let offsetTop = positionValue.top;
                 if (bodyHeight < (positionValue.top + infoCardHeight + 20)) {
                     offsetTop = (bodyHeight - infoCardHeight - 20)
                 }
@@ -564,14 +572,14 @@ var clickEventExcuted = false;
     });
 
     if ($('#user-menu-dropdown').length) {
-        var userDorpdown = $('#user-menu-dropdown').find('.dropdown-menu').clone(true).appendTo("body");
+        const userDorpdown = $('#user-menu-dropdown').find('.dropdown-menu').clone(true).appendTo("body");
 
         $('#user-menu-dropdown').on('show.bs.dropdown', function () {
-            var $this = $('#user-menu-dropdown');
+            const $this = $('#user-menu-dropdown');
             userDorpdown.removeClass('show');
             if ($body.hasClass('dt-sidebar--folded')) {
-                var positionValue = $this.find('.dropdown-toggle').offset();
-                var dropDownHeight = $this.find('.dropdown-toggle').outerHeight(true);
+                const positionValue = $this.find('.dropdown-toggle').offset();
+                const dropDownHeight = $this.find('.dropdown-toggle').outerHeight(true);
                 $this.find('.dropdown-menu').hide();
 
                 setTimeout(function () {
@@ -586,29 +594,30 @@ var clickEventExcuted = false;
         });
 
         $('#user-menu-dropdown').on('hide.bs.dropdown', function () {
-            var $this = $('#user-menu-dropdown');
+            const $this = $('#user-menu-dropdown');
             $this.find('.dropdown-menu').show();
             userDorpdown.removeClass('show');
         });
     }
 
-})(jQuery);
+})($);
 
 function handleSidbarMenu() {
-    var $body = jQuery('body');
 
-    if (jQuery('body').hasClass('dt-sidebar--folded')) {
+    const $body = $('body');
+
+    if ($('body').hasClass('dt-sidebar--folded')) {
         if (!hoverEventExcuted) {
             hoverEventExcuted = true;
-            jQuery(".dt-sidebar--folded ul.dt-side-nav > li.dt-side-nav__item").each(function () {
-                var $currentMenuItem = jQuery(this);
-                var $submenu = jQuery('.dt-side-nav__sub-menu', $currentMenuItem);
-                var ps;
+            $(".dt-sidebar--folded ul.dt-side-nav > li.dt-side-nav__item").each(function () {
+                const $currentMenuItem = $(this);
+                const $submenu = $('.dt-side-nav__sub-menu', $currentMenuItem);
+                let ps;
 
                 $currentMenuItem.find('> a.dt-side-nav__link', $submenu).hover(function () {
-                    var $menuLink = jQuery(this);
+                    const $menuLink = $(this);
 
-                    if ($submenu.length && jQuery('body').hasClass('dt-sidebar--folded')) {
+                    if ($submenu.length && $('body').hasClass('dt-sidebar--folded')) {
                         $submenu.hover(function () {
                             $submenu.addClass('active');
                         }, function () {
@@ -620,8 +629,8 @@ function handleSidbarMenu() {
                         $submenu.addClass('dt-side-nav__balloon');
                         var menuItemWidth = $currentMenuItem.outerWidth(true);
                         var positionValue = $menuLink.offset();
-                        var bodyHeight = $body.outerHeight(true);
-                        var $submenuHeight = $submenu.outerHeight(true);
+                        const bodyHeight = $body.outerHeight(true);
+                        const $submenuHeight = $submenu.outerHeight(true);
 
                         var offsetTop = positionValue.top;
                         if (bodyHeight < (positionValue.top + $submenuHeight + 20)) {
@@ -639,11 +648,11 @@ function handleSidbarMenu() {
                     } else {
                         $currentMenuItem.addClass('dt-side-nav__tooltip');
 
-                        var $menuLinkText = $menuLink.find('.dt-side-nav__text');
+                        const $menuLinkText = $menuLink.find('.dt-side-nav__text');
                         var menuItemWidth = $currentMenuItem.outerWidth(true);
                         var positionValue = $menuLink.offset();
-                        var menuLinkHeight = $menuLink.outerHeight(true);
-                        var $menuLinkTextHeight = $menuLinkText.outerHeight(true);
+                        const menuLinkHeight = $menuLink.outerHeight(true);
+                        const $menuLinkTextHeight = $menuLinkText.outerHeight(true);
                         var offsetTop = positionValue.top + ((menuLinkHeight - $menuLinkTextHeight) / 2);
 
                         $menuLinkText.css({
@@ -661,7 +670,7 @@ function handleSidbarMenu() {
                             }
                         }, 300);
                     } else {
-                        jQuery(this).find('.dt-side-nav__text').attr('style', '');
+                        $(this).find('.dt-side-nav__text').attr('style', '');
                         $currentMenuItem.removeClass('dt-side-nav__tooltip');
                     }
                 });
@@ -670,33 +679,34 @@ function handleSidbarMenu() {
     } else {
         if (!clickEventExcuted) {
             clickEventExcuted = true;
-            var slideDuration = 150;
-            jQuery("ul.dt-side-nav > li.dt-side-nav__item").on("click", function () {
-                var menuLi = this;
-                jQuery("ul.dt-side-nav > li.dt-side-nav__item").not(menuLi).removeClass("open");
-                jQuery("ul.dt-side-nav > li.dt-side-nav__item ul").not(jQuery("ul", menuLi)).slideUp(slideDuration);
-                jQuery(" > ul", menuLi).slideToggle(slideDuration, function () {
-                    jQuery(menuLi).toggleClass("open");
+            const slideDuration = 150;
+            $("ul.dt-side-nav > li.dt-side-nav__item").on("click", function () {
+                const menuLi = this;
+                $("ul.dt-side-nav > li.dt-side-nav__item").not(menuLi).removeClass("open");
+                $("ul.dt-side-nav > li.dt-side-nav__item ul").not($("ul", menuLi)).slideUp(slideDuration);
+                $(" > ul", menuLi).slideToggle(slideDuration, function () {
+                    $(menuLi).toggleClass("open");
                 });
             });
 
-            jQuery("ul.dt-side-nav__sub-menu li").on('click', function (e) {
-                var $current_sm_li = jQuery(this);
-                var $current_sm_li_parent = $current_sm_li.parent();
+            $("ul.dt-side-nav__sub-menu li").on('click', function (e) {
+                const $current_sm_li = $(this);
+                const $current_sm_li_parent = $current_sm_li.parent();
 
+                
                 if ($current_sm_li_parent.parent().hasClass("active")) {
-                    jQuery("li ul", $current_sm_li_parent).not(jQuery("ul", $current_sm_li)).slideUp(slideDuration, function () {
-                        jQuery("li", $current_sm_li_parent).not($current_sm_li).removeClass("active");
+                    $("li ul", $current_sm_li_parent).not($("ul", $current_sm_li)).slideUp(slideDuration, function () {
+                        $("li", $current_sm_li_parent).not($current_sm_li).removeClass("active");
                     });
-
                 } else {
-                    jQuery("ul.dt-side-nav__sub-menu li ul").not(jQuery(" ul", $current_sm_li)).slideUp(slideDuration, function () {
-                        //$("ul.sub-menu li").not($current_sm_li).removeClass("active");console.log('has not parent');
+                    $("ul.dt-side-nav__sub-menu li ul").not($(" ul", $current_sm_li)).slideUp(slideDuration, function () {
+                        $("ul.sub-menu li").not($current_sm_li).removeClass("active");
+                        console.log('has not parent');
                     });
                 }
 
-                jQuery(" > ul", $current_sm_li).slideToggle(slideDuration, function () {
-                    jQuery($current_sm_li).toggleClass("active");
+                $(" > ul", $current_sm_li).slideToggle(slideDuration, function () {
+                    $($current_sm_li).toggleClass("active");
                 });
 
                 e.stopPropagation();
@@ -727,7 +737,7 @@ function notifyUser(title) {
  * @return {undefined}
  */
 function changeLayout($layout, $init) {
-    var $body = jQuery('body');
+    const $body = $('body');
 
     if ($layout === 'framed') {
         $body.removeClass('dt-layout--boxed dt-layout--full-width').addClass('dt-layout--framed');
@@ -753,8 +763,8 @@ function changeLayout($layout, $init) {
  * @return {undefined}
  */
 function changeTheme($theme, $style, $themeStylesheet, $init) {
-    var $body = jQuery('body');
-    var $logo = $body.find('.dt-brand__logo-img');
+    const $body = $('body');
+    const $logo = $body.find('.dt-brand__logo-img');
 
     $('#theme-style-chooser').show();
     if ($theme === 'lite') {
@@ -785,7 +795,7 @@ function changeTheme($theme, $style, $themeStylesheet, $init) {
  * Active customizer layout option
  */
 function activeLayoutHandle(layout) {
-    var $layoutContainer = jQuery('#sidebar-layout');
+    const $layoutContainer = $('#sidebar-layout');
     $layoutContainer.find('.choose-option').removeClass('active');
 
     if (layout === 'folded') {
@@ -801,9 +811,9 @@ function activeLayoutHandle(layout) {
  * Active fixed style
  */
 function activeFixedStyle() {
-    var $body = jQuery('body');
-    var $toggleFixedHeader = jQuery('#toggle-fixed-header');
-    var $toggleFixedSidebar = jQuery('#toggle-fixed-sidebar');
+    const $body = $('body');
+    const $toggleFixedHeader = $('#toggle-fixed-header');
+    const $toggleFixedSidebar = $('#toggle-fixed-sidebar');
 
     if ($body.hasClass('dt-header--fixed')) {
         $toggleFixedHeader.parent().addClass('active');
@@ -819,15 +829,15 @@ function activeFixedStyle() {
 }
 
 function init_indecator() {
-    var $progressbar = jQuery('.dt-indicator-item__info:not(.complete)');
+    const $progressbar = $('.dt-indicator-item__info:not(.complete)');
 
     $progressbar.each(function (index) {
 
-        var $currentBar = $(this);
-        var percentage = Math.ceil($currentBar.data('fill'));
-        var maxVal = ($currentBar.data('max')) ? parseInt($currentBar.data('max')) : 100;
-        var fillTypePercent = ($currentBar.data('percent')) ? true : false;
-        var textSufix = ($currentBar.data('suffix')) ? $currentBar.data('suffix') : '';
+        const $currentBar = $(this);
+        const percentage = Math.ceil($currentBar.data('fill'));
+        const maxVal = ($currentBar.data('max')) ? parseInt($currentBar.data('max')) : 100;
+        const fillTypePercent = !!($currentBar.data('percent'));
+        const textSufix = ($currentBar.data('suffix')) ? $currentBar.data('suffix') : '';
 
         if (percentage && percentage <= maxVal) {
             $({countNum: 0}).animate({countNum: percentage}, {
@@ -835,8 +845,8 @@ function init_indecator() {
                 easing: 'linear',
                 step: function (now, tween) {
                     // What todo on every count
-                    var pct = Math.floor(now);
-                    var widthPct = Math.floor((pct * 100) / maxVal) + '%';
+                    let pct = Math.floor(now);
+                    const widthPct = Math.floor((pct * 100) / maxVal) + '%';
 
                     if (fillTypePercent) {
                         pct += '%';

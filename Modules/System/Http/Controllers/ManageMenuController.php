@@ -101,7 +101,7 @@ class ManageMenuController extends Controller
             "menu_name",
             "menu_desc",
             "menu_icon",
-            DB::raw("concat('fas ', menu_icon) as iconCls"),
+            DB::raw("menu_icon as iconCls"),
             "menu_is_active",
             "menu_order"
         )->orderBy("menu_parent_id")->orderBy("menu_order")->orderBy("menu_name")
