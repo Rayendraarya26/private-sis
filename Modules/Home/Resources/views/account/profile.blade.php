@@ -58,9 +58,11 @@
                                 <i class="far fa-unlock-alt"></i>
                                 Perbarui kata sandi
                             </a>
-                            {{--                            <a class="dropdown-item" href="javascript:void(0)">Something else here</a>--}}
-                            {{--                            <div class="dropdown-divider"></div>--}}
-                            {{--                            <a class="dropdown-item" href="javascript:void(0)">Separated link</a>--}}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="customizer">
+                                <i class="far fa-paint-roller"></i>
+                                Ganti Tema
+                            </a>
                         </div>
                         <!-- /dropdown menu -->
 

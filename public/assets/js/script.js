@@ -338,26 +338,57 @@ let clickEventExcuted = false;
         current_path = 'index.html';
     }
 
-    let $current_menu = $('a[href="' + current_path + '"]');
-    $current_menu.addClass('active').parents('.dt-side-nav__item').find('> .dt-side-nav__link').addClass('active'); // modif by kemal
-    setTimeout(() => {
-        if ($current_menu.children("ul").length === 0) {
-            $current_menu.parents().click();
-        } else {
-            $current_menu.parent().parent().click();
-            $current_menu.parent().parent().click();
-        }
-    }, 500)
+    // Modif by Kemal
+    for (let i = 0; i < current_path.split("/").length + 1; i++) {
+        if (i > 3) {
+            let wadaw = current_path.split("/").slice(0, i)
+            let findMenu = wadaw.join("/");
 
-    if ($current_menu.length > 0) {
-        $('.dt-side-nav__item').removeClass('open');
+            let $current_menu = $('a[href="' + findMenu + '"]');
 
-        if ($current_menu.parents().hasClass('dt-side-nav__item')) {
-            $current_menu.parents('.dt-side-nav__item').addClass('active open selected');
-        } else {
-            $current_menu.parent().addClass('active').parents('.dt-side-nav__item').addClass('open selected');
+            $current_menu.addClass('active').parents('.dt-side-nav__item').find('> .dt-side-nav__link').addClass('active'); // modif by kemal
+            setTimeout(() => {
+                if ($current_menu.children("ul").length === 0) {
+                    $current_menu.parents().click();
+                } else {
+                    $current_menu.parent().parent().click();
+                    $current_menu.parent().parent().click();
+                }
+            }, 500)
+
+            if ($current_menu.length > 0) {
+                $('.dt-side-nav__item').removeClass('open');
+
+                if ($current_menu.parents().hasClass('dt-side-nav__item')) {
+                    $current_menu.parents('.dt-side-nav__item').addClass('active open selected');
+                } else {
+                    $current_menu.parent().addClass('active').parents('.dt-side-nav__item').addClass('open selected');
+                }
+            }
         }
+
     }
+
+    // let $current_menu = $('a[href="' + current_path + '"]');
+    // $current_menu.addClass('active').parents('.dt-side-nav__item').find('> .dt-side-nav__link').addClass('active'); // modif by kemal
+    // setTimeout(() => {
+    //     if ($current_menu.children("ul").length === 0) {
+    //         $current_menu.parents().click();
+    //     } else {
+    //         $current_menu.parent().parent().click();
+    //         $current_menu.parent().parent().click();
+    //     }
+    // }, 500)
+    //
+    // if ($current_menu.length > 0) {
+    //     $('.dt-side-nav__item').removeClass('open');
+    //
+    //     if ($current_menu.parents().hasClass('dt-side-nav__item')) {
+    //         $current_menu.parents('.dt-side-nav__item').addClass('active open selected');
+    //     } else {
+    //         $current_menu.parent().addClass('active').parents('.dt-side-nav__item').addClass('open selected');
+    //     }
+    // }
 
     handleSidbarMenu();
     $(window).resize(function () {
@@ -606,7 +637,7 @@ function handleSidbarMenu() {
 
     const $body = $('body');
 
-    if ($('body').hasClass('dt-sidebar--folded')) {
+    if ($body.hasClass('dt-sidebar--folded')) {
         if (!hoverEventExcuted) {
             hoverEventExcuted = true;
             $(".dt-sidebar--folded ul.dt-side-nav > li.dt-side-nav__item").each(function () {
@@ -693,7 +724,7 @@ function handleSidbarMenu() {
                 const $current_sm_li = $(this);
                 const $current_sm_li_parent = $current_sm_li.parent();
 
-                
+
                 if ($current_sm_li_parent.parent().hasClass("active")) {
                     $("li ul", $current_sm_li_parent).not($("ul", $current_sm_li)).slideUp(slideDuration, function () {
                         $("li", $current_sm_li_parent).not($current_sm_li).removeClass("active");
@@ -843,7 +874,7 @@ function init_indecator() {
             $({countNum: 0}).animate({countNum: percentage}, {
                 duration: 1000,
                 easing: 'linear',
-                step: function (now, tween) {
+                step: function (now) {
                     // What todo on every count
                     let pct = Math.floor(now);
                     const widthPct = Math.floor((pct * 100) / maxVal) + '%';
