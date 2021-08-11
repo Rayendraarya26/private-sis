@@ -91,7 +91,7 @@
                     </div>
                     @error('password')
                     <span class="text-danger">{{$message}}</span>
-                @enderror
+                    @enderror
 
                 <!-- /form group -->
 
@@ -101,20 +101,21 @@
                         </button>
                     </div>
                     <!-- /form group -->
-                    <div style="text-align: center; font-weight: bold;font-size: 16px">
-                        atau
-                    </div>
-                    <div class="form-group pt-4">
-                        <a href="{{route('auth.google')}}" class="btn btn-outline-primary btn-block">
-                            <i class="fab fa-google"></i> Login dengan Google
-                        </a>
-                    </div>
+                    {{--                    <div style="text-align: center; font-weight: bold;font-size: 16px">--}}
+                    {{--                        atau--}}
+                    {{--                    </div>--}}
+                    {{--                    <div class="form-group pt-4">--}}
+                    {{--                        <a href="{{route('auth.google')}}" class="btn btn-outline-primary btn-block">--}}
+                    {{--                            <i class="fab fa-google"></i> Login dengan Google--}}
+                    {{--                        </a>--}}
+                    {{--                    </div>--}}
 
                     <div class="pb-2" style="float: right">
                         <a href="{{route('auth.forget_password')}}" class="text-light-gray">Lupa kata sandi ?</a>
                     </div>
 
-                    <div class="pb-4"></div>
+                    <div class="pb-10"></div>
+                    <div class="pb-10"></div>
                     <hr>
                     <span class="text-light-gray"> Klik disini untuk melakukan
                         <a href="{{route('auth.register')}}">Registrasi</a>

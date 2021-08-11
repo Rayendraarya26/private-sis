@@ -10,8 +10,8 @@ Route::prefix('auth')->name("auth.")->group(function () {
         Route::redirect("/", "auth/login");
         Route::get('login', [LoginController::class, 'index'])->name('login');
         Route::post('login', [LoginController::class, 'handleLogin'])->name("processLogin");
-        Route::get('oauth/google', [LoginController::class, 'redirectToGoogle'])->name('google');
-        Route::get('oauth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+        //Route::get('oauth/google', [LoginController::class, 'redirectToGoogle'])->name('google');
+        //Route::get('oauth/google/callback', [LoginController::class, 'handleGoogleCallback']);
 
         Route::get('register', [RegisterController::class, 'index'])->name('register');
         Route::post('register', [RegisterController::class, 'handleRegister'])->name('processRegister');
