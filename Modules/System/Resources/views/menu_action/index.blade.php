@@ -39,6 +39,7 @@
         $(function () {
             let dg = $('#dgTable').edatagrid({
                 method: 'get',
+                height: document.documentElement.scrollHeight - 350,
                 url: `{{ url("$module/ajax/datagrid") }}`,
                 saveUrl: `{{url("$module")}}`,
                 updateUrl: `{{url("$module/update")}}`,
@@ -85,7 +86,7 @@
                     {
                         field: 'action_controller',
                         title: 'Lokasi Controller',
-                        width: 500,
+                        width: 600,
                         sortable: true,
                         editor: {
                             type: 'textbox',
@@ -104,6 +105,9 @@
                 ]],
                 onBeforeEdit: function (index, row) {
                     row.editing = true;
+                    if (!row.action_controller) {
+                        row.action_controller = 'Modules\\NAMA_MODULE\\Http\\Controllers\\NAMA_CONTROLLER@NAMA_FUNGSI';
+                    }
                     $(this).datagrid('refreshRow', index);
                 },
                 onAfterEdit: function (index, row) {

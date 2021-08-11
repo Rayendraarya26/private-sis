@@ -95,7 +95,7 @@
                                         <div class="col-sm-8">
                                             <div class="row">
                                                 @foreach($groups as $group)
-                                                    <div class="col-md-6">
+                                                    <div class="col-6">
                                                         <label class="form-check-label">
                                                             <input class="form-check-input" type="checkbox"
                                                                    name="group[]"
@@ -103,7 +103,7 @@
                                                             {{$group->group_name}}
                                                         </label>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-6">
                                                         <label class="form-check-label">
                                                             <input class="form-check-input" type="radio"
                                                                    name="group_default" value="{{$group->group_id}}"

@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <table id="treegrid" style="width:100%;min-height: 500px"></table>
+                        <table id="treegrid" style="width:100%;"></table>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>
@@ -88,6 +88,7 @@
         $(function () {
             $('#treegrid').treegrid({
                 method: 'get',
+                height: document.documentElement.scrollHeight - 250,
                 url: `{{ url("$module/ajax/treegrid") }}`,
                 idField: 'id',
                 nowrap: false,
