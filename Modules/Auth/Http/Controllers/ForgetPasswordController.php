@@ -2,16 +2,17 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Modules\Auth\Emails\ForgetPassword;
 
 class ForgetPasswordController extends Controller
 {
+    use GeneralTraits;
+
     public function index()
     {
         return view("auth::forget_password");
@@ -27,7 +28,16 @@ class ForgetPasswordController extends Controller
         } else {
             $dataUser->user_token = Str::random(20);
             $dataUser->save();
-            Mail::to($dataUser->user_email)->send(new ForgetPassword($dataUser));
+            //Mail::to($dataUser->user_email)->send(new ForgetPassword($dataUser));
+
+            $title = "Reset Password";
+            $message = view('auth::mails.reset_password')->with([
+                'name' => $dataUser->user_fullname,
+                'link' => route('auth.reset_password', encrypt($dataUser->user_token))
+            ])->render();
+            $to = $dataUser->user_email;
+            $this->sendEmail($title, $message, $to);
+
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
         }
     }

@@ -27,7 +27,7 @@
             Halo {{$name}}
         </h2>
         <div style="color: #636363; font-size: 14px;">
-            Terimakasih telah mendaftarkan diri pada {{env('APP_NAME')}}, agar anda dapat masuk kehalaman utama klik link
+            Terimakasih telah mendaftarkan diri pada portal {{env('APP_NAME')}}, agar anda dapat masuk kehalaman utama klik link
             verifikasi berikut
 
             <br>

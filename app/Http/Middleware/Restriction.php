@@ -9,7 +9,9 @@ class Restriction
 {
     public function handle(Request $request, Closure $next)
     {
-        if (in_array(request()->route()->getAction()['controller'], session('permission'))) {
+        $availController = session('permission');
+        $currentController = request()->route()->getAction()['controller'];
+        if (in_array($currentController, $availController)) {
             return $next($request);
         } else {
             abort(401);

@@ -584,6 +584,24 @@
 <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
 
 <script>
+    // membuat string kapital diawal kata
+    String.prototype.ucwords = function () {
+        if (this === '') return "";
+        let str = this.toLowerCase();
+        return str.replace(/(^([a-zA-Z{M}]))|([ -][a-zA-Z{M}])/g,
+            function ($1) {
+                return $1.toUpperCase();
+            });
+    };
+
+    // memformat uang
+    String.prototype.formatUang = function (delimiter) {
+        if (this === '') return "";
+        let str = this.toString();
+        delimiter = delimiter || " "
+        return str.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+    };
+
     function syncToken(token) {
         $.post(`{{url('notification/ajax/sync-token')}}`, {token})
             .then(response => {

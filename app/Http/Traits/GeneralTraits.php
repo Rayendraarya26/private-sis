@@ -4,7 +4,10 @@ namespace App\Http\Traits;
 
 use App\Models\BbkkpSis\SysUserFbToken;
 use App\Models\BbkkpSis\SysUserNotif;
+use App\Models\BbkkpSisLog\LogEmailOutbox;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 trait GeneralTraits
 {
@@ -106,5 +109,30 @@ trait GeneralTraits
                 }
             }
         }
+    }
+
+    public function sendEmail($title, $body, $to)
+    {
+        $uuid = Str::uuid();
+        LogEmailOutbox::create([
+            "outbox_uuid" => $uuid,
+            "outbox_reply_to" => env("MAIL_FROM_ADDRESS"),
+            "outbox_from_name" => env("MAIL_FROM_NAME"),
+            "outbox_from_email" => env("MAIL_FROM_ADDRESS"),
+            "outbox_to_name" => "",
+            "outbox_to_email" => $to,
+            "outbox_title" => $title,
+            "outbox_message" => $body,
+            "outbox_read" => "no",
+            "outbox_type" => "system",
+            "outbox_created_at" => date("Y-m-d H:i:s"),
+        ]);
+        Mail::send([], [], function ($message) use ($title, $body, $to, $uuid) {
+            $message
+                ->from([env('MAIL_FROM_ADDRESS', env('MAIL_FROM_NAME'))])
+                ->to($to)
+                ->subject($title . ' | ' . env("APP_NAME"))
+                ->setBody($body . '<img src="' . url("/email/open/$uuid") . '" style="display:none">', 'text/html');
+        });
     }
 }

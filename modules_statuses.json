@@ -4,5 +4,6 @@
     "Home": true,
     "DashboardController": true,
     "System": true,
-    "Certification": true
+    "Certification": true,
+    "Email": true
 }

@@ -2,19 +2,20 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Modules\Auth\Emails\RegisterSuccess;
 use Throwable;
 
 class RegisterController extends Controller
 {
+    use GeneralTraits;
+
     public function index()
     {
         return view('auth::register');
@@ -55,7 +56,18 @@ class RegisterController extends Controller
             $ug->save();
             DB::commit();
 
-            Mail::to($user->user_email)->send(new RegisterSuccess($user));
+            //Mail::to($user->user_email)->send(new RegisterSuccess($user));
+
+            // Sending Email
+            $title = "Pendaftaran berhasil";
+            $message = view('auth::mails.register_success')
+                ->with([
+                    'name' => $user->user_fullname,
+                    'link' => route('auth.verify', encrypt($user->user_token))
+                ])->render();
+            $to = $user->user_email;
+            $this->sendEmail($title, $message, $to);
+
             return redirect()->back()->with('message', "Pendaftaran berhasil, silakan cek email anda");
         } catch (Throwable $e) {
             DB::rollback();

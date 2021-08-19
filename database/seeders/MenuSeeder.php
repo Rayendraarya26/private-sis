@@ -14,8 +14,9 @@ class MenuSeeder extends Seeder
      */
     public function run()
     {
-        $prefixSystem = 'Modules\System\Http\Controllers';
-        $prefixCertification = 'Modules\Certification\Http\Controllers';
+        $moduleSystem = 'Modules\System\Http\Controllers';
+        $moduleCertification = 'Modules\Certification\Http\Controllers';
+        $moduleEmail = 'Modules\Email\Http\Controllers';
         $data_menu = [
             [
                 'name' => 'System',
@@ -36,15 +37,15 @@ class MenuSeeder extends Seeder
                 'order' => '1',
                 'icon' => 'fas fa-users',
                 'action' => [
-                    ['name' => 'index', 'controller' => $prefixSystem . '\ManageUserController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageUserController@create'],
-                    ['name' => 'store', 'controller' => $prefixSystem . '\ManageUserController@store'],
-                    ['name' => 'detail', 'controller' => $prefixSystem . '\ManageUserController@detail'],
-                    ['name' => 'edit', 'controller' => $prefixSystem . '\ManageUserController@edit'],
-                    ['name' => 'update', 'controller' => $prefixSystem . '\ManageUserController@update'],
-                    ['name' => 'delete', 'controller' => $prefixSystem . '\ManageUserController@delete'],
-                    ['name' => 'ajax_datagrid', 'controller' => $prefixSystem . '\ManageUserController@ajaxDatagrid'],
-                    ['name' => 'ajax_banned', 'controller' => $prefixSystem . '\ManageUserController@ajaxBanned'],
+                    ['name' => 'index', 'controller' => $moduleSystem . '\ManageUserController@index'],
+                    ['name' => 'add', 'controller' => $moduleSystem . '\ManageUserController@create'],
+                    ['name' => 'store', 'controller' => $moduleSystem . '\ManageUserController@store'],
+                    ['name' => 'detail', 'controller' => $moduleSystem . '\ManageUserController@detail'],
+                    ['name' => 'edit', 'controller' => $moduleSystem . '\ManageUserController@edit'],
+                    ['name' => 'update', 'controller' => $moduleSystem . '\ManageUserController@update'],
+                    ['name' => 'delete', 'controller' => $moduleSystem . '\ManageUserController@delete'],
+                    ['name' => 'ajax_datagrid', 'controller' => $moduleSystem . '\ManageUserController@ajaxDatagrid'],
+                    ['name' => 'ajax_banned', 'controller' => $moduleSystem . '\ManageUserController@ajaxBanned'],
                 ]
             ],
             [
@@ -55,16 +56,16 @@ class MenuSeeder extends Seeder
                 'order' => '2',
                 'icon' => 'fas fa-user-friends',
                 'action' => [
-                    ['name' => 'index', 'controller' => $prefixSystem . '\ManageGroupController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageGroupController@create'],
-                    ['name' => 'store', 'controller' => $prefixSystem . '\ManageGroupController@store'],
-                    ['name' => 'detail', 'controller' => $prefixSystem . '\ManageGroupController@detail'],
-                    ['name' => 'edit', 'controller' => $prefixSystem . '\ManageGroupController@edit'],
-                    ['name' => 'update', 'controller' => $prefixSystem . '\ManageGroupController@update'],
-                    ['name' => 'delete', 'controller' => $prefixSystem . '\ManageGroupController@delete'],
-                    ['name' => 'ajax_datagrid', 'controller' => $prefixSystem . '\ManageGroupController@ajaxDatagrid'],
-                    ['name' => 'ajax_treegrid', 'controller' => $prefixSystem . '\ManageGroupController@ajaxTreegrid'],
-                    ['name' => 'ajax_active', 'controller' => $prefixSystem . '\ManageGroupController@ajaxActive'],
+                    ['name' => 'index', 'controller' => $moduleSystem . '\ManageGroupController@index'],
+                    ['name' => 'add', 'controller' => $moduleSystem . '\ManageGroupController@create'],
+                    ['name' => 'store', 'controller' => $moduleSystem . '\ManageGroupController@store'],
+                    ['name' => 'detail', 'controller' => $moduleSystem . '\ManageGroupController@detail'],
+                    ['name' => 'edit', 'controller' => $moduleSystem . '\ManageGroupController@edit'],
+                    ['name' => 'update', 'controller' => $moduleSystem . '\ManageGroupController@update'],
+                    ['name' => 'delete', 'controller' => $moduleSystem . '\ManageGroupController@delete'],
+                    ['name' => 'ajax_datagrid', 'controller' => $moduleSystem . '\ManageGroupController@ajaxDatagrid'],
+                    ['name' => 'ajax_treegrid', 'controller' => $moduleSystem . '\ManageGroupController@ajaxTreegrid'],
+                    ['name' => 'ajax_active', 'controller' => $moduleSystem . '\ManageGroupController@ajaxActive'],
                 ]
             ],
             [
@@ -75,16 +76,16 @@ class MenuSeeder extends Seeder
                 'order' => '3',
                 'icon' => 'fas fa-layer-minus',
                 'action' => [
-                    ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuController@create'],
-                    ['name' => 'store', 'controller' => $prefixSystem . '\ManageMenuController@store'],
-                    ['name' => 'detail', 'controller' => $prefixSystem . '\ManageMenuController@detail'],
-                    ['name' => 'edit', 'controller' => $prefixSystem . '\ManageMenuController@edit'],
-                    ['name' => 'update', 'controller' => $prefixSystem . '\ManageMenuController@update'],
-                    ['name' => 'delete', 'controller' => $prefixSystem . '\ManageMenuController@delete'],
-                    ['name' => 'ajax_treegrid', 'controller' => $prefixSystem . '\ManageMenuController@ajaxTreegrid'],
-                    ['name' => 'ajax_data_icon', 'controller' => $prefixSystem . '\ManageMenuController@ajaxDataIcon'],
-                    ['name' => 'ajax_active', 'controller' => $prefixSystem . '\ManageMenuController@ajaxActive'],
+                    ['name' => 'index', 'controller' => $moduleSystem . '\ManageMenuController@index'],
+                    ['name' => 'add', 'controller' => $moduleSystem . '\ManageMenuController@create'],
+                    ['name' => 'store', 'controller' => $moduleSystem . '\ManageMenuController@store'],
+                    ['name' => 'detail', 'controller' => $moduleSystem . '\ManageMenuController@detail'],
+                    ['name' => 'edit', 'controller' => $moduleSystem . '\ManageMenuController@edit'],
+                    ['name' => 'update', 'controller' => $moduleSystem . '\ManageMenuController@update'],
+                    ['name' => 'delete', 'controller' => $moduleSystem . '\ManageMenuController@delete'],
+                    ['name' => 'ajax_treegrid', 'controller' => $moduleSystem . '\ManageMenuController@ajaxTreegrid'],
+                    ['name' => 'ajax_data_icon', 'controller' => $moduleSystem . '\ManageMenuController@ajaxDataIcon'],
+                    ['name' => 'ajax_active', 'controller' => $moduleSystem . '\ManageMenuController@ajaxActive'],
                 ]
             ],
             [
@@ -95,15 +96,15 @@ class MenuSeeder extends Seeder
                 'order' => '3',
                 'icon' => 'fas fa-bars',
                 'action' => [
-                    ['name' => 'index', 'controller' => $prefixSystem . '\ManageMenuActionController@index'],
-                    ['name' => 'add', 'controller' => $prefixSystem . '\ManageMenuActionController@create'],
-                    ['name' => 'store', 'controller' => $prefixSystem . '\ManageMenuActionController@store'],
-                    ['name' => 'detail', 'controller' => $prefixSystem . '\ManageMenuActionController@detail'],
-                    ['name' => 'edit', 'controller' => $prefixSystem . '\ManageMenuActionController@edit'],
-                    ['name' => 'update', 'controller' => $prefixSystem . '\ManageMenuActionController@update'],
-                    ['name' => 'delete', 'controller' => $prefixSystem . '\ManageMenuActionController@delete'],
-                    ['name' => 'ajax_datagrid', 'controller' => $prefixSystem . '\ManageMenuActionController@ajaxDatagrid'],
-                    ['name' => 'ajax_active', 'controller' => $prefixSystem . '\ManageMenuActionController@ajaxActive'],
+                    ['name' => 'index', 'controller' => $moduleSystem . '\ManageMenuActionController@index'],
+                    ['name' => 'add', 'controller' => $moduleSystem . '\ManageMenuActionController@create'],
+                    ['name' => 'store', 'controller' => $moduleSystem . '\ManageMenuActionController@store'],
+                    ['name' => 'detail', 'controller' => $moduleSystem . '\ManageMenuActionController@detail'],
+                    ['name' => 'edit', 'controller' => $moduleSystem . '\ManageMenuActionController@edit'],
+                    ['name' => 'update', 'controller' => $moduleSystem . '\ManageMenuActionController@update'],
+                    ['name' => 'delete', 'controller' => $moduleSystem . '\ManageMenuActionController@delete'],
+                    ['name' => 'ajax_datagrid', 'controller' => $moduleSystem . '\ManageMenuActionController@ajaxDatagrid'],
+                    ['name' => 'ajax_active', 'controller' => $moduleSystem . '\ManageMenuActionController@ajaxActive'],
                 ]
             ],
             [
@@ -125,7 +126,7 @@ class MenuSeeder extends Seeder
                 'order' => '1',
                 'icon' => 'fas fa-newspaper',
                 'action' => [
-                    ['name' => 'index', 'controller' => $prefixCertification . '\RequestCertificateController@index'],
+                    ['name' => 'index', 'controller' => $moduleCertification . '\RequestCertificateController@index'],
                 ]
             ],
             [
@@ -136,7 +137,67 @@ class MenuSeeder extends Seeder
                 'order' => '2',
                 'icon' => 'fas fa-check-circle',
                 'action' => [
-                    ['name' => 'index', 'controller' => $prefixCertification . '\VerifCertificateController@index'],
+                    ['name' => 'index', 'controller' => $moduleCertification . '\VerifCertificateController@index'],
+                ]
+            ],
+
+            [
+                'name' => 'Email',
+                'parent' => NULL,
+                'desc' => 'Modul Email',
+                'active' => 'yes',
+                'order' => '80',
+                'icon' => 'fas fa-mailbox',
+                'action' => [
+                    ['name' => 'index', 'controller' => '#'],
+                ]
+            ],
+            [
+                'name' => 'Template',
+                'parent' => 9,
+                'desc' => 'Template reminder email',
+                'active' => 'yes',
+                'order' => '1',
+                'icon' => 'fas fa-mail-bulk',
+                'action' => [
+                    ['name' => 'index', 'controller' => $moduleEmail . '\TemplateEmailController@index'],
+                ]
+            ],
+            [
+                'name' => 'Outbox',
+                'parent' => 9,
+                'desc' => 'Email keluar',
+                'active' => 'yes',
+                'order' => '2',
+                'icon' => 'fas fa-inbox-out',
+                'action' => [
+                    ['name' => 'index', 'controller' => '#'],
+                ]
+            ],
+            [
+                'name' => 'System',
+                'parent' => 11,
+                'desc' => 'Email keluar melalui system otomatis',
+                'active' => 'yes',
+                'order' => '1',
+                'icon' => 'fas fa-paper-plane',
+                'action' => [
+                    ['name' => 'index', 'controller' => $moduleEmail . '\HistoryEmailSystemController@index'],
+                    ['name' => 'ajax', 'controller' => $moduleEmail . '\HistoryEmailSystemController@ajax'],
+                    ['name' => 'preview', 'controller' => $moduleEmail . '\HistoryEmailSystemController@previewEmail'],
+                ]
+            ],
+            [
+                'name' => 'Reminder',
+                'parent' => 11,
+                'desc' => 'Email keluar melalui cronjob',
+                'active' => 'yes',
+                'order' => '1',
+                'icon' => 'fas fa-paper-plane',
+                'action' => [
+                    ['name' => 'index', 'controller' => $moduleEmail . '\HistoryEmailReminderController@index'],
+                    ['name' => 'ajax', 'controller' => $moduleEmail . '\HistoryEmailReminderController@ajax'],
+                    ['name' => 'preview', 'controller' => $moduleEmail . '\HistoryEmailReminderController@previewEmail'],
                 ]
             ],
             //[

@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use App\Providers\RouteServiceProvider;
@@ -10,14 +11,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
-use Modules\Auth\Emails\ResendValidation;
 use Modules\Auth\Http\Traits\AuthTraits;
 
 class LoginController extends Controller
 {
-    use AuthTraits;
+    use AuthTraits, GeneralTraits;
 
     public function index()
     {
@@ -94,7 +93,18 @@ class LoginController extends Controller
     public function handleResendValidation()
     {
         if (auth()->check()) {
-            Mail::to(auth()->user()->user_email)->send(new ResendValidation(auth()->user()));
+            //Mail::to(auth()->user()->user_email)->send(new ResendValidation(auth()->user()));
+
+            // Sending Email
+            $title = "Verifikasi Akun";
+            $message = view('auth::mails.resend_validation')
+                ->with([
+                    'name' => auth()->user()->user_fullname,
+                    'link' => route('auth.verify', encrypt(auth()->user()->user_token))
+                ])->render();
+            $to = auth()->user()->user_email;
+            $this->sendEmail($title, $message, $to);
+
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
         } else {
             abort(401);

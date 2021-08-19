@@ -354,7 +354,7 @@ let clickEventExcuted = false;
                     $current_menu.parent().parent().click();
                     $current_menu.parent().parent().click();
                 }
-            }, 500)
+            }, 300)
 
             if ($current_menu.length > 0) {
                 $('.dt-side-nav__item').removeClass('open');

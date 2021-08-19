@@ -67,7 +67,7 @@
                 <!-- Form Group -->
                     <div class="form-group">
                         <button type="submit" id="btn-submit" class="btn btn-primary btn-block text-uppercase">
-                            Kirim Ulang Link Validasi
+                            Kirim Ulang Link Verifikasi
                         </button>
                     </div>
                     <!-- /form group -->
