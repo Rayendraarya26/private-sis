@@ -1,6 +1,40 @@
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js');
+
+workbox.setConfig({
+    debug: false
+});
+
+const {registerRoute} = workbox.routing;
+const {CacheFirst, NetworkFirst} = workbox.strategies;
+const {CacheableResponsePlugin} = workbox.cacheableResponse;
+
+registerRoute(
+    ({url}) =>
+        url.pathname.startsWith('/node_modules/') ||
+        url.pathname.startsWith('/plugins/') ||
+        url.pathname.startsWith('/assets/fontawesome/') ||
+        url.pathname.startsWith('/assets/fonts/'),
+    new CacheFirst({
+        plugins: [
+            new CacheableResponsePlugin({statuses: [0, 200]})
+        ],
+    })
+);
+
+registerRoute(
+    ({url}) =>
+        url.pathname.startsWith('/assets/css/') ||
+        url.pathname.startsWith('/assets/js/'),
+    new NetworkFirst({
+        plugins: [
+            new CacheableResponsePlugin({statuses: [0, 200]})
+        ],
+    })
+);
+
 self.addEventListener('push', function (event) {
     console.log(event)
-    var a = event.data.json();
+    const a = event.data.json();
     const title = a.data.title;
     const options = {
         body: a.data.body,
