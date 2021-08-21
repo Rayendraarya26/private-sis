@@ -3,7 +3,6 @@
 namespace Modules\Home\Http\Controllers;
 
 use App\Http\Structs\NotifStruct;
-use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUserFbToken;
 use App\Models\BbkkpSis\SysUserNotif;
 use Carbon\Carbon;
@@ -12,8 +11,6 @@ use Illuminate\Routing\Controller;
 
 class NotificationController extends Controller
 {
-    use GeneralTraits;
-
     public function index()
     {
         $dataNotif = SysUserNotif::where("notif_user_id", auth()->id())->orderBy('notif_is_read', 'desc')->orderBy('notif_created_at', 'desc')->paginate(20);
@@ -47,7 +44,7 @@ class NotificationController extends Controller
             ['fbtoken_agent' => $request->header('User-agent'), 'fbtoken_ip' => $request->getClientIp()]
         );
 
-        return $this->responseJSON(200, null, "sinkronisasi berhasil");
+        return responseJSON(200, null, "sinkronisasi berhasil");
     }
 
     public function tes()
@@ -57,6 +54,6 @@ class NotificationController extends Controller
         $notifStruct->message = auth()->user()->user_fullname . " notifikasi berhasil ya, ini adalah isi pesannya";
         $notifStruct->user_id = auth()->id();
         $notifStruct->click_url = url('/dashboard');
-        $this->sendNotification($notifStruct);
+        sendNotification($notifStruct);
     }
 }

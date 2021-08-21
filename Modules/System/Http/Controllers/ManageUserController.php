@@ -2,7 +2,7 @@
 
 namespace Modules\System\Http\Controllers;
 
-use App\Http\Traits\GeneralTraits;
+
 use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
@@ -15,7 +15,7 @@ use Intervention\Image\Facades\Image;
 
 class ManageUserController extends Controller
 {
-    use GeneralTraits;
+
 
     private $module = 'system/user';
 
@@ -56,7 +56,7 @@ class ManageUserController extends Controller
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-            $imageName = "/images/profiles/" . str_replace(" ", "_", $request->username) . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
+            $imageName = "/images/profiles/" . str_replace(" ", "_", $request->fullname) . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
             $img->save(public_path($imageName), 80);
 
             $dataInsert['user_picture'] = $imageName;
@@ -109,7 +109,7 @@ class ManageUserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'required|string|min:4',
+            'fullname' => 'required|string|min:4',
             'email' => 'required|email|min:4',
             'password' => 'sometimes|confirmed',
             'foto' => 'sometimes|max:500|mimes:jpeg,jpg,png',
@@ -117,14 +117,12 @@ class ManageUserController extends Controller
             'group_default' => 'required',
         ]);
 
-        // TODO: check apakah ada email/username yg kembar
+        // TODO: check apakah ada email yg kembar
         $currentUser = SysUser::findOrFail($id);
-        $newUsername = SysUser::where("user_fullname", $request->username)->where('user_fullname', '<>', $currentUser->user_fullname)->first();
-        if (!empty($newUsername)) return redirect()->back()->withInput($request->all())->withErrors("Username telah digunakan");
         $newEmail = SysUser::where("user_email", $request->email)->where('user_email', '<>', $currentUser->user_email)->first();
         if (!empty($newEmail)) return redirect()->back()->withInput($request->all())->withErrors("Email telah digunakan");
 
-        $currentUser->user_fullname = $request->username;
+        $currentUser->user_fullname = $request->fullname;
         $currentUser->user_email = $request->email;
         if (!empty($request->password)) $currentUser->user_password = bcrypt($request->password);
 
@@ -135,7 +133,7 @@ class ManageUserController extends Controller
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
-            $imageName = "/images/profiles/" . str_replace(" ", "_", $request->username) . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
+            $imageName = "/images/profiles/" . str_replace(" ", "_", $request->fullname) . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
             $img->save(public_path($imageName), 80);
             $currentUser->user_picture = $imageName;
         }
@@ -164,7 +162,7 @@ class ManageUserController extends Controller
         $data = SysUser::findOrFail($id);
         $data->delete();
 
-        return $this->responseJSON(200, [], "Sukses");
+        return responseJSON(200, [], "Sukses");
     }
 
     public function ajaxDatagrid(Request $request)
@@ -215,6 +213,6 @@ class ManageUserController extends Controller
             $data->save();
         }
 
-        return $this->responseJSON(200, [], "Delete berhasil");
+        return responseJSON(200, [], "Delete berhasil");
     }
 }

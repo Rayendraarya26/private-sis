@@ -3,7 +3,6 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Structs\EmailStruct;
-use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
@@ -15,7 +14,7 @@ use Throwable;
 
 class RegisterController extends Controller
 {
-    use GeneralTraits;
+
 
     public function index()
     {
@@ -67,7 +66,7 @@ class RegisterController extends Controller
                     'link' => route('auth.verify', encrypt($user->user_token))
                 ])->render();
             $structEmail->to = $user->user_email;
-            $this->sendEmail($structEmail);
+            sendEmail($structEmail);
             // ================ END Send Email ================
 
             return redirect()->back()->with('message', "Pendaftaran berhasil, silakan cek email anda");

@@ -568,7 +568,14 @@
 <script>
     const toast = swal.mixin({
         toast: true,
-        position: 'top',
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000
+    });
+
+    const toastCenter = swal.mixin({
+        toast: true,
+        position: 'center',
         showConfirmButton: false,
         timer: 3000
     });

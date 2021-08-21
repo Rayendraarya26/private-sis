@@ -32,14 +32,15 @@
                                     @csrf
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
-                                               for="nama_guru">Username*</label>
+                                               for="fullname">Fullname*</label>
                                         <div class="col-sm-8">
-                                            <input class="form-control" placeholder="Masukkan username ..." type="text"
-                                                   name="username" id="username" value="{{old('username')}}">
+                                            <input class="form-control" placeholder="Masukkan kode template ..."
+                                                   type="text"
+                                                   name="fullname" id="fullname" value="{{old('fullname')}}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="no_telp">Email*</label>
+                                        <label class="col-form-label col-sm-3" for="email">Email*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan email..." type="email"
                                                    name="email" id="email" value="{{old('email')}}">
@@ -47,7 +48,7 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="no_telp">Kata sandi*</label>
+                                        <label class="col-form-label col-sm-3" for="password">Kata sandi*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan kata sandi..."
                                                    type="password" name="password" id="password"
@@ -57,7 +58,7 @@
 
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
-                                               for="no_telp">Konfirmasi Password*</label>
+                                               for="password_confirmation">Konfirmasi Password*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control"
                                                    placeholder="Masukkan ulang kata sandi..."

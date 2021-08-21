@@ -2,7 +2,7 @@
 
 namespace Modules\Email\Http\Controllers;
 
-use App\Http\Traits\GeneralTraits;
+
 use App\Models\BbkkpSisLog\LogEmailOutbox;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class HistoryEmailSystemController extends Controller
 {
-    use GeneralTraits;
+
 
     private string $url = 'email/history/system';
 
@@ -28,7 +28,7 @@ class HistoryEmailSystemController extends Controller
             'outbox_title' => $data->outbox_title,
             'outbox_message' => $data->outbox_message,
         ];
-        return $this->responseJSON(200, $response, "data ditemukan");
+        return responseJSON(200, $response, "data ditemukan");
     }
 
     public function ajax(Request $request)

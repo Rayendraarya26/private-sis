@@ -101,14 +101,16 @@
                         </button>
                     </div>
                     <!-- /form group -->
-                    {{--                    <div style="text-align: center; font-weight: bold;font-size: 16px">--}}
-                    {{--                        atau--}}
-                    {{--                    </div>--}}
-                    {{--                    <div class="form-group pt-4">--}}
-                    {{--                        <a href="{{route('auth.google')}}" class="btn btn-outline-primary btn-block">--}}
-                    {{--                            <i class="fab fa-google"></i> Login dengan Google--}}
-                    {{--                        </a>--}}
-                    {{--                    </div>--}}
+                    @if(\Illuminate\Support\Facades\Route::has("auth.google"))
+                        <div style="text-align: center; font-weight: bold;font-size: 16px">
+                            atau
+                        </div>
+                        <div class="form-group pt-4">
+                            <a href="{{route('auth.google')}}" class="btn btn-outline-primary btn-block">
+                                <i class="fab fa-google"></i> Login dengan Google
+                            </a>
+                        </div>
+                    @endif
 
                     <div class="pb-2" style="float: right">
                         <a href="{{route('auth.forget_password')}}" class="text-light-gray">Lupa kata sandi ?</a>

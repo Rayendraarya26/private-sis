@@ -3,7 +3,6 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Structs\EmailStruct;
-use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use App\Providers\RouteServiceProvider;
@@ -17,7 +16,7 @@ use Modules\Auth\Http\Traits\AuthTraits;
 
 class LoginController extends Controller
 {
-    use AuthTraits, GeneralTraits;
+    use AuthTraits;
 
     public function index()
     {
@@ -103,7 +102,7 @@ class LoginController extends Controller
                     'link' => route('auth.verify', encrypt(auth()->user()->user_token))
                 ])->render();
             $structEmail->to = auth()->user()->user_email;
-            $this->sendEmail($structEmail);
+            sendEmail($structEmail);
             // ================ END Send Email ================
 
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");

@@ -2,7 +2,7 @@
 
 namespace Modules\System\Http\Controllers;
 
-use App\Http\Traits\GeneralTraits;
+
 use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysGroupPermission;
 use App\Models\BbkkpSis\SysMenu;
@@ -15,7 +15,7 @@ use Modules\System\Http\Traits\GroupTraits;
 
 class ManageGroupController extends Controller
 {
-    use GeneralTraits, GroupTraits;
+    use GroupTraits;
 
     private $module = 'system/group';
 
@@ -125,7 +125,7 @@ class ManageGroupController extends Controller
         $data = SysGroup::findOrFail($id);
         $data->delete();
 
-        return $this->responseJSON(200, [], "Sukses");
+        return responseJSON(200, [], "Sukses");
     }
 
     public function ajaxDatagrid(Request $request)
@@ -188,6 +188,6 @@ class ManageGroupController extends Controller
             $data->save();
         }
 
-        return $this->responseJSON(200, [], "Deactive berhasil");
+        return responseJSON(200, [], "Deactive berhasil");
     }
 }

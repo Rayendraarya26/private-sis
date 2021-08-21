@@ -2,7 +2,7 @@
 
 namespace Modules\System\Http\Controllers;
 
-use App\Http\Traits\GeneralTraits;
+
 use App\Models\BbkkpSis\MasterIcons;
 use App\Models\BbkkpSis\SysMenu;
 use Exception;
@@ -13,7 +13,7 @@ use Modules\System\Http\Traits\MenuTraits;
 
 class ManageMenuController extends Controller
 {
-    use GeneralTraits, MenuTraits;
+    use MenuTraits;
 
     private $module = 'system/menu';
 
@@ -90,7 +90,7 @@ class ManageMenuController extends Controller
         $data = SysMenu::findOrFail($id);
         $data->delete();
 
-        return $this->responseJSON(200, [], "Sukses");
+        return responseJSON(200, [], "Sukses");
     }
 
     public function ajaxTreegrid()
@@ -120,7 +120,7 @@ class ManageMenuController extends Controller
             $data->save();
         }
 
-        return $this->responseJSON(200, [], "Deactive berhasil");
+        return responseJSON(200, [], "Deactive berhasil");
     }
 
     public function ajaxDataIcon(Request $request)

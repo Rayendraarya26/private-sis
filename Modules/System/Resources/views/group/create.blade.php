@@ -32,7 +32,7 @@
                                     @csrf
                                     <input type="hidden" id="permission" name="permission">
                                     <div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="nama_guru">
+                                        <label class="col-form-label col-sm-3" for="group_name">
                                             Nama Grup
                                         </label>
                                         <div class="col-sm-8">
@@ -43,7 +43,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="no_telp">
+                                        <label class="col-form-label col-sm-3" for="group_desc">
                                             Deskripsi Grup
                                         </label>
                                         <div class="col-sm-8">
@@ -54,7 +54,7 @@
 
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
-                                               for="no_telp">Aktif ?</label>
+                                               for="group_is_active">Aktif ?</label>
                                         <div class="col-sm-8">
                                             <select class="form-control" name="group_is_active" id="group_is_active">
                                                 <option value="yes" selected>Yes</option>

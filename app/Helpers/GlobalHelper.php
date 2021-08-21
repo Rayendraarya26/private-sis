@@ -1,23 +1,40 @@
 <?php
 
-namespace App\Http\Traits;
-
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
 use App\Jobs\SendMail;
 use App\Jobs\SendNotif;
 use App\Models\BbkkpSis\SysUserNotif;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
-trait GeneralTraits
-{
+if (!function_exists('authorized')) {
+    function authorized($controller)
+    {
+        $availController = session('permission');
+        return in_array($controller, $availController);
+    }
+}
+
+if (!function_exists('moneyFormat')) {
     function moneyFormat($value)
     {
         return number_format($value, 0, ",", ".");
     }
+}
 
+if (!function_exists('responseJSON')) {
+    function responseJSON($code = 200, $result = [], $message = "")
+    {
+        $output = [
+            'code' => $code,
+            'results' => $result,
+            'message' => $message,
+        ];
+        return response()->json($output, $code);
+    }
+}
+
+if (!function_exists('monthIndonesia')) {
     function monthIndonesia($month)
     {
         $bulan = [
@@ -37,18 +54,11 @@ trait GeneralTraits
 
         return $bulan[$month];
     }
+}
 
-    public function responseJSON($code = 200, $result = [], $message = ""): JsonResponse
-    {
-        $output = [
-            'code' => $code,
-            'results' => $result,
-            'message' => $message,
-        ];
-        return response()->json($output, $code);
-    }
 
-    public function sendNotification(NotifStruct $struct)
+if (!function_exists('sendNotification')) {
+    function sendNotification(NotifStruct $struct)
     {
         // Add to Notif System
         SysUserNotif::create([
@@ -62,8 +72,10 @@ trait GeneralTraits
         // Send to firebase
         SendNotif::dispatch($struct);
     }
+}
 
-    public function sendEmail(EmailStruct $struct)
+if (!function_exists('sendEmail')) {
+    function sendEmail(EmailStruct $struct)
     {
         try {
             $email = filter_var($struct->to, FILTER_SANITIZE_EMAIL);

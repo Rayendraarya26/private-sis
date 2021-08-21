@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AccountController extends Controller
 {
-
     public function index()
     {
         return view('home::account.profile');

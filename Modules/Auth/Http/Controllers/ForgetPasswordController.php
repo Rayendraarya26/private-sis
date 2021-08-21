@@ -3,7 +3,6 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Structs\EmailStruct;
-use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use Exception;
 use Illuminate\Http\Request;
@@ -12,7 +11,7 @@ use Illuminate\Support\Str;
 
 class ForgetPasswordController extends Controller
 {
-    use GeneralTraits;
+
 
     public function index()
     {
@@ -38,7 +37,7 @@ class ForgetPasswordController extends Controller
                 'link' => route('auth.reset_password', encrypt($dataUser->user_token))
             ])->render();
             $structEmail->to = $dataUser->user_email;
-            $this->sendEmail($structEmail);
+            sendEmail($structEmail);
             // ================ END Send Email ================
 
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");

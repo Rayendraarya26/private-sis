@@ -2,7 +2,7 @@
 
 namespace Modules\System\Http\Controllers;
 
-use App\Http\Traits\GeneralTraits;
+
 use App\Models\BbkkpSis\SysMenu;
 use App\Models\BbkkpSis\SysMenuAction;
 use Carbon\Carbon;
@@ -11,7 +11,7 @@ use Illuminate\Routing\Controller;
 
 class ManageMenuActionController extends Controller
 {
-    use GeneralTraits;
+
 
     private $module;
     private $dataMenu;
@@ -51,7 +51,7 @@ class ManageMenuActionController extends Controller
         ];
         SysMenuAction::create($data);
 
-        return $this->responseJSON(200, ['message' => "success"], "success");
+        return responseJSON(200, ['message' => "success"], "success");
     }
 
 
@@ -66,7 +66,7 @@ class ManageMenuActionController extends Controller
         $action->action_name = $request->action_name;
         $action->action_controller = $request->action_controller;
         $action->save();
-        return $this->responseJSON(200, ['message' => "success"], "success");
+        return responseJSON(200, ['message' => "success"], "success");
     }
 
 
@@ -75,7 +75,7 @@ class ManageMenuActionController extends Controller
         $data = SysMenuAction::findOrFail($actionID);
         $data->delete();
 
-        return $this->responseJSON(200, [], "Sukses");
+        return responseJSON(200, [], "Sukses");
     }
 
     public function ajaxDatagrid(Request $request)

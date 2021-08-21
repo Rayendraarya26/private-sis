@@ -74,12 +74,11 @@
                 frozenColumns: [[
                     {
                         field: 'action', title: "Aksi", width: 100, formatter: function (val, row) {
-                            return `<button class="btn btn-info btn-xs btn-block" onclick="preview(${row.outbox_id})">Preview</button>`;
+                            return `<button class="btn btn-warning btn-xs btn-block" onclick="preview(${row.outbox_id})">Preview</button>`;
                         }
                     }
                 ]],
                 columns: [[
-
                     {field: 'outbox_title', title: 'Title', width: 200, sortable: true},
                     {field: 'outbox_to_email', title: 'Email Penerima', width: 200},
                     {
@@ -103,7 +102,6 @@
             });
             dg.datagrid(
                 'enableFilter', [
-                    {field: 'ck', type: 'label'},
                     {field: 'action', type: 'label'},
                     {field: 'outbox_to_name', type: 'textbox'},
                     {field: 'outbox_to_email', type: 'textbox'},
