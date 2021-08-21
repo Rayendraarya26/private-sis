@@ -94,12 +94,12 @@
                 nowrap: false,
                 singleSelect: false,
                 toolbar: '#toolbar',
-                fitColumns: true,
+                // fitColumns: false,
                 treeField: 'menu_name',
                 columns: [[
                     {field: 'ck', checkbox: true, sortable: false},
                     {
-                        field: 'menu_name', title: 'Nama Menu', width: 100, formatter: function (val, row) {
+                        field: 'menu_name', title: 'Nama Menu', width: 300, formatter: function (val, row) {
                             if (row.hasOwnProperty('children')) {
                                 return `<i class="${row.menu_icon}">&nbsp;${val}</i>`
                             } else {
@@ -109,10 +109,10 @@
                         }
                     },
                     // {field: 'menu_desc', title: 'Deskripsi', width: 200},
-                    {field: 'menu_order', title: 'Urutan', width: 10},
-                    {field: 'menu_is_active', title: 'Aktif ?', width: 20},
+                    {field: 'menu_order', title: 'Urutan', width: 100},
+                    {field: 'menu_is_active', title: 'Aktif ?', width: 100},
                     {
-                        field: 'action', title: 'Aksi', width: 80,
+                        field: 'action', title: 'Aksi', width: 200,
                         formatter: function (val, row) {
                             let btn_edit = `<a href="{{ url("$module") }}/${row.id}/edit" class="btn btn-xs btn-success">Edit</a>`;
                             let btn_action = `<a href="{{url("$module")}}/${row.id}/menu-action" class="btn btn-xs btn-primary">Menu Action</a>`;

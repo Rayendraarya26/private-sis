@@ -64,7 +64,7 @@
                 frozenColumns: [[
                     {field: 'ck', checkbox: true, sortable: false},
                     {
-                        field: 'action', title: 'Aksi', align: 'center', sortable: false, width: 90,
+                        field: 'action', title: 'Aksi', align: 'center', sortable: false, width: 70,
                         formatter: function (value, row) {
                             return `
                             <a class="btn btn-primary btn-xs btn-block" href="{{ url("$module") }}/${row.user_id}/edit">Edit</a>
