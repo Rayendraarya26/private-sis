@@ -5,7 +5,7 @@
 @section('content')
     <div class="dt-content">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-12">
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
@@ -13,7 +13,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <div id="ttData" style="width:100%;"></div>
+                        <div id="ttData" style="width:100%; min-width:400px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>
@@ -61,10 +61,10 @@
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
-                columns: [[
+                frozenColumns: [[
                     {field: 'ck', checkbox: true, sortable: false},
                     {
-                        field: 'action', title: 'Aksi', sortable: false, width: 125,
+                        field: 'action', title: 'Aksi', sortable: false, width: 105, align: 'center',
                         formatter: function (value, row) {
                             return `
                             <a class="btn btn-primary btn-xs" href="{{ url("$module") }}/${row.group_id}/edit">Edit</a>
@@ -72,6 +72,8 @@
                         `;
                         }
                     },
+                ]],
+                columns: [[
                     {field: 'group_name', title: 'Nama', width: 200, sortable: true},
                     {field: 'group_desc', title: 'Deskripsi', width: 200, sortable: true},
                     {field: 'group_is_active', title: 'Aktif ?', width: 80},

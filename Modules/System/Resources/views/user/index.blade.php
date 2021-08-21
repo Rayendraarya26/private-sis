@@ -5,7 +5,7 @@
 @section('content')
     <div class="dt-content">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-12">
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
@@ -13,7 +13,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <div id="ttData" style="width:100%;"></div>
+                        <div id="ttData" style="width:100%;min-width: 320px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>
@@ -64,11 +64,11 @@
                 frozenColumns: [[
                     {field: 'ck', checkbox: true, sortable: false},
                     {
-                        field: 'action', title: 'Aksi', align: 'center', sortable: false, width: 70,
+                        field: 'action', title: 'Aksi', sortable: false, width: 105, align: 'center',
                         formatter: function (value, row) {
                             return `
-                            <a class="btn btn-primary btn-xs btn-block" href="{{ url("$module") }}/${row.user_id}/edit">Edit</a>
-                            <button class="btn btn-danger btn-xs btn-block"
+                            <a class="btn btn-primary btn-xs" href="{{ url("$module") }}/${row.user_id}/edit">Edit</a>
+                            <button class="btn btn-danger btn-xs"
                                     onclick="remove(${row.user_id}, '${row.user_email}')">Delete
                             </button>
                         `;

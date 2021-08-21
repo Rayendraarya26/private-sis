@@ -5,7 +5,7 @@
 @section('content')
     <div class="dt-content">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-12">
                 <a class="btn btn-sm btn-default" href="{{ url("/system/menu") }}" style="margin-bottom: 20px">
                     <i class="fad fa-arrow-left"></i> Kembali
                 </a>
@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <div id="dgTable" style="width:100%;"></div>
+                        <div id="dgTable" style="width:100%;min-width: 320px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>

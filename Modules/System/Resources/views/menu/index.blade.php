@@ -44,7 +44,7 @@
 @section('content')
     <div class="dt-content">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-12">
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <table id="treegrid" style="width:100%;"></table>
+                        <table id="treegrid" style="width:100%;min-width: 320px"></table>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>
