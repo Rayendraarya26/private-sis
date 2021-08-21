@@ -26,7 +26,7 @@ class CreateSysGroupTable extends Migration
             $table->string('group_name');
             $table->string('group_desc')->nullable()->default(null);
             $table->enum('group_is_active', ['yes', 'no'])->default('yes');
-            $table->timestamp('group_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('group_created_at')->nullable()->useCurrent();
             $table->timestamp('group_updated_at')->nullable()->default(null);
         });
     }

@@ -17,7 +17,7 @@ class CreateMasterIconsTable extends Migration
         Schema::create('master_icons', function (Blueprint $table) {
             $table->bigIncrements("icon_id");
             $table->string("icon_name")->nullable();
-            $table->timestamp('icon_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('icon_created_at')->nullable()->useCurrent();
             $table->timestamp('icon_updated_at')->nullable();
         });
     }

@@ -27,7 +27,7 @@ class CreateLogEmailOutboxTable extends Migration
             $table->enum('outbox_read', ['no', 'yes'])->default('no');
             $table->timestamp('outbox_read_at')->nullable();
             $table->enum('outbox_type', ['system', 'reminder'])->default('system');
-            $table->timestamp('outbox_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('outbox_created_at')->nullable()->useCurrent();
             $table->timestamp('outbox_updated_at')->nullable();
         });
     }

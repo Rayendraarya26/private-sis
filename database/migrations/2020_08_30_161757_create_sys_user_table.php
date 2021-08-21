@@ -33,7 +33,7 @@ class CreateSysUserTable extends Migration
             $table->timestamp('user_last_login')->nullable()->default(null);
             $table->timestamp('user_active_at')->nullable()->default(null);
             $table->timestamp('user_banned_at')->nullable()->default(null);
-            $table->timestamp('user_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('user_created_at')->nullable()->useCurrent();
             $table->timestamp('user_updated_at')->nullable()->default(null);
 
             $table->unique(["user_email"], 'user_email');

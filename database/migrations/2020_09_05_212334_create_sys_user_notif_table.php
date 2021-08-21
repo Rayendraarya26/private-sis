@@ -29,7 +29,7 @@ class CreateSysUserNotifTable extends Migration
             $table->string('notif_content')->nullable()->default(null);
             $table->string('notif_link')->nullable()->default(null);
             $table->enum('notif_is_read', ['yes', 'no'])->nullable()->default('no');
-            $table->timestamp('notif_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('notif_created_at')->nullable()->useCurrent();
             $table->timestamp('notif_updated_at')->nullable()->default(null);
 
             $table->index(["notif_user_id"], 'notif_user_id');

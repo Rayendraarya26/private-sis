@@ -25,7 +25,7 @@ class CreateSysUserGroupTable extends Migration
             $table->unsignedBigInteger('ug_user_id');
             $table->unsignedInteger('ug_group_id');
             $table->enum('ug_is_default', ['yes', 'no'])->nullable()->default('no');
-            $table->timestamp('ug_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('ug_created_at')->nullable()->useCurrent();
             $table->timestamp('ug_updated_at')->nullable()->default(null);
 
             $table->index(["ug_user_id"], 'ug_user_id');

@@ -29,7 +29,7 @@ class CreateSysMenuTable extends Migration
             $table->enum('menu_is_active', ['yes', 'no'])->default('yes');
             $table->string('menu_icon')->nullable()->default(null);
             $table->integer('menu_order')->nullable()->default('1');
-            $table->timestamp('menu_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('menu_created_at')->nullable()->useCurrent();
             $table->timestamp('menu_updated_at')->nullable()->default(null);
 
             $table->unique(["menu_parent_id", "menu_name", "menu_is_active"], 'menu_parent_id');

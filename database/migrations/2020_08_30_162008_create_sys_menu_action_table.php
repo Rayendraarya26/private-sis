@@ -26,7 +26,7 @@ class CreateSysMenuActionTable extends Migration
             $table->unsignedInteger('action_menu_id');
             $table->string('action_name');
             $table->string('action_controller');
-            $table->timestamp('action_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('action_created_at')->nullable()->useCurrent();
             $table->timestamp('action_updated_at')->nullable()->default(null);
 
             $table->index(["action_menu_id"], 'action_menu_id');

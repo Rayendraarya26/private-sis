@@ -21,7 +21,7 @@ class CreateSysUserFbtokenTable extends Migration
             $table->string('fbtoken_token')->nullable()->default(null);
             $table->string('fbtoken_agent')->nullable()->default(null);
             $table->string('fbtoken_ip')->nullable()->default(null);
-            $table->timestamp('fbtoken_created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('fbtoken_created_at')->nullable()->useCurrent();
             $table->timestamp('fbtoken_updated_at')->nullable();
 
             $table->index(["fbtoken_user_id"], 'fbtoken_user_id');
