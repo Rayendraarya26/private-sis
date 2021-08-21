@@ -180,7 +180,7 @@ class ManageGroupController extends Controller
 
     }
 
-    public function ajaxDeactive(Request $request)
+    public function ajaxActive(Request $request)
     {
         foreach ($request->ids as $id) {
             $data = SysGroup::findOrFail($id);

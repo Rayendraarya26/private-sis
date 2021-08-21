@@ -4,7 +4,6 @@ namespace App\Http\Traits;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
-use App\Http\Structs\PushNotifStruct;
 use App\Jobs\SendMail;
 use App\Jobs\SendNotif;
 use App\Models\BbkkpSis\SysUserNotif;

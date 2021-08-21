@@ -16,15 +16,14 @@ Route::prefix('system')->middleware(['auth', 'restrict'])->name("system")->group
     Route::resource("group", ManageGroupController::class);
     Route::get('group/ajax/datagrid', [ManageGroupController::class, 'ajaxDatagrid']);
     Route::get('group/ajax/treegrid', [ManageGroupController::class, 'ajaxTreegrid']);
-    Route::post('group/ajax/active', [ManageGroupController::class, 'ajaxDeactive']);
+    Route::post('group/ajax/active', [ManageGroupController::class, 'ajaxActive']);
 
     Route::resource("menu", ManageMenuController::class);
     Route::get('menu/ajax/data-icon', [ManageMenuController::class, 'ajaxDataIcon']);
     Route::get('menu/ajax/treegrid', [ManageMenuController::class, 'ajaxTreegrid']);
-    Route::post('menu/ajax/active', [ManageMenuController::class, 'ajaxDeactive']);
+    Route::post('menu/ajax/active', [ManageMenuController::class, 'ajaxActive']);
 
     Route::resource("menu/{id}/menu-action", ManageMenuActionController::class);
     Route::post('menu/{id}/menu-action/update', [ManageMenuActionController::class, 'update']);
     Route::get('menu/{id}/menu-action/ajax/datagrid', [ManageMenuActionController::class, 'ajaxDatagrid']);
-    Route::post('menu/{id}/menu-action/ajax/active', [ManageMenuActionController::class, 'ajaxDeactive']);
 });

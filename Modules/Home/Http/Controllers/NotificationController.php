@@ -3,7 +3,6 @@
 namespace Modules\Home\Http\Controllers;
 
 use App\Http\Structs\NotifStruct;
-use App\Http\Structs\PushNotifStruct;
 use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUserFbToken;
 use App\Models\BbkkpSis\SysUserNotif;

@@ -112,7 +112,7 @@ class ManageMenuController extends Controller
         return response()->json($menu);
     }
 
-    public function ajaxDeactive(Request $request)
+    public function ajaxActive(Request $request)
     {
         foreach ($request->ids as $id) {
             $data = SysMenu::findOrFail($id);
