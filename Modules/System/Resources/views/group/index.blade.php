@@ -13,7 +13,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <div id="ttData" style="width:100%; min-width:400px"></div>
+                        <div id="ttData" style="width:100%; min-width: 300px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>

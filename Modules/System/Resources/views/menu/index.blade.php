@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <table id="treegrid" style="width:100%;min-width: 320px"></table>
+                        <table id="treegrid" style="width:100%;min-width: 300px"></table>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>
