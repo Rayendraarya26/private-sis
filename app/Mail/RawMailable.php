@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Http\Structs\EmailStruct;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -10,11 +11,11 @@ class RawMailable extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected array $data;
+    protected EmailStruct $struct;
 
-    public function __construct($data)
+    public function __construct($struct)
     {
-        $this->data = $data;
+        $this->struct = $struct;
     }
 
     /**
@@ -25,11 +26,11 @@ class RawMailable extends Mailable
     public function build()
     {
         return $this
-            ->subject($this->data['title'])
-            ->to($this->data['to'])
+            ->to($this->struct->to)
+            ->subject($this->struct->subject)
             ->view('emails.raw')->with([
-                'url_read' => $this->data['url_read'],
-                'content' => $this->data['body'],
+                'url_read' => $this->struct->getUrlRead(),
+                'content' => $this->struct->body,
             ]);
     }
 }

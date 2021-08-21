@@ -2,8 +2,11 @@
 
 namespace App\Http\Traits;
 
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\PushNotifStruct;
 use App\Jobs\SendMail;
-use App\Models\BbkkpSis\SysUserFbToken;
+use App\Jobs\SendNotif;
 use App\Models\BbkkpSis\SysUserNotif;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -46,75 +49,28 @@ trait GeneralTraits
         return response()->json($output, $code);
     }
 
-    public function sendNotification($title = 'Judul', $body = 'message', $penerimaID = 0, $clickUrl = "/")
+    public function sendNotification(NotifStruct $struct)
     {
         // Add to Notif System
         SysUserNotif::create([
-            'notif_user_id' => $penerimaID,
-            'notif_title' => $title,
-            'notif_desc' => $body,
-            'notif_link' => $clickUrl,
+            'notif_user_id' => $struct->user_id,
+            'notif_title' => $struct->title,
+            'notif_content' => $struct->message,
+            'notif_link' => $struct->click_url,
             'notif_is_read' => "no",
             'notif_created_at' => Date("Y-m-d H:i:s"),
         ]);
         // Send to firebase
-        $dataToken = SysUserFbtoken::with("user")->where("fbtoken_user_id", $penerimaID)->get();
-        if (!empty($dataToken)) {
-            $registrationIds = [];
-
-            foreach ($dataToken as $token) {
-                // add token penerima
-                array_push($registrationIds, $token->fbtoken_token);
-            }
-
-            $API_ACCESS_KEY = env("GOOGLE_PUSH_KEY");
-
-            $url = 'https://fcm.googleapis.com/fcm/send';
-
-            if (count($registrationIds) > 0) {
-                // prepare the message
-                $message = array(
-                    'title' => $title,
-                    'body' => strip_tags($body),
-                    'vibrate' => 1,
-                    'sound' => 1,
-                    'url' => $clickUrl,
-                );
-                $fields = array(
-                    'registration_ids' => $registrationIds,
-                    'data' => $message
-                );
-                $headers = array(
-                    'Authorization: key=' . $API_ACCESS_KEY,
-                    'Content-Type: application/json'
-                );
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-                $result = curl_exec($ch);
-                curl_close($ch);
-
-
-                // remove token yang deprecated
-                if ($result) {
-                    foreach (json_decode($result)->results as $key => $value) {
-                        if (isset($value->error)) {
-                            SysUserFbtoken::where("fbtoken_user_id", $penerimaID)->where("fbtoken_token", $registrationIds[$key])->delete();
-                        }
-                    }
-                }
-            }
-        }
+        SendNotif::dispatch($struct);
     }
 
-    public function sendEmail($title, $body, $to)
+    public function sendEmail(EmailStruct $struct)
     {
         try {
-            SendMail::dispatch(['title' => $title, 'body' => $body, 'to' => $to]);
+            $email = filter_var($struct->to, FILTER_SANITIZE_EMAIL);
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                SendMail::dispatch($struct);
+            }
         } catch (Exception $e) {
             Log::error($e->getMessage());
         }

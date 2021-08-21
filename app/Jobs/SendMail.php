@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Http\Structs\EmailStruct;
 use App\Mail\RawMailable;
 use App\Models\BbkkpSisLog\LogEmailOutbox;
 use Illuminate\Bus\Queueable;
@@ -16,13 +17,12 @@ class SendMail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected array $data;
+    protected EmailStruct $struct;
 
-    public function __construct($data)
+    public function __construct(EmailStruct $struct)
     {
-        $this->data = $data;
-        $this->data['uuid'] = Str::uuid();
-        $this->data['url_read'] = url("/email/open/" . $this->data['uuid']);
+        $this->struct = $struct;
+        $this->struct->setUUID(Str::uuid());
     }
 
     /**
@@ -32,20 +32,16 @@ class SendMail implements ShouldQueue
      */
     public function handle()
     {
-        $title = $this->data['title'];
-        $body = $this->data['body'];
-        $to = $this->data['to'];
-
-        Mail::to($to)->send(new RawMailable($this->data));
+        Mail::send(new RawMailable($this->struct));
         LogEmailOutbox::create([
             "outbox_uuid" => $this->data['uuid'],
             "outbox_reply_to" => env("MAIL_FROM_ADDRESS"),
             "outbox_from_name" => env("MAIL_FROM_NAME"),
             "outbox_from_email" => env("MAIL_FROM_ADDRESS"),
             "outbox_to_name" => "",
-            "outbox_to_email" => $this->data['to'],
-            "outbox_title" => $this->data['title'],
-            "outbox_message" => $this->data['body'],
+            "outbox_to_email" => $this->struct->to,
+            "outbox_title" => $this->struct->subject,
+            "outbox_message" => $this->struct->body,
             "outbox_read" => "no",
             "outbox_type" => "system",
             "outbox_created_at" => date("Y-m-d H:i:s"),

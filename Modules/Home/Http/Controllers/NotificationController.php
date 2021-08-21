@@ -2,6 +2,8 @@
 
 namespace Modules\Home\Http\Controllers;
 
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\PushNotifStruct;
 use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUserFbToken;
 use App\Models\BbkkpSis\SysUserNotif;
@@ -51,6 +53,11 @@ class NotificationController extends Controller
 
     public function tes()
     {
-        $this->sendNotification("Helo Hgeys", "Wowowow", auth()->id(), url('/dashboard'));
+        $notifStruct = new NotifStruct();
+        $notifStruct->title = "Halo ini judul push notifikasi";
+        $notifStruct->message = auth()->user()->user_fullname . " notifikasi berhasil ya, ini adalah isi pesannya";
+        $notifStruct->user_id = auth()->id();
+        $notifStruct->click_url = url('/dashboard');
+        $this->sendNotification($notifStruct);
     }
 }

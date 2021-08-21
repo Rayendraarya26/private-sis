@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Structs\EmailStruct;
 use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
@@ -56,17 +57,18 @@ class RegisterController extends Controller
             $ug->save();
             DB::commit();
 
-            //Mail::to($user->user_email)->send(new RegisterSuccess($user));
 
-            // Sending Email
-            $title = "Pendaftaran berhasil";
-            $message = view('auth::mails.register_success')
+            // ================ Send Email ================
+            $structEmail = new EmailStruct();
+            $structEmail->subject = "Pendaftaran berhasil";
+            $structEmail->body = view('auth::mails.register_success')
                 ->with([
                     'name' => $user->user_fullname,
                     'link' => route('auth.verify', encrypt($user->user_token))
                 ])->render();
-            $to = $user->user_email;
-            $this->sendEmail($title, $message, $to);
+            $structEmail->to = $user->user_email;
+            $this->sendEmail($structEmail);
+            // ================ END Send Email ================
 
             return redirect()->back()->with('message', "Pendaftaran berhasil, silakan cek email anda");
         } catch (Throwable $e) {

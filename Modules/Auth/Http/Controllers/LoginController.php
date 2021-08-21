@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Http\Structs\EmailStruct;
 use App\Http\Traits\GeneralTraits;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
@@ -93,17 +94,17 @@ class LoginController extends Controller
     public function handleResendValidation()
     {
         if (auth()->check()) {
-            //Mail::to(auth()->user()->user_email)->send(new ResendValidation(auth()->user()));
-
-            // Sending Email
-            $title = "Verifikasi Akun";
-            $message = view('auth::mails.resend_validation')
+            // ================ Send Email ================
+            $structEmail = new EmailStruct();
+            $structEmail->subject = "Verifikasi Akun";
+            $structEmail->body = view('auth::mails.resend_validation')
                 ->with([
                     'name' => auth()->user()->user_fullname,
                     'link' => route('auth.verify', encrypt(auth()->user()->user_token))
                 ])->render();
-            $to = auth()->user()->user_email;
-            $this->sendEmail($title, $message, $to);
+            $structEmail->to = auth()->user()->user_email;
+            $this->sendEmail($structEmail);
+            // ================ END Send Email ================
 
             return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
         } else {
