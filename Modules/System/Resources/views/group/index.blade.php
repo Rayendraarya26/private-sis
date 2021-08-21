@@ -5,7 +5,7 @@
 @section('content')
     <div class="dt-content">
         <div class="row">
-            <div class="col-xl-12">
+            <div class="col-xs-12">
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
