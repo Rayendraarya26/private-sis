@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Modules\Email\Http\Traits\EmailTrait;
 
 class TemplateEmailController extends Controller
 {
 
+    use EmailTrait;
 
     private string $url = 'email/template';
 
@@ -26,7 +28,7 @@ class TemplateEmailController extends Controller
 
     public function create()
     {
-        return view('email::template.create')->with(['url' => $this->url]);
+        return view('email::template.create')->with(['url' => $this->url, 'email_parser' => $this->commonParser()]);
     }
 
 
@@ -47,7 +49,7 @@ class TemplateEmailController extends Controller
     public function edit($uuid)
     {
         $data = MasterEmailTemplate::where("template_uuid", $uuid)->firstOrFail();
-        return view('email::template.edit')->with(['url' => $this->url, 'data' => $data]);
+        return view('email::template.edit')->with(['url' => $this->url, 'data' => $data, 'email_parser' => $this->commonParser()]);
     }
 
     public function update(Request $request)

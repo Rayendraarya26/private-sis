@@ -66,6 +66,14 @@
                                             Konten email
                                         </label>
                                         <div class="col-sm-8">
+                                            <div class="alert alert-info">
+                                                Common Parser
+                                                <ol>
+                                                    @foreach($email_parser as $ep)
+                                                        <li>{{"{ $ep }"}}</li>
+                                                    @endforeach
+                                                </ol>
+                                            </div>
                                             <textarea class="form-control" placeholder="Masukkaan deskripsi..."
                                                       name="template_mail_body"
                                                       id="template_mail_body">{{old('template_mail_body')}}</textarea>
@@ -97,7 +105,7 @@
             plugins: 'autosave link image code lists',
             relative_urls: false,
             height: 500,
-            placeholder: 'Tulis master konten email disini',
+            placeholder: 'Halo { FULLNAME } selamat datang...',
             automatic_uploads: true,
             images_upload_url: '{{url("$url/ajax?action=uploadimage")}}',
             images_reuse_filename: true,

@@ -34,7 +34,7 @@ class SendMail implements ShouldQueue
     {
         Mail::send(new RawMailable($this->struct));
         LogEmailOutbox::create([
-            "outbox_uuid" => $this->data['uuid'],
+            "outbox_uuid" => $this->struct->getUUID(),
             "outbox_reply_to" => env("MAIL_FROM_ADDRESS"),
             "outbox_from_name" => env("MAIL_FROM_NAME"),
             "outbox_from_email" => env("MAIL_FROM_ADDRESS"),
