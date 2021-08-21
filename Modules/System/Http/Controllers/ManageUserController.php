@@ -21,7 +21,6 @@ class ManageUserController extends Controller
 
     public function index()
     {
-        //dd(session()->all());
         $parse = ['module' => $this->module];
         return view('system::user.index')->with($parse);
     }
@@ -94,8 +93,8 @@ class ManageUserController extends Controller
     {
         $data = SysUser::findOrFail($id);
         $groups = SysGroup::all();
-        $defaultGroup = auth()->user()->user_group()->where("ug_is_default", "yes")->first()->ug_group_id;
-        $selectedGroup = auth()->user()->user_group->toArray();
+        $defaultGroup = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
+        $selectedGroup = $data->user_group->toArray();
         $parse = [
             'module' => $this->module,
             'id' => $id,
