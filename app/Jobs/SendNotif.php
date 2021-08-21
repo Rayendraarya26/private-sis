@@ -52,7 +52,7 @@ class SendNotif implements ShouldQueue
                 );
                 $fields = array(
                     'registration_ids' => $registrationIds,
-                    'data' => strip_tags($this->struct->message)
+                    'data' => $message
                 );
                 $headers = array(
                     'Authorization: key=' . $API_ACCESS_KEY,
