@@ -104,6 +104,9 @@ class TemplateEmailController extends Controller
             case 'datagrid':
                 $response = $this->ajax_datagrid($request);
                 break;
+            case 'tinymce-uploadimage':
+                $response = $this->ajax_tinymce_uploadimage($request);
+                break;
             default:
                 abort(404);
         }
@@ -147,5 +150,24 @@ class TemplateEmailController extends Controller
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_tinymce_uploadimage(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
+            ]);
+
+            $img = $request->file('file');
+            $imgName = $img->hashName();
+            $img->move(public_path(config('app.email_template_image_url')), $imgName);
+            $publicUrl = asset(config('app.email_template_image_url') . '/' . $imgName);
+
+            return response()->json(["location" => $publicUrl]);
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+
     }
 }

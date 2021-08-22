@@ -106,9 +106,10 @@
             relative_urls: false,
             height: 500,
             placeholder: 'Halo { FULLNAME } selamat datang...',
-            automatic_uploads: true,
-            images_upload_url: '{{url("$url/ajax?action=uploadimage")}}',
             images_reuse_filename: true,
+            automatic_uploads: true,
+            images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+            images_upload_credentials: true,
             toolbar: [{
                 name: 'history',
                 items: ['undo', 'redo']

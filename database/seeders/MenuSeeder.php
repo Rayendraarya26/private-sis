@@ -160,6 +160,13 @@ class MenuSeeder extends Seeder
                 'icon' => 'fas fa-mail-bulk',
                 'action' => [
                     ['name' => 'index', 'controller' => $moduleEmail . '\TemplateEmailController@index'],
+                    ['name' => 'create', 'controller' => $moduleEmail . '\TemplateEmailController@create'],
+                    ['name' => 'store', 'controller' => $moduleEmail . '\TemplateEmailController@store'],
+                    ['name' => 'edit', 'controller' => $moduleEmail . '\TemplateEmailController@edit'],
+                    ['name' => 'update', 'controller' => $moduleEmail . '\TemplateEmailController@update'],
+                    ['name' => 'delete', 'controller' => $moduleEmail . '\TemplateEmailController@destroy'],
+                    ['name' => 'preview', 'controller' => $moduleEmail . '\TemplateEmailController@previewEmail'],
+                    ['name' => 'ajax', 'controller' => $moduleEmail . '\TemplateEmailController@ajax'],
                 ]
             ],
             [

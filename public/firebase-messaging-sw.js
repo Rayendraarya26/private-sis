@@ -11,7 +11,7 @@ const {CacheableResponsePlugin} = workbox.cacheableResponse;
 registerRoute(
     ({url}) =>
         url.pathname.startsWith('/node_modules/') ||
-        url.pathname.startsWith('/plugins/') ||
+        url.pathname.startsWith('/assets/plugins/') ||
         url.pathname.startsWith('/assets/fontawesome/') ||
         url.pathname.startsWith('/assets/fonts/'),
     new CacheFirst({

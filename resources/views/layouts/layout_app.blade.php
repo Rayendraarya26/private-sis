@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/lite-style-1.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/fontawesome/css/all.min.css')}}">
 
-    <link href="{{ asset('plugins/easyui/themes/material/easyui.css')}}" rel="stylesheet">
+    <link href="{{ asset('assets/plugins/easyui/themes/material/easyui.css')}}" rel="stylesheet">
 
     <style>
         .table-responsive {
@@ -560,10 +560,10 @@
 
 <script src="{{ asset('assets/fontawesome/js/all.min.js') }}"></script>
 
-<script src="{{ asset('plugins/easyui/jquery.easyui.min.js') }}"></script>
-<script src="{{ asset('plugins/easyui/datagrid-filter.js') }}"></script>
-<script src="{{ asset('plugins/easyui/datagrid-export.js') }}"></script>
-<script src="{{ asset('plugins/easyui/jquery.edatagrid.js') }}"></script>
+<script src="{{ asset('assets/plugins/easyui/jquery.easyui.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/easyui/datagrid-filter.js') }}"></script>
+<script src="{{ asset('assets/plugins/easyui/datagrid-export.js') }}"></script>
+<script src="{{ asset('assets/plugins/easyui/jquery.edatagrid.js') }}"></script>
 
 <script>
     const toast = swal.mixin({
