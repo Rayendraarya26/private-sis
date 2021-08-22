@@ -92,7 +92,7 @@
                 url: `{{ url("$module/ajax/treegrid") }}`,
                 idField: 'id',
                 nowrap: false,
-                singleSelect: true,
+                singleSelect: false,
                 toolbar: '#toolbar',
                 // fitColumns: false,
                 treeField: 'menu_name',
