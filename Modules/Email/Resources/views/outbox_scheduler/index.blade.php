@@ -63,7 +63,7 @@
                 url: `{{ url("$url/ajax?action=datagrid") }}`,
                 rownumbers: true,
                 nowrap: false,
-                singleSelect: false,
+                singleSelect: true,
                 remoteFilter: true,
                 multiSort: true,
                 // fitColumns: true,
