@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateLogEmailOutboxTable extends Migration
@@ -26,7 +25,7 @@ class CreateLogEmailOutboxTable extends Migration
             $table->text('outbox_message')->nullable();
             $table->enum('outbox_read', ['no', 'yes'])->default('no');
             $table->timestamp('outbox_read_at')->nullable();
-            $table->enum('outbox_type', ['system', 'reminder'])->default('system');
+            $table->enum('outbox_type', ['system', 'scheduler'])->default('system');
             $table->timestamp('outbox_created_at')->nullable()->useCurrent();
             $table->timestamp('outbox_updated_at')->nullable();
         });

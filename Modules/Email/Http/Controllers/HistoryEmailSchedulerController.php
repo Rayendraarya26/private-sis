@@ -8,11 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
-class HistoryEmailReminderController extends Controller
+class HistoryEmailSchedulerController extends Controller
 {
-
-
-    private string $url = 'email/history/reminder';
+    private string $url = 'email/history/scheduler';
 
     public function index()
     {
@@ -48,7 +46,7 @@ class HistoryEmailReminderController extends Controller
 
     private function ajax_datagrid(Request $request)
     {
-        $data = LogEmailOutbox::where('outbox_type', "reminder");
+        $data = LogEmailOutbox::where('outbox_type', "scheduler");
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {

@@ -7,7 +7,6 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
     'asset_url' => env('ASSET_URL', null),
-    'email_template_image_url' => 'assets/images/email-template',
 
     'timezone' => 'Asia/Jakarta',
 

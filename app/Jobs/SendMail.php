@@ -43,7 +43,7 @@ class SendMail implements ShouldQueue
             "outbox_title" => $this->struct->subject,
             "outbox_message" => $this->struct->body,
             "outbox_read" => "no",
-            "outbox_type" => "system",
+            "outbox_type" => $this->struct->type,
             "outbox_created_at" => date("Y-m-d H:i:s"),
         ]);
     }

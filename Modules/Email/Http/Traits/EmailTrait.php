@@ -9,4 +9,10 @@ trait EmailTrait
     {
         return ['FULLNAME', 'EMAIL'];
     }
+
+    public function parse(string $text, string $parser, string $value)
+    {
+        $regex = '/[{]' . $parser . '?[}]/';
+        return preg_replace($regex, $value, $text);
+    }
 }

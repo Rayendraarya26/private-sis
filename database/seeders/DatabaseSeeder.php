@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(NotifSeeder::class);
         $this->call(IconSeeder::class);
+        $this->call(MasterEmailSeeder::class);
     }
 }

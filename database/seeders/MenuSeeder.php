@@ -154,7 +154,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Template',
                 'parent' => 9,
-                'desc' => 'Template reminder email',
+                'desc' => 'Template scheduler email',
                 'active' => 'yes',
                 'order' => '1',
                 'icon' => 'fas fa-mail-bulk',
@@ -194,16 +194,16 @@ class MenuSeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Reminder',
+                'name' => 'Scheduler',
                 'parent' => 11,
                 'desc' => 'Email keluar melalui cronjob',
                 'active' => 'yes',
                 'order' => '1',
                 'icon' => 'fas fa-paper-plane',
                 'action' => [
-                    ['name' => 'index', 'controller' => $moduleEmail . '\HistoryEmailReminderController@index'],
-                    ['name' => 'ajax', 'controller' => $moduleEmail . '\HistoryEmailReminderController@ajax'],
-                    ['name' => 'preview', 'controller' => $moduleEmail . '\HistoryEmailReminderController@previewEmail'],
+                    ['name' => 'index', 'controller' => $moduleEmail . '\HistoryEmailSchedulerController@index'],
+                    ['name' => 'ajax', 'controller' => $moduleEmail . '\HistoryEmailSchedulerController@ajax'],
+                    ['name' => 'preview', 'controller' => $moduleEmail . '\HistoryEmailSchedulerController@previewEmail'],
                 ]
             ],
             //[

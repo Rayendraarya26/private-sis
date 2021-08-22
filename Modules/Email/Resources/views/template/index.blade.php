@@ -89,7 +89,7 @@
                 ]],
                 columns: [[
                     {field: 'template_code', title: 'Kode', width: 200, sortable: true},
-                    {field: 'template_desc', title: 'Deskripsi', width: 200, sortable: true},
+                    {field: 'template_desc', title: 'Deskripsi', width: 250, sortable: true},
                     {field: 'template_mail_subject', title: 'Title', width: 200, sortable: true},
                     {field: 'template_created_at', title: 'Tgl Buat', width: 120, sortable: true},
                     {field: 'template_updated_at', title: 'Tgl Ubah', width: 120, sortable: true},
