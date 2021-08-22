@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Outbox System (Cronjob)')
+@section('title', 'Outbox Scheduler (Cronjob)')
 
 @section('content')
     <div class="dt-content">
