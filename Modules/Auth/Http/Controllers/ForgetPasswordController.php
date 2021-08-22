@@ -69,6 +69,7 @@ class ForgetPasswordController extends Controller
 
         $data = SysUser::where("user_email", $request['email'])->firstOrFail();
         $data->user_password = bcrypt($request['password']);
+        $data->user_token = null;
         $data->save();
 
         return redirect(route('auth.login'))->with("message", "Kata sandi berhasil diperbarui");
