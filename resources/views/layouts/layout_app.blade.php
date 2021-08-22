@@ -328,6 +328,13 @@
         <!-- /sidebar -->
         <!-- Site Content Wrapper -->
         <div class="dt-content-wrapper">
+            <div class="d-lg-none">
+                <div class="dt-content" style="margin-bottom: -15px">
+                    <div style="text-align: center">
+                        <h2>@yield('title')</h2>
+                    </div>
+                </div>
+            </div>
         @yield('content')
 
         <!-- Footer -->

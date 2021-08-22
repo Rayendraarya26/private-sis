@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Tambah Kelola User')
+@section('title', 'Ubah User')
 
 @section('content')
     <div class="dt-content">
@@ -33,11 +33,11 @@
                                     @method("PUT")
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
-                                               for="username">Username*</label>
+                                               for="fullname">Fullname*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan fullname ..." type="text"
-                                                   name="username" id="username"
-                                                   value="{{empty(old('fullname')) ? $data->user_fullname : old('username')}}">
+                                                   name="fullname" id="fullname"
+                                                   value="{{empty(old('fullname')) ? $data->user_fullname : old('fullname')}}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
