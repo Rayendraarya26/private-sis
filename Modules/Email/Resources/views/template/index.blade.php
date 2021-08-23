@@ -84,7 +84,7 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row, index) {
-                            let dom = `dropdownMenu_${index}`;
+                            let dom = `dropdownMenu_${row.template_id}`;
                             let btnPreview = `<div data-options="iconCls:'fad fa-search'" onclick="preview(${row.template_id})">Preview</div>`;
                             let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.template_uuid}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.template_uuid}', '${row.template_code}')">Delete</div>`;
@@ -118,9 +118,9 @@
                     {field: 'template_updated_at', title: 'Tgl Ubah', width: 120, sortable: true},
                 ]],
                 onLoadSuccess: function (data) {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         $(this).menubutton({
-                            menu: '#dropdownMenu_' + $(this).attr("data-index")
+                            menu: '#dropdownMenu_' + data.rows[idx].template_id
                         });
                     });
                 },
