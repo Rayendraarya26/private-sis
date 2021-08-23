@@ -130,6 +130,8 @@
         });
 
         function preview(outboxId) {
+            $("#preview-title").html("Loading...")
+            $("#preview-content").html("Sedang memuat data email...")
             $.get(`{{url("$url/preview")}}?outbox_id=${outboxId}`)
                 .then(response => {
                     console.log(response);
