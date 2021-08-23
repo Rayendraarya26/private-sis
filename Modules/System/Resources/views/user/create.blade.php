@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Tambah Kelola User')
+@section('title', 'Tambah User')
 
 @section('content')
     <div class="dt-content">

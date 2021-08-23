@@ -77,7 +77,7 @@
                 ]],
                 columns: [[
 
-                    {field: 'user_fullname', title: 'Username', width: 200, sortable: true},
+                    {field: 'user_fullname', title: 'Fullname', width: 200, sortable: true},
                     {field: 'user_email', title: 'Email', width: 200, sortable: true},
                     {field: 'user_is_active', title: 'Aktif ?', width: 80},
                     {field: 'user_is_banned', title: 'Banned ?', width: 80},

@@ -22,9 +22,9 @@ class MasterEmailSeeder extends Seeder
             ->insert([
                 'template_uuid' => Str::uuid(),
                 'template_code' => "GREETING",
-                'template_desc' => "Contoh master template email greeting, tes untuk mengirim dengan url {HOSTNAME}/email/schedule/send-greeting",
+                'template_desc' => "Contoh master template email greeting, untuk mencoba silakan hit url {HOSTNAME}/email/schedule/send-greeting",
                 'template_mail_subject' => "Informasi untuk {FULLNAME}",
-                'template_mail_body' => '<p>Halo {FULLNAME} email kamu {EMAIL} | {EMAIL}' . $faker->paragraph . '</p><br>' . "<p>" . $faker->paragraph . " {FULLNAME}</p>",
+                'template_mail_body' => '<p>Halo {FULLNAME} ini parser untuk email: {EMAIL} | bisa multiple juga {EMAIL}' . $faker->paragraph . '</p><br>' . "<p>" . $faker->paragraph . " {FULLNAME}</p>",
             ]);
     }
 }

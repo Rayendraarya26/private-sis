@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Outbox System (Cronjob)')
+@section('title', 'Outbox Scheduler (Cronjob)')
 
 @section('content')
     <div class="dt-content">
@@ -63,7 +63,7 @@
                 url: `{{ url("$url/ajax?action=datagrid") }}`,
                 rownumbers: true,
                 nowrap: false,
-                singleSelect: false,
+                singleSelect: true,
                 remoteFilter: true,
                 multiSort: true,
                 // fitColumns: true,

@@ -72,7 +72,7 @@ class RegisterController extends Controller
             return redirect()->back()->with('message', "Pendaftaran berhasil, silakan cek email anda");
         } catch (Throwable $e) {
             DB::rollback();
-            return redirect()->back()->withErrors(["status" => $e->getMessage()]);
+            return redirect()->back()->withInput($request->except("_token"))->withErrors(["status" => $e->getMessage()]);
         }
     }
 }

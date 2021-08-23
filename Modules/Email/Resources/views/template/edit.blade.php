@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Template Email')
+@section('title', 'Ubah Template')
 
 @section('content')
     <div class="dt-content">

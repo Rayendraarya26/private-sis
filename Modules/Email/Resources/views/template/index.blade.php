@@ -79,21 +79,51 @@
                 clientPaging: false,
                 frozenColumns: [[
                     {
-                        field: 'action', title: "Aksi", width: 80, align: 'center', formatter: function (val, row) {
-                            let btnPreview = `<button class="btn btn-warning btn-xs btn-block" onclick="preview(${row.template_id})">Preview</button>`;
-                            let btnEdit = `<a href="{{url("$url/edit")}}/${row.template_uuid}" class="btn btn-primary btn-xs btn-block">Edit</a>`;
-                            let btnDelete = `<button class="btn btn-danger btn-xs btn-block" onclick="confirmDelete('${row.template_uuid}', '${row.template_code}')">Delete</button>`;
-                            return `${btnPreview} ${btnEdit} ${btnDelete}`;
+                        field: 'action',
+                        title: "Aksi",
+                        width: 80,
+                        align: 'center',
+                        formatter: function (val, row, index) {
+                            let dom = `dropdownMenu_${row.template_id}`;
+                            let btnPreview = `<div data-options="iconCls:'fad fa-search'" onclick="preview(${row.template_id})">Preview</div>`;
+                            let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.template_uuid}'">Edit</div>`;
+                            let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.template_uuid}', '${row.template_code}')">Delete</div>`;
+
+                            return `
+                                <div>
+                                    <button class="btn-action btn-info" data-index="${index}" title="Aksi">
+                                        <i class="fa fa-setting"></i> Aksi
+                                    </button>
+                                    <div id="${dom}" style="width:150px; display: none;">
+                                        ${btnPreview}
+                                        ${btnEdit}
+                                        <div class="menu-sep"></div>
+                                        ${btnDelete}
+                                    </div>
+                                </div>`;
+
+
+                            {{--let btnPreview = `<button class="btn btn-warning btn-xs btn-block" onclick="preview(${row.template_id})">Preview</button>`;--}}
+                            {{--let btnEdit = `<a href="{{url("$url/edit")}}/${row.template_uuid}" class="btn btn-primary btn-xs btn-block">Edit</a>`;--}}
+                            {{--let btnDelete = `<button class="btn btn-danger btn-xs btn-block" onclick="confirmDelete('${row.template_uuid}', '${row.template_code}')">Delete</button>`;--}}
+                            {{--return `${btnPreview} ${btnEdit} ${btnDelete}`;--}}
                         }
                     }
                 ]],
                 columns: [[
-                    {field: 'template_code', title: 'Kode', width: 200, sortable: true},
-                    {field: 'template_desc', title: 'Deskripsi', width: 250, sortable: true},
+                    {field: 'template_code', title: 'Kode', width: 120, sortable: true},
+                    {field: 'template_desc', title: 'Deskripsi', width: 350, sortable: true},
                     {field: 'template_mail_subject', title: 'Title', width: 200, sortable: true},
                     {field: 'template_created_at', title: 'Tgl Buat', width: 120, sortable: true},
                     {field: 'template_updated_at', title: 'Tgl Ubah', width: 120, sortable: true},
                 ]],
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].template_id
+                        });
+                    });
+                },
             });
             dg.datagrid(
                 'enableFilter', [
@@ -143,7 +173,12 @@
                                 title: response.message
                             })
 
-                            $('#ttData').datagrid('reload');
+                            // Destroy MenuButton (rebuild onloadsuccess)
+                            let dg = $('#ttData');
+                            dg.datagrid('getPanel').find('.btn-action').each(function () {
+                                $(this).menubutton('destroy');
+                            })
+                            dg.datagrid('reload');
                         },
                         error: function (err) {
                             if (err.responseJSON.message) {

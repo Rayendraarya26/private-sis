@@ -14,7 +14,7 @@ class HistoryEmailSchedulerController extends Controller
 
     public function index()
     {
-        return view("email::outbox_reminder.index")->with(['url' => $this->url]);;
+        return view("email::outbox_scheduler.index")->with(['url' => $this->url]);;
     }
 
     public function previewEmail(Request $request)

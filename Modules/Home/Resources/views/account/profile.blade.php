@@ -233,7 +233,7 @@
                                                     <div class="media-body">
                                                         <span
                                                             class="d-block text-light-gray f-12 mb-1">Last Login</span>
-                                                        <h5 class="mb-0">{{auth()->user()->user_last_login->format("d M Y, h:i:s")}}</h5>
+                                                        <h5 class="mb-0">{{auth()->user()->user_last_login?->format("d M Y, h:i:s")}}</h5>
                                                     </div>
                                                     <!-- /media body -->
 

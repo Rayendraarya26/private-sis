@@ -45,7 +45,7 @@ class LoginController extends Controller
 
             return redirect()->intended(route('dashboard'));
         } else {
-            return redirect()->back()->withErrors(['status' => 'Kombinasi email dan password tidak sesuai']);
+            return redirect()->back()->withInput($request->only('email'))->withErrors(['status' => 'Kombinasi email dan password tidak sesuai']);
         }
     }
 
