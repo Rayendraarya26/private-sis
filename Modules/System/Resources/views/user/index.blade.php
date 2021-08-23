@@ -163,21 +163,35 @@
         });
 
         function remove(id, nama) {
-            console.log(nama)
-            let agree = confirm(`Anda yakin untuk menghapus ${nama}`);
-            if (agree) {
-                $.ajax({
-                    url: `{{ url("$url") }}/${id}`,
-                    type: 'DELETE',
-                    success: function (response) {
-                        console.log(response)
-                        $('#ttData').datagrid('reload');
-                    },
-                    fail: function (error) {
-                        console.log(error)
-                    }
-                });
-            }
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Menghapus '${nama}' ?`,
+                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: `{{ url("$url") }}/${id}`,
+                        type: 'DELETE',
+                        success: function (response) {
+                            console.log(response)
+                            $('#ttData').datagrid('reload');
+                        },
+                        fail: function (error) {
+                            console.log(error)
+                        }
+                    });
+                }
+            });
         }
 
         @if(authorized("{$module}@ajaxBanned"))
