@@ -17,7 +17,7 @@ class ManageGroupController extends Controller
 {
     use GroupTraits;
 
-    private string $module = self::class;
+    public string $module = self::class;
     private string $url = 'system/group';
 
     public function index()

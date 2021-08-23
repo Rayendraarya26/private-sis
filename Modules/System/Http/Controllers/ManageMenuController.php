@@ -15,7 +15,7 @@ class ManageMenuController extends Controller
 {
     use MenuTraits;
 
-    private string $module = self::class;
+    public string $module = self::class;
     private string $url = 'system/menu';
 
 

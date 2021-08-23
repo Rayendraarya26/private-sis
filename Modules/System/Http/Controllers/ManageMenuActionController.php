@@ -11,8 +11,7 @@ use Illuminate\Routing\Controller;
 
 class ManageMenuActionController extends Controller
 {
-
-    private string $module = self::class;
+    public string $module = self::class;
     private string $url;
 
     public function __construct(Request $request)
