@@ -45,7 +45,7 @@
     <div class="dt-content">
         <div class="row">
             <div class="col-xl-12">
-                <a class="btn btn-sm btn-default" href="{{ url("$module") }}" style="margin-bottom: 20px">
+                <a class="btn btn-sm btn-default" href="{{ url("$url") }}" style="margin-bottom: 20px">
                     <i class="fad fa-arrow-left"></i> Kembali
                 </a>
                 <div class="dt-card">
@@ -67,7 +67,7 @@
                                         {{ session('message') }}
                                     </div>
                                 @endif
-                                <form method="post" action="{{url("$module/$id")}}" enctype="multipart/form-data">
+                                <form method="post" action="{{url("$url/$id")}}" enctype="multipart/form-data">
                                     @csrf
                                     @method("PUT")
                                     <div class="form-group row">
@@ -163,7 +163,7 @@
                 mode:'remote',
                 remoteFilter: true,
                 clientPaging: false,
-                url: '{{url("$module/ajax/data-icon?q=" . (old('menu_icon') ?? $data->menu_icon))}}',
+                url: '{{url("$url/ajax/data-icon?q=" . (old('menu_icon') ?? $data->menu_icon))}}',
                 valueField: 'icon_code',
                 textField: 'icon_name',
                 icons: [{
@@ -188,7 +188,7 @@
             $('#menu_parent_id').combotreegrid({
                 method: 'get',
                 width: "100%",
-                url: `{{ url("$module/ajax/treegrid") }}`,
+                url: `{{ url("$url/ajax/treegrid") }}`,
                 idField: 'id',
                 nowrap: false,
                 singleSelect: true,

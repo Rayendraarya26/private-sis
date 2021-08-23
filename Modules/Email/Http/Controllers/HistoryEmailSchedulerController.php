@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class HistoryEmailSchedulerController extends Controller
 {
+    public string $module = self::class;
     private string $url = 'email/history/scheduler';
 
     public function index()
     {
-        return view("email::outbox_scheduler.index")->with(['url' => $this->url]);;
+        return view("email::outbox_scheduler.index")->with(['url' => $this->url, 'module' => $this->module]);
     }
 
     public function previewEmail(Request $request)

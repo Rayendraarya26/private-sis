@@ -17,18 +17,19 @@ class ManageGroupController extends Controller
 {
     use GroupTraits;
 
-    private $module = 'system/group';
+    private string $module = self::class;
+    private string $url = 'system/group';
 
     public function index()
     {
-        $parse = ['module' => $this->module];
+        $parse = ['url' => $this->url, 'module' => $this->module];
         return view('system::group.index')->with($parse);
     }
 
 
     public function create()
     {
-        $parse = ['module' => $this->module];
+        $parse = ['url' => $this->url, 'module' => $this->module];
         return view('system::group.create')->with($parse);
     }
 
@@ -69,13 +70,13 @@ class ManageGroupController extends Controller
 
     public function show($id)
     {
-        return redirect($this->module . "/$id/edit");
+        return redirect($this->url . "/$id/edit");
     }
 
     public function edit($id)
     {
         $data = SysGroup::findOrFail($id);
-        $parse = ['module' => $this->module, 'id' => $id, 'data' => $data];
+        $parse = ['url' => $this->url, 'id' => $id, 'data' => $data, 'module' => $this->module];
         return view('system::group.edit')->with($parse);
     }
 

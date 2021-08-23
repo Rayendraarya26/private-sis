@@ -16,25 +16,29 @@
                         <div id="ttData" style="width:100%;min-width: 310px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
-                                <div>
-                                    <a href="{{ url("$module/create") }}" class="btn btn-outline-success btn-xs">
-                                        <i class="fas fa-plus"></i> Create
-                                    </a>
-                                </div>
-                                &nbsp;&nbsp;
-                                <div class="datagrid-btn-separator"></div>
-                                &nbsp;
-                                <div>
-                                    <button class="btn btn-outline-danger btn-xs" onclick="banned('yes')">
-                                        <i class="fas fa-ban"></i> Banned
-                                    </button>
-                                </div>
-                                &nbsp;
-                                <div>
-                                    <button class="btn btn-outline-danger btn-xs" onclick="banned('no')">
-                                        <i class="fas fa-check"></i> Unbanned
-                                    </button>
-                                </div>
+                                @if(authorized("{$module}@create"))
+                                    <div>
+                                        <a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
+                                            <i class="fas fa-plus"></i> Create
+                                        </a>
+                                    </div>
+                                @endif
+                                &nbsp;&nbsp;&nbsp;
+                                @if(authorized("{$module}@ajaxBanned"))
+                                    <div class="datagrid-btn-separator"></div>
+
+                                    <div>
+                                        <button class="btn btn-outline-danger btn-xs" onclick="banned('yes')">
+                                            <i class="fas fa-ban"></i> Banned
+                                        </button>
+                                    </div>
+                                    &nbsp;
+                                    <div>
+                                        <button class="btn btn-outline-danger btn-xs" onclick="banned('no')">
+                                            <i class="fas fa-check"></i> Unbanned
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -50,7 +54,7 @@
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 250,
-                url: `{{ url("$module/ajax/datagrid") }}`,
+                url: `{{ url("$url/ajax/datagrid") }}`,
                 rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
@@ -66,12 +70,20 @@
                     {
                         field: 'action', title: 'Aksi', sortable: false, width: 105, align: 'center',
                         formatter: function (value, row) {
+                            let dom = `dropdownMenu_${row.user_id}`;
+                            let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url") }}/${row.user_id}/edit'">Edit</div>`;
+                            let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="remove(${row.user_id}, '${row.user_email}')">Delete</div>`;
+
                             return `
-                            <a class="btn btn-primary btn-xs" href="{{ url("$module") }}/${row.user_id}/edit">Edit</a>
-                            <button class="btn btn-danger btn-xs"
-                                    onclick="remove(${row.user_id}, '${row.user_email}')">Delete
-                            </button>
-                        `;
+                            <div>
+                                <button class="btn-action btn-info btn-block" data-index="${row.user_id}" title="Aksi">
+                                    <i class="fa fa-setting"></i> Aksi
+                                </button>
+                                <div id="${dom}" style="width:150px; display: none;">
+                                    @if(authorized("{$module}@edit")) ${btnEdit} @endif
+                            @if(authorized("{$module}@destroy")) ${btnDelete} @endif
+                            </div>
+                        </div>`;
                         }
                     },
                 ]],
@@ -90,6 +102,13 @@
                     {field: 'user_last_login', title: 'Tgl Login', width: 200, sortable: true},
                     {field: 'user_created_at', title: 'Tgl Daftar', width: 200, sortable: true},
                 ]],
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].user_id
+                        });
+                    });
+                },
             });
             dg.datagrid(
                 'enableFilter', [
@@ -148,7 +167,7 @@
             let agree = confirm(`Anda yakin untuk menghapus ${nama}`);
             if (agree) {
                 $.ajax({
-                    url: `{{ url("$module") }}/${id}`,
+                    url: `{{ url("$url") }}/${id}`,
                     type: 'DELETE',
                     success: function (response) {
                         console.log(response)
@@ -161,7 +180,7 @@
             }
         }
 
-
+        @if(authorized("{$module}@ajaxBanned"))
         function banned(status) {
             let rows = $('#ttData').datagrid('getSelections');
             if (rows.length > 0) {
@@ -173,7 +192,7 @@
                     });
                     let formData = {ids: dataId, status};
                     $.ajax({
-                        url: `{{ url("$module/ajax/banned") }}`,
+                        url: `{{ url("$url/ajax/banned") }}`,
                         data: formData,
                         type: 'POST',
                         success: function (response) {
@@ -187,5 +206,6 @@
                 }
             }
         }
+        @endif
     </script>
 @endpush

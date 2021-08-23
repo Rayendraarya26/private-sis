@@ -10,13 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class HistoryEmailSystemController extends Controller
 {
-
-
+    public string $module = self::class;
     private string $url = 'email/history/system';
 
     public function index()
     {
-        return view("email::outbox_system.index")->with(['url' => $this->url]);
+        return view("email::outbox_system.index")->with(['url' => $this->url, 'module' => $this->module]);
     }
 
     public function previewEmail(Request $request)

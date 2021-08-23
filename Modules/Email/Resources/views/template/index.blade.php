@@ -15,11 +15,13 @@
                     <div class="dt-card__body">
                         <div id="ttData" style="width:100%; min-width: 310px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 5px">
+                            @if(authorized("{$module}@create"))
                             <div>
                                 <a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
                                     <i class="fas fa-plus"></i> Create
                                 </a>
                             </div>
+                            @endif
                             &nbsp;&nbsp;
                         </div>
                     </div>
@@ -83,7 +85,7 @@
                         title: "Aksi",
                         width: 80,
                         align: 'center',
-                        formatter: function (val, row, index) {
+                        formatter: function (val, row) {
                             let dom = `dropdownMenu_${row.template_id}`;
                             let btnPreview = `<div data-options="iconCls:'fad fa-search'" onclick="preview(${row.template_id})">Preview</div>`;
                             let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.template_uuid}'">Edit</div>`;
@@ -91,14 +93,15 @@
 
                             return `
                                 <div>
-                                    <button class="btn-action btn-info" data-index="${index}" title="Aksi">
+                                    <button class="btn-action btn-info" data-index="${row.template_id}" title="Aksi">
                                         <i class="fa fa-setting"></i> Aksi
                                     </button>
                                     <div id="${dom}" style="width:150px; display: none;">
-                                        ${btnPreview}
-                                        ${btnEdit}
+                                        @if(authorized("{$module}@previewEmail")) ${btnPreview} @endif
+                                        @if(authorized("{$module}@edit")) ${btnEdit} @endif
+
                                         <div class="menu-sep"></div>
-                                        ${btnDelete}
+                                        @if(authorized("{$module}@destroy")) ${btnDelete} @endif
                                     </div>
                                 </div>`;
 
@@ -135,6 +138,8 @@
         });
 
         function preview(templateId) {
+            $("#preview-title").html("Loading...")
+            $("#preview-content").html("Sedang memuat data email...")
             $.get(`{{url("$url/preview")}}?template_id=${templateId}`)
                 .then(response => {
                     console.log(response);

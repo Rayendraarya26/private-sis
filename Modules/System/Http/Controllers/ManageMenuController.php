@@ -15,19 +15,20 @@ class ManageMenuController extends Controller
 {
     use MenuTraits;
 
-    private $module = 'system/menu';
+    private string $module = self::class;
+    private string $url = 'system/menu';
 
 
     public function index()
     {
-        $parse = ['module' => $this->module];
+        $parse = ['url' => $this->url, 'module' => $this->module];
         return view('system::menu.index')->with($parse);
     }
 
 
     public function create()
     {
-        $parse = ['module' => $this->module];
+        $parse = ['url' => $this->url, 'module' => $this->module];
         return view('system::menu.create')->with($parse);
     }
 
@@ -50,13 +51,13 @@ class ManageMenuController extends Controller
 
     public function show($id)
     {
-        return redirect($this->module . "/$id/edit");
+        return redirect($this->url . "/$id/edit");
     }
 
     public function edit($id)
     {
         $data = SysMenu::findOrFail($id);
-        $parse = ['module' => $this->module, 'id' => $id, 'data' => $data];
+        $parse = ['url' => $this->url, 'id' => $id, 'data' => $data, 'module' => $this->module];
         return view('system::menu.edit')->with($parse);
     }
 

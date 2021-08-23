@@ -12,28 +12,27 @@ use Illuminate\Routing\Controller;
 class ManageMenuActionController extends Controller
 {
 
-
-    private $module;
-    private $dataMenu;
+    private string $module = self::class;
+    private string $url;
 
     public function __construct(Request $request)
     {
         $menu_id = $request->route('id');
         if (empty($menu_id)) return redirect()->back();
         $this->dataMenu = SysMenu::findOrFail($menu_id);
-        $this->module = "system/menu/" . $menu_id . "/menu-action";
+        $this->url = "system/menu/" . $menu_id . "/menu-action";
     }
 
 
     public function index()
     {
-        $parse = ['module' => $this->module, 'menu' => $this->dataMenu];
+        $parse = ['url' => $this->url, 'module' => $this->module, 'menu' => $this->dataMenu];
         return view('system::menu_action.index')->with($parse);
     }
 
     public function create()
     {
-        return redirect($this->module);
+        return redirect($this->url);
     }
 
 

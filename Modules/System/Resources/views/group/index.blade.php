@@ -16,25 +16,29 @@
                         <div id="ttData" style="width:100%; min-width: 310px"></div>
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
-                                <div>
-                                    <a href="{{ url("$module/create") }}" class="btn btn-outline-success btn-xs">
-                                        <i class="fas fa-plus"></i> Create
-                                    </a>
-                                </div>
+                                @if(authorized("{$module}@create"))
+                                    <div>
+                                        <a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
+                                            <i class="fas fa-plus"></i> Create
+                                        </a>
+                                    </div>
+                                @endif
                                 &nbsp;&nbsp;
-                                <div class="datagrid-btn-separator"></div>
-                                &nbsp;
-                                <div>
-                                    <button class="btn btn-outline-danger btn-xs" onclick="active('yes')">
-                                        <i class="fas fa-check"></i> Active
-                                    </button>
-                                </div>
-                                &nbsp;
-                                <div>
-                                    <button class="btn btn-outline-danger btn-xs" onclick="active('no')">
-                                        <i class="fas fa-ban"></i> Non Aktif
-                                    </button>
-                                </div>
+                                @if(authorized("{$module}@ajaxActive"))
+                                    <div class="datagrid-btn-separator"></div>
+                                    &nbsp;
+                                    <div>
+                                        <button class="btn btn-outline-danger btn-xs" onclick="active('yes')">
+                                            <i class="fas fa-check"></i> Active
+                                        </button>
+                                    </div>
+                                    &nbsp;
+                                    <div>
+                                        <button class="btn btn-outline-danger btn-xs" onclick="active('no')">
+                                            <i class="fas fa-ban"></i> Non Aktif
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -50,7 +54,7 @@
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 250,
-                url: `{{ url("$module/ajax/datagrid") }}`,
+                url: `{{ url("$url/ajax/datagrid") }}`,
                 rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
@@ -66,10 +70,20 @@
                     {
                         field: 'action', title: 'Aksi', sortable: false, width: 105, align: 'center',
                         formatter: function (value, row) {
-                            return `
-                            <a class="btn btn-primary btn-xs" href="{{ url("$module") }}/${row.group_id}/edit">Edit</a>
-                            <button class="btn btn-danger btn-xs" onclick="remove(${row.group_id}, '${row.group_name}')">Delete</button>
-                        `;
+                            let btnEdit = `<a class="btn btn-primary btn-xs" href="{{ url("$url") }}/${row.group_id}/edit">Edit</a>`;
+                            let btnDelete = `<button class="btn btn-danger btn-xs" onclick="remove(${row.group_id}, '${row.group_name}')">Delete</button>`
+
+                            let result = "";
+
+                            @if(authorized("{$module}@edit"))
+                                result += btnEdit + "&nbsp;"
+                            @endif
+
+                                @if(authorized("{$module}@destroy"))
+                                result += btnDelete
+                            @endif
+
+                                return result
                         }
                     },
                 ]],
@@ -133,21 +147,34 @@
         });
 
         function remove(id, nama) {
-            console.log(nama);
-            let agree = confirm(`Anda yakin untuk menghapus grup ${nama}`);
-            if (agree) {
-                $.ajax({
-                    url: `{{ url("$module") }}/${id}`,
-                    type: 'DELETE',
-                    success: function (response) {
-                        console.log(response)
-                        $('#ttData').datagrid('reload');
-                    },
-                    fail: function (error) {
-                        console.log(error)
-                    }
-                });
-            }
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Menghapus '${nama}' ?`,
+                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: `{{ url("$url") }}/${id}`,
+                        type: 'DELETE',
+                        success: function (response) {
+                            $('#ttData').datagrid('reload');
+                        },
+                        fail: function (error) {
+                            console.log(error)
+                        }
+                    });
+                }
+            });
         }
 
 
@@ -162,7 +189,7 @@
                     });
                     let formData = {ids: dataId, status};
                     $.ajax({
-                        url: `{{ url("$module/ajax/active") }}`,
+                        url: `{{ url("$url/ajax/active") }}`,
                         data: formData,
                         type: 'POST',
                         success: function (response) {

@@ -15,20 +15,19 @@ use Modules\Email\Http\Traits\EmailTrait;
 
 class TemplateEmailController extends Controller
 {
-
     use EmailTrait;
 
+    public string $module = self::class;
     private string $url = 'email/template';
 
     public function index()
     {
-        return view("email::template.index")->with(['url' => $this->url]);
+        return view("email::template.index")->with(['url' => $this->url, 'module' => $this->module]);
     }
-
 
     public function create()
     {
-        return view('email::template.create')->with(['url' => $this->url, 'email_parser' => $this->commonParser()]);
+        return view('email::template.create')->with(['url' => $this->url, 'module' => $this->module, 'email_parser' => $this->commonParser()]);
     }
 
 
@@ -49,7 +48,7 @@ class TemplateEmailController extends Controller
     public function edit($uuid)
     {
         $data = MasterEmailTemplate::where("template_uuid", $uuid)->firstOrFail();
-        return view('email::template.edit')->with(['url' => $this->url, 'data' => $data, 'email_parser' => $this->commonParser()]);
+        return view('email::template.edit')->with(['url' => $this->url, 'module' => $this->module, 'data' => $data, 'email_parser' => $this->commonParser()]);
     }
 
     public function update(Request $request)

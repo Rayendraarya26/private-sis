@@ -56,24 +56,26 @@
                         <div id="toolbar" style="padding: 10px 0 10px 20px">
                             <div class="row">
                                 <div>
-                                    <a href="{{ url("$module/create") }}" class="btn btn-outline-success btn-xs">
+                                    <a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
                                         <i class="fas fa-plus"></i> Tambah
                                     </a>
                                 </div>
                                 &nbsp;&nbsp;
                                 <div class="datagrid-btn-separator"></div>
                                 &nbsp;
-                                <div>
-                                    <button class="btn btn-outline-danger btn-xs" onclick="active('yes')">
-                                        <i class="fas fa-check"></i> Aktif
-                                    </button>
-                                </div>
-                                &nbsp;
-                                <div>
-                                    <button class="btn btn-outline-danger btn-xs" onclick="active('no')">
-                                        <i class="fas fa-ban"></i> Non Aktif
-                                    </button>
-                                </div>
+                                @if(authorized("{$module}@ajaxActive"))
+                                    <div>
+                                        <button class="btn btn-outline-danger btn-xs" onclick="active('yes')">
+                                            <i class="fas fa-check"></i> Aktif
+                                        </button>
+                                    </div>
+                                    &nbsp;
+                                    <div>
+                                        <button class="btn btn-outline-danger btn-xs" onclick="active('no')">
+                                            <i class="fas fa-ban"></i> Non Aktif
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -89,7 +91,7 @@
             $('#treegrid').treegrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 250,
-                url: `{{ url("$module/ajax/treegrid") }}`,
+                url: `{{ url("$url/ajax/treegrid") }}`,
                 idField: 'id',
                 nowrap: false,
                 singleSelect: false,
@@ -114,10 +116,21 @@
                     {
                         field: 'action', title: 'Aksi', width: 200,
                         formatter: function (val, row) {
-                            let btn_edit = `<a href="{{ url("$module") }}/${row.id}/edit" class="btn btn-xs btn-success">Edit</a>`;
-                            let btn_action = `<a href="{{url("$module")}}/${row.id}/menu-action" class="btn btn-xs btn-primary">Menu Action</a>`;
+                            let btn_edit = `<a href="{{ url("$url") }}/${row.id}/edit" class="btn btn-xs btn-success">Edit</a>`;
+                            let btn_action = `<a href="{{url("$url")}}/${row.id}/menu-action" class="btn btn-xs btn-primary">Menu Action</a>`;
                             let btn_delete = `<button class="btn btn-xs btn-danger" onclick="remove(${row.id}, '${row.menu_name}')">Delete</button>`;
-                            return btn_edit + "&nbsp;" + btn_delete + "&nbsp;" + btn_action;
+                            let result = "";
+
+                            @if(authorized("{$module}@edit"))
+                                result += btn_edit + "&nbsp;"
+                            @endif
+
+                                @if(authorized("{$module}@destroy"))
+                                result += btn_delete + "&nbsp;"
+                            @endif
+
+                                result += btn_action;
+                            return result
                         }
                     }
                 ]]
@@ -129,7 +142,7 @@
             let agree = confirm(`Anda yakin akan menghapus menu ${nama}`);
             if (agree) {
                 $.ajax({
-                    url: `{{ url("$module") }}/${id}`,
+                    url: `{{ url("$url") }}/${id}`,
                     type: 'DELETE',
                     success: function () {
                         $('#treegrid').treegrid('reload');
@@ -153,7 +166,7 @@
                     });
                     let formData = {ids: dataId, status};
                     $.ajax({
-                        url: `{{ url("$module/ajax/active") }}`,
+                        url: `{{ url("$url/ajax/active") }}`,
                         data: formData,
                         type: 'POST',
                         success: function (response) {

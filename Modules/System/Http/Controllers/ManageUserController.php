@@ -16,19 +16,19 @@ use Intervention\Image\Facades\Image;
 class ManageUserController extends Controller
 {
 
-
-    private $module = 'system/user';
+    private string $module = self::class;
+    private string $url = 'system/user';
 
     public function index()
     {
-        $parse = ['module' => $this->module];
+        $parse = ['url' => $this->url, 'module' => $this->module];
         return view('system::user.index')->with($parse);
     }
 
     public function create()
     {
         $groups = SysGroup::all();
-        $parse = ['module' => $this->module, 'groups' => $groups];
+        $parse = ['url' => $this->url, 'groups' => $groups, 'module' => $this->module];
         return view('system::user.create')->with($parse);
     }
 
@@ -83,10 +83,8 @@ class ManageUserController extends Controller
     public function show($id)
     {
         $defaultGroup = auth()->user()->user_group()->where("ug_is_default", "yes")->first();
-        return redirect($this->module . "/$id/edit")
-            ->with([
-                'default_group' => $defaultGroup
-            ]);
+        return redirect($this->url . "/$id/edit")
+            ->with(['default_group' => $defaultGroup, 'module' => $this->module]);
     }
 
     public function edit($id)
@@ -96,12 +94,13 @@ class ManageUserController extends Controller
         $defaultGroup = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
         $selectedGroup = $data->user_group->toArray();
         $parse = [
-            'module' => $this->module,
+            'url' => $this->url,
             'id' => $id,
             'data' => $data,
             'groups' => $groups,
             'default_group' => $defaultGroup,
-            'selected_group' => $selectedGroup
+            'selected_group' => $selectedGroup,
+            'module' => $this->module
         ];
         return view('system::user.edit')->with($parse);
     }

@@ -22,7 +22,7 @@
                             <div class="row">
                                 <div>
                                     <button onclick="addrow()" class="btn btn-outline-success btn-xs">
-                                        <i class="ti-plus"></i> Tambah
+                                        <i class="fas fa-plus"></i> Tambah
                                     </button>
                                 </div>
                             </div>
@@ -40,9 +40,9 @@
             let dg = $('#dgTable').edatagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 350,
-                url: `{{ url("$module/ajax/datagrid") }}`,
-                saveUrl: `{{url("$module")}}`,
-                updateUrl: `{{url("$module/update")}}`,
+                url: `{{ url("$url/ajax/datagrid") }}`,
+                saveUrl: `{{url("$url")}}`,
+                updateUrl: `{{url("$url/update")}}`,
                 rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
@@ -54,20 +54,27 @@
                 clientPaging: false,
                 columns: [[
                     {
-                        field: 'action', title: 'Aksi', align: 'center', sortable: false, width: 150,
+                        field: 'action', title: 'Aksi', align: 'center', sortable: false, width: 100,
                         formatter: function (value, row) {
-                            let cancel = `<button class="btn btn-xs btn-danger" onclick="cancelrow(this)">Cancel</button>`;
-                            let save = `<button class="btn btn-xs btn-success" onclick="saverow(this)">Simpan</button>`;
-                            let edit = `<button class="btn btn-xs btn-primary" onclick="editrow(this)">Ubah</button>`;
-                            let del = `<button class="btn btn-danger btn-xs" onclick="remove(${row.action_id}, '${row.action_name}')">Hapus</button>`;
+                            let cancel = `<button class="btn btn-xs btn-danger btn-block" onclick="cancelrow(this)"><i class="fad fa-cancel"></i> Cancel</button>`;
+                            let save = `<button class="btn btn-xs btn-success btn-block" onclick="saverow(this)"><i class="fad fa-save"></i> Simpan</button>`;
+                            let edit = `<button class="btn btn-xs btn-primary btn-block" onclick="editrow(this)"><i class="fad fa-edit"></i> Ubah</button>`;
+                            let del = `<button class="btn btn-xs btn-danger btn-block" onclick="remove(${row.action_id}, '${row.action_name}')"><i class="fad fa-trash"></i> Hapus</button>`;
 
+                            let output = "";
                             if (row.editing) {
-                                return save + "&nbsp;" + cancel;
+                                output += save + cancel;
                             } else {
-                                return edit + "&nbsp;" + del;
+                                @if(authorized("{$module}@update"))
+                                    output += edit
+                                @endif
+
+                                    @if(authorized("{$module}@destroy"))
+                                    output += del
+                                @endif
                             }
 
-
+                            return output
                         }
                     },
                     {
@@ -155,21 +162,35 @@
         }
 
         function remove(id, nama) {
-            console.log(nama);
-            let agree = confirm(`@lang("system::menu_action.confirm_delete")`);
-            if (agree) {
-                $.ajax({
-                    url: `{{ url("$module") }}/${id}`,
-                    type: 'DELETE',
-                    success: function (response) {
-                        console.log(response)
-                        $('#dgTable').edatagrid('reload');
-                    },
-                    fail: function (error) {
-                        console.log(error)
-                    }
-                });
-            }
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Menghapus '${nama}' ?`,
+                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: `{{ url("$url") }}/${id}`,
+                        type: 'DELETE',
+                        success: function (response) {
+                            console.log(response)
+                            $('#dgTable').edatagrid('reload');
+                        },
+                        fail: function (error) {
+                            console.log(error)
+                        }
+                    });
+                }
+            });
         }
 
 
@@ -184,7 +205,7 @@
                     });
                     let formData = {ids: dataId, status};
                     $.ajax({
-                        url: `{{ url("$module/ajax/active") }}`,
+                        url: `{{ url("$url/ajax/active") }}`,
                         data: formData,
                         type: 'POST',
                         success: function (response) {

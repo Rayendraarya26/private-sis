@@ -24,6 +24,7 @@ trait GroupTraits{
                             'menu_id' => $element->menu_id . '-' . $action->action_id,
                             'menu_parent_id' => $element->menu_parent_id,
                             'menu_name' => $action->action_name,
+                            'menu_controller' => $action->action_controller,
                             'action_id' => $action->action_id,
                         ];
                         if ($groupId != 0) {
