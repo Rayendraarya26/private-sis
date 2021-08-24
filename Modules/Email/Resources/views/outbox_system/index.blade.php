@@ -74,7 +74,9 @@
                 frozenColumns: [[
                     {
                         field: 'action', title: "Aksi", width: 100, formatter: function (val, row) {
-                            return `<button class="btn btn-warning btn-xs btn-block" onclick="preview(${row.outbox_id})">Preview</button>`;
+                            @if(authorized("$module/previewEmail"))
+                                return `<button class="btn btn-warning btn-xs btn-block" onclick="preview(${row.outbox_id})">Preview</button>`;
+                            @endif
                         }
                     }
                 ]],
