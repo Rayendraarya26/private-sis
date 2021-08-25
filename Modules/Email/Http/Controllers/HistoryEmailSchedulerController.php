@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class HistoryEmailSchedulerController extends Controller
 {
-    public string $module = self::class;
-    private string $url = 'email/history/scheduler';
+    public $module = self::class;
+    private $url = 'email/history/scheduler';
 
     public function index()
     {

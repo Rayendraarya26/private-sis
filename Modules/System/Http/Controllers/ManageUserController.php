@@ -15,8 +15,8 @@ use Intervention\Image\Facades\Image;
 
 class ManageUserController extends Controller
 {
-    public string $module = self::class;
-    private string $url = 'system/user';
+    public $module = self::class;
+    private $url = 'system/user';
 
     public function index()
     {

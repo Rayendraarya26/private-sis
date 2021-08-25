@@ -17,8 +17,8 @@ class TemplateEmailController extends Controller
 {
     use EmailTrait;
 
-    public string $module = self::class;
-    private string $url = 'email/template';
+    public $module = self::class;
+    private $url = 'email/template';
 
     public function index()
     {

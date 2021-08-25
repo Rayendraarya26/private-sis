@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class HistoryEmailSystemController extends Controller
 {
-    public string $module = self::class;
-    private string $url = 'email/history/system';
+    public $module = self::class;
+    private $url = 'email/history/system';
 
     public function index()
     {
