@@ -17,13 +17,14 @@ class MenuSeeder extends Seeder
         $moduleSystem = 'Modules\System\Http\Controllers';
         $moduleCertification = 'Modules\Certification\Http\Controllers';
         $moduleEmail = 'Modules\Email\Http\Controllers';
+        $moduleMaster = 'Modules\Master\Http\Controllers';
         $data_menu = [
             [
                 'name' => 'System',
                 'parent' => NULL,
                 'desc' => 'Management System',
                 'active' => 'yes',
-                'order' => '99',
+                'order' => 99999,
                 'icon' => 'fas fa-cog',
                 'action' => [
                     ['name' => 'index', 'controller' => '#'],
@@ -206,19 +207,34 @@ class MenuSeeder extends Seeder
                     ['name' => 'preview', 'controller' => $moduleEmail . '\HistoryEmailSchedulerController@previewEmail'],
                 ]
             ],
-            //[
-            //    'name' => 'Notification',
-            //    'parent' => NULL,
-            //    'desc' => 'Membaca notifikasi',
-            //    'active' => 'no',
-            //    'order' => '100',
-            //    'icon' => NULL,
-            //    'action' => [
-            //        ['name' => 'index', 'controller' => '/notification'],
-            //        ['name' => 'open', 'controller' => '/notification/open/{id}'],
-            //        ['name' => 'readAll', 'controller' => '/notification/mark-as-read'],
-            //    ]
-            //],
+            [
+                'name' => 'Master',
+                'parent' => NULL,
+                'desc' => 'Data Master',
+                'active' => 'yes',
+                'order' => '100',
+                'icon' => 'fas fa-asterisk',
+                'action' => [
+                    ['name' => 'index', 'controller' => '#'],
+                ]
+            ],
+            [
+                'name' => 'Badan Hukum',
+                'parent' => 14,
+                'desc' => 'Data badan hukum',
+                'active' => 'yes',
+                'order' => '100',
+                'icon' => 'fas fa-gavel',
+                'action' => [
+                    ['name' => 'index', 'controller' => $moduleMaster . '\BadanHukumController@index'],
+                    ['name' => 'ajax', 'controller' => $moduleMaster . '\BadanHukumController@ajax'],
+                    ['name' => 'create', 'controller' => $moduleMaster . '\BadanHukumController@create'],
+                    ['name' => 'store', 'controller' => $moduleMaster . '\BadanHukumController@store'],
+                    ['name' => 'edit', 'controller' => $moduleMaster . '\BadanHukumController@edit'],
+                    ['name' => 'update', 'controller' => $moduleMaster . '\BadanHukumController@update'],
+                    ['name' => 'destroy', 'controller' => $moduleMaster . '\BadanHukumController@destroy'],
+                ]
+            ],
             //[
             //    'name' => 'Account',
             //    'parent' => NULL,
