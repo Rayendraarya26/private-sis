@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
 
 namespace App\Models\BbkkpSis;
 
@@ -7,8 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class RefJenisDokPerusahaan
- *
+ * Class MasterJenisDokPerusahaan
+ * 
  * @property int $jenis_dok_perusahaan_id
  * @property string|null $jenis_dok_perusahaan_text
  * @property string|null $jenis_dok_perusahaan_deskripsi
@@ -17,9 +20,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class RefJenisDokPerusahaan extends Model
+class MasterJenisDokPerusahaan extends Model
 {
-	protected $table = 'ref_jenis_dok_perusahaan';
+	protected $table = 'master_jenis_dok_perusahaan';
 	protected $primaryKey = 'jenis_dok_perusahaan_id';
 
 	protected $fillable = [

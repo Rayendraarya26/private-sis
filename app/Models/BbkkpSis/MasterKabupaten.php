@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
 
 namespace App\Models\BbkkpSis;
 
@@ -8,22 +11,22 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class RefKabupaten
- *
+ * Class MasterKabupaten
+ * 
  * @property int $kab_id
  * @property int $prov_id
  * @property string $kab_nama
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @property RefProvinsi $ref_provinsi
- * @property Collection|RefKecamatan[] $ref_kecamatans
+ * 
+ * @property MasterProvinsi $master_provinsi
+ * @property Collection|MasterKecamatan[] $master_kecamatans
  *
  * @package App\Models\BbkkpSis
  */
-class RefKabupaten extends Model
+class MasterKabupaten extends Model
 {
-	protected $table = 'ref_kabupaten';
+	protected $table = 'master_kabupaten';
 	protected $primaryKey = 'kab_id';
 	public $incrementing = false;
 
@@ -37,13 +40,13 @@ class RefKabupaten extends Model
 		'kab_nama'
 	];
 
-	public function ref_provinsi()
+	public function master_provinsi()
 	{
-		return $this->belongsTo(RefProvinsi::class, 'prov_id');
+		return $this->belongsTo(MasterProvinsi::class, 'prov_id');
 	}
 
-	public function ref_kecamatans()
+	public function master_kecamatans()
 	{
-		return $this->hasMany(RefKecamatan::class, 'kab_id');
+		return $this->hasMany(MasterKecamatan::class, 'kab_id');
 	}
 }

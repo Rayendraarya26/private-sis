@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
 
 namespace App\Models\BbkkpSis;
 
@@ -7,8 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class RefBadanHukum
- *
+ * Class MasterBadanHukum
+ * 
  * @property int $badan_hukum_id
  * @property string|null $badan_hukum_nama
  * @property Carbon|null $created_at
@@ -16,9 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class RefBadanHukum extends Model
+class MasterBadanHukum extends Model
 {
-	protected $table = 'ref_badan_hukum';
+	protected $table = 'master_badan_hukum';
 	protected $primaryKey = 'badan_hukum_id';
 
 	protected $fillable = [

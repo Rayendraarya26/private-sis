@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
 
 namespace App\Models\BbkkpSis;
 
@@ -7,21 +10,21 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class RefKecamatan
- *
+ * Class MasterKecamatan
+ * 
  * @property int $kec_id
  * @property int $kab_id
  * @property string $kec_nama
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @property RefKabupaten $ref_kabupaten
+ * 
+ * @property MasterKabupaten $master_kabupaten
  *
  * @package App\Models\BbkkpSis
  */
-class RefKecamatan extends Model
+class MasterKecamatan extends Model
 {
-	protected $table = 'ref_kecamatan';
+	protected $table = 'master_kecamatan';
 	protected $primaryKey = 'kec_id';
 
 	protected $casts = [
@@ -33,8 +36,8 @@ class RefKecamatan extends Model
 		'kec_nama'
 	];
 
-	public function ref_kabupaten()
+	public function master_kabupaten()
 	{
-		return $this->belongsTo(RefKabupaten::class, 'kab_id');
+		return $this->belongsTo(MasterKabupaten::class, 'kab_id');
 	}
 }
