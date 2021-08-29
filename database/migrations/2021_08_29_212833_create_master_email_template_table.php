@@ -15,16 +15,13 @@ class CreateMasterEmailTemplateTable extends Migration
     {
         Schema::create('master_email_template', function (Blueprint $table) {
             $table->bigIncrements('template_id');
-            $table->string('template_uuid');
-            $table->string("template_code");
-            $table->string("template_desc")->nullable();
-            $table->string("template_mail_subject")->nullable();
-            $table->text("template_mail_body")->nullable();
+            $table->string('template_uuid')->unique();
+            $table->string('template_code')->unique();
+            $table->string('template_desc')->nullable();
+            $table->string('template_mail_subject')->nullable();
+            $table->text('template_mail_body')->nullable();
             $table->timestamp('template_created_at')->nullable()->useCurrent();
             $table->timestamp('template_updated_at')->nullable();
-
-            $table->unique(["template_uuid"]);
-            $table->unique(["template_code"]);
         });
     }
 

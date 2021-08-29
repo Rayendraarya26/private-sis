@@ -14,7 +14,6 @@ class CreateSysJobsTable extends Migration
     public function up()
     {
         Schema::create('sys_jobs', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('queue')->index();
             $table->longText('payload');

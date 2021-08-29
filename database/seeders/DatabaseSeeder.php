@@ -19,5 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->call(NotifSeeder::class);
         $this->call(IconSeeder::class);
         $this->call(MasterEmailSeeder::class);
+        $this->call(MasterProvinceSeeder::class);
+        $this->call(MasterRegencySeeder::class);
+        $this->call(MasterDistrictSeeder::class);
+        $this->call(MasterVillageSeeder::class);
     }
 }
