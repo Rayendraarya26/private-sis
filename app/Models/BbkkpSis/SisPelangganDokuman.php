@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $cust_id
  * @property int|null $jenis_dok_perusahaan_id
  * @property string|null $cust_dok_deskripsi
+ * @property string|null $cust_dok_filepath
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
@@ -37,7 +38,8 @@ class SisPelangganDokuman extends Model
 	protected $fillable = [
 		'cust_id',
 		'jenis_dok_perusahaan_id',
-		'cust_dok_deskripsi'
+		'cust_dok_deskripsi',
+		'cust_dok_filepath'
 	];
 
 	public function master_jenis_dok_perusahaan()

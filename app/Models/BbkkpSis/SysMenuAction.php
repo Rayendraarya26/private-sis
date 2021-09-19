@@ -2,8 +2,24 @@
 
 namespace App\Models\BbkkpSis;;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class SysMenuAction
+ *
+ * @property int $action_id
+ * @property int $action_menu_id
+ * @property string $action_name
+ * @property string $action_controller
+ * @property Carbon|null $action_created_at
+ * @property Carbon|null $action_updated_at
+ *
+ * @property SysMenu $menu
+ *
+ * @package App\Models\BbkkpSis
+ */
 class SysMenuAction extends Model
 {
     protected $table = 'sys_menu_action';

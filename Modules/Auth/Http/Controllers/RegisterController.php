@@ -3,6 +3,7 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Structs\EmailStruct;
+use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
@@ -54,6 +55,11 @@ class RegisterController extends Controller
             $ug->ug_is_default = "yes";
             $ug->ug_created_at = Carbon::now();
             $ug->save();
+
+            $sisPelanggan = new SisPelanggan();
+            $sisPelanggan->user_id = $user->user_id;
+            $sisPelanggan->cust_email = $user->user_email;
+            $sisPelanggan->save();
             DB::commit();
 
 

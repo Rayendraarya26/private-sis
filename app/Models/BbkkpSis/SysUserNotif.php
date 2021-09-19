@@ -2,8 +2,25 @@
 
 namespace App\Models\BbkkpSis;;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class SysUserNotif
+ *
+ * @property int $notif_id
+ * @property int|null $notif_user_id
+ * @property string|null $notif_title
+ * @property string|null $notif_content
+ * @property string|null $notif_link
+ * @property string|null $notif_is_read
+ * @property Carbon|null $notif_created_at
+ * @property Carbon|null $notif_updated_at
+ *
+ * @property SysUser|null $sys_user
+ *
+ * @package App\Models\BbkkpSis
+ */
 class SysUserNotif extends Model
 {
     protected $table = 'sys_user_notif';
