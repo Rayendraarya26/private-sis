@@ -16,3 +16,4 @@ yarn-error.log
 doc
 *.lock
 .DS_Store
+public/package-lock.json
