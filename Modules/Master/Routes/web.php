@@ -9,8 +9,15 @@ use Modules\Master\Http\Controllers\KabupatenController;
 use Modules\Master\Http\Controllers\KecamatanController;
 use Modules\Master\Http\Controllers\JenisDokPerusahaanController;
 use Modules\Master\Http\Controllers\JenisPerusahaanController;
+use Modules\Master\Http\Controllers\SisDokPerusahaanController;
+use Modules\Master\Http\Controllers\SisKlausulSertifikasiController;
+use Modules\Master\Http\Controllers\SisKlausulTahap1Controller;
+use Modules\Master\Http\Controllers\SisKodeEaController;
+use Modules\Master\Http\Controllers\SisKodeNaceController;
+use Modules\Master\Http\Controllers\SisKomoditiController;
+use Modules\Master\Http\Controllers\SisSertifikasiController;
 
-Route::prefix('master')->group(function () {
+Route::prefix('master')->middleware(['auth', 'restrict'])->group(function () {
 
     Route::prefix("provinsi")->group(function () {
         Route::get('/', [ProvinsiController::class, 'index']);
@@ -100,5 +107,30 @@ Route::prefix('master')->group(function () {
         Route::get('/edit/{jenisPerusahaanId}', [JenisPerusahaanController::class, 'edit']);
         Route::post('/update', [JenisPerusahaanController::class, 'update']);
         Route::delete('/delete/{jenisPerusahaanId}', [JenisPerusahaanController::class, 'destroy']);
+    });
+
+    // ======================================== SIS ========================================
+    Route::prefix("sis")->group(function () {
+        Route::prefix("dok-perusahaan")->group(function () {
+            Route::get("/", [SisDokPerusahaanController::class, 'index']);
+        });
+        Route::prefix("klausul-sertifikasi")->group(function () {
+            Route::get("/", [SisKlausulSertifikasiController::class, 'index']);
+        });
+        Route::prefix("klausul-tahap-1")->group(function () {
+            Route::get("/", [SisKlausulTahap1Controller::class, 'index']);
+        });
+        Route::prefix("kode-ea")->group(function () {
+            Route::get("/", [SisKodeEaController::class, 'index']);
+        });
+        Route::prefix("kode-nace")->group(function () {
+            Route::get("/", [SisKodeNaceController::class, 'index']);
+        });
+        Route::prefix("komoditi")->group(function () {
+            Route::get("/", [SisKomoditiController::class, 'index']);
+        });
+        Route::prefix("sertifikasi")->group(function () {
+            Route::get("/", [SisSertifikasiController::class, 'index']);
+        });
     });
 });
