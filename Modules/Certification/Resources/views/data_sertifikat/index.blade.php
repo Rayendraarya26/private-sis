@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Verifikasi Sertifikasi')
+@section('title', 'Data Serfikat')
 
 @section('content')
 
