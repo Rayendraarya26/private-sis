@@ -90,7 +90,7 @@ class TemplateEmailController extends Controller
 
         $response = [
             'template_mail_subject' => $data->template_mail_subject,
-            'template_mail_body' => $data->template_mail_body,
+            'template_mail_body'    => $data->template_mail_body,
         ];
         return responseJSON(200, $response, "data ditemukan");
     }

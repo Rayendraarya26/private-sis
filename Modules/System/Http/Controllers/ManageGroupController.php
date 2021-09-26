@@ -8,6 +8,7 @@ use App\Models\BbkkpSis\SysGroupPermission;
 use App\Models\BbkkpSis\SysMenu;
 use App\Models\BbkkpSis\SysMenuAction;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -37,8 +38,8 @@ class ManageGroupController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'group_name' => 'required|unique:App\Models\BbkkpSis\SysGroup,group_name',
-            'group_desc' => 'required',
+            'group_name'      => 'required|unique:App\Models\BbkkpSis\SysGroup,group_name',
+            'group_desc'      => 'required',
             'group_is_active' => 'required',
         ]);
 
@@ -58,7 +59,7 @@ class ManageGroupController extends Controller
                             $action = SysMenuAction::where("action_menu_id", $x[0])->first();
                             SysGroupPermission::create(['group_id' => $insert->group_id, 'action_id' => $action->action_id]);
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
 
                     }
                 }
@@ -83,8 +84,8 @@ class ManageGroupController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'group_name' => 'required',
-            'group_desc' => 'required',
+            'group_name'      => 'required',
+            'group_desc'      => 'required',
             'group_is_active' => 'required',
         ]);
 
@@ -111,7 +112,7 @@ class ManageGroupController extends Controller
                             $action = SysMenuAction::where("action_menu_id", $x[0])->first();
                             SysGroupPermission::create(['group_id' => $data->group_id, 'action_id' => $action->action_id]);
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
 
                     }
                 }

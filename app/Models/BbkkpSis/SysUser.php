@@ -93,4 +93,34 @@ class SysUser extends Authenticatable
     {
         return $this->hasMany(SysUserGroup::class, "ug_user_id", "user_id");
     }
+
+    public function master_pegawais()
+    {
+        return $this->hasMany(MasterPegawai::class, 'user_id');
+    }
+
+    public function sis_audit_lks()
+    {
+        return $this->hasMany(SisAuditLk::class, 'user_id');
+    }
+
+    public function sis_pelanggan()
+    {
+        return $this->hasOne(SisPelanggan::class, 'user_id');
+    }
+
+    public function sis_permohonans()
+    {
+        return $this->hasMany(SisPermohonan::class, 'user_id');
+    }
+
+    public function sys_user_fbtokens()
+    {
+        return $this->hasMany(SysUserFbtoken::class, 'fbtoken_user_id');
+    }
+
+    public function sys_user_notifs()
+    {
+        return $this->hasMany(SysUserNotif::class, 'notif_user_id');
+    }
 }

@@ -63,7 +63,7 @@ class ForgetPasswordController extends Controller
     public function handleNewPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|min:4|confirmed'
         ]);
 

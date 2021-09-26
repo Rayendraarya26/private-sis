@@ -35,16 +35,16 @@ class ManageUserController extends Controller
     {
         $request->validate([
             'fullname' => 'required|string',
-            'email' => 'required|email|min:4|unique:App\Models\BbkkpSis\SysUser,user_email',
+            'email'    => 'required|email|min:4|unique:App\Models\BbkkpSis\SysUser,user_email',
             'password' => 'required|min:4|confirmed',
-            'foto' => 'sometimes|max:500|mimes:jpeg,jpg,png'
+            'foto'     => 'sometimes|max:500|mimes:jpeg,jpg,png'
         ]);
 
         $dataInsert = [
-            'user_fullname' => $request->fullname,
-            'user_email' => $request->email,
-            'user_password' => bcrypt($request->password),
-            'user_token' => NULL,
+            'user_fullname'  => $request->fullname,
+            'user_email'     => $request->email,
+            'user_password'  => bcrypt($request->password),
+            'user_token'     => NULL,
             'user_is_active' => 'yes',
         ];
 
@@ -68,8 +68,8 @@ class ManageUserController extends Controller
             // Reinsert User Group
             foreach ($request->group as $group) {
                 SysUserGroup::create([
-                    'ug_user_id' => $insert->user_id,
-                    'ug_group_id' => $group,
+                    'ug_user_id'    => $insert->user_id,
+                    'ug_group_id'   => $group,
                     'ug_is_default' => $request->group_default == $group ? 'yes' : 'no'
                 ]);
             }
@@ -93,13 +93,13 @@ class ManageUserController extends Controller
         $defaultGroup = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
         $selectedGroup = $data->user_group->toArray();
         $parse = [
-            'url' => $this->url,
-            'id' => $id,
-            'data' => $data,
-            'groups' => $groups,
-            'default_group' => $defaultGroup,
+            'url'            => $this->url,
+            'id'             => $id,
+            'data'           => $data,
+            'groups'         => $groups,
+            'default_group'  => $defaultGroup,
             'selected_group' => $selectedGroup,
-            'module' => $this->module
+            'module'         => $this->module
         ];
         return view('system::user.edit')->with($parse);
     }
@@ -107,11 +107,11 @@ class ManageUserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'fullname' => 'required|string|min:4',
-            'email' => 'required|email|min:4',
-            'password' => 'sometimes|confirmed',
-            'foto' => 'sometimes|max:500|mimes:jpeg,jpg,png',
-            'group' => 'required',
+            'fullname'      => 'required|string|min:4',
+            'email'         => 'required|email|min:4',
+            'password'      => 'sometimes|confirmed',
+            'foto'          => 'sometimes|max:500|mimes:jpeg,jpg,png',
+            'group'         => 'required',
             'group_default' => 'required',
         ]);
 
@@ -142,8 +142,8 @@ class ManageUserController extends Controller
             // Reinsert User Group
             foreach ($request->group as $group) {
                 SysUserGroup::create([
-                    'ug_user_id' => $currentUser->user_id,
-                    'ug_group_id' => $group,
+                    'ug_user_id'    => $currentUser->user_id,
+                    'ug_group_id'   => $group,
                     'ug_is_default' => $request->group_default == $group ? 'yes' : 'no'
                 ]);
             }

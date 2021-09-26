@@ -38,13 +38,13 @@ class ManageMenuActionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'action_name' => 'required',
+            'action_name'       => 'required',
             'action_controller' => 'required',
         ]);
 
         $data = [
-            'action_menu_id' => $this->dataMenu->menu_id,
-            'action_name' => $request->action_name,
+            'action_menu_id'    => $this->dataMenu->menu_id,
+            'action_name'       => $request->action_name,
             'action_controller' => $request->action_controller,
         ];
         SysMenuAction::create($data);

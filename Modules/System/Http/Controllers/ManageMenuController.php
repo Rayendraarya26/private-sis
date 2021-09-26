@@ -36,7 +36,7 @@ class ManageMenuController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'menu_name' => 'required|unique:App\Models\BbkkpSis\SysGroup,group_name',
+            'menu_name'      => 'required|unique:App\Models\BbkkpSis\SysGroup,group_name',
             'menu_is_active' => 'required',
         ]);
 
@@ -65,7 +65,7 @@ class ManageMenuController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'menu_name' => 'required|string',
+            'menu_name'      => 'required|string',
             'menu_is_active' => 'required|string',
         ]);
 

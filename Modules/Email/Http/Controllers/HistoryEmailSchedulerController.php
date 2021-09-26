@@ -24,7 +24,7 @@ class HistoryEmailSchedulerController extends Controller
         $data = LogEmailOutbox::findOrFail($request['outbox_id']);
 
         $response = [
-            'outbox_title' => $data->outbox_title,
+            'outbox_title'   => $data->outbox_title,
             'outbox_message' => $data->outbox_message,
         ];
         return responseJSON(200, $response, "data ditemukan");

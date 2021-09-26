@@ -26,13 +26,13 @@ class LoginController extends Controller
     public function handleLogin(Request $request)
     {
         $request->validate([
-            "email" => 'required|email',
+            "email"    => 'required|email',
             "password" => 'required|min:4'
         ]);
 
         $credentials = [
             'user_email' => $request['email'],
-            'password' => $request['password']
+            'password'   => $request['password']
         ];
         $auth = Auth::attempt($credentials);
         if ($auth) {
