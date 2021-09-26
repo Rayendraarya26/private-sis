@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\Facades\Image;
 
 
 class JenisDokPerusahaanController extends Controller
@@ -28,12 +29,23 @@ class JenisDokPerusahaanController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['jenis_dok_perusahaan_text' => 'required|string']); // auto redirect back jika tidak valid
+        $request->validate([
+            'jenis_dok_perusahaan_text' => 'required|string',
+            'jenis_dok_perusahaan_deskripsi' => 'nullable|string',
+            'jenis_dok_perusahaan_sample_file' => 'nullable|max:2048|mimes:csv,zip,docx,doc,xlx,xls,pdf'
+        ]);
 
-        // Aktifkan dd jika ingin melihat data
-        //dump($request->except('_token'));
-        //dump($request->all());
+        $dataInsert = [
+            'jenis_dok_perusahaan_text'  => $request->jenis_dok_perusahaan_text,
+            'jenis_dok_perusahaan_deskripsi'     => $request->jenis_dok_perusahaan_deskripsi,
+        ];
 
+        if ($request->hasFile("jenis_dok_perusahaan_sample_file")) {
+            $path = $request->file('jenis_dok_perusahaan_sample_file');
+
+            $dataInsert['jenis_dok_perusahaan_sample_file'] = $path;
+        }
+		
         try {
             MasterJenisDokPerusahaan::create($request->except("_token"));
             return redirect()->back()->with('message', "Tambah data berhasil");
@@ -72,19 +84,31 @@ class JenisDokPerusahaanController extends Controller
 
     }
 
-    public function destroy($jenisDokPerusahaanId)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
+		
+		
         try {
-            $data = MasterJenisDokPerusahaan::where("jenis_dok_perusahaan_id", $jenisDokPerusahaanId)->firstOrFail();
-            if ($data->delete()) {
-                return responseJSON(200, [], "Data berhasil dihapus");
-            } else {
-                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
-            }
+            $status_return = TRUE;
+			foreach ($request->ids as $id) {
+				$data = MasterJenisDokPerusahaan::findOrFail($id);
+				if ($data->delete()) {
+					
+				} else {
+					$status_return = FALSE;
+					break;
+				}
+			}
+			
+			if ($status_return == TRUE) {
+				return responseJSON(200, [], "Berhasil menghapus data" );
+			} else {
+				return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+			}
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }

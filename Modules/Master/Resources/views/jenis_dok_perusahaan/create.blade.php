@@ -31,13 +31,28 @@
                                     </div>
                                 @endif
 
-                                <form method="post" action="{{action("$module@store")}}">
+								<form action="{{action("$module@store")}}" method="POST" enctype="multipart/form-data">
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="jenis_dok_perusahaan_text">Nama Jenis Dokumen Perusahaan*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan nama jenis dokumen perusahaan ..." type="text" name="jenis_dok_perusahaan_text" id="jenis_dok_perusahaan_text" value="{{old('jenis_dok_perusahaan_text')}}">
+                                        </div>
+                                    </div>
+									
+									<div class="form-group row">
+										<label class="col-form-label col-sm-3" for="jenis_dok_perusahaan_sample_file">Sample File</label>
+										<div class="col-sm-8">
+											<input class="form-control" type="file" name="jenis_dok_perusahaan_sample_file">
+											<small id="" class="form-text">Note: Upload file sample jika diperlukan; file boleh berupa *.zip atau *.pdf, *.docx, *.xlsx</small>
+										</div>
+									</div>
+									
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="jenis_dok_perusahaan_deskripsi">Keterangan</label>
+                                        <div class="col-sm-8">
+                                            <textarea class="form-control" name="jenis_dok_perusahaan_deskripsi" id="jenis_dok_perusahaan_deskripsi">{{old('jenis_dok_perusahaan_deskripsi')}}</textarea>
                                         </div>
                                     </div>
 

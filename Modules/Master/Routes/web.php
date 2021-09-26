@@ -17,8 +17,8 @@ use Modules\Master\Http\Controllers\SisKodeNaceController;
 use Modules\Master\Http\Controllers\SisKomoditiController;
 use Modules\Master\Http\Controllers\SisSertifikasiController;
 
-Route::prefix('master')->middleware(['auth', 'restrict'])->group(function () {
-
+// Route::prefix('master')->middleware(['auth', 'restrict'])->group(function () {
+Route::prefix('master')->group(function () {
     Route::prefix("provinsi")->group(function () {
         Route::get('/', [ProvinsiController::class, 'index']);
         Route::get('/ajax', [ProvinsiController::class, 'ajax']);
@@ -56,7 +56,7 @@ Route::prefix('master')->middleware(['auth', 'restrict'])->group(function () {
         Route::post('/store', [JenisDokPerusahaanController::class, 'store']);
         Route::get('/edit/{jenisDokPerusahaanId}', [JenisDokPerusahaanController::class, 'edit']);
         Route::post('/update', [JenisDokPerusahaanController::class, 'update']);
-        Route::delete('/delete/{jenisDokPerusahaanId}', [JenisDokPerusahaanController::class, 'destroy']);
+        Route::post('/delete', [JenisDokPerusahaanController::class, 'destroy']);
     });
 
     Route::prefix("badan-hukum")->group(function () {
@@ -67,16 +67,6 @@ Route::prefix('master')->middleware(['auth', 'restrict'])->group(function () {
         Route::get('/edit/{badanHukumId}', [BadanHukumController::class, 'edit']);
         Route::post('/update', [BadanHukumController::class, 'update']);
         Route::delete('/delete/{badanHukumId}', [BadanHukumController::class, 'destroy']);
-    });
-
-    Route::prefix("jenis-dok-perusahaan")->group(function () {
-        Route::get('/', [JenisDokPerusahaanController::class, 'index']);
-        Route::get('/ajax', [JenisDokPerusahaanController::class, 'ajax']);
-        Route::get('/create', [JenisDokPerusahaanController::class, 'create']);
-        Route::post('/store', [JenisDokPerusahaanController::class, 'store']);
-        Route::get('/edit/{jenisDokPerusahaanId}', [JenisDokPerusahaanController::class, 'edit']);
-        Route::post('/update', [JenisDokPerusahaanController::class, 'update']);
-        Route::delete('/delete/{jenisDokPerusahaanId}', [JenisDokPerusahaanController::class, 'destroy']);
     });
 
     Route::prefix("negara")->group(function () {
