@@ -112,8 +112,7 @@ class JenisDokPerusahaanController extends Controller
         try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
-                $data = MasterJenisDokPerusahaan::where("jenis_dok_perusahaan_id", $id)->firstOrFail();
-				
+                $data = MasterJenisDokPerusahaan::findOrFail($id);
                 if ($data->delete()) {
 
                 } else {
