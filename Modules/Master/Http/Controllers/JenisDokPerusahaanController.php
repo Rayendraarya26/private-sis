@@ -71,13 +71,28 @@ class JenisDokPerusahaanController extends Controller
     {
         $request->validate([
             'jenis_dok_perusahaan_id'   => 'required|integer',
-            'jenis_dok_perusahaan_text' => 'required|string'
+            'jenis_dok_perusahaan_text' => 'required|string',
+            'jenis_dok_perusahaan_deskripsi'   => 'nullable|string',
+            'jenis_dok_perusahaan_sample_file' => 'nullable|max:2048|mimes:csv,zip,docx,doc,xlx,xls,pdf'
         ]); // auto redirect back jika tidak valid
-
+		
+		$dataUpdate = [
+            'jenis_dok_perusahaan_text'      => $request->jenis_dok_perusahaan_text,
+            'jenis_dok_perusahaan_deskripsi' => $request->jenis_dok_perusahaan_deskripsi,
+        ];
+		
+		if ($request->hasFile("jenis_dok_perusahaan_sample_file")) {
+            $file     = $request->file('jenis_dok_perusahaan_sample_file');
+            $namaFile = Str::slug($request->jenis_dok_perusahaan_text) . "-" . time() . '.' . $file->getClientOriginalExtension();
+            $path     = config('app.path_file_master'); // "files/master"| lokasi di config/app.php
+            $file->move(public_path($path), $namaFile);
+            $dataUpdate['jenis_dok_perusahaan_sample_file'] = $path . '/' . $namaFile;
+        }
+		
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterJenisDokPerusahaan::findOrFail($request['jenis_dok_perusahaan_id'])
-                ->update($request->only("jenis_dok_perusahaan_text"));
+                ->update($dataUpdate);
             //DB::commit();
             return redirect()->back()->with('message', "Update data berhasil");
         } catch (Exception $e) {
@@ -152,6 +167,7 @@ class JenisDokPerusahaanController extends Controller
         foreach ($data->get() as $d) {
             $x['jenis_dok_perusahaan_id']   = $d->jenis_dok_perusahaan_id;
             $x['jenis_dok_perusahaan_text'] = $d->jenis_dok_perusahaan_text;
+            $x['jenis_dok_perusahaan_sample_file'] = $d->jenis_dok_perusahaan_sample_file != '' ? '<a href="'.url($d->jenis_dok_perusahaan_sample_file).'" target="_blank">Download</a>' : '';
             array_push($result, $x);
         }
 

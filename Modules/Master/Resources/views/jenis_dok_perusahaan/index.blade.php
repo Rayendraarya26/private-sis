@@ -79,11 +79,13 @@
                 ]],
                 columns: [[
                     {field: 'jenis_dok_perusahaan_text', title: 'Jenis Dokumen Perusahaan', width: 500, sortable: true},
+                    {field: 'jenis_dok_perusahaan_sample_file', title: 'Sample File', width: 100, sortable: true},
                 ]],
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'jenis_dok_perusahaan_sample_file', type: 'label'},
                     {field: 'jenis_dok_perusahaan_text', type: 'textbox'},
                 ]);
         });
