@@ -14,15 +14,25 @@
                     </div>
                     <div class="dt-card__body">
                         <div id="ttData" style="width:100%; min-width: 310px;"></div>
-                        <div id="toolbar" style="padding: 10px 0 10px 5px">
-                            @if(authorized("{$module}@create"))
-                                <div>
-                                    <a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
-                                        <i class="fas fa-plus"></i> Create
-                                    </a>
-                                </div>
-                            @endif
-                            &nbsp;&nbsp;
+                        <div id="toolbar" style="padding: 10px 0 10px 20px">
+							<div class="row">
+								@if(authorized("{$module}@create"))
+									<div>
+										<a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
+											<i class="fas fa-plus"></i> Tambah
+										</a>
+									</div>
+									&nbsp;&nbsp;&nbsp;
+								@endif							
+								@if(authorized("{$module}@destroy"))
+									<div class="datagrid-btn-separator"></div>
+									<div>
+										<button class="btn btn-outline-danger btn-xs" onclick="confirmDelete()">
+											<i class="fas fa-trash"></i> Hapus
+										</button>
+									</div>
+								@endif
+							</div>
                         </div>
                     </div>
                 </div>
@@ -48,6 +58,7 @@
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
+                    {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
                         title: "Aksi",
@@ -55,18 +66,13 @@
                         align: 'center',
                         formatter: function (val, row) {
                             let btnEdit = `<a href="{{url("$url/edit")}}/${row.jenis_perusahaan_id}" class="btn btn-primary btn-xs btn-block">Edit</a>`;
-                            let btnDelete = `<button class="btn btn-danger btn-xs btn-block" onclick="confirmDelete('${row.jenis_perusahaan_id}', '${row.jenis_perusahaan_nama}')">Delete</button>`;
                             let output = "";
 
                             @if(authorized("{$module}@edit"))
                                 output += btnEdit
                             @endif
-                                @if(authorized("{$module}@destroy"))
-                                output += btnDelete
-                            @endif
-
-
-                                return output;
+							
+							return output;
                         }
                     }
                 ]],
@@ -81,15 +87,17 @@
                 ]);
         });
 
-        function confirmDelete(jenisDokPerusahaanId, jenisPerusahaanNama) {
+        function confirmDelete() {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
                 cancelButtonClass: 'btn btn-success mr-2 mb-2',
                 buttonsStyling: false,
             });
+			
+			
 
             swalWithBootstrapButtons({
-                title: `Menghapus '${jenisPerusahaanNama}' ?`,
+                title: `Menghapus Data ?`,
                 text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
                 type: 'warning',
                 showCancelButton: true,
@@ -98,9 +106,20 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
+					var idData = []; 
+					var data = $('#ttData').datagrid('getData');
+					var opts = $('#ttData').datagrid('options');
+					for (var i = 0; i < data.rows.length; i++) {
+						var tr = opts.finder.getTr($('#ttData')[0],i);
+						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
+						if(atLeastOneIsChecked == true){
+							idData.push(data.rows[i].jenis_perusahaan_id);
+						}
+					}
                     $.ajax({
-                        url: `{{url("$url/delete")}}/${jenisDokPerusahaanId}`,
-                        type: 'DELETE',
+                        url: `{{url("$url/delete")}}`,
+						data: { 'ids[]': idData },
+						type: 'POST',
                         success: function (response) {
                             toastCenter({
                                 type: 'success',

@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Tambah Badan Hukum')
+@section('title', 'Edit Negara')
 
 @section('content')
     <div class="dt-content">
@@ -14,7 +14,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Tambah Badan Hukum</h3>
+                            <h3 class="dt-card__title">Edit Negara</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -40,14 +40,25 @@
                                 <form method="post" action="{{action("$module@update")}}">
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
-                                    <input type="hidden" name="badan_hukum_id" value="{{$data->badan_hukum_id}}">
+                                    <input type="hidden" name="negara_id" value="{{$data->negara_id}}">
+									<!--
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3"
+                                               for="negara_kode">Kode Negara</label>
+                                        <div class="col-sm-8">
+                                            <input class="form-control" placeholder="Masukkan kode Negara ..."
+                                                   type="text" name="negara_kode" id="negara_kode"
+                                                   value="{{old('negara_kode') ?? $data->negara_kode}}">
+                                        </div>
+                                    </div>
+									-->
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
-                                               for="badan_hukum_nama">Nama Badan Hukum*</label>
+                                               for="negara_nama">Nama Negara*</label>
                                         <div class="col-sm-8">
-                                            <input class="form-control" placeholder="Masukkan nama badan hukum ..."
-                                                   type="text" name="badan_hukum_nama" id="badan_hukum_nama"
-                                                   value="{{old('badan_hukum_nama') ?? $data->badan_hukum_nama}}">
+                                            <input class="form-control" placeholder="Masukkan nama Negara ..."
+                                                   type="text" name="negara_nama" id="negara_nama"
+                                                   value="{{old('negara_nama') ?? $data->negara_nama}}">
                                         </div>
                                     </div>
 
