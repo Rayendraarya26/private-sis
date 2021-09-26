@@ -7,6 +7,7 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jenis_perusahaan_deskripsi
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * 
+ * @property Collection|SisPelanggan[] $sis_pelanggans
  *
  * @package App\Models\BbkkpSis
  */
@@ -29,4 +32,9 @@ class MasterJenisPerusahaan extends Model
 		'jenis_perusahaan_nama',
 		'jenis_perusahaan_deskripsi'
 	];
+
+	public function sis_pelanggans()
+	{
+		return $this->hasMany(SisPelanggan::class, 'jenis_perusahaan_id');
+	}
 }

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisPermohonanPabrik
  * 
  * @property int $mohon_pabrik_id
- * @property int|null $mohon_cust_id
+ * @property int $mohon_id
  * @property string|null $mohon_pabrik_nomor_telp
  * @property string|null $mohon_pabrik_nomor_fax
  * @property string|null $mohon_pabrik_nomor_hp
@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterKabupaten|null $master_kabupaten
  * @property MasterKecamatan|null $master_kecamatan
  * @property MasterProvinsi|null $master_provinsi
- * @property SisPermohonanPelanggan|null $sis_permohonan_pelanggan
+ * @property SisPermohonan $sis_permohonan
  *
  * @package App\Models\BbkkpSis
  */
@@ -43,7 +43,7 @@ class SisPermohonanPabrik extends Model
 	protected $primaryKey = 'mohon_pabrik_id';
 
 	protected $casts = [
-		'mohon_cust_id' => 'int',
+		'mohon_id' => 'int',
 		'kec_id' => 'int',
 		'kab_id' => 'int',
 		'prov_id' => 'int',
@@ -51,7 +51,7 @@ class SisPermohonanPabrik extends Model
 	];
 
 	protected $fillable = [
-		'mohon_cust_id',
+		'mohon_id',
 		'mohon_pabrik_nomor_telp',
 		'mohon_pabrik_nomor_fax',
 		'mohon_pabrik_nomor_hp',
@@ -82,8 +82,8 @@ class SisPermohonanPabrik extends Model
 		return $this->belongsTo(MasterProvinsi::class, 'prov_id');
 	}
 
-	public function sis_permohonan_pelanggan()
+	public function sis_permohonan()
 	{
-		return $this->belongsTo(SisPermohonanPelanggan::class, 'mohon_cust_id');
+		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
 	}
 }

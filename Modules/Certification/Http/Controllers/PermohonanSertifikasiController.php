@@ -2,7 +2,13 @@
 
 namespace Modules\Certification\Http\Controllers;
 
+use App\Models\BbkkpSis\MasterBadanHukum;
+use App\Models\BbkkpSis\MasterJenisPerusahaan;
+use App\Models\BbkkpSis\MasterKabupaten;
+use App\Models\BbkkpSis\MasterKecamatan;
 use App\Models\BbkkpSis\MasterKomoditi;
+use App\Models\BbkkpSis\MasterNegara;
+use App\Models\BbkkpSis\MasterProvinsi;
 use App\Models\BbkkpSis\MasterSertifikasi;
 use App\Models\BbkkpSis\MasterSertifikasiDokuman;
 use App\Models\BbkkpSis\SisPelanggan;
@@ -27,11 +33,15 @@ class PermohonanSertifikasiController extends Controller
 
     public function create()
     {
-        $dataPelanggan = SisPelanggan::where("user_id", auth()->id())->first();
-        $parser        = [
-            'module'        => $this->module,
-            'url'           => $this->url,
-            'dataPelanggan' => $dataPelanggan,
+        $dataPelanggan         = SisPelanggan::where("user_id", auth()->id())->first();
+        $masterBadanHukum      = MasterBadanHukum::all();
+        $masterJenisPerusahaan = MasterJenisPerusahaan::all();
+        $parser                = [
+            'module'                => $this->module,
+            'url'                   => $this->url,
+            'dataPelanggan'         => $dataPelanggan,
+            'masterBadanHukum'      => $masterBadanHukum,
+            'masterJenisPerusahaan' => $masterJenisPerusahaan,
         ];
         return view('certification::permohonan_sertifikasi.create')->with($parser);
     }
@@ -48,8 +58,14 @@ class PermohonanSertifikasiController extends Controller
             'datagrid' => $this->ajax_datagrid($request),
             'combogrid_sertifikasi' => $this->ajax_combogrid_sertifikasi($request),
             'combogrid_komoditas' => $this->ajax_combogrid_komoditas($request),
+            'combogrid_negara' => $this->ajax_combogrid_negara($request),
+            'combogrid_provinsi' => $this->ajax_combogrid_provinsi($request),
+            'combogrid_kabupaten' => $this->ajax_combogrid_kabupaten($request),
+            'combogrid_kecamatan' => $this->ajax_combogrid_kecamatan($request),
             'dokumen_sertifikat' => $this->ajax_dokumen_sertifikat($request),
             "upload_document" => $this->ajax_upload_document($request),
+            "data_pemohon" => $this->ajax_data_pemohon($request),
+            "update_data_pemohon" => $this->ajax_update_data_pemohon($request),
             default => null,
         };
     }
@@ -131,6 +147,141 @@ class PermohonanSertifikasiController extends Controller
         return response()->json(["total" => $total, "rows" => $result]);
     }
 
+    private function ajax_combogrid_negara(Request $request)
+    {
+        $data = MasterNegara::select("*");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('negara_id', $request->q);
+            $data->orWhere('negara_nama', 'LIKE', '%' . $request->q . '%');
+        }
+
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['negara_id']   = $d->negara_id;
+            $x['negara_kode'] = $d->negara_kode;
+            $x['negara_nama'] = $d->negara_nama;
+            array_push($result, $x);
+        }
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_combogrid_provinsi(Request $request)
+    {
+        $data = MasterProvinsi::select("*");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('prov_id', $request->q);
+            $data->orWhere('prov_nama', 'LIKE', '%' . $request->q . '%');
+        }
+
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['prov_id']   = $d->prov_id;
+            $x['prov_nama'] = $d->prov_nama;
+            array_push($result, $x);
+        }
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_combogrid_kabupaten(Request $request)
+    {
+        $data = MasterKabupaten::select("*");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('kab_id', $request->q);
+            $data->orWhere('kab_nama', 'LIKE', '%' . $request->q . '%');
+        }
+        if (!empty($request->prov_id)) {
+            $data->where('prov_id', $request->prov_id);
+        }
+
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['kab_nama'] = $d->kab_nama;
+            $x['kab_id']   = $d->kab_id;
+            array_push($result, $x);
+        }
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_combogrid_kecamatan(Request $request)
+    {
+        $data = MasterKecamatan::select("*");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('kec_id', $request->q);
+            $data->orWhere('kec_nama', 'LIKE', '%' . $request->q . '%');
+        }
+        if (!empty($request->kab_id)) {
+            $data->where('kab_id', $request->kab_id);
+        }
+
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['kec_id']   = $d->kec_id;
+            $x['kec_nama'] = $d->kec_nama;
+            array_push($result, $x);
+        }
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+
     private function ajax_dokumen_sertifikat(Request $request)
     {
         try {
@@ -179,6 +330,32 @@ class PermohonanSertifikasiController extends Controller
             );
 
             return responseJSON(200, $dokumen, "Dokumen berhasil di unggah");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_data_pemohon(Request $request)
+    {
+        try {
+            $dataPemohon = auth()->user()?->sis_pelanggan;
+            return responseJSON(200, $dataPemohon, "Data ditemukan");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_update_data_pemohon(Request $request)
+    {
+        try {
+            $request->validate(["parameter" => "required", "value" => "required"]);
+            $parameter = $request['parameter'];
+            $value     = $request['value'] == '-' ? NULL : $request['value'];
+
+            $dataPemohon             = auth()->user()?->sis_pelanggan;
+            $dataPemohon->$parameter = $value;
+            $dataPemohon->save();
+            return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
             return responseJSON(500, null, $e->getMessage());
         }

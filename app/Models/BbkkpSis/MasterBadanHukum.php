@@ -7,6 +7,7 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $badan_hukum_nama
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * 
+ * @property Collection|SisPelanggan[] $sis_pelanggans
  *
  * @package App\Models\BbkkpSis
  */
@@ -27,4 +30,9 @@ class MasterBadanHukum extends Model
 	protected $fillable = [
 		'badan_hukum_nama'
 	];
+
+	public function sis_pelanggans()
+	{
+		return $this->hasMany(SisPelanggan::class, 'badan_hukum_id');
+	}
 }

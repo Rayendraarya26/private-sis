@@ -32,9 +32,9 @@
     <link href="{{ asset('assets/plugins/easyui/themes/material/easyui.css')}}" rel="stylesheet">
 
     <style>
-        .table-responsive {
-            overflow-x: hidden !important;
-        }
+        /*.table-responsive {*/
+        /*    overflow-x: hidden !important;*/
+        /*}*/
 
         .dt-side-nav__header {
             padding-top: 0 !important;

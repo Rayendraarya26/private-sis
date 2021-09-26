@@ -54,6 +54,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $mohon_cust_shif_kerja
  * @property string|null $mohon_cust_luas_tanah
  * @property string|null $mohon_cust_luas_bangunan
+ * @property string|null $mohon_pertanyaan_filepath
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
@@ -137,7 +138,8 @@ class SisPermohonan extends Model
 		'mohon_cust_jumlah_non_permanen',
 		'mohon_cust_shif_kerja',
 		'mohon_cust_luas_tanah',
-		'mohon_cust_luas_bangunan'
+		'mohon_cust_luas_bangunan',
+		'mohon_pertanyaan_filepath'
 	];
 
 	public function master_sertifikasi()

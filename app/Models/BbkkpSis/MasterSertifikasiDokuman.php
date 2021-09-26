@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $sert_dok_id
  * @property int $jenis_dok_perusahaan_id
  * @property int $sert_id
+ * @property string|null $sert_dok_keterangan
+ * @property string|null $sert_dok_required
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -35,7 +37,9 @@ class MasterSertifikasiDokuman extends Model
 
 	protected $fillable = [
 		'jenis_dok_perusahaan_id',
-		'sert_id'
+		'sert_id',
+		'sert_dok_keterangan',
+		'sert_dok_required'
 	];
 
 	public function master_jenis_dok_perusahaan()

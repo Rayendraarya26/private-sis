@@ -37,7 +37,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#step-3">
-                                        <strong>Langkah 3</strong> <br>Kelengkapan Data Pemohon
+                                        <strong>Langkah 3</strong> <br>Kondisi Perusahaan
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -49,20 +49,13 @@
 
                             <div class="tab-content">
                                 <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
-                                    @include("certification::permohonan_sertifikasi._create_step_one")
+                                    @include("certification::permohonan_sertifikasi._create_step_1")
                                 </div>
                                 <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
-                                    @include("certification::permohonan_sertifikasi._create_step_two")
+                                    @include("certification::permohonan_sertifikasi._create_step_2")
                                 </div>
                                 <div id="step-3" class="tab-pane" role="tabpanel" aria-labelledby="step-3">
-                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                    Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                                    unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                    It has survived not only five centuries, but also the leap into electronic
-                                    typesetting, remaining essentially unchanged. It was popularised in the 1960s with
-                                    the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                                    with desktop publishing software like Aldus PageMaker including versions of Lorem
-                                    Ipsum.
+                                    @include("certification::permohonan_sertifikasi._create_step_3")
                                 </div>
                                 <div id="step-4" class="tab-pane" role="tabpanel" aria-labelledby="step-4">
                                     <h3>Step 4 Content</h3>
@@ -191,9 +184,19 @@
                 try {
                     const currentStep = $('#smartwizard').smartWizard("getStepIndex");
                     // Validate STEP
-                    if (currentStep === 0) {
-                        vueStepOne.validate();
-                        vueStepTwo.start();
+                    switch (currentStep) {
+                        case 0:
+                            vueStepOne.validate();
+                            vueStepTwo.start();
+                            break;
+                        case 1:
+                            vueStepTwo.validate();
+                            vueStepThree.start();
+                            break;
+                        case 2:
+                            vueStepThree.validate();
+                            // vueStepThree.start();
+                            break;
                     }
 
                     // Navigate next

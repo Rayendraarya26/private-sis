@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class MasterSertifikasi
- *
+ * 
  * @property int $sert_id
  * @property string|null $sert_nama
  * @property string|null $sert_deskripsi
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $sert_is_product
  * @property Carbon $created_at
  * @property Carbon $updated_at
- *
+ * 
  * @property Collection|MasterSertifikasiDokuman[] $master_sertifikasi_dokumen
  * @property Collection|MasterSertifikasiKlausul[] $master_sertifikasi_klausuls
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
@@ -31,38 +31,38 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MasterSertifikasi extends Model
 {
-    protected $table = 'master_sertifikasi';
-    protected $primaryKey = 'sert_id';
+	protected $table = 'master_sertifikasi';
+	protected $primaryKey = 'sert_id';
 
-    protected $casts = [
-        'sert_expired' => 'int',
-    ];
+	protected $casts = [
+		'sert_expired' => 'int'
+	];
 
-    protected $fillable = [
-        'sert_nama',
-        'sert_deskripsi',
-        'sert_expired',
-        'sert_format_referensi',
-        'sert_is_product'
-    ];
+	protected $fillable = [
+		'sert_nama',
+		'sert_deskripsi',
+		'sert_expired',
+		'sert_format_referensi',
+		'sert_is_product'
+	];
 
-    public function master_sertifikasi_dokumen()
-    {
-        return $this->hasMany(MasterSertifikasiDokuman::class, 'sert_id');
-    }
+	public function master_sertifikasi_dokumen()
+	{
+		return $this->hasMany(MasterSertifikasiDokuman::class, 'sert_id');
+	}
 
-    public function master_sertifikasi_klausuls()
-    {
-        return $this->hasMany(MasterSertifikasiKlausul::class, 'sert_id');
-    }
+	public function master_sertifikasi_klausuls()
+	{
+		return $this->hasMany(MasterSertifikasiKlausul::class, 'sert_id');
+	}
 
-    public function sis_pelanggan_sertifikasis()
-    {
-        return $this->hasMany(SisPelangganSertifikasi::class, 'sert_id');
-    }
+	public function sis_pelanggan_sertifikasis()
+	{
+		return $this->hasMany(SisPelangganSertifikasi::class, 'sert_id');
+	}
 
-    public function sis_permohonans()
-    {
-        return $this->hasMany(SisPermohonan::class, 'sert_id');
-    }
+	public function sis_permohonans()
+	{
+		return $this->hasMany(SisPermohonan::class, 'sert_id');
+	}
 }

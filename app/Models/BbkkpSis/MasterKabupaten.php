@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property MasterProvinsi $master_provinsi
  * @property Collection|MasterKecamatan[] $master_kecamatans
+ * @property Collection|SisPelanggan[] $sis_pelanggans
+ * @property Collection|SisPelangganPabrik[] $sis_pelanggan_pabriks
+ * @property Collection|SisPermohonanPabrik[] $sis_permohonan_pabriks
  *
  * @package App\Models\BbkkpSis
  */
@@ -48,5 +51,20 @@ class MasterKabupaten extends Model
 	public function master_kecamatans()
 	{
 		return $this->hasMany(MasterKecamatan::class, 'kab_id');
+	}
+
+	public function sis_pelanggans()
+	{
+		return $this->hasMany(SisPelanggan::class, 'kab_id');
+	}
+
+	public function sis_pelanggan_pabriks()
+	{
+		return $this->hasMany(SisPelangganPabrik::class, 'kab_id');
+	}
+
+	public function sis_permohonan_pabriks()
+	{
+		return $this->hasMany(SisPermohonanPabrik::class, 'kab_id');
 	}
 }

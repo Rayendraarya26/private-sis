@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class SisPermohonanDokuman
- *
+ * 
  * @property int $mohon_dok_id
  * @property int $mohon_id
  * @property int|null $jenis_dok_perusahaan_id
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $mohon_dok_filepath
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
- *
+ * 
  * @property SisPermohonan $sis_permohonan
  * @property MasterJenisDokPerusahaan|null $master_jenis_dok_perusahaan
  *
@@ -27,28 +27,28 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SisPermohonanDokuman extends Model
 {
-    protected $table = 'sis_permohonan_dokumen';
-    protected $primaryKey = 'mohon_dok_id';
+	protected $table = 'sis_permohonan_dokumen';
+	protected $primaryKey = 'mohon_dok_id';
 
-    protected $casts = [
-        'mohon_id' => 'int',
-        'jenis_dok_perusahaan_id' => 'int'
-    ];
+	protected $casts = [
+		'mohon_id' => 'int',
+		'jenis_dok_perusahaan_id' => 'int'
+	];
 
-    protected $fillable = [
-        'mohon_id',
-        'jenis_dok_perusahaan_id',
-        'mohon_dok_deskripsi',
-        'mohon_dok_filepath'
-    ];
+	protected $fillable = [
+		'mohon_id',
+		'jenis_dok_perusahaan_id',
+		'mohon_dok_deskripsi',
+		'mohon_dok_filepath'
+	];
 
-    public function sis_permohonan()
-    {
-        return $this->belongsTo(SisPermohonan::class, 'mohon_id');
-    }
+	public function sis_permohonan()
+	{
+		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
+	}
 
-    public function master_jenis_dok_perusahaan()
-    {
-        return $this->belongsTo(MasterJenisDokPerusahaan::class, 'jenis_dok_perusahaan_id');
-    }
+	public function master_jenis_dok_perusahaan()
+	{
+		return $this->belongsTo(MasterJenisDokPerusahaan::class, 'jenis_dok_perusahaan_id');
+	}
 }
