@@ -7,12 +7,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Str;
 
 
 class JenisDokPerusahaanController extends Controller
 {
-	public $module = self::class;
+    public $module = self::class;
     private $url = 'master/jenis-dok-perusahaan';
 
     public function index()
@@ -20,8 +20,8 @@ class JenisDokPerusahaanController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::jenis_dok_perusahaan.index")->with($parser); // Lokasi di Modules\Master\Resources\views\jenis_dok_perusahaan
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::jenis_dok_perusahaan.create")->with($parser); // Lokasi di Modules\Master\Resources\views\jenis_dok_perusahaan
@@ -30,26 +30,30 @@ class JenisDokPerusahaanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_dok_perusahaan_text' => 'required|string',
-            'jenis_dok_perusahaan_deskripsi' => 'nullable|string',
+            'jenis_dok_perusahaan_text'        => 'required|string',
+            'jenis_dok_perusahaan_deskripsi'   => 'nullable|string',
             'jenis_dok_perusahaan_sample_file' => 'nullable|max:2048|mimes:csv,zip,docx,doc,xlx,xls,pdf'
         ]);
 
         $dataInsert = [
-            'jenis_dok_perusahaan_text'  => $request->jenis_dok_perusahaan_text,
-            'jenis_dok_perusahaan_deskripsi'     => $request->jenis_dok_perusahaan_deskripsi,
+            'jenis_dok_perusahaan_text'      => $request->jenis_dok_perusahaan_text,
+            'jenis_dok_perusahaan_deskripsi' => $request->jenis_dok_perusahaan_deskripsi,
         ];
 
         if ($request->hasFile("jenis_dok_perusahaan_sample_file")) {
-            $path = $request->file('jenis_dok_perusahaan_sample_file');
-
-            $dataInsert['jenis_dok_perusahaan_sample_file'] = $path;
+            $file     = $request->file('jenis_dok_perusahaan_sample_file');
+            $namaFile = Str::slug($request->jenis_dok_perusahaan_text) . "-" . time() . '.' . $file->getClientOriginalExtension();
+            $path     = config('app.path_file_master'); // "files/master"| lokasi di config/app.php
+            $file->move(public_path($path), $namaFile);
+            $dataInsert['jenis_dok_perusahaan_sample_file'] = $path . '/' . $namaFile;
         }
-		
         try {
-            MasterJenisDokPerusahaan::create($request->except("_token"));
+            MasterJenisDokPerusahaan::create($dataInsert);
             return redirect()->back()->with('message', "Tambah data berhasil");
         } catch (Exception $e) {
+            if ($request->hasFile("jenis_dok_perusahaan_sample_file")) { // Delete jika ERROR
+                @unlink(public_path(config('app.path_file_master') . '/' . $dataInsert['jenis_dok_perusahaan_sample_file']));
+            }
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -66,7 +70,7 @@ class JenisDokPerusahaanController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'jenis_dok_perusahaan_id' => 'required|integer',
+            'jenis_dok_perusahaan_id'   => 'required|integer',
             'jenis_dok_perusahaan_text' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
@@ -90,25 +94,23 @@ class JenisDokPerusahaanController extends Controller
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
-		
         try {
             $status_return = TRUE;
-			foreach ($request->ids as $id) {
-				$data = MasterJenisDokPerusahaan::findOrFail($id);
-				if ($data->delete()) {
-					
-				} else {
-					$status_return = FALSE;
-					break;
-				}
-			}
-			
-			if ($status_return == TRUE) {
-				return responseJSON(200, [], "Berhasil menghapus data" );
-			} else {
-				return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
-			}
+            foreach ($request->ids as $id) {
+                $data = MasterJenisDokPerusahaan::findOrFail($id);
+                if ($data->delete()) {
+
+                } else {
+                    $status_return = FALSE;
+                    break;
+                }
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+            }
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
@@ -134,7 +136,7 @@ class JenisDokPerusahaanController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -148,7 +150,7 @@ class JenisDokPerusahaanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['jenis_dok_perusahaan_id'] = $d->jenis_dok_perusahaan_id;
+            $x['jenis_dok_perusahaan_id']   = $d->jenis_dok_perusahaan_id;
             $x['jenis_dok_perusahaan_text'] = $d->jenis_dok_perusahaan_text;
             array_push($result, $x);
         }
