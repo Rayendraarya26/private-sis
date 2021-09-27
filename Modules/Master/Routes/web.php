@@ -9,9 +9,6 @@ use Modules\Master\Http\Controllers\KabupatenController;
 use Modules\Master\Http\Controllers\KecamatanController;
 use Modules\Master\Http\Controllers\JenisDokPerusahaanController;
 use Modules\Master\Http\Controllers\JenisPerusahaanController;
-use Modules\Master\Http\Controllers\SisDokPerusahaanController;
-use Modules\Master\Http\Controllers\SisKlausulSertifikasiController;
-use Modules\Master\Http\Controllers\SisKlausulTahap1Controller;
 use Modules\Master\Http\Controllers\SisKodeEaController;
 use Modules\Master\Http\Controllers\SisKodeNaceController;
 use Modules\Master\Http\Controllers\SisKomoditiController;
@@ -101,15 +98,6 @@ Route::prefix('master')->group(function () {
 
     // ======================================== SIS ========================================
     Route::prefix("sis")->group(function () {
-        Route::prefix("dok-perusahaan")->group(function () {
-            Route::get("/", [SisDokPerusahaanController::class, 'index']);
-        });
-        Route::prefix("klausul-sertifikasi")->group(function () {
-            Route::get("/", [SisKlausulSertifikasiController::class, 'index']);
-        });
-        Route::prefix("klausul-tahap-1")->group(function () {
-            Route::get("/", [SisKlausulTahap1Controller::class, 'index']);
-        });
         Route::prefix("kode-ea")->group(function () {
             Route::get("/", [SisKodeEaController::class, 'index']);
 			Route::get('/ajax', [SisKodeEaController::class, 'ajax']);
@@ -139,6 +127,13 @@ Route::prefix('master')->group(function () {
         });
         Route::prefix("sertifikasi")->group(function () {
             Route::get("/", [SisSertifikasiController::class, 'index']);
+			Route::get('/ajax', [SisSertifikasiController::class, 'ajax']);
+			Route::get('/detail', [SisSertifikasiController::class, 'detail']);
+			Route::get('/create', [SisSertifikasiController::class, 'create']);
+			Route::post('/store', [SisSertifikasiController::class, 'store']);
+			Route::get('/edit', [SisSertifikasiController::class, 'edit']);
+			Route::post('/update', [SisSertifikasiController::class, 'update']);
+			Route::delete('/delete', [SisSertifikasiController::class, 'destroy']);
         });
     });
 });
