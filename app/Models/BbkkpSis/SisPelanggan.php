@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class SisPelanggan
- * 
+ *
  * @property int $cust_id
  * @property int $user_id
  * @property string|null $cust_email
@@ -44,9 +44,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $cust_shif_kerja
  * @property string|null $cust_luas_tanah
  * @property string|null $cust_luas_bangunan
+ * @property int|null $cust_kapasitas_produksi_tahunan
+ * @property string|null $cust_kapasitas_produksi_tahunan_satuan
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
- * 
+ *
  * @property MasterBadanHukum|null $master_badan_hukum
  * @property MasterJenisPerusahaan|null $master_jenis_perusahaan
  * @property MasterKabupaten|null $master_kabupaten
@@ -64,119 +66,121 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SisPelanggan extends Model
 {
-	protected $table = 'sis_pelanggan';
-	protected $primaryKey = 'cust_id';
+    protected $table = 'sis_pelanggan';
+    protected $primaryKey = 'cust_id';
 
-	protected $casts = [
-		'user_id' => 'int',
-		'jenis_perusahaan_id' => 'int',
-		'badan_hukum_id' => 'int',
-		'negara_id' => 'int',
-		'kec_id' => 'int',
-		'kab_id' => 'int',
-		'prov_id' => 'int',
-		'cust_jumlah_bagian' => 'int',
-		'cust_jumlah_manajemen' => 'int',
-		'cust_jumlah_administrasi' => 'int',
-		'cust_jumlah_part_time' => 'int',
-		'cust_jumlah_operasional' => 'int',
-		'cust_jumlah_shift_1' => 'int',
-		'cust_jumlah_shift_2' => 'int',
-		'cust_jumlah_shift_3' => 'int',
-		'cust_jumlah_non_permanen' => 'int',
-		'cust_shif_kerja' => 'int'
-	];
+    protected $casts = [
+        'user_id'                  => 'int',
+        'jenis_perusahaan_id'      => 'int',
+        'badan_hukum_id'           => 'int',
+        'negara_id'                => 'int',
+        'kec_id'                   => 'int',
+        'kab_id'                   => 'int',
+        'prov_id'                  => 'int',
+        'cust_jumlah_bagian'       => 'int',
+        'cust_jumlah_manajemen'    => 'int',
+        'cust_jumlah_administrasi' => 'int',
+        'cust_jumlah_part_time'    => 'int',
+        'cust_jumlah_operasional'  => 'int',
+        'cust_jumlah_shift_1'      => 'int',
+        'cust_jumlah_shift_2'      => 'int',
+        'cust_jumlah_shift_3'      => 'int',
+        'cust_jumlah_non_permanen' => 'int',
+        'cust_shif_kerja'          => 'int'
+    ];
 
-	protected $fillable = [
-		'user_id',
-		'cust_email',
-		'cust_nomor_telp',
-		'cust_nomor_fax',
-		'cust_nomor_hp',
-		'cust_nama',
-		'jenis_perusahaan_id',
-		'badan_hukum_id',
-		'cust_asing',
-		'negara_id',
-		'kec_id',
-		'kab_id',
-		'prov_id',
-		'cust_alamat',
-		'cust_nomor_akta_pendirian',
-		'cust_nama_pemilik',
-		'cust_nama_pimpinan',
-		'cust_nama_wakil_manajemen',
-		'cust_jumlah_bagian',
-		'cust_jumlah_manajemen',
-		'cust_jumlah_administrasi',
-		'cust_jumlah_part_time',
-		'cust_jumlah_operasional',
-		'cust_jumlah_shift_1',
-		'cust_jumlah_shift_2',
-		'cust_jumlah_shift_3',
-		'cust_jumlah_non_permanen',
-		'cust_shif_kerja',
-		'cust_luas_tanah',
-		'cust_luas_bangunan'
-	];
+    protected $fillable = [
+        'user_id',
+        'cust_email',
+        'cust_nomor_telp',
+        'cust_nomor_fax',
+        'cust_nomor_hp',
+        'cust_nama',
+        'jenis_perusahaan_id',
+        'badan_hukum_id',
+        'cust_asing',
+        'negara_id',
+        'kec_id',
+        'kab_id',
+        'prov_id',
+        'cust_alamat',
+        'cust_nomor_akta_pendirian',
+        'cust_nama_pemilik',
+        'cust_nama_pimpinan',
+        'cust_nama_wakil_manajemen',
+        'cust_jumlah_bagian',
+        'cust_jumlah_manajemen',
+        'cust_jumlah_administrasi',
+        'cust_jumlah_part_time',
+        'cust_jumlah_operasional',
+        'cust_jumlah_shift_1',
+        'cust_jumlah_shift_2',
+        'cust_jumlah_shift_3',
+        'cust_jumlah_non_permanen',
+        'cust_shif_kerja',
+        'cust_luas_tanah',
+        'cust_luas_bangunan',
+        'cust_kapasitas_produksi_tahunan',
+        'cust_kapasitas_produksi_tahunan_satuan',
+    ];
 
-	public function master_badan_hukum()
-	{
-		return $this->belongsTo(MasterBadanHukum::class, 'badan_hukum_id');
-	}
+    public function master_badan_hukum()
+    {
+        return $this->belongsTo(MasterBadanHukum::class, 'badan_hukum_id');
+    }
 
-	public function master_jenis_perusahaan()
-	{
-		return $this->belongsTo(MasterJenisPerusahaan::class, 'jenis_perusahaan_id');
-	}
+    public function master_jenis_perusahaan()
+    {
+        return $this->belongsTo(MasterJenisPerusahaan::class, 'jenis_perusahaan_id');
+    }
 
-	public function master_kabupaten()
-	{
-		return $this->belongsTo(MasterKabupaten::class, 'kab_id');
-	}
+    public function master_kabupaten()
+    {
+        return $this->belongsTo(MasterKabupaten::class, 'kab_id');
+    }
 
-	public function master_kecamatan()
-	{
-		return $this->belongsTo(MasterKecamatan::class, 'kec_id');
-	}
+    public function master_kecamatan()
+    {
+        return $this->belongsTo(MasterKecamatan::class, 'kec_id');
+    }
 
-	public function master_provinsi()
-	{
-		return $this->belongsTo(MasterProvinsi::class, 'prov_id');
-	}
+    public function master_provinsi()
+    {
+        return $this->belongsTo(MasterProvinsi::class, 'prov_id');
+    }
 
-	public function sys_user()
-	{
-		return $this->belongsTo(SysUser::class, 'user_id');
-	}
+    public function sys_user()
+    {
+        return $this->belongsTo(SysUser::class, 'user_id');
+    }
 
-	public function master_negara()
-	{
-		return $this->belongsTo(MasterNegara::class, 'negara_id');
-	}
+    public function master_negara()
+    {
+        return $this->belongsTo(MasterNegara::class, 'negara_id');
+    }
 
-	public function sis_jadwals()
-	{
-		return $this->hasMany(SisJadwal::class, 'cust_id');
-	}
+    public function sis_jadwals()
+    {
+        return $this->hasMany(SisJadwal::class, 'cust_id');
+    }
 
-	public function sis_pelanggan_dokumen()
-	{
-		return $this->hasMany(SisPelangganDokuman::class, 'cust_id');
-	}
+    public function sis_pelanggan_dokumen()
+    {
+        return $this->hasMany(SisPelangganDokuman::class, 'cust_id');
+    }
 
-	public function sis_pelanggan_pabriks()
-	{
-		return $this->hasMany(SisPelangganPabrik::class, 'cust_id');
-	}
+    public function sis_pelanggan_pabriks()
+    {
+        return $this->hasMany(SisPelangganPabrik::class, 'cust_id');
+    }
 
-	public function sis_pelanggan_sertifikasis()
-	{
-		return $this->hasMany(SisPelangganSertifikasi::class, 'cust_id');
-	}
+    public function sis_pelanggan_sertifikasis()
+    {
+        return $this->hasMany(SisPelangganSertifikasi::class, 'cust_id');
+    }
 
-	public function sis_permohonans()
-	{
-		return $this->hasMany(SisPermohonan::class, 'cust_id');
-	}
+    public function sis_permohonans()
+    {
+        return $this->hasMany(SisPermohonan::class, 'cust_id');
+    }
 }

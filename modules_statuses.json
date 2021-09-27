@@ -6,5 +6,9 @@
     "System": true,
     "Certification": true,
     "Email": true,
-    "Master": true
+    "Master": true,
+    "Pelanggan": true,
+    "Pegawai": true,
+    "OperatorLs": true,
+    "Marketing": true
 }

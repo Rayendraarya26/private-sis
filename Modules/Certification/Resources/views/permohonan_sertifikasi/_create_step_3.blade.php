@@ -4,106 +4,127 @@
         <div>
             <ol>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_nama">Nama Perusahaan*</label>
-                            <input id="step3_perusahaan_nama" name="step3_perusahaan_nama" class="form-control"
-                                   @change="updateDataPemohon('cust_nama',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_nama">Nama Perusahaan*</label>
+                                <input id="step3_perusahaan_nama" name="step3_perusahaan_nama" class="form-control"
+                                       @change="updateDataPemohon('cust_nama',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_akta">Nomor Akta Pendirian*</label>
-                            <input id="step3_perusahaan_akta" name="step3_perusahaan_akta" class="form-control"
-                                   @change="updateDataPemohon('cust_nomor_akta_pendirian',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_akta">Nomor Akta Pendirian*</label>
+                                <input id="step3_perusahaan_akta" name="step3_perusahaan_akta" class="form-control"
+                                       @change="updateDataPemohon('cust_nomor_akta_pendirian',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_nama_pemilik">Nama Pemilik*</label>
-                            <input id="step3_perusahaan_nama_pemilik" name="step3_perusahaan_nama_pemilik"
-                                   class="form-control"
-                                   @change="updateDataPemohon('cust_nama_pemilik',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_nama_pemilik">Nama Pemilik*</label>
+                                <input id="step3_perusahaan_nama_pemilik" name="step3_perusahaan_nama_pemilik"
+                                       class="form-control"
+                                       @change="updateDataPemohon('cust_nama_pemilik',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_nama_pimpinan">Nama Pimpinan*</label>
-                            <input id="step3_perusahaan_nama_pimpinan" name="step3_perusahaan_nama_pimpinan"
-                                   class="form-control"
-                                   @change="updateDataPemohon('cust_nama_pimpinan',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_nama_pimpinan">Nama Pimpinan*</label>
+                                <input id="step3_perusahaan_nama_pimpinan" name="step3_perusahaan_nama_pimpinan"
+                                       class="form-control"
+                                       @change="updateDataPemohon('cust_nama_pimpinan',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_nama_wakil">Nama Wakil Manajemen*</label>
-                            <input id="step3_perusahaan_nama_wakil" name="step3_perusahaan_nama_wakil"
-                                   class="form-control"
-                                   @change="updateDataPemohon('cust_nama_wakil_manajemen',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_nama_wakil">Nama Wakil Manajemen*</label>
+                                <input id="step3_perusahaan_nama_wakil" name="step3_perusahaan_nama_wakil"
+                                       class="form-control"
+                                       @change="updateDataPemohon('cust_nama_wakil_manajemen',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_telp">Telp (Perusahaan)*</label>
-                            <input id="step3_perusahaan_telp" name="step3_perusahaan_telp" class="form-control"
-                                   @change="updateDataPemohon('cust_nomor_telp',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_telp">Telp (Perusahaan)*</label>
+                                <input id="step3_perusahaan_telp" name="step3_perusahaan_telp" class="form-control"
+                                       @change="updateDataPemohon('cust_nomor_telp',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_fax">Fax*</label>
-                            <input id="step3_perusahaan_fax" name="step3_perusahaan_fax" class="form-control"
-                                   @change="updateDataPemohon('cust_nomor_fax',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_fax">Fax*</label>
+                                <input id="step3_perusahaan_fax" name="step3_perusahaan_fax" class="form-control"
+                                       @change="updateDataPemohon('cust_nomor_fax',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_cp">Nomer HP (CP)*</label>
-                            <input id="step3_perusahaan_cp" name="step3_perusahaan_cp" class="form-control"
-                                   @change="updateDataPemohon('cust_nomor_hp',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_cp">Nomer HP (CP)*</label>
+                                <input id="step3_perusahaan_cp" name="step3_perusahaan_cp" class="form-control"
+                                       @change="updateDataPemohon('cust_nomor_hp',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_badan_hukum">Badan Hukum*</label>
-                            <select name="step3_perusahaan_badan_hukum" id="step3_perusahaan_badan_hukum"
-                                    class="form-control" @change="updateDataPemohon('badan_hukum_id',...arguments)">
-                                <option disabled selected>--Pilih Badan Hukum--</option>
-                                @foreach($masterBadanHukum as $bh)
-                                    <option value="{{$bh->badan_hukum_id}}">{{$bh->badan_hukum_nama}}</option>
-                                @endforeach
-                            </select>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_badan_hukum">Badan Hukum*</label>
+                                <select name="step3_perusahaan_badan_hukum" id="step3_perusahaan_badan_hukum"
+                                        class="form-control" @change="updateDataPemohon('badan_hukum_id',...arguments)">
+                                    <option disabled selected>--Pilih Badan Hukum--</option>
+                                    @foreach($masterBadanHukum as $bh)
+                                        <option value="{{$bh->badan_hukum_id}}">{{$bh->badan_hukum_nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_jenis">Jenis Perusahaan*</label>
-                            <select name="step3_perusahaan_jenis" id="step3_perusahaan_jenis"
-                                    class="form-control"
-                                    @change="updateDataPemohon('jenis_perusahaan_id',...arguments)">
-                                <option disabled selected>--Pilih Jenis Perusahaan--</option>
-                                @foreach($masterJenisPerusahaan as $jp)
-                                    <option value="{{$jp->jenis_perusahaan_id}}">{{$jp->jenis_perusahaan_nama}}</option>
-                                @endforeach
-                            </select>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_jenis">Jenis Perusahaan*</label>
+                                <select name="step3_perusahaan_jenis" id="step3_perusahaan_jenis"
+                                        class="form-control"
+                                        @change="updateDataPemohon('jenis_perusahaan_id',...arguments)">
+                                    <option disabled selected>--Pilih Jenis Perusahaan--</option>
+                                    @foreach($masterJenisPerusahaan as $jp)
+                                        <option
+                                            value="{{$jp->jenis_perusahaan_id}}">{{$jp->jenis_perusahaan_nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -116,66 +137,82 @@
         <div>
             <ol start="11">
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_negara">Negara*</label>
-                            <input id="step3_perusahaan_negara" name="step3_perusahaan_negara" class="form-control"
-                                   style="width: 100%">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_negara">Negara*</label>
+                                <input id="step3_perusahaan_negara" name="step3_perusahaan_negara" class="form-control"
+                                       style="width: 100%">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_provinsi">Provinsi*</label>
-                            <input id="step3_perusahaan_provinsi" name="step3_perusahaan_provinsi" class="form-control"
-                                   style="width: 100%">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_provinsi">Provinsi*</label>
+                                <input id="step3_perusahaan_provinsi" name="step3_perusahaan_provinsi"
+                                       class="form-control"
+                                       style="width: 100%">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_kabupaten">Kabupaten*</label>
-                            <input id="step3_perusahaan_kabupaten" name="step3_perusahaan_kabupaten"
-                                   class="form-control" style="width: 100%">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_kabupaten">Kabupaten*</label>
+                                <input id="step3_perusahaan_kabupaten" name="step3_perusahaan_kabupaten"
+                                       class="form-control" style="width: 100%">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_kecamatan">Kecamatan*</label>
-                            <input id="step3_perusahaan_kecamatan" name="step3_perusahaan_kecamatan"
-                                   class="form-control" style="width: 100%">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_kecamatan">Kecamatan*</label>
+                                <input id="step3_perusahaan_kecamatan" name="step3_perusahaan_kecamatan"
+                                       class="form-control" style="width: 100%">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_alamat">Alamat*</label>
-                            <textarea id="step3_perusahaan_alamat" name="step3_perusahaan_alamat" cols="30"
-                                      class="form-control"
-                                      @change="updateDataPemohon('cust_alamat',...arguments)"></textarea>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_alamat">Alamat*</label>
+                                <textarea id="step3_perusahaan_alamat" name="step3_perusahaan_alamat" cols="30"
+                                          class="form-control"
+                                          @change="updateDataPemohon('cust_alamat',...arguments)"></textarea>
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_luas_tanah">Luas Tanah*</label>
-                            <input id="step3_perusahaan_luas_tanah" name="step3_perusahaan_luas_tanah"
-                                   class="form-control" @change="updateDataPemohon('cust_luas_tanah',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_luas_tanah">Luas Tanah*</label>
+                                <input id="step3_perusahaan_luas_tanah" name="step3_perusahaan_luas_tanah"
+                                       class="form-control" @change="updateDataPemohon('cust_luas_tanah',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_luas_bangunan">Luas Bangunan*</label>
-                            <input id="step3_perusahaan_luas_bangunan" name="step3_perusahaan_luas_bangunan"
-                                   class="form-control" @change="updateDataPemohon('cust_luas_bangunan',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_luas_bangunan">Luas Bangunan*</label>
+                                <input id="step3_perusahaan_luas_bangunan" name="step3_perusahaan_luas_bangunan"
+                                       class="form-control"
+                                       @change="updateDataPemohon('cust_luas_bangunan',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -188,122 +225,227 @@
         <div>
             <ol start="18">
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_jml_shift">Jumlah Shift (dalam sehari)* </label>
-                            <input id="step3_perusahaan_jml_shift" name="step3_perusahaan_jml_shift"
-                                   class="form-control" type="number" min="0"
-                                   @change="updateDataPemohon('cust_shif_kerja',...arguments)">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_produksi_tahunan">Kapasitas Produksi/Tahun* </label>
+                                <input id="step3_perusahaan_produksi_tahunan" name="step3_perusahaan_produksi_tahunan"
+                                       class="form-control" type="number" min="0"
+                                       @change="updateDataPemohon('cust_kapasitas_produksi_tahunan',...arguments)">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_produksi_tahunan_satuan">Satuan* </label>
+                                <input id="step3_perusahaan_produksi_tahunan_satuan"
+                                       name="step3_perusahaan_produksi_tahunan_satuan"
+                                       class="form-control" type="text"
+                                       @change="updateDataPemohon('cust_kapasitas_produksi_tahunan_satuan',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="step3_perusahaan_jml_bagian">Jumlah Bagian* </label>
-                            <input id="step3_perusahaan_jml_bagian" name="step3_perusahaan_jml_bagian"
-                                   class="form-control" type="number" min="0"
-                                   @change="updateDataPemohon('cust_jumlah_bagian',...arguments)">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_jml_shift">Jumlah Shift (dalam sehari)* </label>
+                                <input id="step3_perusahaan_jml_shift" name="step3_perusahaan_jml_shift"
+                                       class="form-control" type="number" min="0"
+                                       @change="updateDataPemohon('cust_shif_kerja',...arguments)">
+                            </div>
                         </div>
                     </div>
                 </li>
                 <li>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label>Jumlah Karyawan* :</label>
-                            {{--<input id="step3_perusahaan_" name="step3_perusahaan_" class="form-control">--}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="step3_perusahaan_jml_bagian">Jumlah Bagian* </label>
+                                <input id="step3_perusahaan_jml_bagian" name="step3_perusahaan_jml_bagian"
+                                       class="form-control" type="number" min="0"
+                                       @change="updateDataPemohon('cust_jumlah_bagian',...arguments)">
+                            </div>
                         </div>
                     </div>
-                    <ol style="margin-top: -20px">
-                        <li>
-                            <div class="form-row">
-                                <div class="col-md-4">
-                                    <!-- Input Group -->
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Manajemen</span>
-                                        </div>
-                                        <input type="number" min="0" class="form-control" aria-label="Manajemen"
-                                               placeholder="Berapa orang ?" name="step3_perusahaan_jml_manajemen"
-                                               id="step3_perusahaan_jml_manajemen"
-                                               @change="updateDataPemohon('cust_jumlah_manajemen',...arguments)">
-                                        <div class="input-group-append">
+                </li>
+                <li>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Jumlah Karyawan* :</label>
+                                {{--<input id="step3_perusahaan_" name="step3_perusahaan_" class="form-control">--}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <ol style="margin-top: -20px">
+                                <li>
+                                    <div class="form-row">
+                                        <div class="col-md-8">
+                                            <!-- Input Group -->
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Manajemen</span>
+                                                </div>
+                                                <input type="number" min="0" class="form-control" aria-label="Manajemen"
+                                                       placeholder="Berapa orang ?"
+                                                       name="step3_perusahaan_jml_manajemen"
+                                                       id="step3_perusahaan_jml_manajemen"
+                                                       @change="updateDataPemohon('cust_jumlah_manajemen',...arguments)">
+                                                <div class="input-group-append">
                                             <span class="input-group-text">
                                                 <i class="fad fa-person"></i>&nbsp; Orang
                                             </span>
+                                                </div>
+                                            </div>
+                                            <!-- /input group -->
                                         </div>
                                     </div>
-                                    <!-- /input group -->
-                                </div>
-                            </div>
-                            <!-- /form row -->
-                        </li>
-                        <li>
-                            <div class="form-row">
-                                <div class="col-md-4">
-                                    <!-- Input Group -->
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Administrasi</span>
-                                        </div>
-                                        <input type="number" min="0" class="form-control" aria-label="Manajemen"
-                                               placeholder="Berapa orang ?" id="step3_perusahaan_jml_administrasi"
-                                               name="step3_perusahaan_jml_administrasi"
-                                               @change="updateDataPemohon('cust_jumlah_administrasi',...arguments)">
-                                        <div class="input-group-append">
+                                    <!-- /form row -->
+                                </li>
+                                <li>
+                                    <div class="form-row">
+                                        <div class="col-md-8">
+                                            <!-- Input Group -->
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Administrasi</span>
+                                                </div>
+                                                <input type="number" min="0" class="form-control" aria-label="Manajemen"
+                                                       placeholder="Berapa orang ?"
+                                                       id="step3_perusahaan_jml_administrasi"
+                                                       name="step3_perusahaan_jml_administrasi"
+                                                       @change="updateDataPemohon('cust_jumlah_administrasi',...arguments)">
+                                                <div class="input-group-append">
                                             <span class="input-group-text">
                                                 <i class="fad fa-person"></i>&nbsp; Orang
                                             </span>
+                                                </div>
+                                            </div>
+                                            <!-- /input group -->
                                         </div>
                                     </div>
-                                    <!-- /input group -->
-                                </div>
-                            </div>
-                            <!-- /form row -->
-                        </li>
-                        <li>
-                            <div class="form-row">
-                                <div class="col-md-4">
-                                    <!-- Input Group -->
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Part Time</span>
-                                        </div>
-                                        <input type="number" min="0" class="form-control" aria-label="Manajemen"
-                                               placeholder="Berapa orang ?" id="step3_perusahaan_jml_part_time"
-                                               name="step3_perusahaan_jml_part_time"
-                                               @change="updateDataPemohon('cust_jumlah_part_time',...arguments)">
-                                        <div class="input-group-append">
+                                    <!-- /form row -->
+                                </li>
+                                <li>
+                                    <div class="form-row">
+                                        <div class="col-md-8">
+                                            <!-- Input Group -->
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Part Time</span>
+                                                </div>
+                                                <input type="number" min="0" class="form-control" aria-label="Manajemen"
+                                                       placeholder="Berapa orang ?" id="step3_perusahaan_jml_part_time"
+                                                       name="step3_perusahaan_jml_part_time"
+                                                       @change="updateDataPemohon('cust_jumlah_part_time',...arguments)">
+                                                <div class="input-group-append">
                                             <span class="input-group-text">
                                                 <i class="fad fa-person"></i>&nbsp; Orang
                                             </span>
+                                                </div>
+                                            </div>
+                                            <!-- /input group -->
                                         </div>
                                     </div>
-                                    <!-- /input group -->
-                                </div>
-                            </div>
-                            <!-- /form row -->
-                        </li>
-                        <li style="padding-top: 20px; padding-bottom: 20px">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="step3_perusahaan_">Operasional* :</label>
-                                </div>
-                            </div>
+                                    <!-- /form row -->
+                                </li>
+                                <li style="padding-top: 20px; padding-bottom: 20px">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="step3_perusahaan_">Operasional* :</label>
+                                        </div>
+                                    </div>
 
-                            <ul style="margin-top: -20px">
+                                    <ul style="margin-top: -20px">
+                                        <li>
+                                            <div class="form-row">
+                                                <div class="col-md-8">
+                                                    <!-- Input Group -->
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Shift 1</span>
+                                                        </div>
+                                                        <input type="number" min="0" class="form-control"
+                                                               aria-label="Shift 1"
+                                                               placeholder="Berapa orang ?"
+                                                               id="step3_perusahaan_jml_shift_1"
+                                                               name="step3_perusahaan_jml_shift_1"
+                                                               @change="updateDataPemohon('cust_jumlah_shift_1',...arguments)">
+                                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="fad fa-person"></i>&nbsp; Orang
+                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /input group -->
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="form-row">
+                                                <div class="col-md-8">
+                                                    <!-- Input Group -->
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Shift 2</span>
+                                                        </div>
+                                                        <input type="number" min="0" class="form-control"
+                                                               aria-label="Shift 2"
+                                                               placeholder="Berapa orang ?"
+                                                               id="step3_perusahaan_jml_shift_2"
+                                                               name="step3_perusahaan_jml_shift_2"
+                                                               @change="updateDataPemohon('cust_jumlah_shift_2',...arguments)">
+                                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="fad fa-person"></i>&nbsp; Orang
+                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /input group -->
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="form-row">
+                                                <div class="col-md-8">
+                                                    <!-- Input Group -->
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">Shift 3</span>
+                                                        </div>
+                                                        <input type="number" min="0" class="form-control"
+                                                               aria-label="Shift 3"
+                                                               placeholder="Berapa orang ?"
+                                                               id="step3_perusahaan_jml_shift_3"
+                                                               name="step3_perusahaan_jml_shift_3"
+                                                               @change="updateDataPemohon('cust_jumlah_shift_3',...arguments)">
+                                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="fad fa-person"></i>&nbsp; Orang
+                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /input group -->
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li>
                                 <li>
                                     <div class="form-row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-8">
                                             <!-- Input Group -->
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text">Shift 1</span>
+                                                    <span class="input-group-text">Non Permanen</span>
                                                 </div>
-                                                <input type="number" min="0" class="form-control" aria-label="Shift 1"
-                                                       placeholder="Berapa orang ?" id="step3_perusahaan_jml_shift_1"
-                                                       name="step3_perusahaan_jml_shift_1"
-                                                       @change="updateDataPemohon('cust_jumlah_shift_1',...arguments)">
+                                                <input type="number" min="0" class="form-control"
+                                                       aria-label="Non Permanen"
+                                                       placeholder="Berapa orang ?"
+                                                       id="step3_perusahaan_jml_non_permanen"
+                                                       name="step3_perusahaan_jml_non_permanen"
+                                                       @change="updateDataPemohon('cust_jumlah_non_permanen',...arguments)">
                                                 <div class="input-group-append">
                                             <span class="input-group-text">
                                                 <i class="fad fa-person"></i>&nbsp; Orang
@@ -313,80 +455,13 @@
                                             <!-- /input group -->
                                         </div>
                                     </div>
+                                    <!-- /form row -->
                                 </li>
-                                <li>
-                                    <div class="form-row">
-                                        <div class="col-md-4">
-                                            <!-- Input Group -->
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Shift 2</span>
-                                                </div>
-                                                <input type="number" min="0" class="form-control" aria-label="Shift 2"
-                                                       placeholder="Berapa orang ?" id="step3_perusahaan_jml_shift_2"
-                                                       name="step3_perusahaan_jml_shift_2"
-                                                       @change="updateDataPemohon('cust_jumlah_shift_2',...arguments)">
-                                                <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
-                                                </div>
-                                            </div>
-                                            <!-- /input group -->
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-row">
-                                        <div class="col-md-4">
-                                            <!-- Input Group -->
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Shift 3</span>
-                                                </div>
-                                                <input type="number" min="0" class="form-control" aria-label="Shift 3"
-                                                       placeholder="Berapa orang ?" id="step3_perusahaan_jml_shift_3"
-                                                       name="step3_perusahaan_jml_shift_3"
-                                                       @change="updateDataPemohon('cust_jumlah_shift_3',...arguments)">
-                                                <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
-                                                </div>
-                                            </div>
-                                            <!-- /input group -->
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <div class="form-row">
-                                <div class="col-md-4">
-                                    <!-- Input Group -->
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">Non Permanen</span>
-                                        </div>
-                                        <input type="number" min="0" class="form-control" aria-label="Non Permanen"
-                                               placeholder="Berapa orang ?" id="step3_perusahaan_jml_non_permanen"
-                                               name="step3_perusahaan_jml_non_permanen"
-                                               @change="updateDataPemohon('cust_jumlah_non_permanen',...arguments)">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <!-- /input group -->
-                                </div>
-                            </div>
-                            <!-- /form row -->
-                        </li>
-                    </ol>
+                            </ol>
+                        </div>
+                    </div>
                 </li>
             </ol>
-
         </div>
     </div>
 </div>
@@ -591,6 +666,8 @@
                                 $("#step3_perusahaan_luas_tanah").val(res.cust_luas_tanah);
                                 $("#step3_perusahaan_luas_bangunan").val(res.cust_luas_bangunan);
 
+                                $("#step3_perusahaan_produksi_tahunan").val(res.cust_kapasitas_produksi_tahunan);
+                                $("#step3_perusahaan_produksi_tahunan_satuan").val(res.cust_kapasitas_produksi_tahunan_satuan);
                                 $("#step3_perusahaan_jml_shift").val(res.cust_shif_kerja);
                                 $("#step3_perusahaan_jml_bagian").val(res.cust_jumlah_bagian);
                                 $("#step3_perusahaan_jml_manajemen").val(res.cust_jumlah_manajemen);

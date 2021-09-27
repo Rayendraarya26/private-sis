@@ -352,8 +352,9 @@ class PermohonanSertifikasiController extends Controller
             $parameter = $request['parameter'];
             $value     = $request['value'] == '-' ? NULL : $request['value'];
 
-            $dataPemohon             = auth()->user()?->sis_pelanggan;
-            $dataPemohon->$parameter = $value;
+            $dataPemohon                          = auth()->user()?->sis_pelanggan;
+            $dataPemohon->$parameter              = $value;
+            $dataPemohon->cust_jumlah_operasional = $dataPemohon->cust_jumlah_shift_1 + $dataPemohon->cust_jumlah_shift_2 + $dataPemohon->cust_jumlah_shift_3;
             $dataPemohon->save();
             return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
