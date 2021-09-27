@@ -72,16 +72,26 @@ class JenisPerusahaanController extends Controller
 
     }
 
-    public function destroy($jenisPerusahaanId)
+	public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
         try {
-            $data = MasterJenisPerusahaan::where("jenis_perusahaan_id", $jenisPerusahaanId)->firstOrFail();
-            if ($data->delete()) {
-                return responseJSON(200, [], "Data berhasil dihapus");
+            $status_return = TRUE;
+            foreach ($request->ids as $id) {
+                $data = MasterJenisPerusahaan::where("jenis_perusahaan_id", $id)->firstOrFail();
+                if ($data->delete()) {
+
+                } else {
+                    $status_return = FALSE;
+                    break;
+                }
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }

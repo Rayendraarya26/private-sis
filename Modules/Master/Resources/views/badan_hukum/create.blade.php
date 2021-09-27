@@ -14,7 +14,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Tambah User</h3>
+                            <h3 class="dt-card__title">Tambah Badan Hukum</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">

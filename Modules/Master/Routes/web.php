@@ -66,7 +66,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [BadanHukumController::class, 'store']);
         Route::get('/edit/{badanHukumId}', [BadanHukumController::class, 'edit']);
         Route::post('/update', [BadanHukumController::class, 'update']);
-        Route::delete('/delete/{badanHukumId}', [BadanHukumController::class, 'destroy']);
+        Route::post('/delete/', [BadanHukumController::class, 'destroy']);
     });
 
     Route::prefix("negara")->group(function () {
@@ -76,7 +76,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [NegaraController::class, 'store']);
         Route::get('/edit/{negaraId}', [NegaraController::class, 'edit']);
         Route::post('/update', [NegaraController::class, 'update']);
-        Route::delete('/delete/{negaraId}', [NegaraController::class, 'destroy']);
+        Route::post('/delete', [NegaraController::class, 'destroy']);
     });
 
     Route::prefix("kode-pos")->group(function () {
@@ -86,7 +86,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [KodePosController::class, 'store']);
         Route::get('/edit/{kodePosId}', [KodePosController::class, 'edit']);
         Route::post('/update', [KodePosController::class, 'update']);
-        Route::delete('/delete/{kodePosId}', [KodePosController::class, 'destroy']);
+        Route::post('/delete', [KodePosController::class, 'destroy']);
     });
 
     Route::prefix("jenis-perusahaan")->group(function () {
@@ -96,7 +96,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [JenisPerusahaanController::class, 'store']);
         Route::get('/edit/{jenisPerusahaanId}', [JenisPerusahaanController::class, 'edit']);
         Route::post('/update', [JenisPerusahaanController::class, 'update']);
-        Route::delete('/delete/{jenisPerusahaanId}', [JenisPerusahaanController::class, 'destroy']);
+        Route::post('/delete', [JenisPerusahaanController::class, 'destroy']);
     });
 
     // ======================================== SIS ========================================
