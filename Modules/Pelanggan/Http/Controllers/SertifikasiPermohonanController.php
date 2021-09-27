@@ -13,6 +13,7 @@ use App\Models\BbkkpSis\MasterSertifikasi;
 use App\Models\BbkkpSis\MasterSertifikasiDokuman;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganDokuman;
+use App\Models\BbkkpSis\SisPelangganPabrik;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -23,7 +24,7 @@ use Illuminate\Support\Str;
 class SertifikasiPermohonanController extends Controller
 {
     public $module = self::class;
-    private $url = 'sertifikasi/permohonan-sertifikasi';
+    private $url = 'pelanggan/sertifikasi/permohonan';
 
     public function index()
     {
@@ -66,6 +67,10 @@ class SertifikasiPermohonanController extends Controller
             "upload_document" => $this->ajax_upload_document($request),
             "data_pemohon" => $this->ajax_data_pemohon($request),
             "update_data_pemohon" => $this->ajax_update_data_pemohon($request),
+            "pabrik_data" => $this->ajax_pabrik_data($request),
+            "pabrik_add" => $this->ajax_pabrik_add($request),
+            "pabrik_update" => $this->ajax_pabrik_update($request),
+            "pabrik_delete" => $this->ajax_pabrik_delete($request),
             default => null,
         };
     }
@@ -345,12 +350,74 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
+    private function ajax_pabrik_data(Request $request)
+    {
+        try {
+            $dataPabrik = auth()->user()?->sis_pelanggan?->sis_pelanggan_pabriks;
+            return responseJSON(200, $dataPabrik, "Data ditemukan");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_pabrik_add(Request $request)
+    {
+        try {
+            $dataPelanggan = auth()->user()?->sis_pelanggan;
+            $dataPabrik    = $dataPelanggan?->sis_pelanggan_pabriks;
+
+            $newPabrik              = new SisPelangganPabrik();
+            $newPabrik->cust_id     = $dataPelanggan->cust_id;
+            $newPabrik->pabrik_nama = sprintf("Pabrik %d", count($dataPabrik) + 1);
+
+            $allField = $newPabrik->getFillable();
+            foreach ($allField as $field) {
+                if (!in_array($field, ['cust_id', 'pabrik_nama', 'kec_id', 'kab_id', 'prov_id',])) {
+                    $newPabrik->$field = "-";
+                }
+            }
+            $newPabrik->save();
+            return responseJSON(200, $newPabrik, "Data pabrik ditambahkan");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_pabrik_update(Request $request)
+    {
+        try {
+            $request->validate(['pabrik_id' => 'required|integer', "parameter" => "required", "value" => "required"]);
+            $parameter = $request['parameter'];
+            $value     = $request['value'] == '--' ? NULL : $request['value'];
+
+            $dataPabrik             = SisPelangganPabrik::findOrFail($request['pabrik_id']);
+            $dataPabrik->$parameter = $value;
+            $dataPabrik->save();
+            return responseJSON(200, null, "Data pabrik diperbarui");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_pabrik_delete(Request $request)
+    {
+        try {
+            $request->validate(['pabrik_id' => 'required|integer']);
+
+            $dataPabrik = SisPelangganPabrik::findOrFail($request['pabrik_id']);
+            $dataPabrik->delete();
+            return responseJSON(200, null, "Data pabrik dihapus");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
     private function ajax_update_data_pemohon(Request $request)
     {
         try {
             $request->validate(["parameter" => "required", "value" => "required"]);
             $parameter = $request['parameter'];
-            $value     = $request['value'] == '-' ? NULL : $request['value'];
+            $value     = $request['value'] == '--' ? NULL : $request['value'];
 
             $dataPemohon                          = auth()->user()?->sis_pelanggan;
             $dataPemohon->$parameter              = $value;
