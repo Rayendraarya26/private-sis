@@ -75,6 +75,9 @@ class SisSertifikasiController extends Controller
 			case 'datagrid-sertifikasi-dokumen':
                 $response = $this->ajax_datagrid_sertifikasi_dokumen($request);
                 break;
+			case 'datagrid-sertifikasi-klausul':
+                $response = $this->ajax_datagrid_sertifikasi_klausul($request);
+                break;
 			case 'combobox-jenis-dokumen':
                 $response = $this->ajax_combobox_jenis_dokumen($request);
                 break;
@@ -112,6 +115,43 @@ class SisSertifikasiController extends Controller
 		
         return response()->json($result);
     }
+	
+	private function ajax_datagrid_sertifikasi_klausul(Request $request)
+	{
+		 $data = MasterSertifikasiKlausul::select("*");
+        // Filter
+		$data->where('sert_id', '=', $request['sert_id']);;
+        if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+            }
+        }
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['sert_klau_id'] = $d->sert_klau_id;
+            $x['sert_id'] = $d->sert_id;
+            $x['sert_klau_nomor'] = $d->sert_klau_nomor;
+            $x['sert_klau_peryataan'] = $d->sert_klau_peryataan;
+            $x['sert_klau_is_item'] = $d->sert_klau_is_item;
+            array_push($result, $x);
+        }
+
+        return response()->json(["total" => $total, "rows" => $result]);
+	}
 	
 	private function ajax_datagrid_sertifikasi_dokumen(Request $request)
     {
@@ -217,9 +257,17 @@ class SisSertifikasiController extends Controller
 		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'create-sertifikasi' => $this->create_sertifikasi($request),
             'create-sertifikasi-dokumen' => $this->create_sertifikasi_dokumen($request),
+            'create-sertifikasi-klausul' => $this->create_sertifikasi_klausul($request),
             default => null,
         };
     }
+	
+	private function create_sertifikasi_klausul(Request $request)
+    {
+		$data = MasterSertifikasi::findOrFail($request['sert_id']);
+        $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
+        return view("master::sis_sertifikasi.create-sertifikasi-klausul")->with($parser);
+	}
 	
 	private function create_sertifikasi_dokumen(Request $request)
     {
@@ -240,8 +288,30 @@ class SisSertifikasiController extends Controller
 		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'store-sertifikasi' => $this->store_sertifikasi($request),
             'store-sertifikasi-dokumen' => $this->store_sertifikasi_dokumen($request),
+            'store-sertifikasi-klausul' => $this->store_sertifikasi_klausul($request),
             default => null,
         };
+    }
+	
+	private function store_sertifikasi_klausul( Request $request)
+    {
+        $request->validate([
+							'sert_klau_nomor' => 'required|string',
+							'sert_id' => 'required|integer',
+							'sert_klau_peryataan' => 'required|string'
+						]); // auto redirect back jika tidak valid
+		$dataInsert = [
+            'sert_klau_nomor' => $request->sert_klau_nomor,
+            'sert_id' => $request->sert_id,
+            'sert_klau_peryataan' => $request->sert_klau_peryataan
+        ];
+
+        try {
+            MasterSertifikasiKlausul::create($dataInsert);
+            return redirect()->back()->with('message', "Tambah data berhasil");
+        } catch (Exception $e) {
+            return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
+        }
     }
 	
 	private function store_sertifikasi_dokumen( Request $request)
@@ -298,9 +368,18 @@ class SisSertifikasiController extends Controller
 		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'edit-sertifikasi' => $this->edit_sertifikasi($request),
             'edit-sertifikasi-dokumen' => $this->edit_sertifikasi_dokumen($request),
+            'edit-sertifikasi-klausul' => $this->edit_sertifikasi_klausul($request),
             default => null,
         };
     }
+	
+	private function edit_sertifikasi_klausul( Request $request)
+	{
+        $data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']); 
+        $data = MasterSertifikasiKlausul::findOrFail($request['sert_klau_id']); 
+        $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data, 'data_sertifikat' => $data_sertifikat];
+        return view("master::sis_sertifikasi.edit-sertifikasi-klausul")->with($parser);
+	}
 	
 	private function edit_sertifikasi_dokumen( Request $request)
     {
@@ -328,8 +407,31 @@ class SisSertifikasiController extends Controller
 		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'update-sertifikasi' => $this->update_sertifikasi($request),
             'update-sertifikasi-dokumen' => $this->update_sertifikasi_dokumen($request),
+            'update-sertifikasi-klausul' => $this->update_sertifikasi_klausul($request),
             default => null,
         };
+    }
+	
+	private function update_sertifikasi_klausul( Request $request)
+    {
+        $request->validate([
+							'sert_klau_id' => 'required|integer',
+							'sert_id' => 'required|integer',
+							'sert_klau_nomor' => 'required|string',
+							'sert_klau_peryataan' => 'required|string'
+						]); // auto redirect back jika tidak valid
+		$dataUpdate = [
+            'sert_klau_nomor' => $request->sert_klau_nomor,
+            'sert_klau_peryataan' => $request->sert_klau_peryataan
+        ];
+
+        try {
+            $data = MasterSertifikasiKlausul::findOrFail($request['sert_klau_id'])
+                ->update($dataUpdate);
+            return redirect()->back()->with('message', "Update data berhasil");
+        } catch (Exception $e) {
+            return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
+        }
     }
 	
 	private function update_sertifikasi_dokumen(Request $request)
@@ -392,9 +494,39 @@ class SisSertifikasiController extends Controller
 		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'delete-sertifikasi' => $this->delete_sertifikasi($request),
             'delete-sertifikasi-dokumen' => $this->delete_sertifikasi_dokumen($request),
+            'delete-sertifikasi-klausul' => $this->delete_sertifikasi_klausul($request),
             default => null,
         };
     }
+	
+	private function delete_sertifikasi_klausul(Request $request)
+	{
+		/*
+        responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
+        Lokasi helper ada di App\Helpers\GlobalHelper
+        */
+		
+		try {
+            $status_return = TRUE;
+            foreach ($request->ids as $id) {
+                $data = MasterSertifikasiKlausul::where("sert_klau_id", $id)->firstOrFail();
+                if ($data->delete()) {
+
+                } else {
+                    $status_return = FALSE;
+                    break;
+                }
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+            }
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+	}
 	
 	private function delete_sertifikasi_dokumen(Request $request)
 	{

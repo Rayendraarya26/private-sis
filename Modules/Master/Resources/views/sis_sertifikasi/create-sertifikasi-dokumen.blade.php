@@ -64,9 +64,7 @@
                                         <label class="col-form-label col-sm-3"
                                                for="sert_dok_keterangan">Keterangan</label>
                                         <div class="col-sm-8">
-                                            <textarea class="form-control"
-                                                   type="text" name="sert_dok_keterangan" id="sert_dok_keterangan"
-                                                   value="">{{old('sert_dok_keterangan')}}</textarea>
+                                            <textarea class="form-control" name="sert_dok_keterangan" id="sert_dok_keterangan">{{old('sert_dok_keterangan')}}</textarea>
                                         </div>
                                     </div>
 									
