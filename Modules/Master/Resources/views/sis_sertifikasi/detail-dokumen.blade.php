@@ -1,15 +1,20 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Master Sertifikasi')
+@section('title', 'Master Dokumen Sertifikasi')
 
 @section('content')
     <div class="dt-content">
         <div class="row">
             <div class="col-md-12">
+                <a class="btn btn-sm btn-default"
+                   href="{{url("$url")}}"
+                   style="margin-bottom: 20px">
+                    <i class="fad fa-arrow-left"></i> Kembali ke Data Sertifikasi
+                </a>
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Master Sertifikasi</h3>
+                            <h3 class="dt-card__title">Data Master Dokumen Sertifikasi "{{$data->sert_nama}}"</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -18,7 +23,7 @@
 							<div class="row">
 								@if(authorized("{$module}@create"))
 									<div>
-										<a href="{{ url("$url/create?tipe=create-sertifikasi") }}" class="btn btn-outline-success btn-xs">
+										<a href="{{ url("$url/create?tipe=create-sertifikasi-dokumen&sert_id=$data->sert_id") }}" class="btn btn-outline-success btn-xs">
 											<i class="fas fa-plus"></i> Tambah
 										</a>
 									</div>
@@ -46,8 +51,8 @@
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-sertifikasi") }}`,
-                rownumbers: true,
+                url: `{{ url("$url/ajax?action=datagrid-sertifikasi-dokumen") }}`,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -57,55 +62,61 @@
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
+				queryParams: {
+					sert_id: `{{$data->sert_id}}`,
+				},
                 frozenColumns: [[
                     {field: 'ck', checkbox: true, sortable: false},
-                    {
+					{
                         field: 'action',
                         title: "Aksi",
                         width: 80,
                         align: 'center',
-                        formatter: function (val, row) {							
-							let dom = `dropdownMenu_${row.sert_id}`;
-                            let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit?tipe=edit-sertifikasi") }}&sert_id=${row.sert_id}'">Edit</div>`;
-                            let btnDetail = `<div data-options="iconCls:'fad fa-folder'" onclick="location.href = '{{ url("$url/detail?tipe=detail-klausul-tahap1") }}&sert_id=${row.sert_id}'">Klausul Tahap 1</div>
-											<div data-options="iconCls:'fad fa-folder'" onclick="location.href = '{{ url("$url/detail?tipe=detail-klausul") }}&sert_id=${row.sert_id}'">Klausul</div>
-											<div data-options="iconCls:'fad fa-folder'" onclick="location.href = '{{ url("$url/detail?tipe=detail-dokumen") }}&sert_id=${row.sert_id}'">Dokumen</div>
-											`;
+                        formatter: function (val, row) {
+                            let btnEdit = `<a href="{{url("$url/edit?tipe=edit-sertifikasi-dokumen")}}&sert_id={{$data->sert_id}}&sert_dok_id=${row.sert_dok_id}" class="btn btn-primary btn-xs btn-block">Edit</a>`;
+							let output = "";
 
-                            return `
-								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.sert_id}" title="Aksi">
-										<i class="fa fa-setting"></i> Aksi
-									</button>
-									<div id="${dom}" style="width:150px; display: none;">
-										@if(authorized("{$module}@edit")) ${btnEdit} @endif
-										@if(authorized("{$module}@detail")) ${btnDetail} @endif
-								</div>
-							</div>`
+                            @if(authorized("{$module}@edit"))
+                                output += btnEdit
+                            @endif
+							return output;
                         }
                     }
                 ]],
                 columns: [[
-                    {field: 'sert_nama', title: 'Sertifikasi', width: 400, sortable: true},
-                    {field: 'sert_expired', title: 'Masa<br/>Berlaku(Tahun)', width: 140, sortable: true},
-                    {field: 'sert_format_referensi', title: 'Format<br/>Nomor<br/>Referensi', width: 200, sortable: true},
+                    {field: 'jenis_dok_perusahaan_id', hidden: true},
+                    {field: 'sert_dok_id', hidden: true},
+                    {field: 'jenis_dok_perusahaan_text', title: 'Nama Dokumen', width: 400, sortable: true},
+                    {field: 'sert_dok_required', title: 'Harus?', width: 100, sortable: true, align: 'center'},
+                    {field: 'sert_dok_keterangan', title: 'Keterangan', width: 400, sortable: true},
                 ]],
-				onLoadSuccess: function (data) {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].sert_id
-                        });
-                    });
-                },
             });
             dg.datagrid(
                 'enableFilter', [
-                    {field: 'action', type: 'label'},
-                    {field: 'sert_expired', type: 'label'},
-                    {field: 'sert_format_referensi', type: 'label'},
-                    {field: 'sert_nama', type: 'textbox'},
+                    {field: 'jenis_dok_perusahaan_text', type: 'textbox'},
+					{
+						field:'sert_dok_required',
+						type:'combobox',
+						options:{
+							panelHeight:'auto',
+							data:[{value:'',text:'All'},{value:'ya',text:'Ya'},{value:'tidak',text:'Tidak'}],
+							onChange:function(value){
+								if (value == ''){
+									dg.datagrid('removeFilterRule', 'sert_dok_required');
+								} else {
+									dg.datagrid('addFilterRule', {
+										field: 'sert_dok_required',
+										op: 'equal',
+										value: value
+									});
+								}
+								dg.datagrid('doFilter');
+							}
+						}
+					}
                 ]);
         });
+		
 		
 		function confirmDelete() {
             const swalWithBootstrapButtons = swal.mixin({
@@ -131,12 +142,12 @@
 						var tr = opts.finder.getTr($('#ttData')[0],i);
 						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
 						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].sert_id);
+							idData.push(data.rows[i].sert_dok_id);
 						}
 					}
                     $.ajax({
                         url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData, 'tipe' : 'delete-sertifikasi' },
+						data: { 'ids[]': idData, 'tipe' : 'delete-sertifikasi-dokumen', sert_id: `{{$data->sert_id}}` },
 						type: 'DELETE',
                         success: function (response) {
                             toastCenter({
