@@ -1,0 +1,13 @@
+{
+    "name": "OperatorLs",
+    "alias": "operatorls",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\OperatorLs\\Providers\\OperatorLsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

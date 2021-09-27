@@ -1,0 +1,13 @@
+{
+    "name": "Pelanggan",
+    "alias": "pelanggan",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Pelanggan\\Providers\\PelangganServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
