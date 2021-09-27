@@ -677,6 +677,8 @@
                         if ($.trim($("#step3_perusahaan_alamat").val()) === "") throw "Inputkan Alamat";
                         if ($.trim($("#step3_perusahaan_luas_tanah").val()) === "") throw "Inputkan Luas Tanah";
                         if ($.trim($("#step3_perusahaan_luas_bangunan").val()) === "") throw "Inputkan Luas Bangunan";
+                        if ($.trim($("#step3_perusahaan_produksi_tahunan").val()) === "") throw "Inputkan Produksi Tahunan";
+                        if ($.trim($("#step3_perusahaan_produksi_tahunan_satuan").val()) === "") throw "Inputkan Satuan Produksi Tahunan";
                         if ($.trim($("#step3_perusahaan_jml_shift").val()) === "") throw "Inputkan Jumlah Shift";
                         if ($.trim($("#step3_perusahaan_jml_bagian").val()) === "") throw "Inputkan Jumlah Bagian";
                         if ($.trim($("#step3_perusahaan_jml_manajemen").val()) === "") throw "Inputkan Jumlah Manajemen";
