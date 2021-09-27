@@ -112,12 +112,30 @@ Route::prefix('master')->group(function () {
         });
         Route::prefix("kode-ea")->group(function () {
             Route::get("/", [SisKodeEaController::class, 'index']);
+			Route::get('/ajax', [SisKodeEaController::class, 'ajax']);
+			Route::get('/create', [SisKodeEaController::class, 'create']);
+			Route::post('/store', [SisKodeEaController::class, 'store']);
+			Route::get('/edit/{id}', [SisKodeEaController::class, 'edit']);
+			Route::post('/update', [SisKodeEaController::class, 'update']);
+			Route::delete('/delete', [SisKodeEaController::class, 'destroy']);
         });
         Route::prefix("kode-nace")->group(function () {
             Route::get("/", [SisKodeNaceController::class, 'index']);
+			Route::get('/ajax', [SisKodeNaceController::class, 'ajax']);
+			Route::get('/create', [SisKodeNaceController::class, 'create']);
+			Route::post('/store', [SisKodeNaceController::class, 'store']);
+			Route::get('/edit/{id}', [SisKodeNaceController::class, 'edit']);
+			Route::post('/update', [SisKodeNaceController::class, 'update']);
+			Route::delete('/delete', [SisKodeNaceController::class, 'destroy']);
         });
         Route::prefix("komoditi")->group(function () {
             Route::get("/", [SisKomoditiController::class, 'index']);
+			Route::get('/ajax', [SisKomoditiController::class, 'ajax']);
+			Route::get('/create', [SisKomoditiController::class, 'create']);
+			Route::post('/store', [SisKomoditiController::class, 'store']);
+			Route::get('/edit/{id}', [SisKomoditiController::class, 'edit']);
+			Route::post('/update', [SisKomoditiController::class, 'update']);
+			Route::delete('/delete', [SisKomoditiController::class, 'destroy']);
         });
         Route::prefix("sertifikasi")->group(function () {
             Route::get("/", [SisSertifikasiController::class, 'index']);
