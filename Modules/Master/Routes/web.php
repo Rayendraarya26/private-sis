@@ -26,7 +26,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [ProvinsiController::class, 'store']);
         Route::get('/edit/{provId}', [ProvinsiController::class, 'edit']);
         Route::post('/update', [ProvinsiController::class, 'update']);
-        Route::delete('/delete/{provId}', [ProvinsiController::class, 'destroy']);
+        Route::delete('/delete', [ProvinsiController::class, 'destroy']);
     });
 
     Route::prefix("kabupaten")->group(function () {
@@ -36,7 +36,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [KabupatenController::class, 'store']);
         Route::get('/edit/{kabId}', [KabupatenController::class, 'edit']);
         Route::post('/update', [KabupatenController::class, 'update']);
-        Route::delete('/delete/{kabId}', [KabupatenController::class, 'destroy']);
+        Route::delete('/delete', [KabupatenController::class, 'destroy']);
     });
 
     Route::prefix("kecamatan")->group(function () {
@@ -46,7 +46,7 @@ Route::prefix('master')->group(function () {
         Route::post('/store', [KecamatanController::class, 'store']);
         Route::get('/edit/{kecId}', [KecamatanController::class, 'edit']);
         Route::post('/update', [KecamatanController::class, 'update']);
-        Route::delete('/delete/{kecId}', [KecamatanController::class, 'destroy']);
+        Route::delete('/delete', [KecamatanController::class, 'destroy']);
     });
 
     Route::prefix("jenis-dok-perusahaan")->group(function () {

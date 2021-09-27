@@ -93,8 +93,6 @@
                 cancelButtonClass: 'btn btn-success mr-2 mb-2',
                 buttonsStyling: false,
             });
-			
-			
 
             swalWithBootstrapButtons({
                 title: `Menghapus Data ?`,

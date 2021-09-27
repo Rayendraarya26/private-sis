@@ -41,6 +41,21 @@
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
                                     <input type="hidden" name="kec_id" value="{{$data->kec_id}}">
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3"
+                                               for="prov_id">Provinsi *</label>
+                                        <div class="col-sm-8">
+                                            <input style="width:100%;" type="text" id="prov_id" name="prov_id" class="form-control"/>
+                                        </div>
+                                    </div>
+									
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3"
+                                               for="prov_id">Kabupaten *</label>
+                                        <div class="col-sm-8">
+                                            <input style="width:100%;" type="text" id="kab_id" name="kab_id" class="form-control"/>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
                                                for="kec_nama">Nama Kecamatan*</label>
@@ -66,3 +81,39 @@
     </div>
 
 @endsection
+@push("javascript")
+    <script>
+		let cb_prov = $('#prov_id').combobox({
+			width: 300,    
+			mode: 'remote',
+			method: 'GET',
+			valueField: 'prov_id',
+			textField: 'prov_nama',
+			url:`{{url("$url/ajax?action=combobox-provinsi")}}`,
+			onSelect: function(rec){
+				cb_kab.combobox({
+					url:`{{url("$url/ajax?action=combobox-kabupaten")}}`,
+					queryParams: {
+						prov_id: `${rec.prov_id}`,
+					},
+				});
+				
+				cb_kab.combobox('setValue', '{{old('kab_id') ?? $data->kab_id}}');
+			}
+		});
+		
+		cb_prov.combobox('setValue', '{{old('prov_id') ?? $data->prov_id}}');
+		
+		let cb_kab = $('#kab_id').combobox({
+			width: 300,    
+			mode: 'remote',
+			method: 'GET',
+			valueField: 'kab_id',
+			url:`{{url("$url/ajax?action=combobox-kabupaten")}}`,
+			queryParams: {
+				prov_id: `{{old('prov_id') ?? $data->prov_id}}`,
+			},
+			textField: 'kab_nama'
+		});
+    </script>
+@endpush

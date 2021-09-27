@@ -3,6 +3,7 @@
 namespace Modules\Master\Http\Controllers;
 
 use App\Models\BbkkpSis\MasterKabupaten;
+use App\Models\BbkkpSis\MasterProvinsi;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -27,14 +28,22 @@ class KabupatenController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['kab_nama' => 'required|string']); // auto redirect back jika tidak valid
+        $request->validate([
+			'prov_id' => 'required|string',
+			'kab_nama' => 'required|string'
+			]); // auto redirect back jika tidak valid
 
         // Aktifkan dd jika ingin melihat data
         //dump($request->except('_token'));
         //dump($request->all());
-
+		
+		$dataInsert = [
+            'prov_id'      => $request->prov_id,
+            'kab_nama' => $request->kab_nama
+        ];
+		
         try {
-            MasterKabupaten::create($request->except("_token"));
+            MasterKabupaten::create($dataInsert);
             return redirect()->back()->with('message', "Tambah data berhasil");
         } catch (Exception $e) {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
@@ -54,13 +63,19 @@ class KabupatenController extends Controller
     {
         $request->validate([
             'kab_id' => 'required|integer',
-            'kab_nama' => 'required|string'
+            'kab_nama' => 'required|string',
+            'prov_id' => 'required|string'
         ]); // auto redirect back jika tidak valid
-
+		
+		$dataUpdate = [
+            'prov_id'	=> $request->prov_id,
+            'kab_nama' 	=> $request->kab_nama,
+        ];
+		
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterKabupaten::findOrFail($request['kab_id'])
-                ->update($request->only("kab_nama"));
+                ->update($dataUpdate);
             //DB::commit();
             return redirect()->back()->with('message', "Update data berhasil");
         } catch (Exception $e) {
@@ -71,16 +86,27 @@ class KabupatenController extends Controller
 
     }
 
-    public function destroy($kabId)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-        try {
-            $data = MasterKabupaten::where("kab_id", $kabId)->firstOrFail();
-            if ($data->delete()) {
-                return responseJSON(200, [], "Data berhasil dihapus");
+		
+		try {
+            $status_return = TRUE;
+            foreach ($request->ids as $id) {
+                $data = MasterKabupaten::where("kab_id", $id)->firstOrFail();
+                if ($data->delete()) {
+
+                } else {
+                    $status_return = FALSE;
+                    break;
+                }
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }
@@ -94,6 +120,7 @@ class KabupatenController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
+            'combobox-provinsi' => $this->ajax_combobox_provinsi($request),
             default => null,
         };
     }
@@ -133,5 +160,26 @@ class KabupatenController extends Controller
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
+    }
+	
+	private function ajax_combobox_provinsi(Request $request)
+    {
+        $data = MasterProvinsi::select("*");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('prov_nama', 'LIKE', '%' . $request->q . '%');
+        }
+        // Sorter
+        $data->orderBy('prov_nama', 'ASC');
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['prov_id'] = $d->prov_id;
+            $x['prov_nama'] = $d->prov_nama;
+            array_push($result, $x);
+        }
+
+        return response()->json($result);
     }
 }
