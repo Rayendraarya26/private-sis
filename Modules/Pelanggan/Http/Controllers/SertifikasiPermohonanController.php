@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Certification\Http\Controllers;
+namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Models\BbkkpSis\MasterBadanHukum;
 use App\Models\BbkkpSis\MasterJenisPerusahaan;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class PermohonanSertifikasiController extends Controller
+class SertifikasiPermohonanController extends Controller
 {
     public $module = self::class;
     private $url = 'sertifikasi/permohonan-sertifikasi';
@@ -28,7 +28,7 @@ class PermohonanSertifikasiController extends Controller
     public function index()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
-        return view('certification::permohonan_sertifikasi.index')->with($parser);
+        return view('pelanggan::sertifikasi_permohonan.index')->with($parser);
     }
 
     public function create()
@@ -43,7 +43,7 @@ class PermohonanSertifikasiController extends Controller
             'masterBadanHukum'      => $masterBadanHukum,
             'masterJenisPerusahaan' => $masterJenisPerusahaan,
         ];
-        return view('certification::permohonan_sertifikasi.create')->with($parser);
+        return view('pelanggan::sertifikasi_permohonan.create')->with($parser);
     }
 
     public function store()

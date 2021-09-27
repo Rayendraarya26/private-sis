@@ -49,13 +49,13 @@
 
                             <div class="tab-content">
                                 <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
-                                    @include("certification::permohonan_sertifikasi._create_step_1")
+                                    @include("pelanggan::sertifikasi_permohonan._create_step_1")
                                 </div>
                                 <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
-                                    @include("certification::permohonan_sertifikasi._create_step_2")
+                                    @include("pelanggan::sertifikasi_permohonan._create_step_2")
                                 </div>
                                 <div id="step-3" class="tab-pane" role="tabpanel" aria-labelledby="step-3">
-                                    @include("certification::permohonan_sertifikasi._create_step_3")
+                                    @include("pelanggan::sertifikasi_permohonan._create_step_3")
                                 </div>
                                 <div id="step-4" class="tab-pane" role="tabpanel" aria-labelledby="step-4">
                                     <h3>Step 4 Content</h3>
