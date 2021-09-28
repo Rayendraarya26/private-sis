@@ -27,9 +27,10 @@
 
     <!-- Load Styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/lite-style-1.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/fontawesome/css/all.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('assets/fontawesome/css/all.min.css') }}">
 
-    <link href="{{ asset('assets/plugins/easyui/themes/material/easyui.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/easyui/themes/material/easyui.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/cooltipz/cooltipz.min.css') }}">
 
     <style>
         /*.table-responsive {*/
@@ -48,6 +49,10 @@
             .dt-side-nav__header {
                 padding-top: 20px !important;
             }
+        }
+
+        .custom-cooltipz {
+            --cooltipz-font-size: 10px;
         }
     </style>
 
@@ -131,9 +136,9 @@
                                     <h4 class="title">Notifikasi @if($total->total) {{$total->total}}) @endif</h4>
 
                                     @if($total->total)
-                                    <div class="ml-auto action-area">
-                                        <a href="{{url('notification/mark-all-as-read')}}">Baca Semua</a>
-                                    </div>
+                                        <div class="ml-auto action-area">
+                                            <a href="{{url('notification/mark-all-as-read')}}">Baca Semua</a>
+                                        </div>
                                     @endif
                                 </div>
                                 <!-- /dropdown menu header -->
@@ -346,10 +351,10 @@
         <!-- /site content wrapper -->
 
         <!-- Theme Chooser -->
-{{--        <div class="dt-customizer-toggle">--}}
-{{--            <a href="javascript:void(0)" data-toggle="customizer"> <i class="icon icon-spin icon-setting"></i> </a>--}}
-{{--        </div>--}}
-        <!-- /theme chooser -->
+    {{--        <div class="dt-customizer-toggle">--}}
+    {{--            <a href="javascript:void(0)" data-toggle="customizer"> <i class="icon icon-spin icon-setting"></i> </a>--}}
+    {{--        </div>--}}
+    <!-- /theme chooser -->
 
         <!-- Customizer Sidebar -->
         <aside class="dt-customizer dt-drawer position-right">
@@ -623,48 +628,50 @@
             });
     }
 
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI",
-        authDomain: "balaikulit-yogya.firebaseapp.com",
-        projectId: "balaikulit-yogya",
-        storageBucket: "balaikulit-yogya.appspot.com",
-        messagingSenderId: "54843566382",
-        appId: "1:54843566382:web:76eb5779a911d71d6d72bf"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    $(function () {
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI",
+            authDomain: "balaikulit-yogya.firebaseapp.com",
+            projectId: "balaikulit-yogya",
+            storageBucket: "balaikulit-yogya.appspot.com",
+            messagingSenderId: "54843566382",
+            appId: "1:54843566382:web:76eb5779a911d71d6d72bf"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
 
-    window.FIREBASE_MESSAGING = firebase.messaging();
+        window.FIREBASE_MESSAGING = firebase.messaging();
 
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
-            .then(function (swReg) {
-                // console.log('Service Worker is registered', swReg);
-                // console.log('ServiceWorker registration successful with scope: ', swReg.scope);
-                FIREBASE_MESSAGING.useServiceWorker(swReg);
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
+                .then(function (swReg) {
+                    // console.log('Service Worker is registered', swReg);
+                    // console.log('ServiceWorker registration successful with scope: ', swReg.scope);
+                    FIREBASE_MESSAGING.useServiceWorker(swReg);
+                })
+                .catch(function (error) {
+                    console.error('Service Worker Error', error);
+                });
+        }
+
+        // meminta perizinan allow pop up
+        FIREBASE_MESSAGING.requestPermission()
+            .then(() => {
+                FIREBASE_MESSAGING.getToken().then(token => {
+                    syncToken(token)
+                })
+
+                FIREBASE_MESSAGING.onMessage(payload => {
+                    // console.log(payload)
+                    alert("new notif");
+                });
             })
-            .catch(function (error) {
-                console.error('Service Worker Error', error);
+            .catch((err) => {
+                console.log(err);
+                console.log("error getting permission :(");
             });
-    }
-
-    // meminta perizinan allow pop up
-    FIREBASE_MESSAGING.requestPermission()
-        .then(() => {
-            FIREBASE_MESSAGING.getToken().then(token => {
-                syncToken(token)
-            })
-
-            FIREBASE_MESSAGING.onMessage(payload => {
-                // console.log(payload)
-                alert("new notif");
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-            console.log("error getting permission :(");
-        });
+    });
 </script>
 
 @stack('javascript')

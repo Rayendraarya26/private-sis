@@ -42,7 +42,7 @@
                            title="Dokumen sudah di unggah"></i>
                         <i class="fad fa-warning" style="color: red" v-else title="Dokumen belum di unggah"></i>
 
-                        @{{ dds.dt_name }}
+                        @{{ dds.dt_name }} <x-linked-icon></x-linked-icon>
                         <span v-if="dds.dt_sample"><a :href="dds.dt_sample">Download Sample</a></span>
                     </td>
                     <td>

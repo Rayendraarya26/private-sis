@@ -19,7 +19,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_nama">Nama Perusahaan*</label>
+                                <label for="step3_perusahaan_nama">
+                                    Nama Perusahaan*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_nama" name="step3_perusahaan_nama" class="form-control"
                                        @change="updateDataPemohon('cust_nama',...arguments)">
                             </div>
@@ -30,7 +33,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_akta">Nomor Akta Pendirian*</label>
+                                <label for="step3_perusahaan_akta">
+                                    Nomor Akta Pendirian*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_akta" name="step3_perusahaan_akta" class="form-control"
                                        @change="updateDataPemohon('cust_nomor_akta_pendirian',...arguments)">
                             </div>
@@ -41,7 +47,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_nama_pemilik">Nama Pemilik*</label>
+                                <label for="step3_perusahaan_nama_pemilik">
+                                    Nama Pemilik*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_nama_pemilik" name="step3_perusahaan_nama_pemilik"
                                        class="form-control"
                                        @change="updateDataPemohon('cust_nama_pemilik',...arguments)">
@@ -53,7 +62,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_nama_pimpinan">Nama Pimpinan*</label>
+                                <label for="step3_perusahaan_nama_pimpinan">
+                                    Nama Pimpinan*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_nama_pimpinan" name="step3_perusahaan_nama_pimpinan"
                                        class="form-control"
                                        @change="updateDataPemohon('cust_nama_pimpinan',...arguments)">
@@ -65,7 +77,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_nama_wakil">Nama Wakil Manajemen*</label>
+                                <label for="step3_perusahaan_nama_wakil">
+                                    Nama Wakil Manajemen*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_nama_wakil" name="step3_perusahaan_nama_wakil"
                                        class="form-control"
                                        @change="updateDataPemohon('cust_nama_wakil_manajemen',...arguments)">
@@ -77,7 +92,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_telp">Telp (Perusahaan)*</label>
+                                <label for="step3_perusahaan_telp">
+                                    Telp (Perusahaan)*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_telp" name="step3_perusahaan_telp" class="form-control"
                                        @change="updateDataPemohon('cust_nomor_telp',...arguments)">
                             </div>
@@ -88,7 +106,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_fax">Fax*</label>
+                                <label for="step3_perusahaan_fax">
+                                    Fax*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_fax" name="step3_perusahaan_fax" class="form-control"
                                        @change="updateDataPemohon('cust_nomor_fax',...arguments)">
                             </div>
@@ -99,7 +120,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_cp">Nomer HP (CP)*</label>
+                                <label for="step3_perusahaan_cp">
+                                    Nomer HP (CP)*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_cp" name="step3_perusahaan_cp" class="form-control"
                                        @change="updateDataPemohon('cust_nomor_hp',...arguments)">
                             </div>
@@ -110,7 +134,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_badan_hukum">Badan Hukum*</label>
+                                <label for="step3_perusahaan_badan_hukum">
+                                    Badan Hukum*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <select name="step3_perusahaan_badan_hukum" id="step3_perusahaan_badan_hukum"
                                         class="form-control" @change="updateDataPemohon('badan_hukum_id',...arguments)">
                                     <option disabled selected>--Pilih Badan Hukum--</option>
@@ -126,7 +153,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_jenis">Jenis Perusahaan*</label>
+                                <label for="step3_perusahaan_jenis">
+                                    Jenis Perusahaan*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <select name="step3_perusahaan_jenis" id="step3_perusahaan_jenis"
                                         class="form-control"
                                         @change="updateDataPemohon('jenis_perusahaan_id',...arguments)">
@@ -152,7 +182,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_negara">Negara*</label>
+                                <label for="step3_perusahaan_negara">
+                                    Negara*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_negara" name="step3_perusahaan_negara" class="form-control"
                                        style="width: 100%">
                             </div>
@@ -163,7 +196,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_provinsi">Provinsi*</label>
+                                <label for="step3_perusahaan_provinsi">
+                                    Provinsi*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_provinsi" name="step3_perusahaan_provinsi"
                                        class="form-control"
                                        style="width: 100%">
@@ -175,7 +211,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_kabupaten">Kabupaten*</label>
+                                <label for="step3_perusahaan_kabupaten">
+                                    Kabupaten*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_kabupaten" name="step3_perusahaan_kabupaten"
                                        class="form-control" style="width: 100%">
                             </div>
@@ -186,7 +225,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_kecamatan">Kecamatan*</label>
+                                <label for="step3_perusahaan_kecamatan">
+                                    Kecamatan*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_kecamatan" name="step3_perusahaan_kecamatan"
                                        class="form-control" style="width: 100%">
                             </div>
@@ -197,7 +239,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_alamat">Alamat*</label>
+                                <label for="step3_perusahaan_alamat">
+                                    Alamat*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <textarea id="step3_perusahaan_alamat" name="step3_perusahaan_alamat" cols="30"
                                           class="form-control"
                                           @change="updateDataPemohon('cust_alamat',...arguments)"></textarea>
@@ -209,7 +254,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_luas_tanah">Luas Tanah*</label>
+                                <label for="step3_perusahaan_luas_tanah">
+                                    Luas Tanah*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_luas_tanah" name="step3_perusahaan_luas_tanah"
                                        class="form-control" @change="updateDataPemohon('cust_luas_tanah',...arguments)">
                             </div>
@@ -220,7 +268,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_luas_bangunan">Luas Bangunan*</label>
+                                <label for="step3_perusahaan_luas_bangunan">
+                                    Luas Bangunan*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_luas_bangunan" name="step3_perusahaan_luas_bangunan"
                                        class="form-control"
                                        @change="updateDataPemohon('cust_luas_bangunan',...arguments)">
@@ -240,7 +291,10 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="form-group">
-                                <label for="step3_perusahaan_produksi_tahunan">Kapasitas Produksi/Tahun* </label>
+                                <label for="step3_perusahaan_produksi_tahunan">
+                                    Kapasitas Produksi/Tahun*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_produksi_tahunan" name="step3_perusahaan_produksi_tahunan"
                                        class="form-control" type="number" min="0"
                                        @change="updateDataPemohon('cust_kapasitas_produksi_tahunan',...arguments)">
@@ -248,7 +302,10 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="step3_perusahaan_produksi_tahunan_satuan">Satuan* </label>
+                                <label for="step3_perusahaan_produksi_tahunan_satuan">
+                                    Satuan*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_produksi_tahunan_satuan"
                                        name="step3_perusahaan_produksi_tahunan_satuan"
                                        class="form-control" type="text"
@@ -261,7 +318,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_jml_shift">Jumlah Shift (dalam sehari)* </label>
+                                <label for="step3_perusahaan_jml_shift">
+                                    Jumlah Shift (dalam sehari)*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_jml_shift" name="step3_perusahaan_jml_shift"
                                        class="form-control" type="number" min="0"
                                        @change="updateDataPemohon('cust_shif_kerja',...arguments)">
@@ -273,7 +333,10 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="step3_perusahaan_jml_bagian">Jumlah Bagian* </label>
+                                <label for="step3_perusahaan_jml_bagian">
+                                    Jumlah Bagian*
+                                    <x-linked-icon></x-linked-icon>
+                                </label>
                                 <input id="step3_perusahaan_jml_bagian" name="step3_perusahaan_jml_bagian"
                                        class="form-control" type="number" min="0"
                                        @change="updateDataPemohon('cust_jumlah_bagian',...arguments)">
@@ -305,13 +368,12 @@
                                                        id="step3_perusahaan_jml_manajemen"
                                                        @change="updateDataPemohon('cust_jumlah_manajemen',...arguments)">
                                                 <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
+                                                    <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
                                             </div>
                                             <!-- /input group -->
                                         </div>
+                                        <x-linked-icon></x-linked-icon>
                                     </div>
                                     <!-- /form row -->
                                 </li>
@@ -329,13 +391,12 @@
                                                        name="step3_perusahaan_jml_administrasi"
                                                        @change="updateDataPemohon('cust_jumlah_administrasi',...arguments)">
                                                 <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
+                                                    <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
                                             </div>
                                             <!-- /input group -->
                                         </div>
+                                        <x-linked-icon></x-linked-icon>
                                     </div>
                                     <!-- /form row -->
                                 </li>
@@ -352,13 +413,12 @@
                                                        name="step3_perusahaan_jml_part_time"
                                                        @change="updateDataPemohon('cust_jumlah_part_time',...arguments)">
                                                 <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
+                                                    <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
                                             </div>
                                             <!-- /input group -->
                                         </div>
+                                        <x-linked-icon></x-linked-icon>
                                     </div>
                                     <!-- /form row -->
                                 </li>
@@ -409,13 +469,12 @@
                                                                name="step3_perusahaan_jml_shift_2"
                                                                @change="updateDataPemohon('cust_jumlah_shift_2',...arguments)">
                                                         <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
+                                                            <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                         </div>
                                                     </div>
                                                     <!-- /input group -->
                                                 </div>
+                                                <x-linked-icon></x-linked-icon>
                                             </div>
                                         </li>
                                         <li>
@@ -433,13 +492,12 @@
                                                                name="step3_perusahaan_jml_shift_3"
                                                                @change="updateDataPemohon('cust_jumlah_shift_3',...arguments)">
                                                         <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
+                                                            <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                         </div>
                                                     </div>
                                                     <!-- /input group -->
                                                 </div>
+                                                <x-linked-icon></x-linked-icon>
                                             </div>
                                         </li>
                                     </ul>
@@ -459,13 +517,12 @@
                                                        name="step3_perusahaan_jml_non_permanen"
                                                        @change="updateDataPemohon('cust_jumlah_non_permanen',...arguments)">
                                                 <div class="input-group-append">
-                                            <span class="input-group-text">
-                                                <i class="fad fa-person"></i>&nbsp; Orang
-                                            </span>
+                                                    <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
                                             </div>
                                             <!-- /input group -->
                                         </div>
+                                        <x-linked-icon></x-linked-icon>
                                     </div>
                                     <!-- /form row -->
                                 </li>
@@ -494,7 +551,7 @@
                                     <div class="table-responsive">
                                         <table class="tabel_pabrik">
                                             <tr>
-                                                <td>Nama Pabrik</td>
+                                                <td>Nama Pabrik <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_nama_'+n.pabrik_id" :value="n.pabrik_nama"
                                                            :name="'step3_pabrik_nama_'+n.pabrik_id" type="text"
@@ -503,7 +560,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Np Telp</td>
+                                                <td>Np Telp <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_telp_'+n.pabrik_id"
                                                            :value="n.pabrik_nomor_telp"
@@ -513,7 +570,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>No HP</td>
+                                                <td>No HP <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_hp_'+n.pabrik_id"
                                                            :value="n.pabrik_nomor_hp"
@@ -523,7 +580,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Fax</td>
+                                                <td>Fax <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_fax_'+n.pabrik_id"
                                                            :value="n.pabrik_nomor_fax"
@@ -533,7 +590,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Provinsi</td>
+                                                <td>Provinsi <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input style="width: 100%"
                                                            :id="'step3_pabrik_provinsi_'+n.pabrik_id"
@@ -542,7 +599,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Kabupaten</td>
+                                                <td>Kabupaten <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input style="width: 100%"
                                                            :id="'step3_pabrik_kabupaten_'+n.pabrik_id"
@@ -551,7 +608,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Kecamatan</td>
+                                                <td>Kecamatan <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input style="width: 100%"
                                                            :id="'step3_pabrik_kecamatan_'+n.pabrik_id"
@@ -560,7 +617,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>KodePos</td>
+                                                <td>KodePos <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_kode_pos_'+n.pabrik_id"
                                                            :value="n.pabrik_kode_pos"
@@ -570,7 +627,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Alamat Pabrik</td>
+                                                <td>Alamat Pabrik <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <textarea class="form-control"
                                                               :id="'step3_pabrik_alamat_'+n.pabrik_id"
@@ -580,7 +637,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Jumlah Karyawan</td>
+                                                <td>Jumlah Karyawan <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input type="text" class="form-control"
                                                            :value="n.pabrik_jumlah_karyawan"
@@ -591,7 +648,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Kegiatan Utama</td>
+                                                <td>Kegiatan Utama <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <textarea class="form-control"
                                                               :id="'step3_pabrik_kegiatan_utama_'+n.pabrik_id"
@@ -601,7 +658,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Luas Tanah</td>
+                                                <td>Luas Tanah <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_luas_tanah_'+n.pabrik_id"
                                                            :value="n.pabrik_luas_tanah"
@@ -611,7 +668,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Luas Bangunan</td>
+                                                <td>Luas Bangunan <x-linked-icon></x-linked-icon></td>
                                                 <td>
                                                     <input :id="'step3_pabrik_luas_bangunan_'+n.pabrik_id"
                                                            :value="n.pabrik_luas_bangunan"
@@ -637,6 +694,20 @@
                         </div>
                     </div>
                 </li>
+            </ol>
+        </div>
+    </div>
+    <div class="col-md-12" style="padding-top: 20px">
+        <h3>Petanyaan Tambahan</h3>
+        <div>
+            <ol start="23">
+                <li>Lengkapi kuesioner berikut dan upload kembali dibawah
+                    <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh kuesioner)</a></li>
+                <br>
+                <input type="file" class="form-control" aria-label="Pertanyaan Tambahan"
+                       @change="validateUploadPertanyaanTambahan" accept="application/pdf"
+                       name="step3_pertanyaan_tambahan" id="step3_pertanyaan_tambahan">
+                <small><span>Upload file harus berjenis PDF</span></small>
             </ol>
         </div>
     </div>
@@ -688,6 +759,7 @@
                         if ($.trim($("#step3_perusahaan_jml_shift_2").val()) === "") throw "Inputkan Jumlah Shift Ke 2";
                         if ($.trim($("#step3_perusahaan_jml_shift_3").val()) === "") throw "Inputkan Jumlah Shift Ke 3";
                         if ($.trim($("#step3_perusahaan_jml_non_permanen").val()) === "") throw "Inputkan Jumlah Non Permanen";
+                        if ($.trim($("#step3_pertanyaan_tambahan").val()) === "") throw "Unggah Pertanyaan Tambahan";
                         if ($.trim($("#step3_perusahaan_negara").combogrid('getValue')) === "") throw "Pilih negara";
                         if ($.trim($("#step3_perusahaan_provinsi").combogrid('getValue')) === "") throw "Pilih provinsi";
                         if ($.trim($("#step3_perusahaan_kabupaten").combogrid('getValue')) === "") throw "Pilih kabupaten";
@@ -710,6 +782,18 @@
                                 if ($.trim(e.pabrik_luas_tanah) === "" || $.trim(e.pabrik_luas_tanah) === null) throw `${pabrikNama}: Inputkan Luas Tanah`;
                                 if ($.trim(e.pabrik_luas_bangunan) === "" || $.trim(e.pabrik_luas_bangunan) === null) throw `${pabrikNama}: Inputkan Luas Bangunan`;
                             })
+                        }
+                    },
+                    validateUploadPertanyaanTambahan(event) {
+                        let uploaded = event.target.files[0];
+                        if (uploaded.type !== "application/pdf") {
+                            swalWithBootstrapButtons({
+                                title: `Validasi`,
+                                text: "File pertanyaan harus bertipe PDF",
+                                type: 'warning',
+                            })
+
+                            $("#step3_pertanyaan_tambahan").val("")
                         }
                     },
                     setComboNegara(search) {
