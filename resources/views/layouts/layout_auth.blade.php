@@ -49,8 +49,8 @@
     <!-- Login Container -->
     <div class="dt-login--container dt-app-login--container">
         <!-- Login Content -->
-        @yield('content')
-        <!-- /login content -->
+    @yield('content')
+    <!-- /login content -->
     </div>
     <!-- /login container -->
 </div>
@@ -71,6 +71,18 @@
 <!-- Custom JavaScript -->
 <script src="{{asset('assets/js/script.js')}}"></script>
 <script src="{{asset('assets/fontawesome/js/all.min.js')}}"></script>
+
+<script src="{{ asset('assets/js/dexie.min.js') }}"></script>
+
+<script>
+    window.idb = new Dexie("bbkkp_sis");
+    window.idb.version(1).stores({
+        pelanggan_permohonan_komoditas: "++id, komoditi_id, komoditi_nama, sni, merk, tipe, ukuran",
+    });
+
+    idb.pelanggan_permohonan_komoditas.clear();
+
+</script>
 
 {{--<script src="https://kit.fontawesome.com/68c3e4b5b2.js"></script>--}}
 @stack('javascript')

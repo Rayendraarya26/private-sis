@@ -1,4 +1,4 @@
-<span aria-label="Terhubung dengan data utama di profile"
+<span aria-label="Setiap perubahan akan tersimpan di server"
       class="custom-cooltipz"
       data-cooltipz-size="large"
       data-cooltipz-dir="right">

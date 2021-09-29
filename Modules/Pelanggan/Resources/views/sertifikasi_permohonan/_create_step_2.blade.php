@@ -42,7 +42,8 @@
                            title="Dokumen sudah di unggah"></i>
                         <i class="fad fa-warning" style="color: red" v-else title="Dokumen belum di unggah"></i>
 
-                        @{{ dds.dt_name }} <x-linked-icon></x-linked-icon>
+                        @{{ dds.dt_name }}
+                        <x-linked-icon></x-linked-icon>
                         <span v-if="dds.dt_sample"><a :href="dds.dt_sample">Download Sample</a></span>
                     </td>
                     <td>
@@ -139,10 +140,10 @@
                                 <td>@{{ kom.tipe }}</td>
                                 <td>@{{ kom.ukuran }}</td>
                                 <td>
-                                    <button class="btn btn-xs btn-danger" @click="deleteKomoditi(idx)">
+                                    <button class="btn btn-xs btn-danger" @click="deleteKomoditi(kom.id)">
                                         <i class="fad fa-trash"></i> Hapus
                                     </button>
-                                    <button class="btn btn-xs btn-warning" @click="editKomoditi(idx)">
+                                    <button class="btn btn-xs btn-warning" @click="editKomoditi(kom.id)">
                                         <i class="fad fa-pencil"></i> Edit
                                     </button>
                                 </td>
@@ -171,7 +172,7 @@
                     jenis_komoditas_id: null,
                     jenis_komoditas_text: "-- Pilih Komoditas --",
                     jenis_komoditas_form_type: "add",
-                    jenis_komoditas_form_edited_idx: null,
+                    jenis_komoditas_form_edited_id: null,
 
                     dokumen_upload: [], // upload to server
                     komoditas: [], // upload to server
@@ -254,7 +255,7 @@
                         $("#step2_komoditi_tipe").val("");
                         $("#step2_komoditi_ukuran").val("");
                         this.jenis_komoditas_form_type = 'add';
-                        this.jenis_komoditas_form_edited_idx = null;
+                        this.jenis_komoditas_form_edited_id = null;
                     },
                     validateKomoditas() {
                         let sni = $.trim($("#step2_komoditi_sni").val());
@@ -267,17 +268,22 @@
                         if (tipe === "") throw "Tuliskan Tipe Komoditas";
                         if (ukuran === "") throw "Tuliskan Ukuran";
                     },
-                    addKomoditas() {
+                    async addKomoditas() {
                         try {
                             this.validateKomoditas()
-                            this.komoditas.push({
+
+                            let newKomoditas = {
                                 "komoditi_id": this.jenis_komoditas_id,
-                                "komoditi_nama": this.jenis_komoditas_text,
+                                "komoditi_nama": $.trim(this.jenis_komoditas_text),
                                 "sni": $.trim($("#step2_komoditi_sni").val()),
                                 "merk": $.trim($("#step2_komoditi_merk").val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe").val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran").val()),
-                            })
+                            };
+
+                            // this.komoditas.push(newKomoditas)
+                            await idb.pelanggan_permohonan_komoditas.put(newKomoditas);
+                            this.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
                             this.resetFormKomoditas();
                         } catch (message) {
                             swalWithBootstrapButtons({
@@ -287,48 +293,49 @@
                             })
                         }
                     },
-                    deleteKomoditi(idx) {
-                        dtKomoditi = this.komoditas[idx]
+                    async deleteKomoditi(id) {
+                        let selectedKomoditas = await window.idb.pelanggan_permohonan_komoditas.get(id);
                         swalWithBootstrapButtons({
                             title: `Hapus Komoditi ?`,
-                            text: `Anda yakin menghapus komoditi ${dtKomoditi.komoditi_nama} ?`,
+                            text: `Anda yakin menghapus komoditi ${selectedKomoditas.komoditi_nama} ?`,
                             type: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Hapus',
                             cancelButtonText: 'Batal',
                             reverseButtons: true
-                        }).then((result) => {
+                        }).then(async (result) => {
                             if (result.value) {
-                                this.komoditas.splice(idx, 1);
+                                await window.idb.pelanggan_permohonan_komoditas.where('id').equals(id).delete();
+                                this.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
                             }
                         });
                     },
-                    editKomoditi(idx) {
-                        let dataKomoditi = this.komoditas[idx];
-                        console.log(dataKomoditi);
-                        $("#step2_komoditi_merk").val(dataKomoditi.merk);
-                        $("#step2_komoditi_sni").val(dataKomoditi.sni);
-                        $("#step2_komoditi_tipe").val(dataKomoditi.tipe);
-                        $("#step2_komoditi_ukuran").val(dataKomoditi.ukuran);
-                        this.setComboDataKomoditas(dataKomoditi.komoditi_nama);
-                        $('#step2_komoditi_datas').combogrid('setValue', dataKomoditi.komoditi_nama);
+                    async editKomoditi(id) {
+                        let selectedKomoditas = await window.idb.pelanggan_permohonan_komoditas.get(id);
+                        $("#step2_komoditi_merk").val(selectedKomoditas.merk);
+                        $("#step2_komoditi_sni").val(selectedKomoditas.sni);
+                        $("#step2_komoditi_tipe").val(selectedKomoditas.tipe);
+                        $("#step2_komoditi_ukuran").val(selectedKomoditas.ukuran);
+                        this.setComboDataKomoditas(selectedKomoditas.komoditi_nama);
+                        $('#step2_komoditi_datas').combogrid('setValue', selectedKomoditas.komoditi_nama);
 
-                        this.jenis_komoditas_id = dataKomoditi.komoditi_id;
-                        this.jenis_komoditas_text = dataKomoditi.komoditi_nama;
+                        this.jenis_komoditas_id = selectedKomoditas.komoditi_id;
+                        this.jenis_komoditas_text = selectedKomoditas.komoditi_nama;
                         this.jenis_komoditas_form_type = "update";
-                        this.jenis_komoditas_form_edited_idx = idx;
+                        this.jenis_komoditas_form_edited_id = id;
                     },
-                    updateKomoditi() {
+                    async updateKomoditi() {
                         try {
                             this.validateKomoditas()
-                            this.komoditas[this.jenis_komoditas_form_edited_idx] = {
+                            await window.idb.pelanggan_permohonan_komoditas.update(this.jenis_komoditas_form_edited_id, {
                                 "komoditi_id": this.jenis_komoditas_id,
                                 "komoditi_nama": this.jenis_komoditas_text,
                                 "sni": $.trim($("#step2_komoditi_sni").val()),
                                 "merk": $.trim($("#step2_komoditi_merk").val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe").val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran").val()),
-                            };
+                            });
+                            this.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
                             this.resetFormKomoditas();
 
                         } catch (message) {
@@ -420,7 +427,10 @@
                                 self.resetUploadDokumen();
                                 self.getDokumenSertifikasi();
                                 if (self.jenis_sertifikasi_is_product === "ya") {
-                                    setTimeout(() => self.setComboDataKomoditas(), 500)
+                                    setTimeout(async () => {
+                                        self.setComboDataKomoditas()
+                                        self.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
+                                    }, 500)
                                 }
                             },
                         });

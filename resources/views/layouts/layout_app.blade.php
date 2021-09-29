@@ -569,6 +569,7 @@
 <!-- Custom JavaScript -->
 <script src="{{ asset('assets/js/script.js') }}"></script>
 <script src="{{ asset('assets/js/vue.min.js') }}"></script>
+<script src="{{ asset('assets/js/dexie.min.js') }}"></script>
 
 <script src="{{ asset('assets/fontawesome/js/all.min.js') }}"></script>
 
@@ -628,7 +629,16 @@
             });
     }
 
+    async function initIDB() {
+        window.idb = new Dexie("bbkkp_sis");
+        window.idb.version(1).stores({
+            pelanggan_permohonan_komoditas: "++id, komoditi_id, komoditi_nama, sni, merk, tipe, ukuran",
+        });
+    }
+
     $(function () {
+        initIDB()
+
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI",

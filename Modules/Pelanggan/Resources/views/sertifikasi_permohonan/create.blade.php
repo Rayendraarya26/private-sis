@@ -156,25 +156,6 @@
                 },
             });
 
-            // // External Button Events
-            // $("#reset-btn").on("click", function () {
-            //     swalWithBootstrapButtons({
-            //         title: `Reset Form`,
-            //         text: "Data yang anda inputkan akan hilang, anda yakin ?",
-            //         type: 'warning',
-            //         showCancelButton: true,
-            //         confirmButtonText: 'Yakin',
-            //         cancelButtonText: 'Batal',
-            //         reverseButtons: true
-            //     }).then((result) => {
-            //         if (result.value) {
-            //             // Reset wizard
-            //             $('#smartwizard').smartWizard("reset");
-            //         }
-            //     })
-            //     return true;
-            // });
-
             $("#prev-btn").on("click", function () {
                 // Navigate previous
                 $('#smartwizard').smartWizard("prev");
