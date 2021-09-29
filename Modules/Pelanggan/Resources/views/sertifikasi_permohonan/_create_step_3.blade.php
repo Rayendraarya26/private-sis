@@ -551,7 +551,9 @@
                                     <div class="table-responsive">
                                         <table class="tabel_pabrik">
                                             <tr>
-                                                <td>Nama Pabrik <x-linked-icon></x-linked-icon></td>
+                                                <td>Nama Pabrik
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_nama_'+n.pabrik_id" :value="n.pabrik_nama"
                                                            :name="'step3_pabrik_nama_'+n.pabrik_id" type="text"
@@ -560,7 +562,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Np Telp <x-linked-icon></x-linked-icon></td>
+                                                <td>Np Telp
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_telp_'+n.pabrik_id"
                                                            :value="n.pabrik_nomor_telp"
@@ -570,7 +574,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>No HP <x-linked-icon></x-linked-icon></td>
+                                                <td>No HP
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_hp_'+n.pabrik_id"
                                                            :value="n.pabrik_nomor_hp"
@@ -580,7 +586,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Fax <x-linked-icon></x-linked-icon></td>
+                                                <td>Fax
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_fax_'+n.pabrik_id"
                                                            :value="n.pabrik_nomor_fax"
@@ -590,7 +598,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Provinsi <x-linked-icon></x-linked-icon></td>
+                                                <td>Provinsi
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input style="width: 100%"
                                                            :id="'step3_pabrik_provinsi_'+n.pabrik_id"
@@ -599,7 +609,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Kabupaten <x-linked-icon></x-linked-icon></td>
+                                                <td>Kabupaten
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input style="width: 100%"
                                                            :id="'step3_pabrik_kabupaten_'+n.pabrik_id"
@@ -608,7 +620,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Kecamatan <x-linked-icon></x-linked-icon></td>
+                                                <td>Kecamatan
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input style="width: 100%"
                                                            :id="'step3_pabrik_kecamatan_'+n.pabrik_id"
@@ -617,7 +631,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>KodePos <x-linked-icon></x-linked-icon></td>
+                                                <td>KodePos
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_kode_pos_'+n.pabrik_id"
                                                            :value="n.pabrik_kode_pos"
@@ -627,7 +643,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Alamat Pabrik <x-linked-icon></x-linked-icon></td>
+                                                <td>Alamat Pabrik
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <textarea class="form-control"
                                                               :id="'step3_pabrik_alamat_'+n.pabrik_id"
@@ -637,7 +655,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Jumlah Karyawan <x-linked-icon></x-linked-icon></td>
+                                                <td>Jumlah Karyawan
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input type="text" class="form-control"
                                                            :value="n.pabrik_jumlah_karyawan"
@@ -648,7 +668,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Kegiatan Utama <x-linked-icon></x-linked-icon></td>
+                                                <td>Kegiatan Utama
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <textarea class="form-control"
                                                               :id="'step3_pabrik_kegiatan_utama_'+n.pabrik_id"
@@ -658,7 +680,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Luas Tanah <x-linked-icon></x-linked-icon></td>
+                                                <td>Luas Tanah
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_luas_tanah_'+n.pabrik_id"
                                                            :value="n.pabrik_luas_tanah"
@@ -668,7 +692,9 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Luas Bangunan <x-linked-icon></x-linked-icon></td>
+                                                <td>Luas Bangunan
+                                                    <x-linked-icon></x-linked-icon>
+                                                </td>
                                                 <td>
                                                     <input :id="'step3_pabrik_luas_bangunan_'+n.pabrik_id"
                                                            :value="n.pabrik_luas_bangunan"
@@ -767,6 +793,7 @@
 
                         if (this.data_pabrik.length > 0) {
                             this.data_pabrik.map(e => {
+                                console.log(e)
                                 let pabrikNama = $.trim(e.pabrik_nama);
                                 if ($.trim(e.pabrik_nama) === "" || $.trim(e.pabrik_nama) == null) throw "Inputkan Nama Pabrik";
                                 if ($.trim(e.pabrik_nomor_telp) === "" || $.trim(e.pabrik_nomor_telp) == null) throw `${pabrikNama}: Inputkan Nomor Telp`;
@@ -860,8 +887,8 @@
                                 self.updateDataPemohonByValue("prov_id", row.prov_id)
                                 self.updateDataPemohonByValue("kec_id", '--')
                                 self.updateDataPemohonByValue("kab_id", '--')
-                                $("#step3_perusahaan_kabupaten").combogrid('setValue', null);
-                                $("#step3_perusahaan_kecamatan").combogrid('setValue', null);
+                                $("#step3_perusahaan_kabupaten").combogrid('clear');
+                                $("#step3_perusahaan_kecamatan").combogrid('clear');
                                 self.setComboKabupaten(row.prov_id)
                             },
                         });
@@ -895,7 +922,7 @@
                             onSelect: function (index, row) {
                                 self.updateDataPemohonByValue("kab_id", row.kab_id)
                                 self.updateDataPemohonByValue("kec_id", '--')
-                                $("#step3_perusahaan_kecamatan").combogrid('setValue', null);
+                                $("#step3_perusahaan_kecamatan").combogrid('clear');
                                 self.setComboKecamatan(row.kab_id);
                             },
                         });
@@ -957,11 +984,18 @@
                                 {field: 'prov_nama', title: 'Provinsi', width: 250, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
+                                // update vue model
+                                let idx = self.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                                self.data_pabrik[idx].prov_id = row.prov_id
+                                self.data_pabrik[idx].kab_id = null
+                                self.data_pabrik[idx].kec_id = null
+
+                                // update server
                                 self.updateDataPabrikByValue(pabrikId, "prov_id", row.prov_id)
                                 self.updateDataPabrikByValue(pabrikId, "kec_id", '--')
                                 self.updateDataPabrikByValue(pabrikId, "kab_id", '--')
-                                $("#step3_pabrik_kabupaten_" + pabrikId).combogrid('setValue', null);
-                                $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('setValue', null);
+                                $("#step3_pabrik_kabupaten_" + pabrikId).combogrid('clear');
+                                $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
                                 self.setComboPabrikKabupaten(pabrikId, row.prov_id)
                             },
                         });
@@ -992,9 +1026,15 @@
                                 {field: 'kab_nama', title: 'Kabupaten', width: 250, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
+                                // update vue model
+                                let idx = self.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                                self.data_pabrik[idx].kab_id = row.kab_id
+                                self.data_pabrik[idx].kec_id = null
+
+                                // update server
                                 self.updateDataPabrikByValue(pabrikId, "kab_id", row.kab_id)
                                 self.updateDataPabrikByValue(pabrikId, "kec_id", '--')
-                                $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('setValue', null);
+                                $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
                                 self.setComboPabrikKecamatan(pabrikId, row.kab_id);
                             },
                         });
@@ -1025,6 +1065,11 @@
                                 {field: 'kec_nama', title: 'Kecamatan', width: 250, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
+                                // update vue model
+                                let idx = self.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                                self.data_pabrik[idx].kec_id = row.kec_id
+
+                                // update server
                                 self.updateDataPabrikByValue(pabrikId, "kec_id", row.kec_id)
                             },
                         });
@@ -1073,6 +1118,10 @@
                                 $("#step3_perusahaan_kabupaten").combogrid('setValue', res.kab_id);
                                 $("#step3_perusahaan_kecamatan").combogrid('setValue', res.kec_id);
                             })
+                            .fail((xhr) => {
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                            });
                     },
                     getDataPabrik() {
                         $.get(`{{url("$url/ajax?action=pabrik_data")}}`)
@@ -1092,6 +1141,10 @@
                                     $(".tab-content").height("100%");
                                 }, 500)
                             })
+                            .fail((xhr) => {
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                            });
                     },
                     addDataPabrik() {
                         $.post(`{{url("$url/ajax?action=pabrik_add")}}`)
@@ -1115,12 +1168,20 @@
                                     .then(() => {
                                         this.getDataPabrik()
                                     })
+                                    .fail((xhr) => {
+                                        if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                        else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                                    });
                             }
                         });
 
                     },
                     updateDataPabrikByValue(pabrikId, parameter, value) {
                         $.post(`{{url("$url/ajax?action=pabrik_update")}}`, {pabrik_id: pabrikId, parameter, value})
+                            .fail((xhr) => {
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                            });
                     },
                     updateDataPabrik(pabrikId, params, event) {
                         // Khusus Nama Pabrik
@@ -1133,16 +1194,26 @@
                             pabrik_id: pabrikId,
                             parameter: params,
                             value: event.target.value
-                        })
+                        }).fail((xhr) => {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        });
                     },
                     updateDataPemohonByValue(parameter, value) {
                         $.post(`{{url("$url/ajax?action=update_data_pemohon")}}`, {parameter, value})
+                            .fail((xhr) => {
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                            });
                     },
                     updateDataPemohon(params, event) {
                         $.post(`{{url("$url/ajax?action=update_data_pemohon")}}`, {
                             parameter: params,
                             value: event.target.value
-                        })
+                        }).fail((xhr) => {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        });
                     },
                 }
             });

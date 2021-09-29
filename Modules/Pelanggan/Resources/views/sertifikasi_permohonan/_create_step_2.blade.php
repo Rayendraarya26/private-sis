@@ -237,12 +237,8 @@
                                 self.getDokumenSertifikasi()
                             },
                             error: function (err) {
-                                console.log(err)
-                                swalWithBootstrapButtons({
-                                    title: `Error`,
-                                    text: err.responseJSON.message,
-                                    type: 'warning'
-                                })
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
                             }
                         });
                     },
@@ -365,9 +361,10 @@
                                 this.data_dokumen_sertifikasi = response.results
                                 $(".tab-content").height("100%");
                             })
-                            .fail(err => {
-                                console.log(err)
-                            })
+                            .fail((xhr) => {
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                            });
                     },
                     setComboDataKomoditas(search) {
                         let self = this;
