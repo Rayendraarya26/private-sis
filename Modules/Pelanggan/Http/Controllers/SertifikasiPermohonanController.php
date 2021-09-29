@@ -47,9 +47,15 @@ class SertifikasiPermohonanController extends Controller
         return view('pelanggan::sertifikasi_permohonan.create')->with($parser);
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        $request->validate([
+            "pertanyaan_tambahan" => 'required',
+            "jenis_sertifikasi"   => 'required',
+            "data_komoditas"      => 'required',
+        ]);
 
+        return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
     }
 
     public function ajax(Request $request)

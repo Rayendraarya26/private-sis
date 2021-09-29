@@ -768,19 +768,19 @@
                         if (this.data_pabrik.length > 0) {
                             this.data_pabrik.map(e => {
                                 let pabrikNama = $.trim(e.pabrik_nama);
-                                if ($.trim(e.pabrik_nama) === "" || $.trim(e.pabrik_nama) === null) throw "Inputkan Nama Pabrik";
-                                if ($.trim(e.pabrik_nomor_telp) === "" || $.trim(e.pabrik_nomor_telp) === null) throw `${pabrikNama}: Inputkan Nomor Telp`;
-                                if ($.trim(e.pabrik_nomor_fax) === "" || $.trim(e.pabrik_nomor_fax) === null) throw `${pabrikNama}: Inputkan Fax`;
-                                if ($.trim(e.pabrik_nomor_hp) === "" || $.trim(e.pabrik_nomor_hp) === null) throw `${pabrikNama}: Inputkan Nomor HP`;
-                                if ($.trim(e.prov_id) === "" || $.trim(e.prov_id) === null) throw `${pabrikNama}: Pilih Provinsi`;
-                                if ($.trim(e.kab_id) === "" || $.trim(e.kab_id) === null) throw `${pabrikNama}: Pilih Kabupaten`;
-                                if ($.trim(e.kec_id) === "" || $.trim(e.kec_id) === null) throw `${pabrikNama}: Pilih Kecamatan`;
-                                if ($.trim(e.pabrik_alamat) === "" || $.trim(e.pabrik_alamat) === null) throw `${pabrikNama}: Inputkan Alamat Pabrik`;
-                                if ($.trim(e.pabrik_kode_pos) === "" || $.trim(e.pabrik_kode_pos) === null) throw `${pabrikNama}: Inputkan Kode Pos`;
-                                if ($.trim(e.pabrik_jumlah_karyawan) === "" || $.trim(e.pabrik_jumlah_karyawan) === null) throw `${pabrikNama}: Inputkan Jumlah Karyawan`;
-                                if ($.trim(e.pabrik_kegiatan_utama) === "" || $.trim(e.pabrik_kegiatan_utama) === null) throw `${pabrikNama}: Inputkan Kegiatan Utama`;
-                                if ($.trim(e.pabrik_luas_tanah) === "" || $.trim(e.pabrik_luas_tanah) === null) throw `${pabrikNama}: Inputkan Luas Tanah`;
-                                if ($.trim(e.pabrik_luas_bangunan) === "" || $.trim(e.pabrik_luas_bangunan) === null) throw `${pabrikNama}: Inputkan Luas Bangunan`;
+                                if ($.trim(e.pabrik_nama) === "" || $.trim(e.pabrik_nama) == null) throw "Inputkan Nama Pabrik";
+                                if ($.trim(e.pabrik_nomor_telp) === "" || $.trim(e.pabrik_nomor_telp) == null) throw `${pabrikNama}: Inputkan Nomor Telp`;
+                                if ($.trim(e.pabrik_nomor_fax) === "" || $.trim(e.pabrik_nomor_fax) == null) throw `${pabrikNama}: Inputkan Fax`;
+                                if ($.trim(e.pabrik_nomor_hp) === "" || $.trim(e.pabrik_nomor_hp) == null) throw `${pabrikNama}: Inputkan Nomor HP`;
+                                if ($.trim(e.prov_id) === "" || $.trim(e.prov_id) == null) throw `${pabrikNama}: Pilih Provinsi`;
+                                if ($.trim(e.kab_id) === "" || $.trim(e.kab_id) == null) throw `${pabrikNama}: Pilih Kabupaten`;
+                                if ($.trim(e.kec_id) === "" || $.trim(e.kec_id) == null) throw `${pabrikNama}: Pilih Kecamatan`;
+                                if ($.trim(e.pabrik_alamat) === "" || $.trim(e.pabrik_alamat) == null) throw `${pabrikNama}: Inputkan Alamat Pabrik`;
+                                if ($.trim(e.pabrik_kode_pos) === "" || $.trim(e.pabrik_kode_pos) == null) throw `${pabrikNama}: Inputkan Kode Pos`;
+                                if ($.trim(e.pabrik_jumlah_karyawan) === "" || $.trim(e.pabrik_jumlah_karyawan) == null) throw `${pabrikNama}: Inputkan Jumlah Karyawan`;
+                                if ($.trim(e.pabrik_kegiatan_utama) === "" || $.trim(e.pabrik_kegiatan_utama) == null) throw `${pabrikNama}: Inputkan Kegiatan Utama`;
+                                if ($.trim(e.pabrik_luas_tanah) === "" || $.trim(e.pabrik_luas_tanah) == null) throw `${pabrikNama}: Inputkan Luas Tanah`;
+                                if ($.trim(e.pabrik_luas_bangunan) === "" || $.trim(e.pabrik_luas_bangunan) == null) throw `${pabrikNama}: Inputkan Luas Bangunan`;
                             })
                         }
                     },

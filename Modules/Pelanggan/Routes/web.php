@@ -8,6 +8,6 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
         Route::get('/', [SertifikasiPermohonanController::class, 'index']);
         Route::any('/ajax', [SertifikasiPermohonanController::class, 'ajax']);
         Route::get('/create', [SertifikasiPermohonanController::class, 'create']);
-        Route::get('/store', [SertifikasiPermohonanController::class, 'store']);
+        Route::post('/create', [SertifikasiPermohonanController::class, 'store']);
     });
 });

@@ -43,7 +43,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link " href="#step-4">
-                                        <strong>Langkah 4</strong> <br>This is step description
+                                        <strong>Langkah 4</strong> <br>Pernyataan
                                     </a>
                                 </li>
                             </ul>
@@ -59,23 +59,7 @@
                                     @include("pelanggan::sertifikasi_permohonan._create_step_3")
                                 </div>
                                 <div id="step-4" class="tab-pane" role="tabpanel" aria-labelledby="step-4">
-                                    <h3>Step 4 Content</h3>
-                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                    Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                                    unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                    It has survived not only five centuries, but also the leap into electronic
-                                    typesetting, remaining essentially unchanged. It was popularised in the 1960s with
-                                    the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                                    with desktop publishing software like Aldus PageMaker including versions of Lorem
-                                    Ipsum.
-                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                    Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                                    unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                    It has survived not only five centuries, but also the leap into electronic
-                                    typesetting, remaining essentially unchanged. It was popularised in the 1960s with
-                                    the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                                    with desktop publishing software like Aldus PageMaker including versions of Lorem
-                                    Ipsum.
+                                    @include("pelanggan::sertifikasi_permohonan._create_step_4")
                                 </div>
                             </div>
                         </div>

@@ -38,7 +38,7 @@
                 <tr v-for="(dds, idx) in data_dokumen_sertifikasi">
                     <td>@{{ idx + 1 }}</td>
                     <td>
-                        <i class="fad fa-check-circle" style="color: green" v-if="dds.my_document !== null"
+                        <i class="fad fa-check-circle" style="color: green" v-if="dds.my_document != null"
                            title="Dokumen sudah di unggah"></i>
                         <i class="fad fa-warning" style="color: red" v-else title="Dokumen belum di unggah"></i>
 
@@ -51,7 +51,7 @@
                                @change="uploadDokumen(dds.dt_id)" accept="application/pdf">
                     </td>
                     <td>
-                        <a :href="dds.my_document" v-if="dds.my_document !== null" target="_blank">Download</a>
+                        <a :href="dds.my_document" v-if="dds.my_document != null" target="_blank">Download</a>
                     </td>
                 </tr>
                 </tbody>
@@ -63,7 +63,10 @@
          style="padding-bottom: 20px">
         <div class="row">
             <div class="col-md-12">
-                <h3>Data Komoditas</h3>
+                <h3>Data Komoditas <small aria-label="Setiap perubahan akan tersimpan di storage browser"
+                                          class="custom-cooltipz"
+                                          data-cooltipz-size="large"
+                                          data-cooltipz-dir="right"><i class="fal fa-database"></i></small></h3>
                 <div class="row">
                     <div class="col-md-2">
                         <div class="form-group">
@@ -76,28 +79,28 @@
                         <div class="form-group">
                             <label for="step2_komoditi_sni">No SNI</label>
                             <input id="step2_komoditi_sni" name="step2_komoditi_sni" class="form-control"
-                                   @keyup.enter="addKomoditas">
+                                   @keyup.enter="addOrUpdateKomoditas">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="step2_komoditi_merk">Merk</label>
                             <input id="step2_komoditi_merk" name="step2_komoditi_merk" class="form-control"
-                                   @keyup.enter="addKomoditas">
+                                   @keyup.enter="addOrUpdateKomoditas">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="step2_komoditi_tipe">Tipe</label>
                             <input id="step2_komoditi_tipe" name="step2_komoditi_tipe" class="form-control"
-                                   @keyup.enter="addKomoditas">
+                                   @keyup.enter="addOrUpdateKomoditas">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="step2_komoditi_ukuran">Ukuran</label>
                             <input id="step2_komoditi_ukuran" name="step2_komoditi_ukuran" class="form-control"
-                                   @keyup.enter="addKomoditas">
+                                   @keyup.enter="addOrUpdateKomoditas">
                         </div>
                     </div>
                     <div class="col-md-2 komoditi-button">
@@ -190,9 +193,11 @@
                         setTimeout(() => this.setComboDataSertifikasi(), 500)
                     },
                     validate() {
+                        if (this.jenis_sertifikasi_id == null) throw "Pilih Jenis Sertifikasi"
+
                         // validate kelengkapan dokumen
                         this.data_dokumen_sertifikasi.map(e => {
-                            if (e.my_document === null) throw `Upload ${e.dt_name}`
+                            if (e.my_document == null) throw `Upload ${e.dt_name}`
                         })
 
                         // validate komoditas (jika diperlukan)
@@ -262,11 +267,15 @@
                         let merk = $.trim($("#step2_komoditi_merk").val());
                         let tipe = $.trim($("#step2_komoditi_tipe").val());
                         let ukuran = $.trim($("#step2_komoditi_ukuran").val());
-                        if (this.jenis_komoditas_id === null) throw "Pilih Komoditas"
+                        if (this.jenis_komoditas_id == null) throw "Pilih Komoditas"
                         if (sni === "") throw "Tuliskan No SNI";
                         if (merk === "") throw "Tuliskan Merk";
                         if (tipe === "") throw "Tuliskan Tipe Komoditas";
                         if (ukuran === "") throw "Tuliskan Ukuran";
+                    },
+                    addOrUpdateKomoditas() {
+                        if (this.jenis_komoditas_form_type === "add") this.addKomoditas()
+                        else this.updateKomoditi()
                     },
                     async addKomoditas() {
                         try {
@@ -420,23 +429,49 @@
                                 {field: 'sert_nama', title: 'Jenis Sertifikasi', width: 250, sortable: true,},
                                 // {field: 'sert_is_product', title: 'Produk?', width: 100, sortable: true,},
                             ]],
-                            onSelect: function (index, row) {
-                                self.jenis_sertifikasi_id = row.sert_id;
-                                self.jenis_sertifikasi_text = row.sert_nama;
-                                self.jenis_sertifikasi_is_product = row.sert_is_product;
-                                self.resetUploadDokumen();
-                                self.getDokumenSertifikasi();
-                                if (self.jenis_sertifikasi_is_product === "ya") {
-                                    setTimeout(async () => {
-                                        self.setComboDataKomoditas()
-                                        self.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
-                                    }, 500)
+                            onLoadSuccess: async function () {
+                                // Load to set initial Index DB
+                                let currentData = await idb.pelanggan_permohonan
+                                    .where({name: "jenis_sertifikasi"})
+                                    .first()
+
+                                console.log(currentData)
+
+                                if (currentData != null) {
+                                    $('#step2_jenis_sertifikasi').combogrid('setValue', currentData.value.sert_id)
+                                    self.comboDataSertifikasiOnSelect(currentData.value)
+                                }
+                            },
+                            onSelect: async function (index, row) {
+                                self.comboDataSertifikasiOnSelect(row)
+
+                                // Insert to Index DB
+                                const currentaData = await idb.pelanggan_permohonan.where({name: "jenis_sertifikasi"}).first();
+                                let dbData = {name: "jenis_sertifikasi", value: row}
+                                if (currentaData == null) {
+                                    await idb.pelanggan_permohonan.put(dbData);
+                                } else {
+                                    await idb.pelanggan_permohonan.update(currentaData.id, dbData);
                                 }
                             },
                         });
 
                         if (self.jenis_sertifikasi_id != null) {
                             $('#step2_jenis_sertifikasi').combogrid('setValue', self.jenis_sertifikasi_id)
+                        }
+                    },
+                    comboDataSertifikasiOnSelect(row) {
+                        this.jenis_sertifikasi_id = row.sert_id;
+                        this.jenis_sertifikasi_text = row.sert_nama;
+                        this.jenis_sertifikasi_is_product = row.sert_is_product;
+                        this.resetUploadDokumen();
+                        this.getDokumenSertifikasi();
+
+                        if (this.jenis_sertifikasi_is_product === "ya") {
+                            setTimeout(async () => {
+                                this.setComboDataKomoditas()
+                                this.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
+                            }, 500)
                         }
                     }
                 }

@@ -631,7 +631,8 @@
 
     async function initIDB() {
         window.idb = new Dexie("bbkkp_sis");
-        window.idb.version(1).stores({
+        window.idb.version(3).stores({
+            pelanggan_permohonan: "++id, &name, value",
             pelanggan_permohonan_komoditas: "++id, komoditi_id, komoditi_nama, sni, merk, tipe, ukuran",
         });
     }
