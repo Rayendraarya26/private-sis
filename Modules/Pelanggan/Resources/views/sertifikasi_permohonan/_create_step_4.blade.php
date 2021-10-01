@@ -51,16 +51,28 @@
                         }).then(async (result) => {
                             if (result.value) {
                                 let formData = new FormData();
+                                // Step 1
+                                const dataPermohonan = window.vueStepOne.jenis_pengajuan;
+                                const dataSertifikat = window.vueStepOne.sertifikat_lama_id;
+                                formData.append("jenis_permohonan", dataPermohonan)
+                                if (dataPermohonan == "lama") {
+                                    formData.append("sertifikat_lama_id", dataSertifikat)
+                                }
+
+                                // Step 2
+                                const dataSertifikasi = window.vueStepTwo.jenis_sertifikasi_data;
+                                const dataKomoditas = window.vueStepTwo.komoditas;
+                                formData.append("jenis_sertifikasi", dataSertifikasi.sert_id)
+                                if (dataSertifikasi.sert_is_product == "ya") {
+                                    formData.append("data_komoditas", JSON.stringify(dataKomoditas))
+                                }
+
+                                // Step 3
                                 const dataPertanyaanTambahan = document.querySelector("#step3_pertanyaan_tambahan").files[0];
-                                const dataPermohonan = await idb.pelanggan_permohonan.where({name: "jenis_permohonan"}).first();
-                                const dataSertifikasi = await idb.pelanggan_permohonan.where({name: "jenis_sertifikasi"}).first();
-                                const dataKomoditas = await window.idb.pelanggan_permohonan_komoditas.toArray();
-
                                 formData.append("pertanyaan_tambahan", dataPertanyaanTambahan)
-                                formData.append("jenis_sertifikasi", dataSertifikasi.value.sert_id)
-                                formData.append("jenis_permohonan", dataPermohonan.value)
-                                formData.append("data_komoditas", JSON.stringify(dataKomoditas))
 
+
+                                // Submit Permohonan
                                 this.loading_submit = true;
                                 let self = this;
                                 $.ajax({
@@ -69,12 +81,15 @@
                                     processData: false,
                                     contentType: false,
                                     data: formData,
-                                    success: function (res) {
-                                        self.loading_submit = false;
+                                    success: async function (res) {
                                         toastCenter({
                                             type: 'success',
                                             title: res.message
                                         })
+
+                                        await window.idb.pelanggan_permohonan.clear();
+                                        await window.idb.pelanggan_permohonan_komoditas.clear();
+                                        setTimeout(() => location.href = "{{url("$url")}}", 1000)
                                     },
                                     error: function (xhr) {
                                         self.loading_submit = false;

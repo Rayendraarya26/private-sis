@@ -14,6 +14,7 @@ use App\Models\BbkkpSis\MasterSertifikasiDokuman;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganDokuman;
 use App\Models\BbkkpSis\SisPelangganPabrik;
+use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokuman;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
@@ -65,6 +66,7 @@ class SertifikasiPermohonanController extends Controller
         $custID       = auth()->user()?->sis_pelanggan->cust_id;
         try {
             if (!$request->hasFile('pertanyaan_tambahan')) throw new Exception("Mohon unggah pertanyaan tambahan", 400);
+            if ($request['jenis_permohonan'] == "lama" && empty($request['sertifikat_lama_id'])) throw new Exception("Sertifikat lama belum dipilih", 400);
 
             /* TODO:
              * 1. FIND: data sis_pelanggan, sis_pelanggan_dokumen, sis_pelanggan_pabrik
@@ -96,7 +98,8 @@ class SertifikasiPermohonanController extends Controller
             $newSisPermohonan->cust_id                                      = $dataSisPelanggan->cust_id;
             $newSisPermohonan->user_id                                      = $dataSisPelanggan->user_id;
             $newSisPermohonan->sert_id                                      = $request['jenis_sertifikasi'];
-            $newSisPermohonan->cust_sert_id                                 = null;
+            $newSisPermohonan->mohon_jenis_status                           = $request['jenis_permohonan'];
+            $newSisPermohonan->cust_sert_id                                 = $request['sertifikat_lama_id'];
             $newSisPermohonan->mohon_kajian_permohonan_file                 = null;
             $newSisPermohonan->mohon_pernyataan_persetujuan_file            = null;
             $newSisPermohonan->mohon_spk_file                               = null;
@@ -218,7 +221,6 @@ class SertifikasiPermohonanController extends Controller
 
             DB::commit();
 
-
             return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
         } catch (Exception $e) {
             DB::rollBack();
@@ -236,28 +238,115 @@ class SertifikasiPermohonanController extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'datagrid'              => $this->ajax_datagrid($request),
-            'combogrid_sertifikasi' => $this->ajax_combogrid_sertifikasi($request),
-            'combogrid_komoditas'   => $this->ajax_combogrid_komoditas($request),
-            'combogrid_negara'      => $this->ajax_combogrid_negara($request),
-            'combogrid_provinsi'    => $this->ajax_combogrid_provinsi($request),
-            'combogrid_kabupaten'   => $this->ajax_combogrid_kabupaten($request),
-            'combogrid_kecamatan'   => $this->ajax_combogrid_kecamatan($request),
-            'dokumen_sertifikat'    => $this->ajax_dokumen_sertifikat($request),
-            "upload_document"       => $this->ajax_upload_document($request),
-            "data_pemohon"          => $this->ajax_data_pemohon($request),
-            "update_data_pemohon"   => $this->ajax_update_data_pemohon($request),
-            "pabrik_data"           => $this->ajax_pabrik_data($request),
-            "pabrik_add"            => $this->ajax_pabrik_add($request),
-            "pabrik_update"         => $this->ajax_pabrik_update($request),
-            "pabrik_delete"         => $this->ajax_pabrik_delete($request),
-            default                 => null,
+            'datagrid'                  => $this->ajax_datagrid($request),
+            'combogrid_sertifikat_lama' => $this->ajax_combogrid_sertifikat_lama($request),
+            'combogrid_sertifikasi'     => $this->ajax_combogrid_sertifikasi($request),
+            'combogrid_komoditas'       => $this->ajax_combogrid_komoditas($request),
+            'combogrid_negara'          => $this->ajax_combogrid_negara($request),
+            'combogrid_provinsi'        => $this->ajax_combogrid_provinsi($request),
+            'combogrid_kabupaten'       => $this->ajax_combogrid_kabupaten($request),
+            'combogrid_kecamatan'       => $this->ajax_combogrid_kecamatan($request),
+            'dokumen_sertifikat'        => $this->ajax_dokumen_sertifikat($request),
+            "upload_document"           => $this->ajax_upload_document($request),
+            "data_pemohon"              => $this->ajax_data_pemohon($request),
+            "update_data_pemohon"       => $this->ajax_update_data_pemohon($request),
+            "pabrik_data"               => $this->ajax_pabrik_data($request),
+            "pabrik_add"                => $this->ajax_pabrik_add($request),
+            "pabrik_update"             => $this->ajax_pabrik_update($request),
+            "pabrik_delete"             => $this->ajax_pabrik_delete($request),
+            default                     => null,
         };
     }
 
     private function ajax_datagrid(Request $request)
     {
-        return response()->json([]);
+        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
+        // Filter
+        if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+            }
+        }
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['cust_sert_id']          = $d->cust_sert_id;
+            $x['mohon_id']              = $d->mohon_id;
+            $x['cust_id']               = $d->cust_id;
+            $x['user_id']               = $d->user_id;
+            $x['sert_id']               = $d->sert_id;
+            $x['sert_nama']             = $d->sert_nama;
+            $x['mohon_approved_status'] = $d->mohon_approved_status;
+            $x['mohon_jenis_status']    = $d->mohon_jenis_status;
+            $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['update_at']             = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            array_push($result, $x);
+        }
+
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_combogrid_sertifikat_lama(Request $request)
+    {
+        $data = SisPelangganSertifikasi::with("master_sertifikasi")->join("master_sertifikasi", "master_sertifikasi.sert_id", '=', "sis_pelanggan_sertifikasi.sert_id");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('sert_nama', 'LIKE', '%' . $request->q . '%')
+                ->orWhere('cust_sert_tipe', 'LIKE', '%' . $request->q . '%')
+                ->orWhere('cust_sert_merk', 'LIKE', '%' . $request->q . '%')
+                ->orWhere('cust_sert_nomor_sertifikat', 'LIKE', '%' . $request->q . '%')
+                ->orWhere('cust_sert_nomor_referensi', 'LIKE', '%' . $request->q . '%')
+                ->orWhere('cust_sert_nomor_sni', 'LIKE', '%' . $request->q . '%')
+                ->orWhere('cust_sert_lingkup', 'LIKE', '%' . $request->q . '%');
+        }
+
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        } else {
+            $data->orderBy("cust_sert_expired_date");
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['sert_id']                    = $d->sert_id;
+            $x['sert_nama']                  = $d->sert_nama;
+            $x['sert_deskripsi']             = $d->sert_deskripsi;
+            $x['sert_expired']               = $d->sert_expired;
+            $x['sert_format_referensi']      = $d->sert_format_referensi;
+            $x['sert_is_product']            = $d->sert_is_product;
+            $x['cust_sert_id']               = $d->cust_sert_id;
+            $x['cust_sert_nomor_sertifikat'] = $d->cust_sert_nomor_sertifikat;
+            $x['cust_sert_expired_date']     = $d->created_at?->format("Y-m-d H:i:s");
+            $x['cust_sert_nomor_referensi']  = $d->cust_sert_nomor_referensi;
+            $x['cust_sert_nomor_sni']        = $d->cust_sert_nomor_sni;
+            $x['cust_sert_lingkup']          = $d->cust_sert_lingkup;
+            array_push($result, $x);
+        }
+
+        return response()->json(["total" => $total, "rows" => $result]);
     }
 
     private function ajax_combogrid_sertifikasi(Request $request)

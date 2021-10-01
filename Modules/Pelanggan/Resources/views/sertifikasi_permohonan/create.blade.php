@@ -122,7 +122,7 @@
                 selected: 0,
                 cycleSteps: false,
                 theme: 'arrows', // default, arrows, dots, progress
-                enableURLhash: true,
+                enableURLhash: false,
                 // darkMode: true,
                 transition: {
                     animation: 'slide-horizontal', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
@@ -137,6 +137,9 @@
                 anchorSettings: {
                     anchorClickable: false, // Enable/Disable anchor navigation
                     removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                },
+                keyboardSettings: {
+                    keyNavigation: false,
                 },
             });
 

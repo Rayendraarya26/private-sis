@@ -168,6 +168,7 @@
                 data: {
                     data_dokumen_sertifikasi: [],
 
+                    jenis_sertifikasi_data: null,
                     jenis_sertifikasi_id: null, // upload to server
                     jenis_sertifikasi_is_product: 'tidak',
                     jenis_sertifikasi_text: "--Pilih Jenis Sertifikasi--",
@@ -190,7 +191,21 @@
                 },
                 methods: {
                     start() {
-                        setTimeout(() => this.setComboDataSertifikasi(), 500)
+                        setTimeout(async () => {
+                            await this.setComboDataSertifikasi()
+
+                            // Load to set initial Index DB
+                            let currentData = await idb.pelanggan_permohonan
+                                .where({name: "jenis_sertifikasi"})
+                                .first()
+
+                            console.log(currentData)
+
+                            if (currentData != null) {
+                                $('#step2_jenis_sertifikasi').combogrid('setValue', currentData.value.sert_id)
+                                this.comboDataSertifikasiOnSelect(currentData.value)
+                            }
+                        }, 500)
                     },
                     validate() {
                         if (this.jenis_sertifikasi_id == null) throw "Pilih Jenis Sertifikasi"
@@ -359,7 +374,7 @@
                         $.get(`{{url("$url/ajax?action=dokumen_sertifikat")}}&sert_id=${this.jenis_sertifikasi_id}`)
                             .then(response => {
                                 this.data_dokumen_sertifikasi = response.results
-                                $(".tab-content").height("100%");
+                                setTimeout(() => $(".tab-content").height("100%"), 500)
                             })
                             .fail((xhr) => {
                                 if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
@@ -427,17 +442,7 @@
                                 // {field: 'sert_is_product', title: 'Produk?', width: 100, sortable: true,},
                             ]],
                             onLoadSuccess: async function () {
-                                // Load to set initial Index DB
-                                let currentData = await idb.pelanggan_permohonan
-                                    .where({name: "jenis_sertifikasi"})
-                                    .first()
 
-                                console.log(currentData)
-
-                                if (currentData != null) {
-                                    $('#step2_jenis_sertifikasi').combogrid('setValue', currentData.value.sert_id)
-                                    self.comboDataSertifikasiOnSelect(currentData.value)
-                                }
                             },
                             onSelect: async function (index, row) {
                                 self.comboDataSertifikasiOnSelect(row)
@@ -458,6 +463,7 @@
                         }
                     },
                     comboDataSertifikasiOnSelect(row) {
+                        this.jenis_sertifikasi_data = row
                         this.jenis_sertifikasi_id = row.sert_id;
                         this.jenis_sertifikasi_text = row.sert_nama;
                         this.jenis_sertifikasi_is_product = row.sert_is_product;
