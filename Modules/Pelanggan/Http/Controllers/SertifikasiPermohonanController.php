@@ -234,6 +234,25 @@ class SertifikasiPermohonanController extends Controller
 
     }
 
+    public function destroy(Request $request)
+    {
+        $request->validate(['mohon_id' => 'required|integer']);
+
+        try {
+            DB::beginTransaction();
+            $dataPemohon = SisPermohonan::findOrFail($request['mohon_id']);
+            $deletedPath = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
+            $dataPemohon->delete();
+            File::deleteDirectory($deletedPath);
+
+            DB::commit();
+            return responseJSON(200, null, "Data berhasil dihapus");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);

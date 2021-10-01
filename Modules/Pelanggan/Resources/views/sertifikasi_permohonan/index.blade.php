@@ -166,7 +166,7 @@
                 ]);
         });
 
-        function confirmDelete() {
+        function confirmDelete(id, nama) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
                 cancelButtonClass: 'btn btn-success mr-2 mb-2',
@@ -174,8 +174,8 @@
             });
 
             swalWithBootstrapButtons({
-                title: `Menghapus Data ?`,
-                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
+                title: `Hapus Sertifikat ?`,
+                text: `Menghapus sertifikat "${nama}" bersifat permanen dan tidak dapat di kembalikan`,
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Hapus',
@@ -183,7 +183,29 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
+                    $.ajax({
+                        url: `{{url("$url/delete")}}`,
+                        type: 'DELETE',
+                        dataType: 'json',
+                        data: {mohon_id: id},
+                        success: function (response) {
+                            toastCenter({
+                                type: 'success',
+                                title: response.message
+                            })
 
+                            // Destroy MenuButton (rebuild onloadsuccess)
+                            let dg = $('#ttData');
+                            dg.datagrid('getPanel').find('.btn-action').each(function () {
+                                $(this).menubutton('destroy');
+                            })
+                            dg.datagrid('reload');
+                        },
+                        error: function (xhr) {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
                 }
             });
         }
