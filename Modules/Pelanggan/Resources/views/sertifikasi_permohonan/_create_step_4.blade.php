@@ -11,12 +11,19 @@
             isikan benar
         </div>
         <div style="padding-top: 20px">
-            <button :disabled="!agreement"
-                    :class="{'btn': true, 'btn-primary':agreement, 'btn-outline-primary':!agreement,'btn-block':true}"
-                    @click="submitPermohonan"
-            >
-                <i class="fad fa-paper-plane"></i> Kirim
-            </button>
+            <template v-if="loading_submit">
+                <div class="fa-3x" style="text-align: center">
+                    <i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+                </div>
+            </template>
+            <template v-else>
+                <button :disabled="!agreement"
+                        :class="{'btn': true, 'btn-primary':agreement, 'btn-outline-primary':!agreement,'btn-block':true}"
+                        @click="submitPermohonan"
+                >
+                    <i class="fad fa-paper-plane"></i> Kirim
+                </button>
+            </template>
         </div>
     </div>
     <div class="col-md-4"></div>
@@ -29,6 +36,7 @@
                 el: "#vueStepFour",
                 data: {
                     agreement: false,
+                    loading_submit: false,
                 },
                 methods: {
                     submitPermohonan() {
@@ -45,12 +53,16 @@
                                 let formData = new FormData();
                                 const dataPertanyaanTambahan = document.querySelector("#step3_pertanyaan_tambahan").files[0];
                                 const dataPermohonan = await idb.pelanggan_permohonan.where({name: "jenis_permohonan"}).first();
+                                const dataSertifikasi = await idb.pelanggan_permohonan.where({name: "jenis_sertifikasi"}).first();
                                 const dataKomoditas = await window.idb.pelanggan_permohonan_komoditas.toArray();
 
                                 formData.append("pertanyaan_tambahan", dataPertanyaanTambahan)
-                                formData.append("jenis_sertifikasi", dataPermohonan.value)
+                                formData.append("jenis_sertifikasi", dataSertifikasi.value.sert_id)
+                                formData.append("jenis_permohonan", dataPermohonan.value)
                                 formData.append("data_komoditas", JSON.stringify(dataKomoditas))
 
+                                this.loading_submit = true;
+                                let self = this;
                                 $.ajax({
                                     url: `{{action("$module@store")}}`,
                                     type: 'post',
@@ -58,12 +70,14 @@
                                     contentType: false,
                                     data: formData,
                                     success: function (res) {
+                                        self.loading_submit = false;
                                         toastCenter({
                                             type: 'success',
                                             title: res.message
                                         })
                                     },
-                                    error: function (err) {
+                                    error: function (xhr) {
+                                        self.loading_submit = false;
                                         if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
                                         else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
                                     }

@@ -17,8 +17,9 @@ return [
     'key'    => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 
-    'path_file_master'   => "files/master",
-    'path_file_customer' => "files/customer/%d",
+    'path_file_master'    => "files/master",
+    'path_file_customer'  => "files/customer/%d",
+    'path_file_pengajuan' => "files/pengajuan/%d",
 
     /*
     |--------------------------------------------------------------------------

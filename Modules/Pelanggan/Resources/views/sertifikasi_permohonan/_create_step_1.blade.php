@@ -1,5 +1,5 @@
 <div class="row" id="vueStepOne">
-    <div class="col-md-6" @click="setJenisPermohonan('baru')"
+    <div class="col-md-6 col-xs-6" @click="setJenisPermohonan('baru')"
          style="cursor: pointer">
         <div
             style="justify-content: center; align-items: center; horiz-align: center">
@@ -13,7 +13,7 @@
             </p>
         </div>
     </div>
-    <div class="col-md-6" @click="setJenisPermohonan('lama')"
+    <div class="col-md-6 col-xs-6" @click="setJenisPermohonan('lama')"
          style="cursor: pointer">
         <img src="{{asset('images/sertifikasi-asset/pengajuan_lama.jpg')}}"
              alt="pengajuan baru" class="step1_image">

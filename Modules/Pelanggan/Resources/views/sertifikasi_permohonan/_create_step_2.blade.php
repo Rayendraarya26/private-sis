@@ -236,7 +236,7 @@
                                 })
                                 self.getDokumenSertifikasi()
                             },
-                            error: function (err) {
+                            error: function (xhr) {
                                 if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
                                 else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
                             }

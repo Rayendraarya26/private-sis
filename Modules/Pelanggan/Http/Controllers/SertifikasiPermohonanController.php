@@ -14,6 +14,11 @@ use App\Models\BbkkpSis\MasterSertifikasiDokuman;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganDokuman;
 use App\Models\BbkkpSis\SisPelangganPabrik;
+use App\Models\BbkkpSis\SisPermohonan;
+use App\Models\BbkkpSis\SisPermohonanDokuman;
+use App\Models\BbkkpSis\SisPermohonanKomoditi;
+use App\Models\BbkkpSis\SisPermohonanPabrik;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -51,33 +56,202 @@ class SertifikasiPermohonanController extends Controller
     {
         $request->validate([
             "pertanyaan_tambahan" => 'required',
+            "jenis_permohonan"    => 'required',
             "jenis_sertifikasi"   => 'required',
-            "data_komoditas"      => 'required',
         ]);
 
-        return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
+        // Set data uploaded file path (digunakan untuk delete file yang diupload ketika catch error)
+        $uploadedPath = [];
+        $custID       = auth()->user()?->sis_pelanggan->cust_id;
+        try {
+            if (!$request->hasFile('pertanyaan_tambahan')) throw new Exception("Mohon unggah pertanyaan tambahan", 400);
+
+            /* TODO:
+             * 1. FIND: data sis_pelanggan, sis_pelanggan_dokumen, sis_pelanggan_pabrik
+             * 2. FIND: master_sertifikasi dan dukumen yang dibutuhkan master_sertifikasi_dokumen (cek juga apakah semua dokumen sudah terupload)
+             * 2. ADD: sis_permohonan, sis_pelanggan_pabrik, sis_permohonan_dokumen (sesuai jenis sertifikasi), sis_permohonan_komoditi (jika ada)
+             * 3. COPY: Jika sukses copy file sis_pelanggan_dokumen ke lokasi sis_permohonan_dokumen
+             *  */
+
+            DB::beginTransaction();
+            // 1
+            $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumen", "sis_pelanggan_pabriks"])->find($custID)->first();
+
+            // 2
+            $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumen.master_jenis_dok_perusahaan')->findOrFail($request['jenis_sertifikasi']);
+            $uploadedDocID         = [];
+            $requiredDocID         = [];
+            foreach ($dataSisPelanggan->sis_pelanggan_dokumen as $dokumen) {
+                array_push($uploadedDocID, $dokumen->jenis_dok_perusahaan_id);
+            }
+            foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumen as $dms) {
+                array_push($requiredDocID, $dms->jenis_dok_perusahaan_id);
+                if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new Exception(sprintf("Dokumen %s belum di unggah", $dataMasterSertifiaksi->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
+            }
+
+            if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($request['data_komoditas'])) throw new Exception("Data komoditas belum di inputkan", 400);
+
+            // 3.1 add sis_permohonan
+            $newSisPermohonan                                               = new SisPermohonan();
+            $newSisPermohonan->cust_id                                      = $dataSisPelanggan->cust_id;
+            $newSisPermohonan->user_id                                      = $dataSisPelanggan->user_id;
+            $newSisPermohonan->sert_id                                      = $request['jenis_sertifikasi'];
+            $newSisPermohonan->cust_sert_id                                 = null;
+            $newSisPermohonan->mohon_kajian_permohonan_file                 = null;
+            $newSisPermohonan->mohon_pernyataan_persetujuan_file            = null;
+            $newSisPermohonan->mohon_spk_file                               = null;
+            $newSisPermohonan->mohon_cust_email                             = $dataSisPelanggan->cust_email;
+            $newSisPermohonan->mohon_cust_nomor_telp                        = $dataSisPelanggan->cust_nomor_telp;
+            $newSisPermohonan->mohon_cust_nomor_fax                         = $dataSisPelanggan->cust_nomor_fax;
+            $newSisPermohonan->mohon_cust_nomor_hp                          = $dataSisPelanggan->cust_nomor_hp;
+            $newSisPermohonan->mohon_cust_nama                              = $dataSisPelanggan->cust_nama;
+            $newSisPermohonan->jenis_perusahaan_id                          = $dataSisPelanggan->jenis_perusahaan_id;
+            $newSisPermohonan->badan_hukum_id                               = $dataSisPelanggan->badan_hukum_id;
+            $newSisPermohonan->cust_asing                                   = $dataSisPelanggan->cust_asing;
+            $newSisPermohonan->negara_id                                    = $dataSisPelanggan->negara_id;
+            $newSisPermohonan->kec_id                                       = $dataSisPelanggan->kec_id;
+            $newSisPermohonan->kab_id                                       = $dataSisPelanggan->kab_id;
+            $newSisPermohonan->prov_id                                      = $dataSisPelanggan->prov_id;
+            $newSisPermohonan->mohon_cust_alamat                            = $dataSisPelanggan->cust_alamat;
+            $newSisPermohonan->mohon_cust_nomor_akta_pendirian              = $dataSisPelanggan->cust_nomor_akta_pendirian;
+            $newSisPermohonan->mohon_cust_nama_pemilik                      = $dataSisPelanggan->cust_nama_pemilik;
+            $newSisPermohonan->mohon_cust_nama_pimpinan                     = $dataSisPelanggan->cust_nama_pimpinan;
+            $newSisPermohonan->mohon_cust_nama_wakil_manajemen              = $dataSisPelanggan->cust_nama_wakil_manajemen;
+            $newSisPermohonan->mohon_cust_jumlah_bagian                     = $dataSisPelanggan->cust_jumlah_bagian;
+            $newSisPermohonan->mohon_cust_jumlah_manajemen                  = $dataSisPelanggan->cust_jumlah_manajemen;
+            $newSisPermohonan->mohon_cust_jumlah_administrasi               = $dataSisPelanggan->cust_jumlah_administrasi;
+            $newSisPermohonan->mohon_cust_jumlah_part_time                  = $dataSisPelanggan->cust_jumlah_part_time;
+            $newSisPermohonan->mohon_cust_jumlah_operasional                = $dataSisPelanggan->cust_jumlah_operasional;
+            $newSisPermohonan->mohon_cust_jumlah_shift_1                    = $dataSisPelanggan->cust_jumlah_shift_1;
+            $newSisPermohonan->mohon_cust_jumlah_shift_2                    = $dataSisPelanggan->cust_jumlah_shift_2;
+            $newSisPermohonan->mohon_cust_jumlah_shift_3                    = $dataSisPelanggan->cust_jumlah_shift_3;
+            $newSisPermohonan->mohon_cust_jumlah_non_permanen               = $dataSisPelanggan->cust_jumlah_non_permanen;
+            $newSisPermohonan->mohon_cust_shif_kerja                        = $dataSisPelanggan->cust_shif_kerja;
+            $newSisPermohonan->mohon_cust_luas_tanah                        = $dataSisPelanggan->cust_luas_tanah;
+            $newSisPermohonan->mohon_cust_luas_bangunan                     = $dataSisPelanggan->cust_luas_bangunan;
+            $newSisPermohonan->mohon_cust_kapasitas_produksi_tahunan        = $dataSisPelanggan->cust_kapasitas_produksi_tahunan;
+            $newSisPermohonan->mohon_cust_kapasitas_produksi_tahunan_satuan = $dataSisPelanggan->cust_kapasitas_produksi_tahunan_satuan;
+            $newSisPermohonan->mohon_pertanyaan_filepath                    = null;
+            $newSisPermohonan->created_at                                   = Carbon::now();
+            $newSisPermohonan->updated_at                                   = Carbon::now();
+            $newSisPermohonan->save();
+
+            // DEFINE BASE UPLOAD AND UPDATE mohon_pertanyaan_filepath
+            $baseFileUpload     = sprintf(config("app.path_file_pengajuan"), $newSisPermohonan->mohon_id);
+            $filePertanyaan     = $request->file('pertanyaan_tambahan');
+            $filePertanyaanName = Str::slug('pertanyaan-tambahan' . $filePertanyaan->getClientOriginalName()) . '-' . time() . '.' . $filePertanyaan->getClientOriginalExtension();
+            $filePertanyaanPath = sprintf("%s/%s", $baseFileUpload, $filePertanyaanName);
+            $filePertanyaan->move($baseFileUpload, $filePertanyaanName);
+            array_push($uploadedPath, $filePertanyaanPath);
+            $newSisPermohonan->mohon_pertanyaan_filepath = $filePertanyaanPath;
+            $newSisPermohonan->save();
+
+            // 3.2 add sis_permohonan_pabrik
+            if (!empty($dataSisPelanggan?->sis_pelanggan_pabriks)) {
+                foreach ($dataSisPelanggan?->sis_pelanggan_pabriks as $pabrik) {
+                    $newSisPermohonanPabrik                               = new SisPermohonanPabrik();
+                    $newSisPermohonanPabrik->mohon_id                     = $newSisPermohonan->mohon_id;
+                    $newSisPermohonanPabrik->mohon_pabrik_nomor_telp      = $pabrik->pabrik_nomor_telp;
+                    $newSisPermohonanPabrik->mohon_pabrik_nomor_fax       = $pabrik->pabrik_nomor_fax;
+                    $newSisPermohonanPabrik->mohon_pabrik_nomor_hp        = $pabrik->pabrik_nomor_hp;
+                    $newSisPermohonanPabrik->mohon_pabrik_nama            = $pabrik->pabrik_nama;
+                    $newSisPermohonanPabrik->kec_id                       = $pabrik->kec_id;
+                    $newSisPermohonanPabrik->kab_id                       = $pabrik->kab_id;
+                    $newSisPermohonanPabrik->prov_id                      = $pabrik->prov_id;
+                    $newSisPermohonanPabrik->mohon_pabrik_alamat          = $pabrik->pabrik_alamat;
+                    $newSisPermohonanPabrik->mohon_pabrik_kode_pos        = $pabrik->pabrik_kode_pos;
+                    $newSisPermohonanPabrik->mohon_pabrik_jumlah_karyawan = $pabrik->pabrik_jumlah_karyawan;
+                    $newSisPermohonanPabrik->mohon_pabrik_kegiatan_utama  = $pabrik->pabrik_kegiatan_utama;
+                    $newSisPermohonanPabrik->mohon_pabrik_luas_tanah      = $pabrik->pabrik_luas_tanah;
+                    $newSisPermohonanPabrik->mohon_pabrik_luas_bangunan   = $pabrik->pabrik_luas_bangunan;
+                    $newSisPermohonanPabrik->created_at                   = Carbon::now();
+                    $newSisPermohonanPabrik->updated_at                   = Carbon::now();
+                    $newSisPermohonanPabrik->save();
+                }
+            }
+
+            // 3.3 add sis_permohonan_dokumen
+            if (!empty($dataSisPelanggan?->sis_pelanggan_dokumen)) {
+                foreach ($dataSisPelanggan?->sis_pelanggan_dokumen as $dokumen) {
+                    if (in_array($dokumen->jenis_dok_perusahaan_id, $requiredDocID)) {
+                        // Get data pelanggan dokumen
+                        $pelangganFilePath = public_path($dokumen->cust_dok_filepath);
+
+                        // Copy to pengajuan
+                        $dokumenName   = basename($pelangganFilePath);
+                        $dokumenFolder = sprintf("%s/dokumen", $baseFileUpload);
+                        $dokumenPath   = sprintf("%s/%s", $dokumenFolder, $dokumenName);
+                        if (!File::exists($dokumenFolder)) {
+                            File::makeDirectory($dokumenFolder, 0777, true, true);
+                        }
+                        copy($pelangganFilePath, $dokumenPath);
+                        array_push($uploadedPath, $dokumenPath);
+
+                        $newSisPermohonanDokumen                          = new SisPermohonanDokuman();
+                        $newSisPermohonanDokumen->mohon_id                = $newSisPermohonan->mohon_id;
+                        $newSisPermohonanDokumen->jenis_dok_perusahaan_id = $dokumen->jenis_dok_perusahaan_id;
+                        $newSisPermohonanDokumen->mohon_dok_deskripsi     = $dokumen->cust_dok_deskripsi;
+                        $newSisPermohonanDokumen->mohon_dok_filepath      = $dokumenPath;
+                        $newSisPermohonanDokumen->created_at              = Carbon::now();
+                        $newSisPermohonanDokumen->updated_at              = Carbon::now();
+                        $newSisPermohonanDokumen->save();
+                    }
+                }
+            }
+
+            // 3.4 add sis_permohonan_komoditi
+            if ($dataMasterSertifiaksi->sert_is_product == "ya") {
+                $dataKomoditas = json_decode($request['data_komoditas']);
+                foreach ($dataKomoditas as $komoditi) {
+                    $newSisPermohonanKomoditas                      = new SisPermohonanKomoditi();
+                    $newSisPermohonanKomoditas->mohon_id            = $newSisPermohonan->mohon_id;
+                    $newSisPermohonanKomoditas->komodt_id           = $komoditi->komoditi_id;
+                    $newSisPermohonanKomoditas->mohon_kmditi_sni    = $komoditi->sni;
+                    $newSisPermohonanKomoditas->mohon_kmditi_merk   = $komoditi->merk;
+                    $newSisPermohonanKomoditas->mohon_kmditi_tipe   = $komoditi->tipe;
+                    $newSisPermohonanKomoditas->mohon_kmditi_ukuran = $komoditi->ukuran;
+                    $newSisPermohonanKomoditas->created_at          = Carbon::now();
+                    $newSisPermohonanKomoditas->updated_at          = Carbon::now();
+                    $newSisPermohonanKomoditas->save();
+                }
+            }
+
+            DB::commit();
+
+
+            return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            foreach ($uploadedPath as $delPath) { // delete uploaded file
+                @unlink($delPath);
+            }
+
+            return responseJSON(500, null, $e->getMessage());
+        }
+
     }
 
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'datagrid' => $this->ajax_datagrid($request),
+            'datagrid'              => $this->ajax_datagrid($request),
             'combogrid_sertifikasi' => $this->ajax_combogrid_sertifikasi($request),
-            'combogrid_komoditas' => $this->ajax_combogrid_komoditas($request),
-            'combogrid_negara' => $this->ajax_combogrid_negara($request),
-            'combogrid_provinsi' => $this->ajax_combogrid_provinsi($request),
-            'combogrid_kabupaten' => $this->ajax_combogrid_kabupaten($request),
-            'combogrid_kecamatan' => $this->ajax_combogrid_kecamatan($request),
-            'dokumen_sertifikat' => $this->ajax_dokumen_sertifikat($request),
-            "upload_document" => $this->ajax_upload_document($request),
-            "data_pemohon" => $this->ajax_data_pemohon($request),
-            "update_data_pemohon" => $this->ajax_update_data_pemohon($request),
-            "pabrik_data" => $this->ajax_pabrik_data($request),
-            "pabrik_add" => $this->ajax_pabrik_add($request),
-            "pabrik_update" => $this->ajax_pabrik_update($request),
-            "pabrik_delete" => $this->ajax_pabrik_delete($request),
-            default => null,
+            'combogrid_komoditas'   => $this->ajax_combogrid_komoditas($request),
+            'combogrid_negara'      => $this->ajax_combogrid_negara($request),
+            'combogrid_provinsi'    => $this->ajax_combogrid_provinsi($request),
+            'combogrid_kabupaten'   => $this->ajax_combogrid_kabupaten($request),
+            'combogrid_kecamatan'   => $this->ajax_combogrid_kecamatan($request),
+            'dokumen_sertifikat'    => $this->ajax_dokumen_sertifikat($request),
+            "upload_document"       => $this->ajax_upload_document($request),
+            "data_pemohon"          => $this->ajax_data_pemohon($request),
+            "update_data_pemohon"   => $this->ajax_update_data_pemohon($request),
+            "pabrik_data"           => $this->ajax_pabrik_data($request),
+            "pabrik_add"            => $this->ajax_pabrik_add($request),
+            "pabrik_update"         => $this->ajax_pabrik_update($request),
+            "pabrik_delete"         => $this->ajax_pabrik_delete($request),
+            default                 => null,
         };
     }
 
@@ -328,7 +502,7 @@ class SertifikasiPermohonanController extends Controller
             $dataMasterSertDok = MasterSertifikasiDokuman::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
 
             $dataFile = $request->file("file");
-            $filePath = sprintf(config("app.path_file_customer"), auth()->id());
+            $filePath = sprintf(config("app.path_file_customer"), auth()->user()?->sis_pelanggan->cust_id);
             if (!File::exists($filePath)) {
                 File::makeDirectory($filePath, 0777, true, true);
             }
