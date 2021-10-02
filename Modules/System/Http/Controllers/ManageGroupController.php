@@ -3,6 +3,7 @@
 namespace Modules\System\Http\Controllers;
 
 
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysGroupPermission;
 use App\Models\BbkkpSis\SysMenu;
@@ -23,14 +24,25 @@ class ManageGroupController extends Controller
 
     public function index()
     {
-        $parse = ['url' => $this->url, 'module' => $this->module];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Group'),
+        ];
+
+        $parse = ['url' => $this->url, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::group.index')->with($parse);
     }
 
 
     public function create()
     {
-        $parse = ['url' => $this->url, 'module' => $this->module];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Group', url($this->url)),
+            new BreadcrumbsStruct('Tambah'),
+        ];
+
+        $parse = ['url' => $this->url, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::group.create')->with($parse);
     }
 
@@ -77,7 +89,14 @@ class ManageGroupController extends Controller
     public function edit($id)
     {
         $data = SysGroup::findOrFail($id);
-        $parse = ['url' => $this->url, 'id' => $id, 'data' => $data, 'module' => $this->module];
+
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Group', url($this->url)),
+            new BreadcrumbsStruct('Ubah'),
+        ];
+
+        $parse = ['url' => $this->url, 'id' => $id, 'data' => $data, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::group.edit')->with($parse);
     }
 
@@ -90,9 +109,9 @@ class ManageGroupController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $id) {
-            $data = SysGroup::findOrFail($id);
-            $data->group_name = $request->group_name;
-            $data->group_desc = $request->group_desc;
+            $data                  = SysGroup::findOrFail($id);
+            $data->group_name      = $request->group_name;
+            $data->group_desc      = $request->group_desc;
             $data->group_is_active = $request->group_is_active;
             $data->save();
             // Remove
@@ -141,7 +160,7 @@ class ManageGroupController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -155,10 +174,10 @@ class ManageGroupController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['group_id'] = $d->group_id;
-            $x['group_name'] = $d->group_name;
-            $x['group_desc'] = $d->group_desc;
-            $x['group_is_active'] = ucwords($d->group_is_active);
+            $x['group_id']         = $d->group_id;
+            $x['group_name']       = $d->group_name;
+            $x['group_desc']       = $d->group_desc;
+            $x['group_is_active']  = ucwords($d->group_is_active);
             $x['group_created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $d->group_created_at)->format("d M Y, h:i:s");
             array_push($result, $x);
         }
@@ -185,7 +204,7 @@ class ManageGroupController extends Controller
     public function ajaxActive(Request $request)
     {
         foreach ($request->ids as $id) {
-            $data = SysGroup::findOrFail($id);
+            $data                  = SysGroup::findOrFail($id);
             $data->group_is_active = $request->status;
             $data->save();
         }

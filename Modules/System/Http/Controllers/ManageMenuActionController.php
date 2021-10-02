@@ -3,6 +3,7 @@
 namespace Modules\System\Http\Controllers;
 
 
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SysMenu;
 use App\Models\BbkkpSis\SysMenuAction;
 use Carbon\Carbon;
@@ -19,13 +20,19 @@ class ManageMenuActionController extends Controller
         $menu_id = $request->route('id');
         if (empty($menu_id)) return redirect()->back();
         $this->dataMenu = SysMenu::findOrFail($menu_id);
-        $this->url = "system/menu/" . $menu_id . "/menu-action";
+        $this->url      = "system/menu/" . $menu_id . "/menu-action";
     }
 
 
     public function index()
     {
-        $parse = ['url' => $this->url, 'module' => $this->module, 'menu' => $this->dataMenu];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Menu', url('system/menu')),
+            new BreadcrumbsStruct('Menu Action'),
+        ];
+
+        $parse = ['url' => $this->url, 'module' => $this->module, 'menu' => $this->dataMenu, 'breadcrumbs' => $breadcrumbs];
         return view('system::menu_action.index')->with($parse);
     }
 
@@ -60,8 +67,8 @@ class ManageMenuActionController extends Controller
      */
     public function update(Request $request)
     {
-        $action = SysMenuAction::findOrFail($request->action_id);
-        $action->action_name = $request->action_name;
+        $action                    = SysMenuAction::findOrFail($request->action_id);
+        $action->action_name       = $request->action_name;
         $action->action_controller = $request->action_controller;
         $action->save();
         return responseJSON(200, ['message' => "success"], "success");
@@ -87,7 +94,7 @@ class ManageMenuActionController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -101,8 +108,8 @@ class ManageMenuActionController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['action_id'] = $d->action_id;
-            $x['action_name'] = $d->action_name;
+            $x['action_id']         = $d->action_id;
+            $x['action_name']       = $d->action_name;
             $x['action_controller'] = $d->action_controller;
             $x['action_created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $d->action_created_at)->format("d M Y, h:i:s");
             array_push($result, $x);

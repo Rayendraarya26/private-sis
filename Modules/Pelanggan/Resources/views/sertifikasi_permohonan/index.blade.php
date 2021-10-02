@@ -56,8 +56,15 @@
                         align: 'center',
                         formatter: function (val, row) {
                             let dom = `dropdownMenu_${row.mohon_id}`;
+                            let btnDetail = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.mohon_id}'">Detail</div>`;
                             let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.mohon_id}', '${row.sert_nama}')">Delete</div>`;
+
+                            if (row.mohon_approved_status !== "on-progress") {
+                                btnDelete = "";
+                                btnEdit = "";
+                            }
+
 
                             return `
                         <div>
@@ -65,8 +72,9 @@
                             <i class="fa fa-setting"></i> Aksi
                         </button>
                         <div id="${dom}" style="width:150px; display: none;">
+                            @if(authorized("{$module}@detail")) ${btnDetail} @endif
                             @if(authorized("{$module}@edit")) ${btnEdit} @endif
-                            <div class="menu-sep"></div>
+                            <!-- <div class="menu-sep"></div> -->
                                 @if(authorized("{$module}@destroy")) ${btnDelete} @endif
                             </div>
                         </div>`;

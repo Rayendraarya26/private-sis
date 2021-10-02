@@ -176,11 +176,6 @@ class SisPermohonan extends Model
         return $this->hasMany(SisPermohonanDokuman::class, 'mohon_id');
     }
 
-    public function sis_permohonan_jawabans()
-    {
-        return $this->hasMany(SisPermohonanJawaban::class, 'mohon_id');
-    }
-
     public function sis_permohonan_komoditis()
     {
         return $this->hasMany(SisPermohonanKomoditi::class, 'mohon_id');

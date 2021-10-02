@@ -3,6 +3,7 @@
 namespace Modules\System\Http\Controllers;
 
 
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\MasterIcons;
 use App\Models\BbkkpSis\SysMenu;
 use Exception;
@@ -21,14 +22,25 @@ class ManageMenuController extends Controller
 
     public function index()
     {
-        $parse = ['url' => $this->url, 'module' => $this->module];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Menu'),
+        ];
+
+        $parse = ['url' => $this->url, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::menu.index')->with($parse);
     }
 
 
     public function create()
     {
-        $parse = ['url' => $this->url, 'module' => $this->module];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Menu', url($this->url)),
+            new BreadcrumbsStruct('Tambah'),
+        ];
+
+        $parse = ['url' => $this->url, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::menu.create')->with($parse);
     }
 
@@ -57,7 +69,14 @@ class ManageMenuController extends Controller
     public function edit($id)
     {
         $data = SysMenu::findOrFail($id);
-        $parse = ['url' => $this->url, 'id' => $id, 'data' => $data, 'module' => $this->module];
+
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Menu', url($this->url)),
+            new BreadcrumbsStruct('Edit'),
+        ];
+
+        $parse = ['url' => $this->url, 'id' => $id, 'data' => $data, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::menu.edit')->with($parse);
     }
 
@@ -71,13 +90,13 @@ class ManageMenuController extends Controller
 
         // TODO: check apakah ada menu yg kembar
         $currentData = SysMenu::findOrFail($id);
-        $newName = SysMenu::where("menu_name", $request->menu_name)->where('menu_name', '<>', $currentData->menu_name)->first();
+        $newName     = SysMenu::where("menu_name", $request->menu_name)->where('menu_name', '<>', $currentData->menu_name)->first();
         if (!empty($newName)) return redirect()->back()->withInput($request->all())->withErrors("Nama menu sudah dipakai");
 
-        $currentData->menu_name = $request->menu_name;
-        $currentData->menu_desc = $request->menu_desc;
-        $currentData->menu_icon = $request->menu_icon;
-        $currentData->menu_order = $request->menu_order;
+        $currentData->menu_name      = $request->menu_name;
+        $currentData->menu_desc      = $request->menu_desc;
+        $currentData->menu_icon      = $request->menu_icon;
+        $currentData->menu_order     = $request->menu_order;
         $currentData->menu_is_active = $request->menu_is_active;
         if (!empty($request->menu_parent_id)) $currentData->menu_parent_id = $request->menu_parent_id;
 
@@ -116,7 +135,7 @@ class ManageMenuController extends Controller
     public function ajaxActive(Request $request)
     {
         foreach ($request->ids as $id) {
-            $data = SysMenu::findOrFail($id);
+            $data                 = SysMenu::findOrFail($id);
             $data->menu_is_active = $request->status;
             $data->save();
         }
@@ -129,7 +148,7 @@ class ManageMenuController extends Controller
         $dataIcons = MasterIcons::when($request['q'], function ($query, $search) {
             return $query->where('icon_name', 'like', '%' . $search . '%');
         })->limit(10)->get();
-        $response = [];
+        $response  = [];
         foreach ($dataIcons as $icon) {
             $response[] = ['icon_name' => $icon->icon_name, 'icon_code' => $icon->icon_name];
         }

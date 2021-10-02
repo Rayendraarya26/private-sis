@@ -3,6 +3,7 @@
 namespace Modules\System\Http\Controllers;
 
 
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
@@ -20,14 +21,25 @@ class ManageUserController extends Controller
 
     public function index()
     {
-        $parse = ['url' => $this->url, 'module' => $this->module];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Users', url($this->url))
+        ];
+
+        $parse = ['url' => $this->url, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::user.index')->with($parse);
     }
 
     public function create()
     {
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Users', url($this->url)),
+            new BreadcrumbsStruct('Tambah'),
+        ];
+
         $groups = SysGroup::all();
-        $parse = ['url' => $this->url, 'groups' => $groups, 'module' => $this->module];
+        $parse  = ['url' => $this->url, 'groups' => $groups, 'module' => $this->module, 'breadcrumbs' => $breadcrumbs];
         return view('system::user.create')->with($parse);
     }
 
@@ -50,7 +62,7 @@ class ManageUserController extends Controller
 
         if ($request->hasFile("foto")) {
             $image = $request->file('foto');
-            $img = (new Image)->make($request->file('foto')->getRealPath());
+            $img   = (new Image)->make($request->file('foto')->getRealPath());
             $img->resize(300, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
@@ -88,18 +100,25 @@ class ManageUserController extends Controller
 
     public function edit($id)
     {
-        $data = SysUser::findOrFail($id);
-        $groups = SysGroup::all();
-        $defaultGroup = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
+        $breadcrumbs = [
+            new BreadcrumbsStruct('System'),
+            new BreadcrumbsStruct('Manage Users', url($this->url)),
+            new BreadcrumbsStruct('Edit'),
+        ];
+
+        $data          = SysUser::findOrFail($id);
+        $groups        = SysGroup::all();
+        $defaultGroup  = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
         $selectedGroup = $data->user_group->toArray();
-        $parse = [
+        $parse         = [
+            'breadcrumbs'    => $breadcrumbs,
             'url'            => $this->url,
+            'module'         => $this->module,
             'id'             => $id,
             'data'           => $data,
             'groups'         => $groups,
             'default_group'  => $defaultGroup,
             'selected_group' => $selectedGroup,
-            'module'         => $this->module
         ];
         return view('system::user.edit')->with($parse);
     }
@@ -117,16 +136,16 @@ class ManageUserController extends Controller
 
         // TODO: check apakah ada email yg kembar
         $currentUser = SysUser::findOrFail($id);
-        $newEmail = SysUser::where("user_email", $request->email)->where('user_email', '<>', $currentUser->user_email)->first();
+        $newEmail    = SysUser::where("user_email", $request->email)->where('user_email', '<>', $currentUser->user_email)->first();
         if (!empty($newEmail)) return redirect()->back()->withInput($request->all())->withErrors("Email telah digunakan");
 
         $currentUser->user_fullname = $request->fullname;
-        $currentUser->user_email = $request->email;
+        $currentUser->user_email    = $request->email;
         if (!empty($request->password)) $currentUser->user_password = bcrypt($request->password);
 
         if ($request->hasFile("foto")) {
             $image = $request->file('foto');
-            $img = Image::make($request->file('foto')->getRealPath());
+            $img   = Image::make($request->file('foto')->getRealPath());
             $img->resize(300, null, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
@@ -174,7 +193,7 @@ class ManageUserController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -188,12 +207,12 @@ class ManageUserController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['user_id'] = $d->user_id;
-            $x['user_fullname'] = $d->user_fullname;
-            $x['user_email'] = $d->user_email;
-            $x['user_is_active'] = ucwords($d->user_is_active);
-            $x['user_is_banned'] = ucwords($d->user_is_banned);
-            $x['user_picture'] = url(config("app.url_profile_image") . $d->user_picture);
+            $x['user_id']         = $d->user_id;
+            $x['user_fullname']   = $d->user_fullname;
+            $x['user_email']      = $d->user_email;
+            $x['user_is_active']  = ucwords($d->user_is_active);
+            $x['user_is_banned']  = ucwords($d->user_is_banned);
+            $x['user_picture']    = url(config("app.url_profile_image") . $d->user_picture);
             $x['user_last_login'] = !empty($d->user_last_login) ? Carbon::createFromFormat('Y-m-d H:i:s', $d->user_last_login)->format("d M Y, h:i:s") : $d->user_last_login;
             $x['user_created_at'] = Carbon::createFromFormat('Y-m-d H:i:s', $d->user_created_at)->format("d M Y, h:i:s");
             array_push($result, $x);
@@ -205,7 +224,7 @@ class ManageUserController extends Controller
     {
 
         foreach ($request->ids as $id) {
-            $data = SysUser::findOrFail($id);
+            $data                 = SysUser::findOrFail($id);
             $data->user_is_banned = $request->status;
             $data->user_banned_at = $request->status == 'yes' ? date("Y-m-d H:i:s") : NULL;
             $data->save();

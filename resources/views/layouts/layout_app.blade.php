@@ -331,8 +331,14 @@
             </div>
         </aside>
         <!-- /sidebar -->
-        <!-- Site Content Wrapper -->
+
+
         <div class="dt-content-wrapper">
+            <!-- Breadcrumbs -->
+            @if(isset($breadcrumbs))
+                <x-breadcrumbs :data="$breadcrumbs"></x-breadcrumbs>
+            @endif
+
             <div class="d-lg-none">
                 <div class="dt-content" style="margin-bottom: -15px">
                     <div style="text-align: center">

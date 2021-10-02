@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\MasterBadanHukum;
 use App\Models\BbkkpSis\MasterJenisPerusahaan;
 use App\Models\BbkkpSis\MasterKabupaten;
@@ -34,7 +35,12 @@ class SertifikasiPermohonanController extends Controller
 
     public function index()
     {
-        $parser = ['module' => $this->module, 'url' => $this->url];
+        $breadcrumbs = [
+            new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Permohonan Sertifikasi'),
+        ];
+
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view('pelanggan::sertifikasi_permohonan.index')->with($parser);
     }
 
@@ -43,12 +49,18 @@ class SertifikasiPermohonanController extends Controller
         $dataPelanggan         = SisPelanggan::where("user_id", auth()->id())->first();
         $masterBadanHukum      = MasterBadanHukum::all();
         $masterJenisPerusahaan = MasterJenisPerusahaan::all();
+        $breadcrumbs           = [
+            new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Permohonan Sertifikasi', url($this->url)),
+            new BreadcrumbsStruct('Tambah'),
+        ];
         $parser                = [
             'module'                => $this->module,
             'url'                   => $this->url,
             'dataPelanggan'         => $dataPelanggan,
             'masterBadanHukum'      => $masterBadanHukum,
             'masterJenisPerusahaan' => $masterJenisPerusahaan,
+            'breadcrumbs'           => $breadcrumbs
         ];
         return view('pelanggan::sertifikasi_permohonan.create')->with($parser);
     }
@@ -231,7 +243,25 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(500, null, $e->getMessage());
         }
+    }
 
+    public function detail(Request $request, $mohonID)
+    {
+        $dataPemohon = SisPermohonan::with(['sis_permohonan_dokumen', 'sis_permohonan_komoditis', 'sis_permohonan_pabriks', 'master_sertifikasi'])
+            ->findOrFail($mohonID);
+
+        $breadcrumbs = [
+            new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Permohonan Sertifikasi', url($this->url)),
+            new BreadcrumbsStruct('Detail'),
+        ];
+        $parser      = [
+            'module'      => $this->module,
+            'url'         => $this->url,
+            'dataPemohon' => $dataPemohon,
+            'breadcrumbs' => $breadcrumbs
+        ];
+        return view('pelanggan::sertifikasi_permohonan.detail')->with($parser);
     }
 
     public function destroy(Request $request)
