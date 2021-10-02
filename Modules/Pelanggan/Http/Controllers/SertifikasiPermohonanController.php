@@ -240,7 +240,8 @@ class SertifikasiPermohonanController extends Controller
 
         try {
             DB::beginTransaction();
-            $dataPemohon = SisPermohonan::findOrFail($request['mohon_id']);
+            $dataPemohon = SisPermohonan::where('user_id', auth()->id())->findOrFail($request['mohon_id']);
+            if ($dataPemohon->mohon_approved_status != "on-progress") throw new Exception("Permohonan tidak dapat dihapus, anda hanya dapat menghapus permohonan dengan status Proses");
             $deletedPath = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
             $dataPemohon->delete();
             File::deleteDirectory($deletedPath);

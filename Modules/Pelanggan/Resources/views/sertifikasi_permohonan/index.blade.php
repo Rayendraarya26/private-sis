@@ -49,7 +49,6 @@
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
                         title: "Aksi",
@@ -174,8 +173,8 @@
             });
 
             swalWithBootstrapButtons({
-                title: `Hapus Sertifikat ?`,
-                text: `Menghapus sertifikat "${nama}" bersifat permanen dan tidak dapat di kembalikan`,
+                title: `Hapus Permohonan ?`,
+                text: `Menghapus permohonan untuk sertifikat "${nama}" bersifat permanen dan tidak dapat di kembalikan`,
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Hapus',

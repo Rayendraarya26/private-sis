@@ -51,7 +51,7 @@ class RegisterController extends Controller
 
             $ug                = new SysUserGroup();
             $ug->ug_user_id    = $user->user_id;
-            $ug->ug_group_id   = 2;
+            $ug->ug_group_id   = 3;
             $ug->ug_is_default = "yes";
             $ug->ug_created_at = Carbon::now();
             $ug->save();
