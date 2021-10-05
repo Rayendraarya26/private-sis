@@ -9,8 +9,8 @@ namespace App\Models\BbkkpSis;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class MasterKodepo
- *
+ * Class MasterKodepos
+ * 
  * @property int $id
  * @property string $kelurahan
  * @property string $kecamatan

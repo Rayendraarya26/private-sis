@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property Collection|MasterSertifikasiDokuman[] $master_sertifikasi_dokumen
+ * @property Collection|MasterSertifikasiDokumen[] $master_sertifikasi_dokumens
  * @property Collection|MasterSertifikasiKlausul[] $master_sertifikasi_klausuls
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
  * @property Collection|SisPermohonan[] $sis_permohonans
@@ -46,9 +46,9 @@ class MasterSertifikasi extends Model
 		'sert_is_product'
 	];
 
-	public function master_sertifikasi_dokumen()
+	public function master_sertifikasi_dokumens()
 	{
-		return $this->hasMany(MasterSertifikasiDokuman::class, 'sert_id');
+		return $this->hasMany(MasterSertifikasiDokumen::class, 'sert_id');
 	}
 
 	public function master_sertifikasi_klausuls()

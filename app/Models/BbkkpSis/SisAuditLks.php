@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class SisAuditLk
+ * Class SisAuditLks
  * 
  * @property int $lks_id
  * @property int $jadw_id
@@ -38,7 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class SisAuditLk extends Model
+class SisAuditLks extends Model
 {
 	protected $table = 'sis_audit_lks';
 	protected $primaryKey = 'lks_id';

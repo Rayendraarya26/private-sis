@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class MasterSertifikasiDokuman
+ * Class MasterSertifikasiDokumen
  * 
  * @property int $sert_dok_id
  * @property int $jenis_dok_perusahaan_id
@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class MasterSertifikasiDokuman extends Model
+class MasterSertifikasiDokumen extends Model
 {
 	protected $table = 'master_sertifikasi_dokumen';
 	protected $primaryKey = 'sert_dok_id';

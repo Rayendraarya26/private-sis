@@ -31,10 +31,8 @@ class SisPermohonanKomoditi extends Model
 {
 	protected $table = 'sis_permohonan_komoditi';
 	protected $primaryKey = 'mohon_kmditi_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'mohon_kmditi_id' => 'int',
 		'mohon_id' => 'int',
 		'komodt_id' => 'int'
 	];

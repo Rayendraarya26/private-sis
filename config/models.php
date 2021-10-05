@@ -399,7 +399,7 @@ return [
         | You can disable pluralization tables and relations
         |
         */
-        'pluralize' => true,
+        'pluralize' => false,
 
         /*
         |--------------------------------------------------------------------------

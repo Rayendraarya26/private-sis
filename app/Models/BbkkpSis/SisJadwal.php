@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $jadw_id
  * @property string|null $jadw_bil_nomor
  * @property float|null $jadw_bil_total
+ * @property string|null $jadw_bil_harus_lunas
  * @property string|null $jadw_bil_status
  * @property string|null $jadw_bil_invoice
  * @property string|null $jadw_bil_bukti_bayar
@@ -35,8 +36,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|SisAuditDaftarPeriksa[] $sis_audit_daftar_periksas
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
  * @property Collection|SisAuditLapLengkap[] $sis_audit_lap_lengkaps
- * @property Collection|SisAuditLapRingka[] $sis_audit_lap_ringkas
- * @property Collection|SisAuditLk[] $sis_audit_lks
+ * @property Collection|SisAuditLapRingkas[] $sis_audit_lap_ringkas
+ * @property Collection|SisAuditLks[] $sis_audit_lks
  * @property Collection|SisAuditLogbook[] $sis_audit_logbooks
  * @property Collection|SisAuditObservasi[] $sis_audit_observasis
  * @property Collection|SisAuditPpc[] $sis_audit_ppcs
@@ -65,6 +66,7 @@ class SisJadwal extends Model
 	protected $fillable = [
 		'jadw_bil_nomor',
 		'jadw_bil_total',
+		'jadw_bil_harus_lunas',
 		'jadw_bil_status',
 		'jadw_bil_invoice',
 		'jadw_bil_bukti_bayar',
@@ -101,12 +103,12 @@ class SisJadwal extends Model
 
 	public function sis_audit_lap_ringkas()
 	{
-		return $this->hasMany(SisAuditLapRingka::class, 'jadw_id');
+		return $this->hasMany(SisAuditLapRingkas::class, 'jadw_id');
 	}
 
 	public function sis_audit_lks()
 	{
-		return $this->hasMany(SisAuditLk::class, 'jadw_id');
+		return $this->hasMany(SisAuditLks::class, 'jadw_id');
 	}
 
 	public function sis_audit_logbooks()

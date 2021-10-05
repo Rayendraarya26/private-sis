@@ -20,9 +20,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
- * @property Collection|MasterSertifikasiDokuman[] $master_sertifikasi_dokumen
- * @property Collection|SisPelangganDokuman[] $sis_pelanggan_dokumen
- * @property Collection|SisPermohonanDokuman[] $sis_permohonan_dokumen
+ * @property Collection|MasterSertifikasiDokumen[] $master_sertifikasi_dokumens
+ * @property Collection|SisPelangganDokumen[] $sis_pelanggan_dokumens
+ * @property Collection|SisPermohonanDokumen[] $sis_permohonan_dokumens
  *
  * @package App\Models\BbkkpSis
  */
@@ -37,18 +37,18 @@ class MasterJenisDokPerusahaan extends Model
 		'jenis_dok_perusahaan_deskripsi'
 	];
 
-	public function master_sertifikasi_dokumen()
+	public function master_sertifikasi_dokumens()
 	{
-		return $this->hasMany(MasterSertifikasiDokuman::class, 'jenis_dok_perusahaan_id');
+		return $this->hasMany(MasterSertifikasiDokumen::class, 'jenis_dok_perusahaan_id');
 	}
 
-	public function sis_pelanggan_dokumen()
+	public function sis_pelanggan_dokumens()
 	{
-		return $this->hasMany(SisPelangganDokuman::class, 'jenis_dok_perusahaan_id');
+		return $this->hasMany(SisPelangganDokumen::class, 'jenis_dok_perusahaan_id');
 	}
 
-	public function sis_permohonan_dokumen()
+	public function sis_permohonan_dokumens()
 	{
-		return $this->hasMany(SisPermohonanDokuman::class, 'jenis_dok_perusahaan_id');
+		return $this->hasMany(SisPermohonanDokumen::class, 'jenis_dok_perusahaan_id');
 	}
 }

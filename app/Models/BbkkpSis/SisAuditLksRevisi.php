@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisAuditLk $sis_audit_lk
+ * @property SisAuditLks $sis_audit_lks
  *
  * @package App\Models\BbkkpSis
  */
@@ -38,8 +38,8 @@ class SisAuditLksRevisi extends Model
 		'lks_revisi_catatan'
 	];
 
-	public function sis_audit_lk()
+	public function sis_audit_lks()
 	{
-		return $this->belongsTo(SisAuditLk::class, 'lks_id');
+		return $this->belongsTo(SisAuditLks::class, 'lks_id');
 	}
 }

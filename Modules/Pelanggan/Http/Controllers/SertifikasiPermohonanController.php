@@ -13,7 +13,7 @@ use App\Models\BbkkpSis\MasterProvinsi;
 use App\Models\BbkkpSis\MasterSertifikasi;
 use App\Models\BbkkpSis\MasterSertifikasiDokuman;
 use App\Models\BbkkpSis\SisPelanggan;
-use App\Models\BbkkpSis\SisPelangganDokuman;
+use App\Models\BbkkpSis\SisPelangganDokumen;
 use App\Models\BbkkpSis\SisPelangganPabrik;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
@@ -613,7 +613,7 @@ class SertifikasiPermohonanController extends Controller
             $dataDokumen = MasterSertifikasiDokuman::with("master_jenis_dok_perusahaan")->where("sert_id", $request['sert_id'])->get();
             $results     = [];
             foreach ($dataDokumen as $dt) {
-                $findMyDoc = SisPelangganDokuman::where("cust_id", auth()->user()?->sis_pelanggan->cust_id)
+                $findMyDoc = SisPelangganDokumen::where("cust_id", auth()->user()?->sis_pelanggan->cust_id)
                     ->where("jenis_dok_perusahaan_id", $dt->jenis_dok_perusahaan_id)->first();
                 $results[] = [
                     'dt_id'        => $dt->sert_dok_id,
@@ -648,7 +648,7 @@ class SertifikasiPermohonanController extends Controller
             $fileName = Str::slug($dataMasterSertDok?->master_jenis_dok_perusahaan?->jenis_dok_perusahaan_text) . '-' . time() . '.' . $dataFile->getClientOriginalExtension();
             $dataFile->move($filePath, $fileName);
 
-            $dokumen = SisPelangganDokuman::updateOrCreate(
+            $dokumen = SisPelangganDokumen::updateOrCreate(
                 ['cust_id' => auth()->user()->sis_pelanggan->cust_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
                 ['cust_dok_filepath' => $filePath . '/' . $fileName]
             );

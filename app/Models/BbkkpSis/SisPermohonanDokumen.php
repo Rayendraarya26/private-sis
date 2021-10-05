@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class SisPermohonanDokuman
+ * Class SisPermohonanDokumen
  * 
  * @property int $mohon_dok_id
  * @property int $mohon_id
@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class SisPermohonanDokuman extends Model
+class SisPermohonanDokumen extends Model
 {
 	protected $table = 'sis_permohonan_dokumen';
 	protected $primaryKey = 'mohon_dok_id';

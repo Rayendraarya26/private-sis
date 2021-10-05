@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class SisAuditLapRingka
+ * Class SisAuditLapRingkas
  * 
  * @property int $lap_ringkas_id
  * @property int $jadw_id
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class SisAuditLapRingka extends Model
+class SisAuditLapRingkas extends Model
 {
 	protected $table = 'sis_audit_lap_ringkas';
 	protected $primaryKey = 'lap_ringkas_id';

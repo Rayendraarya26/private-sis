@@ -44,10 +44,8 @@ class SisPelangganSertifikasi extends Model
 {
 	protected $table = 'sis_pelanggan_sertifikasi';
 	protected $primaryKey = 'cust_sert_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'cust_sert_id' => 'int',
 		'sert_id' => 'int',
 		'cust_id' => 'int',
 		'komodt_id' => 'int'

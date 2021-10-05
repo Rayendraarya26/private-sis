@@ -101,7 +101,7 @@ class SysUser extends Authenticatable
 
     public function sis_audit_lks()
     {
-        return $this->hasMany(SisAuditLk::class, 'user_id');
+        return $this->hasMany(SisAuditLks::class, 'user_id');
     }
 
     public function sis_pelanggan()
@@ -117,6 +117,11 @@ class SysUser extends Authenticatable
     public function sys_user_fbtokens()
     {
         return $this->hasMany(SysUserFbtoken::class, 'fbtoken_user_id');
+    }
+
+    public function sys_user_group()
+    {
+        return $this->hasOne(SysUserGroup::class, 'ug_user_id');
     }
 
     public function sys_user_notifs()
