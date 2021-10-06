@@ -1,58 +1,42 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Master Dokumen Sertifikasi')
+@section('title', 'Permohonan Sertifikasi')
 
 @section('content')
     <div class="dt-content">
         <div class="row">
             <div class="col-md-12">
-                <a class="btn btn-sm btn-default"
-                   href="{{url("$url")}}"
-                   style="margin-bottom: 20px">
-                    <i class="fad fa-arrow-left"></i> Kembali ke Data Sertifikasi
-                </a>
+				@if(session('message'))
+					<div class="alert alert-primary alert-dismissible fade show" role="alert">
+						{!! session('message') !!}
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+					</div>
+				@endif
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Master Dokumen Sertifikasi "{{$data->sert_nama}}"</h3>
+                            <h3 class="dt-card__title">Data Permohonan Sertifikasi</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
-                        <div id="ttData" style="width:100%; min-width: 310px;"></div>
-                        <div id="toolbar" style="padding: 10px 0 10px 20px">
-							<div class="row">
-								@if(authorized("{$module}@create"))
-									<div>
-										<a href="{{ url("$url/create?tipe=create-sertifikasi-dokumen&sert_id=$data->sert_id") }}" class="btn btn-outline-success btn-xs">
-											<i class="fas fa-plus"></i> Tambah
-										</a>
-									</div>
-									&nbsp;&nbsp;&nbsp;
-								@endif							
-								@if(authorized("{$module}@destroy"))
-									<div class="datagrid-btn-separator"></div>
-									<div>
-										<button class="btn btn-outline-danger btn-xs" onclick="confirmDelete()">
-											<i class="fas fa-trash"></i> Hapus
-										</button>
-									</div>
-								@endif
-							</div>
-                        </div>
+                        <div id="ttData" style="width:100%; min-width: 310px"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
 @push("javascript")
     <script>
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-sertifikasi-dokumen") }}`,
-                rownumbers: false,
+                url: `{{ url("$url/ajax?action=datagrid-permohonan") }}`,
+                rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -62,62 +46,66 @@
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
-				queryParams: {
-					sert_id: `{{$data->sert_id}}`,
-				},
                 frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
-					{
+                    {
                         field: 'action',
                         title: "Aksi",
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnEdit = `<a href="{{url("$url/edit?tipe=edit-sertifikasi-dokumen")}}&sert_id={{$data->sert_id}}&sert_dok_id=${row.sert_dok_id}" class="btn btn-primary btn-xs btn-block">Edit</a>`;
-							let output = "";
-
-                            @if(authorized("{$module}@edit"))
-                                output += btnEdit
-                            @endif
-							return output;
+							let btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-primary btn-xs btn-block"><i class="fad fa-info-circle"></i> Verifikasi</a>`;
+                            return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
                         }
                     }
                 ]],
                 columns: [[
-                    {field: 'jenis_dok_perusahaan_id', hidden: true},
-                    {field: 'sert_dok_id', hidden: true},
-                    {field: 'jenis_dok_perusahaan_text', title: 'Nama Dokumen', width: 400, sortable: true},
-                    {field: 'sert_dok_required', title: 'Harus?', width: 100, sortable: true, align: 'center'},
-                    {field: 'sert_dok_keterangan', title: 'Keterangan', width: 400, sortable: true},
+                    {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
+                    {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
+                    {
+                        field: 'mohon_jenis_status',
+                        title: 'Jenis Permohonan <br> Sertifikat',
+                        width: 150,
+                        sortable: true,
+                        formatter: function (val) {
+                            switch (val) {
+                                case 'lama':
+                                    return "Lama";
+                                case 'baru':
+                                    return "Baru";
+                            }
+                        }
+                    },
+                    {field: 'sert_nama', title: 'Nama Sertifikasi', width: 320, sortable: true},
+                    {field: 'mohon_cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                 ]],
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {field: 'jenis_dok_perusahaan_text', type: 'textbox'},
-					{
-						field:'sert_dok_required',
-						type:'combobox',
-						options:{
-							panelHeight:'auto',
-							data:[{value:'',text:'All'},{value:'ya',text:'Ya'},{value:'tidak',text:'Tidak'}],
-							onChange:function(value){
-								if (value == ''){
-									dg.datagrid('removeFilterRule', 'sert_dok_required');
-								} else {
-									dg.datagrid('addFilterRule', {
-										field: 'sert_dok_required',
-										op: 'equal',
-										value: value
-									});
-								}
-								dg.datagrid('doFilter');
-							}
-						}
-					}
+                    {field: 'sert_nama', type: 'textbox'},
+                    {
+                        field: 'mohon_jenis_status',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'lama', text: 'Lama'},
+                                {value: 'baru', text: 'Baru'}
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'mohon_jenis_status',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
                 ]);
         });
-		
 		
 		function confirmDelete() {
             const swalWithBootstrapButtons = swal.mixin({
@@ -143,13 +131,13 @@
 						var tr = opts.finder.getTr($('#ttData')[0],i);
 						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
 						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].sert_dok_id);
+							idData.push(data.rows[i].negara_id);
 						}
 					}
                     $.ajax({
                         url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData, 'tipe' : 'delete-sertifikasi-dokumen', sert_id: `{{$data->sert_id}}` },
-						type: 'DELETE',
+						data: { 'ids[]': idData },
+						type: 'POST',
                         success: function (response) {
                             toastCenter({
                                 type: 'success',
