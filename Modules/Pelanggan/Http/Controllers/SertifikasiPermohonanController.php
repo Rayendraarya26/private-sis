@@ -144,8 +144,6 @@ class SertifikasiPermohonanController extends Controller
             $newSisPermohonan->mohon_cust_shif_kerja                        = $dataSisPelanggan->cust_shif_kerja;
             $newSisPermohonan->mohon_cust_luas_tanah                        = $dataSisPelanggan->cust_luas_tanah;
             $newSisPermohonan->mohon_cust_luas_bangunan                     = $dataSisPelanggan->cust_luas_bangunan;
-            $newSisPermohonan->mohon_cust_kapasitas_produksi_tahunan        = $dataSisPelanggan->cust_kapasitas_produksi_tahunan;
-            $newSisPermohonan->mohon_cust_kapasitas_produksi_tahunan_satuan = $dataSisPelanggan->cust_kapasitas_produksi_tahunan_satuan;
             $newSisPermohonan->mohon_pertanyaan_filepath                    = null;
             $newSisPermohonan->created_at                                   = Carbon::now();
             $newSisPermohonan->updated_at                                   = Carbon::now();
@@ -218,15 +216,17 @@ class SertifikasiPermohonanController extends Controller
             if ($dataMasterSertifiaksi->sert_is_product == "ya") {
                 $dataKomoditas = json_decode($request['data_komoditas']);
                 foreach ($dataKomoditas as $komoditi) {
-                    $newSisPermohonanKomoditas                      = new SisPermohonanKomoditi();
-                    $newSisPermohonanKomoditas->mohon_id            = $newSisPermohonan->mohon_id;
-                    $newSisPermohonanKomoditas->komodt_id           = $komoditi->komoditi_id;
-                    $newSisPermohonanKomoditas->mohon_kmditi_sni    = $komoditi->sni;
-                    $newSisPermohonanKomoditas->mohon_kmditi_merk   = $komoditi->merk;
-                    $newSisPermohonanKomoditas->mohon_kmditi_tipe   = $komoditi->tipe;
-                    $newSisPermohonanKomoditas->mohon_kmditi_ukuran = $komoditi->ukuran;
-                    $newSisPermohonanKomoditas->created_at          = Carbon::now();
-                    $newSisPermohonanKomoditas->updated_at          = Carbon::now();
+                    $newSisPermohonanKomoditas                                                 = new SisPermohonanKomoditi();
+                    $newSisPermohonanKomoditas->mohon_id                                       = $newSisPermohonan->mohon_id;
+                    $newSisPermohonanKomoditas->komodt_id                                      = $komoditi->komoditi_id;
+                    $newSisPermohonanKomoditas->mohon_kmditi_sni                               = $komoditi->sni;
+                    $newSisPermohonanKomoditas->mohon_kmditi_merk                              = $komoditi->merk;
+                    $newSisPermohonanKomoditas->mohon_kmditi_tipe                              = $komoditi->tipe;
+                    $newSisPermohonanKomoditas->mohon_kmditi_ukuran                            = $komoditi->ukuran;
+                    $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditi->produksi_tahunan;
+                    $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditi->satuan_produksi;
+                    $newSisPermohonanKomoditas->created_at                                     = Carbon::now();
+                    $newSisPermohonanKomoditas->updated_at                                     = Carbon::now();
                     $newSisPermohonanKomoditas->save();
                 }
             }

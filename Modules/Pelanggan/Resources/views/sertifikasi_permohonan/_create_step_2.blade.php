@@ -1,7 +1,7 @@
 @push('css')
     <style>
         .komoditi-button {
-            padding-top: 30px;
+            padding-top: 15px;
         }
 
         @media screen and (max-width: 450px) {
@@ -68,56 +68,80 @@
                                           data-cooltipz-size="large"
                                           data-cooltipz-dir="right"><i class="fal fa-database"></i></small></h3>
                 <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="step2_komoditi_datas">Komoditi</label><br>
-                            <input id="step2_komoditi_datas" name="step2_komoditi_datas" class="form-control"
-                                   style="width: 100%">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_komoditi_datas">Komoditi</label><br>
+                                    <input id="step2_komoditi_datas" name="step2_komoditi_datas" class="form-control"
+                                           style="width: 100%">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_komoditi_sni">No SNI</label>
+                                    <input id="step2_komoditi_sni" name="step2_komoditi_sni" class="form-control"
+                                           @keyup.enter="addOrUpdateKomoditas">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_komoditi_merk">Merk</label>
+                                    <input id="step2_komoditi_merk" name="step2_komoditi_merk" class="form-control"
+                                           @keyup.enter="addOrUpdateKomoditas">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_komoditi_tipe">Tipe</label>
+                                    <input id="step2_komoditi_tipe" name="step2_komoditi_tipe" class="form-control"
+                                           @keyup.enter="addOrUpdateKomoditas">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="step2_komoditi_sni">No SNI</label>
-                            <input id="step2_komoditi_sni" name="step2_komoditi_sni" class="form-control"
-                                   @keyup.enter="addOrUpdateKomoditas">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_komoditi_ukuran">Ukuran</label>
+                                    <input id="step2_komoditi_ukuran" name="step2_komoditi_ukuran" class="form-control"
+                                           @keyup.enter="addOrUpdateKomoditas">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_produksi_tahunan">Jumlah Produksi/Tahun</label>
+                                    <input id="step2_produksi_tahunan" name="step2_produksi_tahunan"
+                                           class="form-control" type="number" minlength="0"
+                                           @keyup.enter="addOrUpdateKomoditas">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step2_satuan_produksi">Satuan Produksi</label>
+                                    <input id="step2_satuan_produksi" name="step2_satuan_produksi" class="form-control"
+                                           @keyup.enter="addOrUpdateKomoditas">
+                                </div>
+                            </div>
+                            <div class="col-md-12 komoditi-button">
+                                <template v-if="jenis_komoditas_form_type == 'add'">
+                                    <button class="btn btn-success" @click="addKomoditas">
+                                        <i class="fas fa-plus"></i> Tambah
+                                    </button>
+                                </template>
+                                <template v-else>
+                                    <button class="btn btn-primary" @click="updateKomoditi">
+                                        <i class="fas fa-save"></i> Simpan
+                                    </button>
+                                    <button class="btn btn-danger" @click="calcelUpdateKomoditi">
+                                        <i class="fas fa-close"></i> Batal
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="step2_komoditi_merk">Merk</label>
-                            <input id="step2_komoditi_merk" name="step2_komoditi_merk" class="form-control"
-                                   @keyup.enter="addOrUpdateKomoditas">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="step2_komoditi_tipe">Tipe</label>
-                            <input id="step2_komoditi_tipe" name="step2_komoditi_tipe" class="form-control"
-                                   @keyup.enter="addOrUpdateKomoditas">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="step2_komoditi_ukuran">Ukuran</label>
-                            <input id="step2_komoditi_ukuran" name="step2_komoditi_ukuran" class="form-control"
-                                   @keyup.enter="addOrUpdateKomoditas">
-                        </div>
-                    </div>
-                    <div class="col-md-2 komoditi-button">
-                        <template v-if="jenis_komoditas_form_type == 'add'">
-                            <button class="btn btn-success btn-xs" @click="addKomoditas">
-                                <i class="fas fa-plus"></i> Tambah
-                            </button>
-                        </template>
-                        <template v-else>
-                            <button class="btn btn-primary btn-xs" @click="updateKomoditi">
-                                <i class="fas fa-save"></i> Simpan
-                            </button>
-                            <button class="btn btn-danger btn-xs" @click="calcelUpdateKomoditi">
-                                <i class="fas fa-close"></i> Batal
-                            </button>
-                        </template>
-                    </div>
+                    <div class="col-md-4"></div>
                 </div>
 
             </div>
@@ -131,6 +155,8 @@
                             <th>Merk</th>
                             <th>Tipe</th>
                             <th>Ukuran</th>
+                            <th>Produksi Tahunan</th>
+                            <th>Satuan Produksi</th>
                             <th>Aksi</th>
                         </tr>
                         </thead>
@@ -142,6 +168,8 @@
                                 <td>@{{ kom.merk }}</td>
                                 <td>@{{ kom.tipe }}</td>
                                 <td>@{{ kom.ukuran }}</td>
+                                <td>@{{ kom.produksi_tahunan }}</td>
+                                <td>@{{ kom.satuan_produksi }}</td>
                                 <td>
                                     <button class="btn btn-xs btn-danger" @click="deleteKomoditi(kom.id)">
                                         <i class="fad fa-trash"></i> Hapus
@@ -265,11 +293,15 @@
                             this.dokumen_upload = [];
                         }
                     },
-                    resetFormKomoditas() {
+                    async resetFormKomoditas() {
                         $("#step2_komoditi_merk").val("");
                         $("#step2_komoditi_sni").val("");
                         $("#step2_komoditi_tipe").val("");
                         $("#step2_komoditi_ukuran").val("");
+                        $("#step2_produksi_tahunan").val("");
+                        $("#step2_satuan_produksi").val("");
+                        await this.setComboDataKomoditas()
+                        $("#step2_komoditi_datas").combogrid('clear');
                         this.jenis_komoditas_form_type = 'add';
                         this.jenis_komoditas_form_edited_id = null;
                     },
@@ -278,11 +310,15 @@
                         let merk = $.trim($("#step2_komoditi_merk").val());
                         let tipe = $.trim($("#step2_komoditi_tipe").val());
                         let ukuran = $.trim($("#step2_komoditi_ukuran").val());
+                        let produksi_tahunan = $.trim($("#step2_produksi_tahunan").val());
+                        let satuan_produksi = $.trim($("#step2_satuan_produksi").val());
                         if (this.jenis_komoditas_id == null) throw "Pilih Komoditas"
                         if (sni === "") throw "Tuliskan No SNI";
                         if (merk === "") throw "Tuliskan Merk";
                         if (tipe === "") throw "Tuliskan Tipe Komoditas";
                         if (ukuran === "") throw "Tuliskan Ukuran";
+                        if (produksi_tahunan === "") throw "Tuliskan Produksi Tahunan";
+                        if (satuan_produksi === "") throw "Tuliskan Satuan Produksi";
                     },
                     addOrUpdateKomoditas() {
                         if (this.jenis_komoditas_form_type === "add") this.addKomoditas()
@@ -299,6 +335,8 @@
                                 "merk": $.trim($("#step2_komoditi_merk").val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe").val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran").val()),
+                                "produksi_tahunan": $.trim($("#step2_produksi_tahunan").val()),
+                                "satuan_produksi": $.trim($("#step2_satuan_produksi").val()),
                             };
 
                             // this.komoditas.push(newKomoditas)
@@ -336,6 +374,8 @@
                         $("#step2_komoditi_sni").val(selectedKomoditas.sni);
                         $("#step2_komoditi_tipe").val(selectedKomoditas.tipe);
                         $("#step2_komoditi_ukuran").val(selectedKomoditas.ukuran);
+                        $("#step2_produksi_tahunan").val(selectedKomoditas.produksi_tahunan);
+                        $("#step2_satuan_produksi").val(selectedKomoditas.satuan_produksi);
                         this.setComboDataKomoditas(selectedKomoditas.komoditi_nama);
                         $('#step2_komoditi_datas').combogrid('setValue', selectedKomoditas.komoditi_nama);
 
@@ -354,6 +394,8 @@
                                 "merk": $.trim($("#step2_komoditi_merk").val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe").val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran").val()),
+                                "produksi_tahunan": $.trim($("#step2_produksi_tahunan").val()),
+                                "satuan_produksi": $.trim($("#step2_satuan_produksi").val()),
                             });
                             this.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()
                             this.resetFormKomoditas();

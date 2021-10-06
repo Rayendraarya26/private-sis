@@ -44,8 +44,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $cust_shif_kerja
  * @property string|null $cust_luas_tanah
  * @property string|null $cust_luas_bangunan
- * @property int|null $cust_kapasitas_produksi_tahunan
- * @property string|null $cust_kapasitas_produksi_tahunan_satuan
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
@@ -86,8 +84,7 @@ class SisPelanggan extends Model
 		'cust_jumlah_shift_2' => 'int',
 		'cust_jumlah_shift_3' => 'int',
 		'cust_jumlah_non_permanen' => 'int',
-		'cust_shif_kerja' => 'int',
-		'cust_kapasitas_produksi_tahunan' => 'int'
+		'cust_shif_kerja' => 'int'
 	];
 
 	protected $fillable = [
@@ -120,9 +117,7 @@ class SisPelanggan extends Model
 		'cust_jumlah_non_permanen',
 		'cust_shif_kerja',
 		'cust_luas_tanah',
-		'cust_luas_bangunan',
-		'cust_kapasitas_produksi_tahunan',
-		'cust_kapasitas_produksi_tahunan_satuan'
+		'cust_luas_bangunan'
 	];
 
 	public function master_badan_hukum()

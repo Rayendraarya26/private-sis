@@ -289,33 +289,6 @@
             <ol start="18">
                 <li>
                     <div class="row">
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label for="step3_perusahaan_produksi_tahunan">
-                                    Kapasitas Produksi/Tahun*
-                                    <x-linked-icon></x-linked-icon>
-                                </label>
-                                <input id="step3_perusahaan_produksi_tahunan" name="step3_perusahaan_produksi_tahunan"
-                                       class="form-control" type="number" min="0"
-                                       @change="updateDataPemohon('cust_kapasitas_produksi_tahunan',...arguments)">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="step3_perusahaan_produksi_tahunan_satuan">
-                                    Satuan*
-                                    <x-linked-icon></x-linked-icon>
-                                </label>
-                                <input id="step3_perusahaan_produksi_tahunan_satuan"
-                                       name="step3_perusahaan_produksi_tahunan_satuan"
-                                       class="form-control" type="text"
-                                       @change="updateDataPemohon('cust_kapasitas_produksi_tahunan_satuan',...arguments)">
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="step3_perusahaan_jml_shift">
@@ -774,8 +747,6 @@
                         if ($.trim($("#step3_perusahaan_alamat").val()) === "") throw "Inputkan Alamat";
                         if ($.trim($("#step3_perusahaan_luas_tanah").val()) === "") throw "Inputkan Luas Tanah";
                         if ($.trim($("#step3_perusahaan_luas_bangunan").val()) === "") throw "Inputkan Luas Bangunan";
-                        if ($.trim($("#step3_perusahaan_produksi_tahunan").val()) === "") throw "Inputkan Produksi Tahunan";
-                        if ($.trim($("#step3_perusahaan_produksi_tahunan_satuan").val()) === "") throw "Inputkan Satuan Produksi Tahunan";
                         if ($.trim($("#step3_perusahaan_jml_shift").val()) === "") throw "Inputkan Jumlah Shift";
                         if ($.trim($("#step3_perusahaan_jml_bagian").val()) === "") throw "Inputkan Jumlah Bagian";
                         if ($.trim($("#step3_perusahaan_jml_manajemen").val()) === "") throw "Inputkan Jumlah Manajemen";

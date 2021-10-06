@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class SisPermohonanStatus
  * 
- * @property int|null $status_id
+ * @property int $status_id
  * @property int|null $status_mohon_id
  * @property string|null $status_tipe
  * @property string|null $status_judul
@@ -27,15 +27,13 @@ use Illuminate\Database\Eloquent\Model;
 class SisPermohonanStatus extends Model
 {
 	protected $table = 'sis_permohonan_status';
-	public $incrementing = false;
+	protected $primaryKey = 'status_id';
 
 	protected $casts = [
-		'status_id' => 'int',
 		'status_mohon_id' => 'int'
 	];
 
 	protected $fillable = [
-		'status_id',
 		'status_mohon_id',
 		'status_tipe',
 		'status_judul',

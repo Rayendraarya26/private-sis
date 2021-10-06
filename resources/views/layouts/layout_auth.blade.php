@@ -76,9 +76,9 @@
 
 <script>
     window.idb = new Dexie("bbkkp_sis");
-    window.idb.version(3).stores({
+    window.idb.version(4).stores({
         pelanggan_permohonan: "++id, &name, value",
-        pelanggan_permohonan_komoditas: "++id, komoditi_id, komoditi_nama, sni, merk, tipe, ukuran",
+        pelanggan_permohonan_komoditas: "++id, komoditi_id, komoditi_nama, sni, merk, tipe, ukuran, produksi_tahunan, satuan_produksi",
     });
 
     idb.pelanggan_permohonan.clear();

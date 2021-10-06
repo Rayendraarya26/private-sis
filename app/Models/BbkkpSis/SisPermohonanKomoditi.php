@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $mohon_kmditi_merk
  * @property string|null $mohon_kmditi_tipe
  * @property string|null $mohon_kmditi_ukuran
+ * @property string|null $mohon_kmditi_kapasitas_produksi_tahunan
+ * @property string|null $mohon_kmditi_kapasitas_produksi_tahunan_satuan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -43,7 +45,9 @@ class SisPermohonanKomoditi extends Model
 		'mohon_kmditi_sni',
 		'mohon_kmditi_merk',
 		'mohon_kmditi_tipe',
-		'mohon_kmditi_ukuran'
+		'mohon_kmditi_ukuran',
+		'mohon_kmditi_kapasitas_produksi_tahunan',
+		'mohon_kmditi_kapasitas_produksi_tahunan_satuan'
 	];
 
 	public function master_komoditi()

@@ -22,7 +22,11 @@
         }
 
         .data-perusahaan > tbody > tr > td:nth-child(2) {
-            max-width: 100px;
+            width: 350px;
+        }
+
+        #jumlah_karyawan > li {
+            padding: 5px
         }
     </style>
 @endpush
@@ -105,6 +109,8 @@
                                                 <th>Merk</th>
                                                 <th>Tipe</th>
                                                 <th>Ukuran</th>
+                                                <th>Jumlah Produksi Tahunan</th>
+                                                <th>Satuan Produksi</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -116,6 +122,8 @@
                                                     <td>{{$kom->mohon_kmditi_merk}}</td>
                                                     <td>{{$kom->mohon_kmditi_tipe}}</td>
                                                     <td>{{$kom->mohon_kmditi_ukuran}}</td>
+                                                    <td>{{$kom->mohon_kmditi_kapasitas_produksi_tahunan}}</td>
+                                                    <td>{{$kom->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}</td>
                                                 </tr>
                                             @endforeach
                                             </tbody>
@@ -264,6 +272,48 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-12">
+                                <h4>Data Operasional</h4>
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped data-perusahaan">
+                                        <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td>Jumlah Shift (dalam sehari)</td>
+                                            <td>: {{$dataPemohon->mohon_cust_shif_kerja}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Jumlah Bagian</td>
+                                            <td>: {{$dataPemohon->mohon_cust_jumlah_bagian}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                Jumlah Karyawan
+                                                <ol id="jumlah_karyawan">
+                                                    <li>Manajemen: {{$dataPemohon->mohon_cust_jumlah_manajemen}} orang</li>
+                                                    <li>Administrasi: {{$dataPemohon->mohon_cust_jumlah_administrasi}} orang</li>
+                                                    <li>Part Time: {{$dataPemohon->mohon_cust_jumlah_part_time}} orang</li>
+                                                    <li>
+                                                        Operasional:
+                                                        <ul>
+                                                            <li>Shift 1: {{$dataPemohon->mohon_cust_jumlah_shift_1}} orang</li>
+                                                            <li>Shift 2: {{$dataPemohon->mohon_cust_jumlah_shift_2}} orang</li>
+                                                            <li>Shift 3: {{$dataPemohon->mohon_cust_jumlah_shift_3}} orang</li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>Non Permanen: {{$dataPemohon->mohon_cust_jumlah_non_permanen}} orang</li>
+                                                </ol>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
 
                             @if(!empty($dataPemohon->sis_permohonan_pabriks))
                                 <div class="col-md-12">
@@ -274,7 +324,7 @@
                                         <table class="table table-striped data-perusahaan">
                                             <tbody>
                                             <tr>
-                                                <td></td>
+                                                <td style="padding: 10px 0 0 0"></td>
                                                 <td>
                                                     Detail Lokasi Pabrik :
                                                     <div class="table-responsive" style="padding-top: 20px">

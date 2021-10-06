@@ -54,8 +54,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $mohon_cust_shif_kerja
  * @property string|null $mohon_cust_luas_tanah
  * @property string|null $mohon_cust_luas_bangunan
- * @property int|null $mohon_cust_kapasitas_produksi_tahunan
- * @property string|null $mohon_cust_kapasitas_produksi_tahunan_satuan
  * @property string|null $mohon_pertanyaan_filepath
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
@@ -67,14 +65,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterJenisPerusahaan|null $master_jenis_perusahaan
  * @property MasterBadanHukum|null $master_badan_hukum
  * @property MasterNegara|null $master_negara
- * @property MasterKecamatan|null $master_kecamatan
  * @property MasterProvinsi|null $master_provinsi
  * @property MasterKabupaten|null $master_kabupaten
+ * @property MasterKecamatan|null $master_kecamatan
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPermohonanDokumen[] $sis_permohonan_dokumens
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
  * @property Collection|SisPermohonanPabrik[] $sis_permohonan_pabriks
- * @property SisPermohonanStatus $sis_permohonan_status
+ * @property Collection|SisPermohonanStatus[] $sis_permohonan_statuses
  *
  * @package App\Models\BbkkpSis
  */
@@ -103,8 +101,7 @@ class SisPermohonan extends Model
 		'mohon_cust_jumlah_shift_2' => 'int',
 		'mohon_cust_jumlah_shift_3' => 'int',
 		'mohon_cust_jumlah_non_permanen' => 'int',
-		'mohon_cust_shif_kerja' => 'int',
-		'mohon_cust_kapasitas_produksi_tahunan' => 'int'
+		'mohon_cust_shif_kerja' => 'int'
 	];
 
 	protected $fillable = [
@@ -148,8 +145,6 @@ class SisPermohonan extends Model
 		'mohon_cust_shif_kerja',
 		'mohon_cust_luas_tanah',
 		'mohon_cust_luas_bangunan',
-		'mohon_cust_kapasitas_produksi_tahunan',
-		'mohon_cust_kapasitas_produksi_tahunan_satuan',
 		'mohon_pertanyaan_filepath'
 	];
 
@@ -188,11 +183,6 @@ class SisPermohonan extends Model
 		return $this->belongsTo(MasterNegara::class, 'negara_id');
 	}
 
-	public function master_kecamatan()
-	{
-		return $this->belongsTo(MasterKecamatan::class, 'kec_id');
-	}
-
 	public function master_provinsi()
 	{
 		return $this->belongsTo(MasterProvinsi::class, 'prov_id');
@@ -201,6 +191,11 @@ class SisPermohonan extends Model
 	public function master_kabupaten()
 	{
 		return $this->belongsTo(MasterKabupaten::class, 'kab_id');
+	}
+
+	public function master_kecamatan()
+	{
+		return $this->belongsTo(MasterKecamatan::class, 'kec_id');
 	}
 
 	public function sis_jadwal_audits()
@@ -223,8 +218,8 @@ class SisPermohonan extends Model
 		return $this->hasMany(SisPermohonanPabrik::class, 'mohon_id');
 	}
 
-	public function sis_permohonan_status()
+	public function sis_permohonan_statuses()
 	{
-		return $this->hasOne(SisPermohonanStatus::class, 'status_mohon_id');
+		return $this->hasMany(SisPermohonanStatus::class, 'status_mohon_id');
 	}
 }

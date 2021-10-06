@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property Collection|SisPelanggan[] $sis_pelanggans
+ * @property Collection|SisPermohonan[] $sis_permohonans
  *
  * @package App\Models\BbkkpSis
  */
@@ -36,5 +37,10 @@ class MasterJenisPerusahaan extends Model
 	public function sis_pelanggans()
 	{
 		return $this->hasMany(SisPelanggan::class, 'jenis_perusahaan_id');
+	}
+
+	public function sis_permohonans()
+	{
+		return $this->hasMany(SisPermohonan::class, 'jenis_perusahaan_id');
 	}
 }
