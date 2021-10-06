@@ -43,6 +43,20 @@
 										</div>
 									</div>
 									
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="mohon_harus_lunas_status">Harus Lunas Dulu? *</label>
+                                        <div class="col-sm-8">
+											<div class="form-check form-check-inline">
+												<input class="form-check-input" type="radio" name="mohon_harus_lunas_status" id="mohon_harus_lunas_status" value="ya" {{old('mohon_harus_lunas_status') == "ya" ? "checked" :""}} >
+												<label class="form-check-label" for="mohon_harus_lunas_status">Ya</label>
+											</div>
+											<div class="form-check form-check-inline">
+												<input class="form-check-input" type="radio" name="mohon_harus_lunas_status" id="mohon_harus_lunas_status" value="tidak" {{old('mohon_harus_lunas_status') == "tidak" ? "checked" :""}}>
+												<label class="form-check-label" for="mohon_harus_lunas_status">Tidak</label>
+											</div>
+                                        </div>
+                                    </div>
+									
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
                                             <i class="fas fa-save"></i> Simpan
@@ -57,62 +71,3 @@
         </div>
     </div>
 @endsection
-
-@push('javascript')
-    <script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js"
-            referrerpolicy="origin"></script>
-
-    <script>
-        tinymce.init({
-            selector: '#status_pesan',
-            plugins: 'autosave link image code lists',
-            relative_urls: false,
-            height: 500,
-            placeholder: '',
-            images_reuse_filename: true,
-            automatic_uploads: true,
-            images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-            images_upload_credentials: true,
-            toolbar: [{
-                name: 'history',
-                items: ['undo', 'redo']
-            },
-                {
-                    name: 'styles',
-                    items: ['styleselect']
-                },
-                {
-                    name: 'formatting',
-                    items: ['bold', 'italic']
-                },
-                {
-                    name: 'alignment',
-                    items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']
-                },
-                {
-                    name: 'list',
-                    items: ['bullist', 'numlist']
-                },
-                {
-                    name: 'indentation',
-                    items: ['outdent', 'indent']
-                },
-                {
-                    name: 'link',
-                    items: ['link', 'image']
-                },
-                {
-                    name: 'restore',
-                    items: ['restoredraft']
-                },
-            ],
-        });
-
-        @if(session('message'))
-        toastCenter({
-            type: 'success',
-            title: '{{ session('message') }}'
-        })
-        @endif
-    </script>
-@endpush
