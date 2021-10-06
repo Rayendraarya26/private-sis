@@ -3,7 +3,7 @@
 namespace Modules\Master\Http\Controllers;
 
 use App\Models\BbkkpSis\MasterSertifikasi;
-use App\Models\BbkkpSis\MasterSertifikasiDokuman;
+use App\Models\BbkkpSis\MasterSertifikasiDokumen;
 use App\Models\BbkkpSis\MasterSertifikasiKlausul;
 use App\Models\BbkkpSis\MasterKlausulTahap1;
 use App\Models\BbkkpSis\MasterJenisDokPerusahaan;
@@ -16,13 +16,13 @@ class SisSertifikasiController extends Controller
 {
     public $module = self::class;
     private $url = 'master/sis/sertifikasi';
-	
+
 	public function index()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::sis_sertifikasi.index")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_sertifikasi
     }
-	
+
 	public function detail(Request $request)
     {
 		$request->validate(['tipe' => 'required']);
@@ -33,7 +33,7 @@ class SisSertifikasiController extends Controller
             default => null,
         };
     }
-	
+
 	private function detail_klausul_tahap1( Request $request)
     {
 		// Check apakah ID tersedia
@@ -41,7 +41,7 @@ class SisSertifikasiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.detail-klausul-tahap1")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_sertifikasi
 	}
-	
+
 	private function detail_klausul( Request $request)
     {
 		// Check apakah ID tersedia
@@ -50,7 +50,7 @@ class SisSertifikasiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.detail-klausul")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_sertifikasi
 	}
-	
+
 	private function detail_dokumen( Request $request)
     {
 		// Check apakah ID tersedia
@@ -59,7 +59,7 @@ class SisSertifikasiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.detail-dokumen")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_sertifikasi
 	}
-	
+
     public function ajax(Request $request)
     {
 		$request->validate(['action' => 'required']);
@@ -89,7 +89,7 @@ class SisSertifikasiController extends Controller
 
         return $response;
     }
-	
+
 	private function ajax_combobox_jenis_dokumen(Request $request)
     {
         $result = [];
@@ -111,10 +111,10 @@ class SisSertifikasiController extends Controller
 			$x['jenis_dok_perusahaan_text'] = $d->jenis_dok_perusahaan_text;
 			array_push($result, $x);
 		}
-		
+
         return response()->json($result);
     }
-	
+
 	private function ajax_datagrid_sertifikasi_klausul_tahap1(Request $request)
 	{
 		$data = MasterKlausulTahap1::select("*");
@@ -151,7 +151,7 @@ class SisSertifikasiController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
 	}
-	
+
 	private function ajax_datagrid_sertifikasi_klausul(Request $request)
 	{
 		 $data = MasterSertifikasiKlausul::select("*");
@@ -188,15 +188,15 @@ class SisSertifikasiController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
 	}
-	
+
 	private function ajax_datagrid_sertifikasi_dokumen(Request $request)
     {
         $data = MasterJenisDokPerusahaan::select("*");
-		
+
 		$data->join('master_sertifikasi_dokumen', function ($join) {
             $join->on('master_sertifikasi_dokumen.jenis_dok_perusahaan_id', '=', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id')->where('master_sertifikasi_dokumen.sert_id', '=', $_GET['sert_id']);
         });
-		
+
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -211,7 +211,7 @@ class SisSertifikasiController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-		
+
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;
         // Pagination
@@ -230,7 +230,7 @@ class SisSertifikasiController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-	
+
 	private function ajax_tinymce_uploadimage(Request $request)
     {
         try {
@@ -249,7 +249,7 @@ class SisSertifikasiController extends Controller
         }
 
     }
-	
+
     private function ajax_datagrid_sertifikasi(Request $request)
     {
         $data = MasterSertifikasi::select("*");
@@ -286,7 +286,7 @@ class SisSertifikasiController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-	
+
 	public function create( Request $request)
     {
 		$request->validate(['tipe' => 'required']);
@@ -298,34 +298,34 @@ class SisSertifikasiController extends Controller
             default => null,
         };
     }
-	
+
 	private function create_sertifikasi_klausul_tahap1(Request $request)
     {
 		$data = MasterSertifikasi::findOrFail($request['sert_id']);
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.create-sertifikasi-klausul-tahap1")->with($parser);
 	}
-	
+
 	private function create_sertifikasi_klausul(Request $request)
     {
 		$data = MasterSertifikasi::findOrFail($request['sert_id']);
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.create-sertifikasi-klausul")->with($parser);
 	}
-	
+
 	private function create_sertifikasi_dokumen(Request $request)
     {
 		$data = MasterSertifikasi::findOrFail($request['sert_id']);
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.create-sertifikasi-dokumen")->with($parser);
 	}
-	
+
 	private function create_sertifikasi(Request $request)
     {
 		$parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::sis_sertifikasi.create-sertifikasi")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_sertifikasi
 	}
-	
+
 	public function store( Request $request)
     {
 		$request->validate(['tipe' => 'required']);
@@ -337,7 +337,7 @@ class SisSertifikasiController extends Controller
             default => null,
         };
     }
-	
+
 	private function store_sertifikasi_klausul_tahap1( Request $request)
     {
         $request->validate([
@@ -358,7 +358,7 @@ class SisSertifikasiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function store_sertifikasi_klausul( Request $request)
     {
         $request->validate([
@@ -379,7 +379,7 @@ class SisSertifikasiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function store_sertifikasi_dokumen( Request $request)
     {
         $request->validate([
@@ -396,13 +396,13 @@ class SisSertifikasiController extends Controller
         ];
 
         try {
-            MasterSertifikasiDokuman::create($dataInsert);
+            MasterSertifikasiDokumen::create($dataInsert);
             return redirect()->back()->with('message', "Tambah data berhasil");
         } catch (Exception $e) {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
     private function store_sertifikasi( Request $request)
     {
         $request->validate([
@@ -439,34 +439,34 @@ class SisSertifikasiController extends Controller
             default => null,
         };
     }
-	
+
 	private function edit_sertifikasi_klausul_tahap1( Request $request)
 	{
-		$data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']); 
-        $data = MasterKlausulTahap1::findOrFail($request['klausul_thp1_id']); 
+		$data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']);
+        $data = MasterKlausulTahap1::findOrFail($request['klausul_thp1_id']);
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data, 'data_sertifikat' => $data_sertifikat];
         return view("master::sis_sertifikasi.edit-sertifikasi-klausul-tahap1")->with($parser);
 	}
-	
+
 	private function edit_sertifikasi_klausul( Request $request)
 	{
-        $data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']); 
-        $data = MasterSertifikasiKlausul::findOrFail($request['sert_klau_id']); 
+        $data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']);
+        $data = MasterSertifikasiKlausul::findOrFail($request['sert_klau_id']);
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data, 'data_sertifikat' => $data_sertifikat];
         return view("master::sis_sertifikasi.edit-sertifikasi-klausul")->with($parser);
 	}
-	
+
 	private function edit_sertifikasi_dokumen( Request $request)
     {
 		// Check apakah ID tersedia
-        $data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']); 
-        $data = MasterSertifikasiDokuman::findOrFail($request['sert_dok_id']); 
-		
-        $data_dok = MasterJenisDokPerusahaan::findOrFail($data->jenis_dok_perusahaan_id); 
+        $data_sertifikat = MasterSertifikasi::findOrFail($request['sert_id']);
+        $data = MasterSertifikasiDokumen::findOrFail($request['sert_dok_id']);
+
+        $data_dok = MasterJenisDokPerusahaan::findOrFail($data->jenis_dok_perusahaan_id);
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data, 'data_sertifikat' => $data_sertifikat, 'data_dok' => $data_dok];
         return view("master::sis_sertifikasi.edit-sertifikasi-dokumen")->with($parser);
 	}
-	
+
 	private function edit_sertifikasi( Request $request)
     {
 		// Check apakah ID tersedia
@@ -474,7 +474,7 @@ class SisSertifikasiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
         return view("master::sis_sertifikasi.edit-sertifikasi")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_sertifikasi
 	}
-	
+
 
     public function update(Request $request)
     {
@@ -487,7 +487,7 @@ class SisSertifikasiController extends Controller
             default => null,
         };
     }
-	
+
 	private function update_sertifikasi_klausul_tahap1( Request $request)
 	{
 		$request->validate([
@@ -509,7 +509,7 @@ class SisSertifikasiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
 	}
-	
+
 	private function update_sertifikasi_klausul( Request $request)
     {
         $request->validate([
@@ -531,7 +531,7 @@ class SisSertifikasiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function update_sertifikasi_dokumen(Request $request)
 	{
 		$request->validate([
@@ -539,14 +539,14 @@ class SisSertifikasiController extends Controller
 			'sert_dok_required' => 'required|string',
 			'sert_dok_keterangan' => 'nullable|string'
 		]); // auto redirect back jika tidak valid
-		
+
 		$dataUpdate = [
             'sert_dok_required'      => $request->sert_dok_required,
             'sert_dok_keterangan' => $request->sert_dok_keterangan
         ];
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
-            $data = MasterSertifikasiDokuman::findOrFail($request['sert_dok_id'])
+            $data = MasterSertifikasiDokumen::findOrFail($request['sert_dok_id'])
                 ->update($dataUpdate);
             //DB::commit();
             return redirect()->back()->with('message', "Update data berhasil");
@@ -555,7 +555,7 @@ class SisSertifikasiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
 	}
-	
+
 	private function update_sertifikasi(Request $request)
 	{
 		 $request->validate([
@@ -566,7 +566,7 @@ class SisSertifikasiController extends Controller
 			'sert_format_referensi' => 'required|string',
 			'sert_is_product' => 'required|string'
 		]); // auto redirect back jika tidak valid
-		
+
 		$dataUpdate = [
             'sert_nama'      => $request->sert_nama,
             'sert_deskripsi' => $request->sert_deskripsi,
@@ -585,7 +585,7 @@ class SisSertifikasiController extends Controller
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
 	}
-	
+
 	public function destroy(Request $request)
     {
 		$request->validate(['tipe' => 'required']);
@@ -597,14 +597,14 @@ class SisSertifikasiController extends Controller
             default => null,
         };
     }
-	
+
 	private function delete_sertifikasi_klausul_tahap1(Request $request)
 	{
 		/*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
+
 		try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
@@ -626,14 +626,14 @@ class SisSertifikasiController extends Controller
             return responseJSON(500, [], $e->getMessage());
         }
 	}
-	
+
 	private function delete_sertifikasi_klausul(Request $request)
 	{
 		/*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
+
 		try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
@@ -655,18 +655,18 @@ class SisSertifikasiController extends Controller
             return responseJSON(500, [], $e->getMessage());
         }
 	}
-	
+
 	private function delete_sertifikasi_dokumen(Request $request)
 	{
 		/*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
+
 		try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
-                $data = MasterSertifikasiDokuman::where("sert_dok_id", $id)->firstOrFail();
+                $data = MasterSertifikasiDokumen::where("sert_dok_id", $id)->firstOrFail();
                 if ($data->delete()) {
 
                 } else {
@@ -684,14 +684,14 @@ class SisSertifikasiController extends Controller
             return responseJSON(500, [], $e->getMessage());
         }
 	}
-	
+
 	private function delete_sertifikasi(Request $request)
 	{
 		/*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
+
 		try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {

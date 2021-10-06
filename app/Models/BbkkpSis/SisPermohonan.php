@@ -64,6 +64,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisPelanggan $sis_pelanggan
  * @property SysUser $sys_user
  * @property SisPelangganSertifikasi|null $sis_pelanggan_sertifikasi
+ * @property MasterJenisPerusahaan|null $master_jenis_perusahaan
+ * @property MasterBadanHukum|null $master_badan_hukum
+ * @property MasterNegara|null $master_negara
+ * @property MasterKecamatan|null $master_kecamatan
+ * @property MasterProvinsi|null $master_provinsi
+ * @property MasterKabupaten|null $master_kabupaten
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPermohonanDokumen[] $sis_permohonan_dokumens
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
@@ -165,6 +171,36 @@ class SisPermohonan extends Model
 	public function sis_pelanggan_sertifikasi()
 	{
 		return $this->belongsTo(SisPelangganSertifikasi::class, 'cust_sert_id');
+	}
+
+	public function master_jenis_perusahaan()
+	{
+		return $this->belongsTo(MasterJenisPerusahaan::class, 'jenis_perusahaan_id');
+	}
+
+	public function master_badan_hukum()
+	{
+		return $this->belongsTo(MasterBadanHukum::class, 'badan_hukum_id');
+	}
+
+	public function master_negara()
+	{
+		return $this->belongsTo(MasterNegara::class, 'negara_id');
+	}
+
+	public function master_kecamatan()
+	{
+		return $this->belongsTo(MasterKecamatan::class, 'kec_id');
+	}
+
+	public function master_provinsi()
+	{
+		return $this->belongsTo(MasterProvinsi::class, 'prov_id');
+	}
+
+	public function master_kabupaten()
+	{
+		return $this->belongsTo(MasterKabupaten::class, 'kab_id');
 	}
 
 	public function sis_jadwal_audits()

@@ -11,13 +11,13 @@ use App\Models\BbkkpSis\MasterKomoditi;
 use App\Models\BbkkpSis\MasterNegara;
 use App\Models\BbkkpSis\MasterProvinsi;
 use App\Models\BbkkpSis\MasterSertifikasi;
-use App\Models\BbkkpSis\MasterSertifikasiDokuman;
+use App\Models\BbkkpSis\MasterSertifikasiDokumen;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganDokumen;
 use App\Models\BbkkpSis\SisPelangganPabrik;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
-use App\Models\BbkkpSis\SisPermohonanDokuman;
+use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use Carbon\Carbon;
@@ -81,24 +81,24 @@ class SertifikasiPermohonanController extends Controller
             if ($request['jenis_permohonan'] == "lama" && empty($request['sertifikat_lama_id'])) throw new Exception("Sertifikat lama belum dipilih", 400);
 
             /* TODO:
-             * 1. FIND: data sis_pelanggan, sis_pelanggan_dokumen, sis_pelanggan_pabrik
-             * 2. FIND: master_sertifikasi dan dukumen yang dibutuhkan master_sertifikasi_dokumen (cek juga apakah semua dokumen sudah terupload)
-             * 2. ADD: sis_permohonan, sis_pelanggan_pabrik, sis_permohonan_dokumen (sesuai jenis sertifikasi), sis_permohonan_komoditi (jika ada)
-             * 3. COPY: Jika sukses copy file sis_pelanggan_dokumen ke lokasi sis_permohonan_dokumen
+             * 1. FIND: data sis_pelanggan, sis_pelanggan_dokumens, sis_pelanggan_pabrik
+             * 2. FIND: master_sertifikasi dan dukumen yang dibutuhkan master_sertifikasi_dokumens (cek juga apakah semua dokumen sudah terupload)
+             * 2. ADD: sis_permohonan, sis_pelanggan_pabrik, sis_permohonan_dokumens (sesuai jenis sertifikasi), sis_permohonan_komoditi (jika ada)
+             * 3. COPY: Jika sukses copy file sis_pelanggan_dokumens ke lokasi sis_permohonan_dokumens
              *  */
 
             DB::beginTransaction();
             // 1
-            $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumen", "sis_pelanggan_pabriks"])->find($custID)->first();
+            $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumens", "sis_pelanggan_pabriks"])->find($custID)->first();
 
             // 2
-            $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumen.master_jenis_dok_perusahaan')->findOrFail($request['jenis_sertifikasi']);
+            $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumens.master_jenis_dok_perusahaan')->findOrFail($request['jenis_sertifikasi']);
             $uploadedDocID         = [];
             $requiredDocID         = [];
-            foreach ($dataSisPelanggan->sis_pelanggan_dokumen as $dokumen) {
+            foreach ($dataSisPelanggan->sis_pelanggan_dokumens as $dokumen) {
                 array_push($uploadedDocID, $dokumen->jenis_dok_perusahaan_id);
             }
-            foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumen as $dms) {
+            foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumens as $dms) {
                 array_push($requiredDocID, $dms->jenis_dok_perusahaan_id);
                 if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new Exception(sprintf("Dokumen %s belum di unggah", $dataMasterSertifiaksi->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
             }
@@ -106,32 +106,32 @@ class SertifikasiPermohonanController extends Controller
             if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($request['data_komoditas'])) throw new Exception("Data komoditas belum di inputkan", 400);
 
             // 3.1 add sis_permohonan
-            $newSisPermohonan                                               = new SisPermohonan();
-            $newSisPermohonan->cust_id                                      = $dataSisPelanggan->cust_id;
-            $newSisPermohonan->user_id                                      = $dataSisPelanggan->user_id;
-            $newSisPermohonan->sert_id                                      = $request['jenis_sertifikasi'];
-            $newSisPermohonan->mohon_jenis_status                           = $request['jenis_permohonan'];
-            $newSisPermohonan->cust_sert_id                                 = $request['sertifikat_lama_id'];
-            $newSisPermohonan->mohon_kajian_permohonan_file                 = null;
-            $newSisPermohonan->mohon_pernyataan_persetujuan_file            = null;
-            $newSisPermohonan->mohon_spk_file                               = null;
-            $newSisPermohonan->mohon_cust_email                             = $dataSisPelanggan->cust_email;
-            $newSisPermohonan->mohon_cust_nomor_telp                        = $dataSisPelanggan->cust_nomor_telp;
-            $newSisPermohonan->mohon_cust_nomor_fax                         = $dataSisPelanggan->cust_nomor_fax;
-            $newSisPermohonan->mohon_cust_nomor_hp                          = $dataSisPelanggan->cust_nomor_hp;
-            $newSisPermohonan->mohon_cust_nama                              = $dataSisPelanggan->cust_nama;
-            $newSisPermohonan->jenis_perusahaan_id                          = $dataSisPelanggan->jenis_perusahaan_id;
-            $newSisPermohonan->badan_hukum_id                               = $dataSisPelanggan->badan_hukum_id;
-            $newSisPermohonan->cust_asing                                   = $dataSisPelanggan->cust_asing;
-            $newSisPermohonan->negara_id                                    = $dataSisPelanggan->negara_id;
-            $newSisPermohonan->kec_id                                       = $dataSisPelanggan->kec_id;
-            $newSisPermohonan->kab_id                                       = $dataSisPelanggan->kab_id;
-            $newSisPermohonan->prov_id                                      = $dataSisPelanggan->prov_id;
-            $newSisPermohonan->mohon_cust_alamat                            = $dataSisPelanggan->cust_alamat;
-            $newSisPermohonan->mohon_cust_nomor_akta_pendirian              = $dataSisPelanggan->cust_nomor_akta_pendirian;
-            $newSisPermohonan->mohon_cust_nama_pemilik                      = $dataSisPelanggan->cust_nama_pemilik;
-            $newSisPermohonan->mohon_cust_nama_pimpinan                     = $dataSisPelanggan->cust_nama_pimpinan;
-            $newSisPermohonan->mohon_cust_nama_wakil_manajemen              = $dataSisPelanggan->cust_nama_wakil_manajemen;
+            $newSisPermohonan                                             = new SisPermohonan();
+            $newSisPermohonan->cust_id                                    = $dataSisPelanggan->cust_id;
+            $newSisPermohonan->user_id                                    = $dataSisPelanggan->user_id;
+            $newSisPermohonan->sert_id                                    = $request['jenis_sertifikasi'];
+            $newSisPermohonan->mohon_jenis_status                         = $request['jenis_permohonan'];
+            $newSisPermohonan->cust_sert_id                               = $request['sertifikat_lama_id'];
+            $newSisPermohonan->mohon_kajian_permohonan_file               = null;
+            $newSisPermohonan->mohon_pernyataan_persetujuan_file          = null;
+            $newSisPermohonan->mohon_spk_file                             = null;
+            $newSisPermohonan->mohon_cust_email                           = $dataSisPelanggan->cust_email;
+            $newSisPermohonan->mohon_cust_nomor_telp                      = $dataSisPelanggan->cust_nomor_telp;
+            $newSisPermohonan->mohon_cust_nomor_fax                       = $dataSisPelanggan->cust_nomor_fax;
+            $newSisPermohonan->mohon_cust_nomor_hp                        = $dataSisPelanggan->cust_nomor_hp;
+            $newSisPermohonan->mohon_cust_nama                            = $dataSisPelanggan->cust_nama;
+            $newSisPermohonan->jenis_perusahaan_id                        = $dataSisPelanggan->jenis_perusahaan_id;
+            $newSisPermohonan->badan_hukum_id                             = $dataSisPelanggan->badan_hukum_id;
+            $newSisPermohonan->cust_asing                                 = $dataSisPelanggan->cust_asing;
+            $newSisPermohonan->negara_id                                  = $dataSisPelanggan->negara_id;
+            $newSisPermohonan->kec_id                                     = $dataSisPelanggan->kec_id;
+            $newSisPermohonan->kab_id                                     = $dataSisPelanggan->kab_id;
+            $newSisPermohonan->prov_id                                    = $dataSisPelanggan->prov_id;
+            $newSisPermohonan->mohon_cust_alamat                          = $dataSisPelanggan->cust_alamat;
+            $newSisPermohonan->mohon_cust_nomor_akta_pendirian            = $dataSisPelanggan->cust_nomor_akta_pendirian;
+            $newSisPermohonan->mohon_cust_nama_pemilik                    = $dataSisPelanggan->cust_nama_pemilik;
+            $newSisPermohonan->mohon_cust_nama_pimpinan                   = $dataSisPelanggan->cust_nama_pimpinan;
+            $newSisPermohonan->mohon_cust_nama_wakil_manajemen            = $dataSisPelanggan->cust_nama_wakil_manajemen;
             $newSisPermohonan->mohon_cust_jumlah_bagian                     = $dataSisPelanggan->cust_jumlah_bagian;
             $newSisPermohonan->mohon_cust_jumlah_manajemen                  = $dataSisPelanggan->cust_jumlah_manajemen;
             $newSisPermohonan->mohon_cust_jumlah_administrasi               = $dataSisPelanggan->cust_jumlah_administrasi;
@@ -185,9 +185,9 @@ class SertifikasiPermohonanController extends Controller
                 }
             }
 
-            // 3.3 add sis_permohonan_dokumen
-            if (!empty($dataSisPelanggan?->sis_pelanggan_dokumen)) {
-                foreach ($dataSisPelanggan?->sis_pelanggan_dokumen as $dokumen) {
+            // 3.3 add sis_permohonan_dokumens
+            if (!empty($dataSisPelanggan?->sis_pelanggan_dokumens)) {
+                foreach ($dataSisPelanggan?->sis_pelanggan_dokumens as $dokumen) {
                     if (in_array($dokumen->jenis_dok_perusahaan_id, $requiredDocID)) {
                         // Get data pelanggan dokumen
                         $pelangganFilePath = public_path($dokumen->cust_dok_filepath);
@@ -202,7 +202,7 @@ class SertifikasiPermohonanController extends Controller
                         copy($pelangganFilePath, $dokumenPath);
                         array_push($uploadedPath, $dokumenPath);
 
-                        $newSisPermohonanDokumen                          = new SisPermohonanDokuman();
+                        $newSisPermohonanDokumen                          = new SisPermohonanDokumen();
                         $newSisPermohonanDokumen->mohon_id                = $newSisPermohonan->mohon_id;
                         $newSisPermohonanDokumen->jenis_dok_perusahaan_id = $dokumen->jenis_dok_perusahaan_id;
                         $newSisPermohonanDokumen->mohon_dok_deskripsi     = $dokumen->cust_dok_deskripsi;
@@ -247,7 +247,21 @@ class SertifikasiPermohonanController extends Controller
 
     public function detail(Request $request, $mohonID)
     {
-        $dataPemohon = SisPermohonan::with(['sis_permohonan_dokumen', 'sis_permohonan_komoditis', 'sis_permohonan_pabriks', 'master_sertifikasi'])
+        $dataPemohon = SisPermohonan::with([
+            'sis_pelanggan_sertifikasi',
+            'sis_permohonan_dokumens.master_jenis_dok_perusahaan',
+            'sis_permohonan_komoditis.master_komoditi',
+            'sis_permohonan_pabriks.master_kabupaten',
+            'sis_permohonan_pabriks.master_kecamatan',
+            'sis_permohonan_pabriks.master_provinsi',
+            'master_sertifikasi',
+            'master_jenis_perusahaan',
+            'master_badan_hukum',
+            'master_negara',
+            'master_provinsi',
+            'master_kabupaten',
+            'master_kecamatan',
+        ])
             ->findOrFail($mohonID);
 
         $breadcrumbs = [
@@ -256,10 +270,10 @@ class SertifikasiPermohonanController extends Controller
             new BreadcrumbsStruct('Detail'),
         ];
         $parser      = [
+            'breadcrumbs' => $breadcrumbs,
             'module'      => $this->module,
             'url'         => $this->url,
             'dataPemohon' => $dataPemohon,
-            'breadcrumbs' => $breadcrumbs
         ];
         return view('pelanggan::sertifikasi_permohonan.detail')->with($parser);
     }
@@ -610,7 +624,7 @@ class SertifikasiPermohonanController extends Controller
     {
         try {
             $request->validate(['sert_id' => 'required|integer']);
-            $dataDokumen = MasterSertifikasiDokuman::with("master_jenis_dok_perusahaan")->where("sert_id", $request['sert_id'])->get();
+            $dataDokumen = MasterSertifikasiDokumen::with("master_jenis_dok_perusahaan")->where("sert_id", $request['sert_id'])->get();
             $results     = [];
             foreach ($dataDokumen as $dt) {
                 $findMyDoc = SisPelangganDokumen::where("cust_id", auth()->user()?->sis_pelanggan->cust_id)
@@ -638,7 +652,7 @@ class SertifikasiPermohonanController extends Controller
                 'file'        => 'required|mimetypes:application/pdf|max:10000', // 10MB
             ]);
 
-            $dataMasterSertDok = MasterSertifikasiDokuman::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
+            $dataMasterSertDok = MasterSertifikasiDokumen::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
 
             $dataFile = $request->file("file");
             $filePath = sprintf(config("app.path_file_customer"), auth()->user()?->sis_pelanggan->cust_id);
