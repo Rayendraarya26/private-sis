@@ -20,9 +20,12 @@ use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
 Route::prefix('operatorls')->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
 	
-	Route::prefix("verifikasi-permohonan")->group(function () {
+	Route::prefix("kelengkapan-permohonan")->group(function () {
         Route::get('/', [KelengkapanPermohonanController::class, 'index']);
         Route::get('/ajax', [KelengkapanPermohonanController::class, 'ajax']);
+        Route::get('/detail/{mohon_id}', [KelengkapanPermohonanController::class, 'detail']);
+        Route::get('/edit', [KelengkapanPermohonanController::class, 'edit']);
+        Route::post('/update', [KelengkapanPermohonanController::class, 'update']);
     });
 	
 	

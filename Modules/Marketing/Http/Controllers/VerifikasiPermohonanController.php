@@ -293,12 +293,14 @@ class VerifikasiPermohonanController extends Controller
             'mohon_id' => 'required|integer',
 			'status_tipe' => 'required|string',
 			'mohon_harus_lunas_status' => 'required|string',
+			'mohon_harga_permohonan' => 'numeric|string',
             'mohon_kajian_permohonan_file' => 'required|mimes:pdf'
         ]);
 
        $dataInsert = [
             'mohon_id' => $request->mohon_id,
             'status_mohon_id' => $request->mohon_id,
+            'mohon_harga_permohonan' => $request->mohon_harga_permohonan,
             'mohon_harus_lunas_status' => $request->mohon_harus_lunas_status,
             'status_tipe' => $request->status_tipe,
             'status_pesan' => 'Permohonan anda untuk nomor #'.$request->mohon_id.' telah diterima.',
@@ -320,7 +322,7 @@ class VerifikasiPermohonanController extends Controller
 					'status_judul' => $dataInsert['status_judul']
 				]);
 				// Delete User Group
-				SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted', 'mohon_kajian_permohonan_file' => $dataInsert['mohon_kajian_permohonan_file'], 'mohon_harus_lunas_status' => $dataInsert['mohon_harus_lunas_status']]);
+				SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted', 'mohon_kajian_permohonan_file' => $dataInsert['mohon_kajian_permohonan_file'], 'mohon_harus_lunas_status' => $dataInsert['mohon_harus_lunas_status'], 'mohon_harga_permohonan' => $dataInsert['mohon_harga_permohonan']]);
 			});
 			
 			return redirect($this->url)->with('message', "Data permohonan #".$request->mohon_id." sudah diverifikasi dengan status diterima.");
