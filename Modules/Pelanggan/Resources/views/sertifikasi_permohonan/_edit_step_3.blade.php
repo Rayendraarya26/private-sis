@@ -24,7 +24,7 @@
                                     <x-linked-icon></x-linked-icon>
                                 </label>
                                 <input id="step3_perusahaan_nama" name="step3_perusahaan_nama" class="form-control"
-                                       @change="updateDataPemohon('cust_nama',...arguments)">
+                                       @change="updateDataPemohon('cust_nama','mohon_cust_nama',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -38,7 +38,7 @@
                                     <x-linked-icon></x-linked-icon>
                                 </label>
                                 <input id="step3_perusahaan_akta" name="step3_perusahaan_akta" class="form-control"
-                                       @change="updateDataPemohon('cust_nomor_akta_pendirian',...arguments)">
+                                       @change="updateDataPemohon('cust_nomor_akta_pendirian','mohon_cust_nomor_akta_pendirian',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                                 </label>
                                 <input id="step3_perusahaan_nama_pemilik" name="step3_perusahaan_nama_pemilik"
                                        class="form-control"
-                                       @change="updateDataPemohon('cust_nama_pemilik',...arguments)">
+                                       @change="updateDataPemohon('cust_nama_pemilik','mohon_cust_nama_pemilik',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                                 </label>
                                 <input id="step3_perusahaan_nama_pimpinan" name="step3_perusahaan_nama_pimpinan"
                                        class="form-control"
-                                       @change="updateDataPemohon('cust_nama_pimpinan',...arguments)">
+                                       @change="updateDataPemohon('cust_nama_pimpinan','mohon_cust_nama_pimpinan',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
                                 </label>
                                 <input id="step3_perusahaan_nama_wakil" name="step3_perusahaan_nama_wakil"
                                        class="form-control"
-                                       @change="updateDataPemohon('cust_nama_wakil_manajemen',...arguments)">
+                                       @change="updateDataPemohon('cust_nama_wakil_manajemen','mohon_cust_nama_wakil_manajemen',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
                                     <x-linked-icon></x-linked-icon>
                                 </label>
                                 <input id="step3_perusahaan_telp" name="step3_perusahaan_telp" class="form-control"
-                                       @change="updateDataPemohon('cust_nomor_telp',...arguments)">
+                                       @change="updateDataPemohon('cust_nomor_telp','mohon_cust_nomor_telp',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                                     <x-linked-icon></x-linked-icon>
                                 </label>
                                 <input id="step3_perusahaan_fax" name="step3_perusahaan_fax" class="form-control"
-                                       @change="updateDataPemohon('cust_nomor_fax',...arguments)">
+                                       @change="updateDataPemohon('cust_nomor_fax','mohon_cust_nomor_fax',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                                     <x-linked-icon></x-linked-icon>
                                 </label>
                                 <input id="step3_perusahaan_cp" name="step3_perusahaan_cp" class="form-control"
-                                       @change="updateDataPemohon('cust_nomor_hp',...arguments)">
+                                       @change="updateDataPemohon('cust_nomor_hp','mohon_cust_nomor_hp',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -245,7 +245,7 @@
                                 </label>
                                 <textarea id="step3_perusahaan_alamat" name="step3_perusahaan_alamat" cols="30"
                                           class="form-control"
-                                          @change="updateDataPemohon('cust_alamat',...arguments)"></textarea>
+                                          @change="updateDataPemohon('cust_alamat','mohon_cust_alamat',...arguments)"></textarea>
                             </div>
                         </div>
                     </div>
@@ -259,7 +259,8 @@
                                     <x-linked-icon></x-linked-icon>
                                 </label>
                                 <input id="step3_perusahaan_luas_tanah" name="step3_perusahaan_luas_tanah"
-                                       class="form-control" @change="updateDataPemohon('cust_luas_tanah',...arguments)">
+                                       class="form-control"
+                                       @change="updateDataPemohon('cust_luas_tanah','mohon_cust_luas_tanah',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -274,7 +275,7 @@
                                 </label>
                                 <input id="step3_perusahaan_luas_bangunan" name="step3_perusahaan_luas_bangunan"
                                        class="form-control"
-                                       @change="updateDataPemohon('cust_luas_bangunan',...arguments)">
+                                       @change="updateDataPemohon('cust_luas_bangunan','mohon_cust_luas_bangunan',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -297,7 +298,7 @@
                                 </label>
                                 <input id="step3_perusahaan_jml_shift" name="step3_perusahaan_jml_shift"
                                        class="form-control" type="number" min="0"
-                                       @change="updateDataPemohon('cust_shif_kerja',...arguments)">
+                                       @change="updateDataPemohon('cust_shif_kerja','mohon_cust_shif_kerja',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -312,7 +313,7 @@
                                 </label>
                                 <input id="step3_perusahaan_jml_bagian" name="step3_perusahaan_jml_bagian"
                                        class="form-control" type="number" min="0"
-                                       @change="updateDataPemohon('cust_jumlah_bagian',...arguments)">
+                                       @change="updateDataPemohon('cust_jumlah_bagian','mohon_cust_jumlah_bagian',...arguments)">
                             </div>
                         </div>
                     </div>
@@ -339,7 +340,7 @@
                                                        placeholder="Berapa orang ?"
                                                        name="step3_perusahaan_jml_manajemen"
                                                        id="step3_perusahaan_jml_manajemen"
-                                                       @change="updateDataPemohon('cust_jumlah_manajemen',...arguments)">
+                                                       @change="updateDataPemohon('cust_jumlah_manajemen','mohon_cust_jumlah_manajemen',...arguments)">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
@@ -362,7 +363,7 @@
                                                        placeholder="Berapa orang ?"
                                                        id="step3_perusahaan_jml_administrasi"
                                                        name="step3_perusahaan_jml_administrasi"
-                                                       @change="updateDataPemohon('cust_jumlah_administrasi',...arguments)">
+                                                       @change="updateDataPemohon('cust_jumlah_administrasi','mohon_cust_jumlah_administrasi',...arguments)">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
@@ -384,7 +385,7 @@
                                                 <input type="number" min="0" class="form-control" aria-label="Manajemen"
                                                        placeholder="Berapa orang ?" id="step3_perusahaan_jml_part_time"
                                                        name="step3_perusahaan_jml_part_time"
-                                                       @change="updateDataPemohon('cust_jumlah_part_time',...arguments)">
+                                                       @change="updateDataPemohon('cust_jumlah_part_time','mohon_cust_jumlah_part_time',...arguments)">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
@@ -416,7 +417,7 @@
                                                                placeholder="Berapa orang ?"
                                                                id="step3_perusahaan_jml_shift_1"
                                                                name="step3_perusahaan_jml_shift_1"
-                                                               @change="updateDataPemohon('cust_jumlah_shift_1',...arguments)">
+                                                               @change="updateDataPemohon('cust_jumlah_shift_1','mohon_cust_jumlah_shift_1',...arguments)">
                                                         <div class="input-group-append">
                                             <span class="input-group-text">
                                                 <i class="fad fa-person"></i>&nbsp; Orang
@@ -440,7 +441,7 @@
                                                                placeholder="Berapa orang ?"
                                                                id="step3_perusahaan_jml_shift_2"
                                                                name="step3_perusahaan_jml_shift_2"
-                                                               @change="updateDataPemohon('cust_jumlah_shift_2',...arguments)">
+                                                               @change="updateDataPemohon('cust_jumlah_shift_2','mohon_cust_jumlah_shift_2',...arguments)">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                         </div>
@@ -463,7 +464,7 @@
                                                                placeholder="Berapa orang ?"
                                                                id="step3_perusahaan_jml_shift_3"
                                                                name="step3_perusahaan_jml_shift_3"
-                                                               @change="updateDataPemohon('cust_jumlah_shift_3',...arguments)">
+                                                               @change="updateDataPemohon('cust_jumlah_shift_3','mohon_cust_jumlah_shift_3',...arguments)">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                         </div>
@@ -488,7 +489,7 @@
                                                        placeholder="Berapa orang ?"
                                                        id="step3_perusahaan_jml_non_permanen"
                                                        name="step3_perusahaan_jml_non_permanen"
-                                                       @change="updateDataPemohon('cust_jumlah_non_permanen',...arguments)">
+                                                       @change="updateDataPemohon('cust_jumlah_non_permanen','mohon_cust_jumlah_non_permanen',...arguments)">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text"><i class="fad fa-person"></i>&nbsp; Orang</span>
                                                 </div>
@@ -528,10 +529,11 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_nama_'+n.pabrik_id" :value="n.pabrik_nama"
-                                                           :name="'step3_pabrik_nama_'+n.pabrik_id" type="text"
+                                                    <input :id="'step3_pabrik_nama_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_nama"
+                                                           :name="'step3_pabrik_nama_'+n.mohon_pabrik_id" type="text"
                                                            class="form-control" aria-label="Nama Pabrik"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_nama',...arguments)">
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_nama','mohon_pabrik_nama',...arguments)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -539,11 +541,11 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_telp_'+n.pabrik_id"
-                                                           :value="n.pabrik_nomor_telp"
-                                                           :name="'step3_pabrik_telp_'+n.pabrik_id" type="text"
+                                                    <input :id="'step3_pabrik_telp_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_nomor_telp"
+                                                           :name="'step3_pabrik_telp_'+n.mohon_pabrik_id" type="text"
                                                            class="form-control" aria-label="Np Telp"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_nomor_telp',...arguments)">
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_nomor_telp','mohon_pabrik_nomor_telp',...arguments)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -551,11 +553,11 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_hp_'+n.pabrik_id"
-                                                           :value="n.pabrik_nomor_hp"
-                                                           :name="'step3_pabrik_hp_'+n.pabrik_id"
+                                                    <input :id="'step3_pabrik_hp_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_nomor_hp"
+                                                           :name="'step3_pabrik_hp_'+n.mohon_pabrik_id"
                                                            type="text" class="form-control" aria-label="No HP"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_nomor_hp',...arguments)">
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_nomor_hp','mohon_pabrik_nomor_hp',...arguments)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -563,11 +565,11 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_fax_'+n.pabrik_id"
-                                                           :value="n.pabrik_nomor_fax"
-                                                           :name="'step3_pabrik_fax_'+n.pabrik_id"
+                                                    <input :id="'step3_pabrik_fax_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_nomor_fax"
+                                                           :name="'step3_pabrik_fax_'+n.mohon_pabrik_id"
                                                            type="text" class="form-control" aria-label="Fax"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_nomor_fax',...arguments)">
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_nomor_fax','mohon_pabrik_nomor_fax',...arguments)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -576,8 +578,8 @@
                                                 </td>
                                                 <td>
                                                     <input style="width: 100%"
-                                                           :id="'step3_pabrik_provinsi_'+n.pabrik_id"
-                                                           :name="'step3_pabrik_provinsi_'+n.pabrik_id"
+                                                           :id="'step3_pabrik_provinsi_'+n.mohon_pabrik_id"
+                                                           :name="'step3_pabrik_provinsi_'+n.mohon_pabrik_id"
                                                            type="text" class="form-control" aria-label="Provinsi">
                                                 </td>
                                             </tr>
@@ -587,8 +589,8 @@
                                                 </td>
                                                 <td>
                                                     <input style="width: 100%"
-                                                           :id="'step3_pabrik_kabupaten_'+n.pabrik_id"
-                                                           :name="'step3_pabrik_kabupaten_'+n.pabrik_id"
+                                                           :id="'step3_pabrik_kabupaten_'+n.mohon_pabrik_id"
+                                                           :name="'step3_pabrik_kabupaten_'+n.mohon_pabrik_id"
                                                            type="text" class="form-control" aria-label="Kabupaten">
                                                 </td>
                                             </tr>
@@ -598,8 +600,8 @@
                                                 </td>
                                                 <td>
                                                     <input style="width: 100%"
-                                                           :id="'step3_pabrik_kecamatan_'+n.pabrik_id"
-                                                           :name="'step3_pabrik_kecamatan_'+n.pabrik_id"
+                                                           :id="'step3_pabrik_kecamatan_'+n.mohon_pabrik_id"
+                                                           :name="'step3_pabrik_kecamatan_'+n.mohon_pabrik_id"
                                                            type="text" class="form-control" aria-label="Kecamatan">
                                                 </td>
                                             </tr>
@@ -608,11 +610,11 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_kode_pos_'+n.pabrik_id"
-                                                           :value="n.pabrik_kode_pos"
-                                                           :name="'step3_pabrik_kode_pos_'+n.pabrik_id"
+                                                    <input :id="'step3_pabrik_kode_pos_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_kode_pos"
+                                                           :name="'step3_pabrik_kode_pos_'+n.mohon_pabrik_id"
                                                            type="text" class="form-control" aria-label="KodePos"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_kode_pos',...arguments)">
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_kode_pos','mohon_pabrik_kode_pos',...arguments)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -621,10 +623,10 @@
                                                 </td>
                                                 <td>
                                                     <textarea class="form-control"
-                                                              :id="'step3_pabrik_alamat_'+n.pabrik_id"
-                                                              :name="'step3_pabrik_alamat_'+n.pabrik_id"
-                                                              @change="updateDataPabrik(n.pabrik_id, 'pabrik_alamat',...arguments)"
-                                                              aria-label="Alamat Pabrik">@{{ n.pabrik_alamat }}</textarea>
+                                                              :id="'step3_pabrik_alamat_'+n.mohon_pabrik_id"
+                                                              :name="'step3_pabrik_alamat_'+n.mohon_pabrik_id"
+                                                              @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_alamat','mohon_pabrik_alamat',...arguments)"
+                                                              aria-label="Alamat Pabrik">@{{ n.mohon_pabrik_alamat }}</textarea>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -633,10 +635,10 @@
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                           :value="n.pabrik_jumlah_karyawan"
-                                                           :id="'step3_pabrik_jml_karyawan_'+n.pabrik_id"
-                                                           :name="'step3_pabrik_jml_karyawan_'+n.pabrik_id"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_jumlah_karyawan',...arguments)"
+                                                           :value="n.mohon_pabrik_jumlah_karyawan"
+                                                           :id="'step3_pabrik_jml_karyawan_'+n.mohon_pabrik_id"
+                                                           :name="'step3_pabrik_jml_karyawan_'+n.mohon_pabrik_id"
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_jumlah_karyawan','mohon_pabrik_jumlah_karyawan',...arguments)"
                                                            aria-label="Jumlah Karyawan">
                                                 </td>
                                             </tr>
@@ -646,10 +648,10 @@
                                                 </td>
                                                 <td>
                                                     <textarea class="form-control"
-                                                              :id="'step3_pabrik_kegiatan_utama_'+n.pabrik_id"
-                                                              :name="'step3_pabrik_kegiatan_utama_'+n.pabrik_id"
-                                                              @change="updateDataPabrik(n.pabrik_id, 'pabrik_kegiatan_utama',...arguments)"
-                                                              aria-label="Kegiatan Utama">@{{ n.pabrik_kegiatan_utama }}</textarea>
+                                                              :id="'step3_pabrik_kegiatan_utama_'+n.mohon_pabrik_id"
+                                                              :name="'step3_pabrik_kegiatan_utama_'+n.mohon_pabrik_id"
+                                                              @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_kegiatan_utama','mohon_pabrik_kegiatan_utama',...arguments)"
+                                                              aria-label="Kegiatan Utama">@{{ n.mohon_pabrik_kegiatan_utama }}</textarea>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -657,10 +659,10 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_luas_tanah_'+n.pabrik_id"
-                                                           :value="n.pabrik_luas_tanah"
-                                                           :name="'step3_pabrik_luas_tanah_'+n.pabrik_id"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_luas_tanah',...arguments)"
+                                                    <input :id="'step3_pabrik_luas_tanah_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_luas_tanah"
+                                                           :name="'step3_pabrik_luas_tanah_'+n.mohon_pabrik_id"
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_luas_tanah','mohon_pabrik_luas_tanah',...arguments)"
                                                            type="text" class="form-control" aria-label="Luas Tanah">
                                                 </td>
                                             </tr>
@@ -669,10 +671,10 @@
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
-                                                    <input :id="'step3_pabrik_luas_bangunan_'+n.pabrik_id"
-                                                           :value="n.pabrik_luas_bangunan"
-                                                           :name="'step3_pabrik_luas_bangunan_'+n.pabrik_id"
-                                                           @change="updateDataPabrik(n.pabrik_id, 'pabrik_luas_bangunan',...arguments)"
+                                                    <input :id="'step3_pabrik_luas_bangunan_'+n.mohon_pabrik_id"
+                                                           :value="n.mohon_pabrik_luas_bangunan"
+                                                           :name="'step3_pabrik_luas_bangunan_'+n.mohon_pabrik_id"
+                                                           @change="updateDataPabrik(n.mohon_pabrik_id, 'pabrik_luas_bangunan','mohon_pabrik_luas_bangunan',...arguments)"
                                                            type="text" class="form-control" aria-label="Luas Bangunan">
                                                 </td>
                                             </tr>
@@ -680,7 +682,7 @@
                                     </div>
 
                                     <div style="float:right; padding-top: 10px">
-                                        <button class="btn btn-danger btn-xs" @click="delDataPabrik(n.pabrik_id)">
+                                        <button class="btn btn-danger btn-xs" @click="delDataPabrik(n.mohon_pabrik_id)">
                                             <i class="fas fa-minus"></i> Delete
                                         </button>
                                     </div>
@@ -701,12 +703,17 @@
         <div>
             <ol start="23">
                 <li>Lengkapi kuesioner berikut dan upload kembali dibawah
-                    <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh kuesioner)</a></li>
-                <br>
+                    <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh form kuesioner)</a>
+                    <br><br>
+                    <a href="{{asset($dataPemohon->mohon_pertanyaan_filepath)}}" target="_blank">
+                        <i class="fad fa-download"></i> Unduh Formulir yang sudah anda upload
+                    </a>
+                </li>
+                <br/>
                 <input type="file" class="form-control" aria-label="Pertanyaan Tambahan"
                        @change="validateUploadPertanyaanTambahan" accept="application/pdf"
                        name="step3_pertanyaan_tambahan" id="step3_pertanyaan_tambahan">
-                <small><span>Upload file harus berjenis PDF</span></small>
+                <small><span>Upload ulang jika ingin memperbarui (*format: PDF)</span></small>
             </ol>
         </div>
     </div>
@@ -756,7 +763,6 @@
                         if ($.trim($("#step3_perusahaan_jml_shift_2").val()) === "") throw "Inputkan Jumlah Shift Ke 2";
                         if ($.trim($("#step3_perusahaan_jml_shift_3").val()) === "") throw "Inputkan Jumlah Shift Ke 3";
                         if ($.trim($("#step3_perusahaan_jml_non_permanen").val()) === "") throw "Inputkan Jumlah Non Permanen";
-                        if ($.trim($("#step3_pertanyaan_tambahan").val()) === "") throw "Unggah Pertanyaan Tambahan";
                         if ($.trim($("#step3_perusahaan_negara").combogrid('getValue')) === "") throw "Pilih negara";
                         if ($.trim($("#step3_perusahaan_provinsi").combogrid('getValue')) === "") throw "Pilih provinsi";
                         if ($.trim($("#step3_perusahaan_kabupaten").combogrid('getValue')) === "") throw "Pilih kabupaten";
@@ -766,19 +772,19 @@
                             this.data_pabrik.map(e => {
                                 console.log(e)
                                 let pabrikNama = $.trim(e.pabrik_nama);
-                                if ($.trim(e.pabrik_nama) === "" || $.trim(e.pabrik_nama) == null) throw "Inputkan Nama Pabrik";
-                                if ($.trim(e.pabrik_nomor_telp) === "" || $.trim(e.pabrik_nomor_telp) == null) throw `${pabrikNama}: Inputkan Nomor Telp`;
-                                if ($.trim(e.pabrik_nomor_fax) === "" || $.trim(e.pabrik_nomor_fax) == null) throw `${pabrikNama}: Inputkan Fax`;
-                                if ($.trim(e.pabrik_nomor_hp) === "" || $.trim(e.pabrik_nomor_hp) == null) throw `${pabrikNama}: Inputkan Nomor HP`;
+                                if ($.trim(e.mohon_pabrik_nama) === "" || $.trim(e.mohon_pabrik_nama) == null) throw "Inputkan Nama Pabrik";
+                                if ($.trim(e.mohon_pabrik_nomor_telp) === "" || $.trim(e.mohon_pabrik_nomor_telp) == null) throw `${pabrikNama}: Inputkan Nomor Telp`;
+                                if ($.trim(e.mohon_pabrik_nomor_fax) === "" || $.trim(e.mohon_pabrik_nomor_fax) == null) throw `${pabrikNama}: Inputkan Fax`;
+                                if ($.trim(e.mohon_pabrik_nomor_hp) === "" || $.trim(e.mohon_pabrik_nomor_hp) == null) throw `${pabrikNama}: Inputkan Nomor HP`;
                                 if ($.trim(e.prov_id) === "" || $.trim(e.prov_id) == null) throw `${pabrikNama}: Pilih Provinsi`;
                                 if ($.trim(e.kab_id) === "" || $.trim(e.kab_id) == null) throw `${pabrikNama}: Pilih Kabupaten`;
                                 if ($.trim(e.kec_id) === "" || $.trim(e.kec_id) == null) throw `${pabrikNama}: Pilih Kecamatan`;
-                                if ($.trim(e.pabrik_alamat) === "" || $.trim(e.pabrik_alamat) == null) throw `${pabrikNama}: Inputkan Alamat Pabrik`;
-                                if ($.trim(e.pabrik_kode_pos) === "" || $.trim(e.pabrik_kode_pos) == null) throw `${pabrikNama}: Inputkan Kode Pos`;
-                                if ($.trim(e.pabrik_jumlah_karyawan) === "" || $.trim(e.pabrik_jumlah_karyawan) == null) throw `${pabrikNama}: Inputkan Jumlah Karyawan`;
-                                if ($.trim(e.pabrik_kegiatan_utama) === "" || $.trim(e.pabrik_kegiatan_utama) == null) throw `${pabrikNama}: Inputkan Kegiatan Utama`;
-                                if ($.trim(e.pabrik_luas_tanah) === "" || $.trim(e.pabrik_luas_tanah) == null) throw `${pabrikNama}: Inputkan Luas Tanah`;
-                                if ($.trim(e.pabrik_luas_bangunan) === "" || $.trim(e.pabrik_luas_bangunan) == null) throw `${pabrikNama}: Inputkan Luas Bangunan`;
+                                if ($.trim(e.mohon_pabrik_alamat) === "" || $.trim(e.mohon_pabrik_alamat) == null) throw `${pabrikNama}: Inputkan Alamat Pabrik`;
+                                if ($.trim(e.mohon_pabrik_kode_pos) === "" || $.trim(e.mohon_pabrik_kode_pos) == null) throw `${pabrikNama}: Inputkan Kode Pos`;
+                                if ($.trim(e.mohon_pabrik_jumlah_karyawan) === "" || $.trim(e.mohon_pabrik_jumlah_karyawan) == null) throw `${pabrikNama}: Inputkan Jumlah Karyawan`;
+                                if ($.trim(e.mohon_pabrik_kegiatan_utama) === "" || $.trim(e.mohon_pabrik_kegiatan_utama) == null) throw `${pabrikNama}: Inputkan Kegiatan Utama`;
+                                if ($.trim(e.mohon_pabrik_luas_tanah) === "" || $.trim(e.mohon_pabrik_luas_tanah) == null) throw `${pabrikNama}: Inputkan Luas Tanah`;
+                                if ($.trim(e.mohon_pabrik_luas_bangunan) === "" || $.trim(e.mohon_pabrik_luas_bangunan) == null) throw `${pabrikNama}: Inputkan Luas Bangunan`;
                             })
                         }
                     },
@@ -796,7 +802,7 @@
                     },
                     setComboNegara(search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_negara") }}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_negara") }}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -830,7 +836,7 @@
                     },
                     setComboProvinsi(search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_provinsi") }}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_provinsi") }}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -866,7 +872,7 @@
                     },
                     setComboKabupaten(provId, search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_kabupaten") }}&prov_id=${provId}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_kabupaten") }}&prov_id=${provId}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -900,7 +906,7 @@
                     },
                     setComboKecamatan(kabId, search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_kecamatan") }}&kab_id=${kabId}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_kecamatan") }}&kab_id=${kabId}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -931,7 +937,7 @@
                     },
                     setComboPabrikProvinsi(pabrikId, search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_provinsi") }}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_provinsi") }}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -956,10 +962,10 @@
                             ]],
                             onSelect: function (index, row) {
                                 // update vue model
-                                let idx = self.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                                let idx                       = self.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
                                 self.data_pabrik[idx].prov_id = row.prov_id
-                                self.data_pabrik[idx].kab_id = null
-                                self.data_pabrik[idx].kec_id = null
+                                self.data_pabrik[idx].kab_id  = null
+                                self.data_pabrik[idx].kec_id  = null
 
                                 // update server
                                 self.updateDataPabrikByValue(pabrikId, "prov_id", row.prov_id)
@@ -973,7 +979,7 @@
                     },
                     setComboPabrikKabupaten(pabrikId, provId, search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_kabupaten") }}&prov_id=${provId}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_kabupaten") }}&prov_id=${provId}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -998,7 +1004,7 @@
                             ]],
                             onSelect: function (index, row) {
                                 // update vue model
-                                let idx = self.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                                let idx                      = self.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
                                 self.data_pabrik[idx].kab_id = row.kab_id
                                 self.data_pabrik[idx].kec_id = null
 
@@ -1012,7 +1018,7 @@
                     },
                     setComboPabrikKecamatan(pabrikId, kabId, search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_kecamatan") }}&kab_id=${kabId}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_kecamatan") }}&kab_id=${kabId}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -1037,7 +1043,7 @@
                             ]],
                             onSelect: function (index, row) {
                                 // update vue model
-                                let idx = self.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                                let idx                      = self.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
                                 self.data_pabrik[idx].kec_id = row.kec_id
 
                                 // update server
@@ -1046,35 +1052,35 @@
                         });
                     },
                     getDataPemohon() {
-                        $.get(`{{url("$url/ajax?action=data_pemohon")}}`)
+                        $.get(`{!! url("$url/ajax?action=permohonan_kondisi_perusahaan&mohon_id=" . $dataPemohon->mohon_id) !!}`)
                             .then(response => {
                                 let res = response.results;
-                                $("#step3_perusahaan_nama").val(res.cust_nama);
-                                $("#step3_perusahaan_akta").val(res.cust_nomor_akta_pendirian);
-                                $("#step3_perusahaan_nama_pemilik").val(res.cust_nama_pemilik);
-                                $("#step3_perusahaan_nama_pimpinan").val(res.cust_nama_pimpinan);
-                                $("#step3_perusahaan_nama_wakil").val(res.cust_nama_wakil_manajemen);
-                                $("#step3_perusahaan_telp").val(res.cust_nomor_telp);
-                                $("#step3_perusahaan_fax").val(res.cust_nomor_fax);
-                                $("#step3_perusahaan_cp").val(res.cust_nomor_hp);
+                                $("#step3_perusahaan_nama").val(res.mohon_cust_nama);
+                                $("#step3_perusahaan_akta").val(res.mohon_cust_nomor_akta_pendirian);
+                                $("#step3_perusahaan_nama_pemilik").val(res.mohon_cust_nama_pemilik);
+                                $("#step3_perusahaan_nama_pimpinan").val(res.mohon_cust_nama_pimpinan);
+                                $("#step3_perusahaan_nama_wakil").val(res.mohon_cust_nama_wakil_manajemen);
+                                $("#step3_perusahaan_telp").val(res.mohon_cust_nomor_telp);
+                                $("#step3_perusahaan_fax").val(res.mohon_cust_nomor_fax);
+                                $("#step3_perusahaan_cp").val(res.mohon_cust_nomor_hp);
                                 $("#step3_perusahaan_badan_hukum").val(res.badan_hukum_id);
                                 $("#step3_perusahaan_jenis").val(res.jenis_perusahaan_id);
 
-                                $("#step3_perusahaan_alamat").val(res.cust_alamat);
-                                $("#step3_perusahaan_luas_tanah").val(res.cust_luas_tanah);
-                                $("#step3_perusahaan_luas_bangunan").val(res.cust_luas_bangunan);
+                                $("#step3_perusahaan_alamat").val(res.mohon_cust_alamat);
+                                $("#step3_perusahaan_luas_tanah").val(res.mohon_cust_luas_tanah);
+                                $("#step3_perusahaan_luas_bangunan").val(res.mohon_cust_luas_bangunan);
 
-                                $("#step3_perusahaan_produksi_tahunan").val(res.cust_kapasitas_produksi_tahunan);
-                                $("#step3_perusahaan_produksi_tahunan_satuan").val(res.cust_kapasitas_produksi_tahunan_satuan);
-                                $("#step3_perusahaan_jml_shift").val(res.cust_shif_kerja);
-                                $("#step3_perusahaan_jml_bagian").val(res.cust_jumlah_bagian);
-                                $("#step3_perusahaan_jml_manajemen").val(res.cust_jumlah_manajemen);
-                                $("#step3_perusahaan_jml_administrasi").val(res.cust_jumlah_administrasi);
-                                $("#step3_perusahaan_jml_part_time").val(res.cust_jumlah_part_time);
-                                $("#step3_perusahaan_jml_shift_1").val(res.cust_jumlah_shift_1);
-                                $("#step3_perusahaan_jml_shift_2").val(res.cust_jumlah_shift_2);
-                                $("#step3_perusahaan_jml_shift_3").val(res.cust_jumlah_shift_3);
-                                $("#step3_perusahaan_jml_non_permanen").val(res.cust_jumlah_non_permanen);
+                                $("#step3_perusahaan_produksi_tahunan").val(res.mohon_cust_kapasitas_produksi_tahunan);
+                                $("#step3_perusahaan_produksi_tahunan_satuan").val(res.mohon_cust_kapasitas_produksi_tahunan_satuan);
+                                $("#step3_perusahaan_jml_shift").val(res.mohon_cust_shif_kerja);
+                                $("#step3_perusahaan_jml_bagian").val(res.mohon_cust_jumlah_bagian);
+                                $("#step3_perusahaan_jml_manajemen").val(res.mohon_cust_jumlah_manajemen);
+                                $("#step3_perusahaan_jml_administrasi").val(res.mohon_cust_jumlah_administrasi);
+                                $("#step3_perusahaan_jml_part_time").val(res.mohon_cust_jumlah_part_time);
+                                $("#step3_perusahaan_jml_shift_1").val(res.mohon_cust_jumlah_shift_1);
+                                $("#step3_perusahaan_jml_shift_2").val(res.mohon_cust_jumlah_shift_2);
+                                $("#step3_perusahaan_jml_shift_3").val(res.mohon_cust_jumlah_shift_3);
+                                $("#step3_perusahaan_jml_non_permanen").val(res.mohon_cust_jumlah_non_permanen);
 
 
                                 // Enable Combogrid Negara
@@ -1095,18 +1101,18 @@
                             });
                     },
                     getDataPabrik() {
-                        $.get(`{{url("$url/ajax?action=pabrik_data")}}`)
+                        $.get(`{!! url("$url/ajax?action=permohonan_pabrik_data&mohon_id="  . $dataPemohon->mohon_id) !!}`)
                             .then(response => {
                                 this.data_pabrik = response.results
                                 setTimeout(() => {
                                     if (this.data_pabrik.length > 0) {
                                         this.data_pabrik.map(e => {
-                                            this.setComboPabrikProvinsi(e.pabrik_id, e.prov_id)
-                                            this.setComboPabrikKabupaten(e.pabrik_id, e.prov_id, e.kab_id);
-                                            this.setComboPabrikKecamatan(e.pabrik_id, e.kab_id, e.kec_id);
-                                            $("#step3_pabrik_provinsi_" + e.pabrik_id).combogrid('setValue', e.prov_id);
-                                            $("#step3_pabrik_kabupaten_" + e.pabrik_id).combogrid('setValue', e.kab_id);
-                                            $("#step3_pabrik_kecamatan_" + e.pabrik_id).combogrid('setValue', e.kec_id);
+                                            this.setComboPabrikProvinsi(e.mohon_pabrik_id, e.prov_id)
+                                            this.setComboPabrikKabupaten(e.mohon_pabrik_id, e.prov_id, e.kab_id);
+                                            this.setComboPabrikKecamatan(e.mohon_pabrik_id, e.kab_id, e.kec_id);
+                                            $("#step3_pabrik_provinsi_" + e.mohon_pabrik_id).combogrid('setValue', e.prov_id);
+                                            $("#step3_pabrik_kabupaten_" + e.mohon_pabrik_id).combogrid('setValue', e.kab_id);
+                                            $("#step3_pabrik_kecamatan_" + e.mohon_pabrik_id).combogrid('setValue', e.kec_id);
                                         })
                                     }
                                     $(".tab-content").height("100%");
@@ -1118,13 +1124,13 @@
                             });
                     },
                     addDataPabrik() {
-                        $.post(`{{url("$url/ajax?action=pabrik_add")}}`)
+                        $.post(`{!! url("$url/ajax?action=permohonan_pabrik_add&mohon_id=" . $dataPemohon->mohon_id) !!}`)
                             .then(() => {
                                 this.getDataPabrik()
                             })
                     },
                     delDataPabrik(pabrikId) {
-                        let dtPabrik = this.data_pabrik.find(e => e.pabrik_id === pabrikId)
+                        let dtPabrik = this.data_pabrik.find(e => e.mohon_pabrik_id === pabrikId)
                         swalWithBootstrapButtons({
                             title: `Hapus Pabrik: ${dtPabrik.pabrik_nama} ?`,
                             text: `Menghapus data bersifat permanen dan tidak dapat dikembalikan`,
@@ -1135,7 +1141,10 @@
                             reverseButtons: true
                         }).then((result) => {
                             if (result.value) {
-                                $.post(`{{url("$url/ajax?action=pabrik_delete")}}`, {"pabrik_id": pabrikId})
+                                $.post(`{{url("$url/ajax?action=permohonan_pabrik_delete")}}`, {
+                                    "mohon_pabrik_id": pabrikId,
+                                    "mohon_id": {{$dataPemohon->mohon_id}}
+                                })
                                     .then(() => {
                                         this.getDataPabrik()
                                     })
@@ -1148,22 +1157,28 @@
 
                     },
                     updateDataPabrikByValue(pabrikId, parameter, value) {
-                        $.post(`{{url("$url/ajax?action=pabrik_update")}}`, {pabrik_id: pabrikId, parameter, value})
+                        $.post(`{!! url("$url/ajax?action=permohonan_pabrik_update&mohon_id=" . $dataPemohon->mohon_id) !!}`, {
+                            mohon_pabrik_id: pabrikId,
+                            parameter_pelanggan: parameter,
+                            parameter_permohonan: parameter,
+                            value
+                        })
                             .fail((xhr) => {
                                 if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
                                 else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
                             });
                     },
-                    updateDataPabrik(pabrikId, params, event) {
+                    updateDataPabrik(pabrikId, paramsPelanggan, paramsPermohonan, event) {
                         // Khusus Nama Pabrik
-                        if (params === "pabrik_nama") {
-                            let idx = this.data_pabrik.findIndex(e => e.pabrik_id === pabrikId)
+                        if (paramsPermohonan === "mohon_pabrik_nama") {
+                            let idx                           = this.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
                             this.data_pabrik[idx].pabrik_nama = event.target.value
                         }
 
-                        $.post(`{{url("$url/ajax?action=pabrik_update")}}`, {
-                            pabrik_id: pabrikId,
-                            parameter: params,
+                        $.post(`{!! url("$url/ajax?action=permohonan_pabrik_update&mohon_id=" . $dataPemohon->mohon_id) !!}`, {
+                            mohon_pabrik_id: pabrikId,
+                            parameter_pelanggan: paramsPelanggan,
+                            parameter_permohonan: paramsPermohonan,
                             value: event.target.value
                         }).fail((xhr) => {
                             if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
@@ -1171,15 +1186,19 @@
                         });
                     },
                     updateDataPemohonByValue(parameter, value) {
-                        $.post(`{{url("$url/ajax?action=update_data_pemohon")}}`, {parameter, value})
-                            .fail((xhr) => {
-                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                            });
+                        $.post(`{!! url("$url/ajax?action=permohonan_update_kondisi_perusahaan&mohon_id=" . $dataPemohon->mohon_id) !!}`, {
+                            parameter_main: parameter,
+                            parameter_permohonan: parameter,
+                            value
+                        }).fail((xhr) => {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        });
                     },
-                    updateDataPemohon(params, event) {
-                        $.post(`{{url("$url/ajax?action=update_data_pemohon")}}`, {
-                            parameter: params,
+                    updateDataPemohon(paramsMain, paramsPermohonan, event) {
+                        $.post(`{!! url("$url/ajax?action=permohonan_update_kondisi_perusahaan&mohon_id=" . $dataPemohon->mohon_id) !!}`, {
+                            parameter_main: paramsMain,
+                            parameter_permohonan: paramsPermohonan,
                             value: event.target.value
                         }).fail((xhr) => {
                             if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})

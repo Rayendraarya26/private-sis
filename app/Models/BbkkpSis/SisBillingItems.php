@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * Created by Reliese Model.
+ */
+
+namespace App\Models\BbkkpSis;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class SisBillingItems
+ * 
+ * @property int $itms_bil_id
+ * @property int $bil_id
+ * @property string $itms_bil_tipe
+ * @property int|null $mohon_id
+ * @property string|null $itms_bil_desc
+ * @property float|null $itms_bil_rate
+ * @property float|null $itms_bil_total
+ * 
+ * @property SisBilling $sis_billing
+ * @property SisPermohonan|null $sis_permohonan
+ *
+ * @package App\Models\BbkkpSis
+ */
+class SisBillingItems extends Model
+{
+	protected $table = 'sis_billing_items';
+	protected $primaryKey = 'itms_bil_id';
+	public $timestamps = false;
+
+	protected $casts = [
+		'bil_id' => 'int',
+		'mohon_id' => 'int',
+		'itms_bil_rate' => 'float',
+		'itms_bil_total' => 'float'
+	];
+
+	protected $fillable = [
+		'bil_id',
+		'itms_bil_tipe',
+		'mohon_id',
+		'itms_bil_desc',
+		'itms_bil_rate',
+		'itms_bil_total'
+	];
+
+	public function sis_billing()
+	{
+		return $this->belongsTo(SisBilling::class, 'bil_id');
+	}
+
+	public function sis_permohonan()
+	{
+		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
+	}
+}

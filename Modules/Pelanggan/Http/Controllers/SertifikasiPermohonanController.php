@@ -245,6 +245,112 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
+    public function edit($mohonID)
+    {
+        $dataPemohon           = SisPermohonan::with([
+            'sis_pelanggan_sertifikasi',
+            'sis_permohonan_dokumens.master_jenis_dok_perusahaan',
+            'sis_permohonan_komoditis.master_komoditi',
+            'sis_permohonan_pabriks.master_kabupaten',
+            'sis_permohonan_pabriks.master_kecamatan',
+            'sis_permohonan_pabriks.master_provinsi',
+            'master_sertifikasi',
+            'master_jenis_perusahaan',
+            'master_badan_hukum',
+            'master_negara',
+            'master_provinsi',
+            'master_kabupaten',
+            'master_kecamatan',
+        ])->where("user_id", auth()->id())->findOrFail($mohonID);
+        $masterBadanHukum      = MasterBadanHukum::all();
+        $masterJenisPerusahaan = MasterJenisPerusahaan::all();
+
+        $breadcrumbs = [
+            new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Permohonan Sertifikasi', url($this->url)),
+            new BreadcrumbsStruct('Ubah'),
+        ];
+
+        $parser = [
+            'breadcrumbs'           => $breadcrumbs,
+            'module'                => $this->module,
+            'url'                   => $this->url,
+            'dataPemohon'           => $dataPemohon,
+            'masterBadanHukum'      => $masterBadanHukum,
+            'masterJenisPerusahaan' => $masterJenisPerusahaan,
+        ];
+        // dd($parser);
+        return view('pelanggan::sertifikasi_permohonan.edit')->with($parser);
+    }
+
+    public function update(Request $request)
+    {
+        $uploadedPath = [];
+        try {
+            $request->validate([
+                "mohon_id"            => 'required|integer',
+                "pertanyaan_tambahan" => 'sometimes|mimetypes:application/pdf',
+                'data_komoditas'      => 'sometimes'
+            ]);
+
+            /* TODO:
+             * 1. FIND: data sis_permohonan dengan id mohon_id
+             * 2. UPDATE: data komoditas (jika sert_produk = ya)
+             * 3. UPDATE: pertanyaan tambahan (jika di upload)
+             *  */
+
+            $dataPemohon = SisPermohonan::with(['master_sertifikasi'])
+                ->where('mohon_id', $request['mohon_id'])
+                ->where('cust_id', auth()->user()->sis_pelanggan->cust_id)->first();
+
+            if ($dataPemohon->master_sertifikasi->sert_is_product == "ya") {
+                if (empty($request['data_komoditas'])) throw new Exception("Data komoditas dibutuhkan", 500);
+                $dataKomoditas = json_decode($request['data_komoditas']);
+                SisPermohonanKomoditi::where('mohon_id', $dataPemohon->mohon_id)->delete(); // Delete ROW
+                foreach ($dataKomoditas as $komoditas) {
+                    SisPermohonanKomoditi::firstOrCreate(
+                        [
+                            'komodt_id'                                      => $komoditas->komoditi_id,
+                            'mohon_kmditi_sni'                               => $komoditas->sni,
+                            'mohon_kmditi_merk'                              => $komoditas->merk,
+                            'mohon_kmditi_tipe'                              => $komoditas->tipe,
+                            'mohon_kmditi_ukuran'                            => $komoditas->ukuran,
+                            'mohon_kmditi_kapasitas_produksi_tahunan'        => $komoditas->produksi_tahunan,
+                            'mohon_kmditi_kapasitas_produksi_tahunan_satuan' => $komoditas->satuan_produksi,
+                        ],
+                        [
+                            'mohon_id'   => $dataPemohon->mohon_id,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]
+                    );
+                }
+            }
+
+            $baseFileUpload = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
+            if ($request->hasFile('pertanyaan_tambahan')) {
+                $filePertanyaan     = $request->file('pertanyaan_tambahan');
+                $filePertanyaanName = Str::slug('pertanyaan-tambahan' . $filePertanyaan->getClientOriginalName()) . '-' . time() . '.' . $filePertanyaan->getClientOriginalExtension();
+                $filePertanyaanPath = sprintf("%s/%s", $baseFileUpload, $filePertanyaanName);
+                $filePertanyaan->move($baseFileUpload, $filePertanyaanName);
+                array_push($uploadedPath, $filePertanyaanPath);
+                $dataPemohon->mohon_pertanyaan_filepath = $filePertanyaanPath;
+                $dataPemohon->save();
+            }
+
+            DB::commit();
+
+            return responseJSON(200, null, "Pembaruan data permohonan berhasil");
+        } catch (Exception $e) {
+            DB::rollBack();
+            foreach ($uploadedPath as $delPath) { // delete uploaded file
+                @unlink($delPath);
+            }
+            return responseJSON(500, null, $e->getMessage());
+        }
+
+    }
+
     public function detail(Request $request, $mohonID)
     {
         $dataPemohon = SisPermohonan::with([
@@ -302,23 +408,31 @@ class SertifikasiPermohonanController extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'datagrid'                  => $this->ajax_datagrid($request),
-            'combogrid_sertifikat_lama' => $this->ajax_combogrid_sertifikat_lama($request),
-            'combogrid_sertifikasi'     => $this->ajax_combogrid_sertifikasi($request),
-            'combogrid_komoditas'       => $this->ajax_combogrid_komoditas($request),
-            'combogrid_negara'          => $this->ajax_combogrid_negara($request),
-            'combogrid_provinsi'        => $this->ajax_combogrid_provinsi($request),
-            'combogrid_kabupaten'       => $this->ajax_combogrid_kabupaten($request),
-            'combogrid_kecamatan'       => $this->ajax_combogrid_kecamatan($request),
-            'dokumen_sertifikat'        => $this->ajax_dokumen_sertifikat($request),
-            "upload_document"           => $this->ajax_upload_document($request),
-            "data_pemohon"              => $this->ajax_data_pemohon($request),
-            "update_data_pemohon"       => $this->ajax_update_data_pemohon($request),
-            "pabrik_data"               => $this->ajax_pabrik_data($request),
-            "pabrik_add"                => $this->ajax_pabrik_add($request),
-            "pabrik_update"             => $this->ajax_pabrik_update($request),
-            "pabrik_delete"             => $this->ajax_pabrik_delete($request),
-            default                     => null,
+            'datagrid'                             => $this->ajax_datagrid($request),
+            'combogrid_sertifikat_lama'            => $this->ajax_combogrid_sertifikat_lama($request),
+            'combogrid_sertifikasi'                => $this->ajax_combogrid_sertifikasi($request),
+            'combogrid_komoditas'                  => $this->ajax_combogrid_komoditas($request),
+            'combogrid_negara'                     => $this->ajax_combogrid_negara($request),
+            'combogrid_provinsi'                   => $this->ajax_combogrid_provinsi($request),
+            'combogrid_kabupaten'                  => $this->ajax_combogrid_kabupaten($request),
+            'combogrid_kecamatan'                  => $this->ajax_combogrid_kecamatan($request),
+            'dokumen_sertifikat'                   => $this->ajax_dokumen_sertifikat($request),
+            "upload_dokumen"                       => $this->ajax_upload_dokumen($request),
+            "data_pemohon"                         => $this->ajax_data_pemohon($request),
+            "update_data_pemohon"                  => $this->ajax_update_data_pemohon($request),
+            "pabrik_data"                          => $this->ajax_pabrik_data($request),
+            "pabrik_add"                           => $this->ajax_pabrik_add($request),
+            "pabrik_update"                        => $this->ajax_pabrik_update($request),
+            "pabrik_delete"                        => $this->ajax_pabrik_delete($request),
+            "permohonan_get_dokumen"               => $this->ajax_permohonan_get_dokumen($request),
+            "permohonan_unggah_dokumen"            => $this->ajax_permohonan_unggah_dokumen($request),
+            "permohonan_kondisi_perusahaan"        => $this->ajax_permohonan_kondisi_perusahaan($request),
+            "permohonan_update_kondisi_perusahaan" => $this->ajax_permohonan_update_kondisi_perusahaan($request),
+            "permohonan_pabrik_data"               => $this->ajax_permohonan_pabrik_data($request),
+            "permohonan_pabrik_add"                => $this->ajax_permohonan_pabrik_add($request),
+            "permohonan_pabrik_update"             => $this->ajax_permohonan_pabrik_update($request),
+            "permohonan_pabrik_delete"             => $this->ajax_permohonan_pabrik_delete($request),
+            default                                => responseJSON(404, null, "Invalid url"),
         };
     }
 
@@ -644,7 +758,7 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
-    private function ajax_upload_document(Request $request)
+    private function ajax_upload_dokumen(Request $request)
     {
         try {
             $request->validate([
@@ -701,7 +815,7 @@ class SertifikasiPermohonanController extends Controller
 
             $newPabrik              = new SisPelangganPabrik();
             $newPabrik->cust_id     = $dataPelanggan->cust_id;
-            $newPabrik->pabrik_nama = sprintf("Pabrik %d", count($dataPabrik) + 1);
+            $newPabrik->pabrik_nama = sprintf("Pabrik %d - (silakan ubah nama pabrik %s)", count($dataPabrik) + 1, Str::random(5));
 
             $allField = $newPabrik->getFillable();
             foreach ($allField as $field) {
@@ -758,6 +872,243 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon->save();
             return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_get_dokumen(Request $request)
+    {
+        try {
+            $request->validate(['mohon_id' => 'required|integer']);
+
+            $dataPemohon = SisPermohonan::with(['sis_permohonan_dokumens.master_jenis_dok_perusahaan'])
+                ->where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+
+            $dataDokumen = MasterSertifikasiDokumen::with("master_jenis_dok_perusahaan")->where("sert_id", $dataPemohon->sert_id)->get();
+            $results     = [];
+            foreach ($dataDokumen as $dt) {
+                $findMyDoc = $dataPemohon->sis_permohonan_dokumens()->where('jenis_dok_perusahaan_id', $dt->jenis_dok_perusahaan_id)->first();
+                $results[] = [
+                    'dt_id'        => $dt->sert_dok_id,
+                    'dt_name'      => $dt->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text,
+                    'dt_sample'    => !empty($dt->master_jenis_dok_perusahaan->jenis_dok_perusahaan_sample_file) ? asset($dt->master_jenis_dok_perusahaan->jenis_dok_perusahaan_sample_file) : null,
+                    'dt_deskripsi' => $dt->master_jenis_dok_perusahaan->jenis_dok_perusahaan_deskripsi,
+                    'my_document'  => !empty($findMyDoc) ? asset($findMyDoc->mohon_dok_filepath) : null,
+                ];
+            }
+
+            return responseJSON(200, $results, "data ditemukan");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_unggah_dokumen(Request $request)
+    {
+        $uploadedPath = [];
+        try {
+            $request->validate([
+                'mohon_id'    => 'required|integer',
+                'sert_dok_id' => 'required|integer',
+                'file'        => 'required|mimetypes:application/pdf|max:10000', // 10MB
+            ]);
+
+            DB::beginTransaction();
+            $dataPemohon = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+
+            $dataMasterSertDok = MasterSertifikasiDokumen::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
+
+            // Update data utama
+            $dataFile = $request->file("file");
+            $filePath = sprintf(config("app.path_file_customer"), auth()->user()?->sis_pelanggan->cust_id);
+            if (!File::exists($filePath)) {
+                File::makeDirectory($filePath, 0777, true, true);
+            }
+            $fileName = Str::slug($dataMasterSertDok?->master_jenis_dok_perusahaan?->jenis_dok_perusahaan_text) . '-' . time() . '.' . $dataFile->getClientOriginalExtension();
+            $dataFile->move($filePath, $fileName);
+            $dataDokumen = SisPelangganDokumen::updateOrCreate(
+                ['cust_id' => auth()->user()->sis_pelanggan->cust_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
+                ['cust_dok_filepath' => $filePath . '/' . $fileName]
+            );
+            $source      = public_path($dataDokumen->cust_dok_filepath);
+            array_push($uploadedPath, $source);
+
+            // Update data pemohon
+            # Copy from pelanggan
+            $dokumenName    = basename($source);
+            $baseFileUpload = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
+            $dokumenFolder  = sprintf("%s/dokumen", $baseFileUpload);
+            $destination    = sprintf("%s/%s", $dokumenFolder, $dokumenName);
+            copy($source, $destination);
+            array_push($uploadedPath, $destination);
+            $dokumen = SisPermohonanDokumen::updateOrCreate(
+                ['mohon_id' => $dataPemohon->mohon_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
+                ['mohon_dok_filepath' => $destination]
+            );
+            DB::commit();
+
+            return responseJSON(200, $dokumen, "Dokumen berhasil di unggah");
+        } catch (Exception $e) {
+            DB::rollBack();
+            foreach ($uploadedPath as $delPath) { // delete uploaded file
+                @unlink($delPath);
+            }
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_kondisi_perusahaan(Request $request)
+    {
+        try {
+            $request->validate(["mohon_id" => "required|integer"]);
+            $dataPemohon = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+
+            return responseJSON(200, $dataPemohon, "Data ditemukan");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_update_kondisi_perusahaan(Request $request)
+    {
+        try {
+            $request->validate(["parameter_main" => "required", "parameter_permohonan" => "required", "value" => "required", 'mohon_id' => 'required']);
+            $parameterPelanggan = $request['parameter_main'];
+            $parameterPemohon   = $request['parameter_permohonan'];
+            $value              = $request['value'] == '--' ? NULL : $request['value'];
+
+            DB::beginTransaction();
+
+            $dataPelanggan                          = auth()->user()?->sis_pelanggan;
+            $dataPelanggan->$parameterPelanggan     = $value;
+            $dataPelanggan->cust_jumlah_operasional = $dataPelanggan->cust_jumlah_shift_1 + $dataPelanggan->cust_jumlah_shift_2 + $dataPelanggan->cust_jumlah_shift_3;
+            $dataPelanggan->save();
+
+            $dataPemohon                                = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+            $dataPemohon->$parameterPemohon             = $value;
+            $dataPemohon->mohon_cust_jumlah_operasional = $dataPemohon->mohon_cust_jumlah_shift_1 + $dataPemohon->mohon_cust_jumlah_shift_2 + $dataPemohon->mohon_cust_jumlah_shift_3;
+            $dataPemohon->save();
+
+            DB::commit();
+            return responseJSON(200, $dataPemohon, "Data diperbarui");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_pabrik_data(Request $request)
+    {
+        try {
+            $request->validate(["mohon_id" => "required|integer"]);
+            $dataPemohon = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+            $dataPabrik  = $dataPemohon?->sis_permohonan_pabriks;
+            return responseJSON(200, $dataPabrik, "Data ditemukan");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_pabrik_add(Request $request)
+    {
+        try {
+            $request->validate(["mohon_id" => "required|integer"]);
+            DB::beginTransaction();
+            $randomName = Str::random(5);
+            // Add Permohonan Data
+            $dataPemohon       = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+            $dataPabrikPemohon = $dataPemohon?->sis_permohonan_pabriks;
+
+            $mohonNewPabrik                    = new SisPermohonanPabrik();
+            $mohonNewPabrik->mohon_id          = $dataPemohon->mohon_id;
+            $mohonNewPabrik->mohon_pabrik_nama = sprintf("Pabrik %d - (silakan ubah nama pabrik %s)", count($dataPabrikPemohon) + 1, $randomName);
+            $allField                          = $mohonNewPabrik->getFillable();
+            foreach ($allField as $field) {
+                if (!in_array($field, ['mohon_id', 'mohon_pabrik_nama', 'kec_id', 'kab_id', 'prov_id',])) {
+                    $mohonNewPabrik->$field = "-";
+                }
+            }
+            $mohonNewPabrik->save();
+
+
+            // Add Main Data
+            $dataPelanggan       = auth()->user()?->sis_pelanggan;
+            $dataPabrikPelanggan = $dataPelanggan?->sis_pelanggan_pabriks;
+
+            $newPabrik              = new SisPelangganPabrik();
+            $newPabrik->cust_id     = $dataPelanggan->cust_id;
+            $newPabrik->pabrik_nama = sprintf("Pabrik %d - (silakan ubah nama pabrik %s)", count($dataPabrikPelanggan) + 1, $randomName);
+
+            $allField = $newPabrik->getFillable();
+            foreach ($allField as $field) {
+                if (!in_array($field, ['cust_id', 'pabrik_nama', 'kec_id', 'kab_id', 'prov_id',])) {
+                    $newPabrik->$field = "-";
+                }
+            }
+            $newPabrik->save();
+
+            DB::commit();
+            return responseJSON(200, $newPabrik, "Data pabrik ditambahkan");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_pabrik_update(Request $request)
+    {
+        try {
+            $request->validate([
+                'mohon_id'             => 'required|integer',
+                'mohon_pabrik_id'      => 'required|integer',
+                "parameter_pelanggan"  => "required",
+                "parameter_permohonan" => "required",
+                "value"                => "required"
+            ]);
+            DB::beginTransaction();
+            $parameterPermohonan = $request['parameter_permohonan'];
+            $parameterPelanggan  = $request['parameter_pelanggan'];
+            $value               = $request['value'] == '--' ? NULL : $request['value'];
+            // Update Permohonan Pabrik
+            $dataPabrikPermohonan                       = SisPermohonanPabrik::where('mohon_id', $request['mohon_id'])->findOrFail($request['mohon_pabrik_id']);
+            $namaPabrik                                 = $dataPabrikPermohonan->mohon_pabrik_nama;
+            $dataPabrikPermohonan->$parameterPermohonan = $value;
+            $dataPabrikPermohonan->save();
+
+            // Update Pelanggan Pabrik
+            $dataPabrikPelanggan                      = SisPelangganPabrik::where("pabrik_nama", $namaPabrik)->where("cust_id", auth()->user()->sis_pelanggan?->cust_id)->first();
+            $dataPabrikPelanggan->$parameterPelanggan = $value;
+            $dataPabrikPelanggan->save();
+            DB::commit();
+            return responseJSON(200, null, "Data pabrik diperbarui");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
+    private function ajax_permohonan_pabrik_delete(Request $request)
+    {
+        try {
+            $request->validate([
+                'mohon_pabrik_id' => 'required|integer',
+                'mohon_id'        => 'required|integer',
+            ]);
+            DB::beginTransaction();
+
+            // Delete pabrik permohonan
+            $dataPabrikPermohonan = SisPermohonanPabrik::where('mohon_id', $request['mohon_id'])->findOrFail($request['mohon_pabrik_id']);
+            $namaPabrik           = $dataPabrikPermohonan->mohon_pabrik_nama;
+            $dataPabrikPermohonan->delete();
+
+            // Delete pabrik pelanggan
+            $dataPabrikPelanggan = SisPelangganPabrik::where("pabrik_nama", $namaPabrik)->where("cust_id", auth()->user()->sis_pelanggan?->cust_id)->first();
+            $dataPabrikPelanggan->delete();
+
+            DB::commit();
+            return responseJSON(200, null, "Data pabrik dihapus");
+        } catch (Exception $e) {
+            DB::rollBack();
             return responseJSON(500, null, $e->getMessage());
         }
     }

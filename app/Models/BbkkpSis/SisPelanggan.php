@@ -54,6 +54,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterProvinsi|null $master_provinsi
  * @property SysUser $sys_user
  * @property MasterNegara|null $master_negara
+ * @property Collection|SisBilling[] $sis_billings
  * @property Collection|SisJadwal[] $sis_jadwals
  * @property Collection|SisPelangganDokumen[] $sis_pelanggan_dokumens
  * @property Collection|SisPelangganPabrik[] $sis_pelanggan_pabriks
@@ -153,6 +154,11 @@ class SisPelanggan extends Model
 	public function master_negara()
 	{
 		return $this->belongsTo(MasterNegara::class, 'negara_id');
+	}
+
+	public function sis_billings()
+	{
+		return $this->hasMany(SisBilling::class, 'cust_id');
 	}
 
 	public function sis_jadwals()
