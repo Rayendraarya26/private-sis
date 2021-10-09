@@ -192,49 +192,51 @@
                         </div>
                     </div>
                 </li>
-                <li>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="step3_perusahaan_provinsi">
-                                    Provinsi*
-                                    <x-linked-icon></x-linked-icon>
-                                </label>
-                                <input id="step3_perusahaan_provinsi" name="step3_perusahaan_provinsi"
-                                       class="form-control"
-                                       style="width: 100%">
+                <template v-if="is_indonesia">
+                    <li>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step3_perusahaan_provinsi">
+                                        Provinsi*
+                                        <x-linked-icon></x-linked-icon>
+                                    </label>
+                                    <input id="step3_perusahaan_provinsi" name="step3_perusahaan_provinsi"
+                                           class="form-control"
+                                           style="width: 100%">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="step3_perusahaan_kabupaten">
-                                    Kabupaten*
-                                    <x-linked-icon></x-linked-icon>
-                                </label>
-                                <input id="step3_perusahaan_kabupaten" name="step3_perusahaan_kabupaten"
-                                       class="form-control" style="width: 100%">
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step3_perusahaan_kabupaten">
+                                        Kabupaten*
+                                        <x-linked-icon></x-linked-icon>
+                                    </label>
+                                    <input id="step3_perusahaan_kabupaten" name="step3_perusahaan_kabupaten"
+                                           class="form-control" style="width: 100%">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="step3_perusahaan_kecamatan">
-                                    Kecamatan*
-                                    <x-linked-icon></x-linked-icon>
-                                </label>
-                                <input id="step3_perusahaan_kecamatan" name="step3_perusahaan_kecamatan"
-                                       class="form-control" style="width: 100%">
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="step3_perusahaan_kecamatan">
+                                        Kecamatan*
+                                        <x-linked-icon></x-linked-icon>
+                                    </label>
+                                    <input id="step3_perusahaan_kecamatan" name="step3_perusahaan_kecamatan"
+                                           class="form-control" style="width: 100%">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
+                </template>
                 <li>
                     <div class="row">
                         <div class="col-md-12">
@@ -287,7 +289,7 @@
     <div class="col-md-12">
         <h3>Data Operasional</h3>
         <div>
-            <ol start="18">
+            <ol :start="is_indonesia ? 18 : 15">
                 <li>
                     <div class="row">
                         <div class="col-md-12">
@@ -510,7 +512,7 @@
     <div class="col-md-12" style="padding-top: 20px">
         <h3>Data Pabrik</h3>
         <div>
-            <ol start="22">
+            <ol :start="is_indonesia ? 22 : 19">
                 <li>
                     <div class="row">
                         <div class="col-md-12">
@@ -701,7 +703,7 @@
     <div class="col-md-12" style="padding-top: 20px">
         <h3>Petanyaan Tambahan</h3>
         <div>
-            <ol start="23">
+            <ol :start="is_indonesia ? 23 : 20">
                 <li>Lengkapi kuesioner berikut dan upload kembali dibawah
                     <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh form kuesioner)</a>
                     <br><br>
@@ -725,6 +727,7 @@
             window.vueStepThree = new Vue({
                 el: "#vueStepThree",
                 data: {
+                    is_indonesia: true,
                     data_pabrik: [],
                 },
                 mounted() {
@@ -763,10 +766,13 @@
                         if ($.trim($("#step3_perusahaan_jml_shift_2").val()) === "") throw "Inputkan Jumlah Shift Ke 2";
                         if ($.trim($("#step3_perusahaan_jml_shift_3").val()) === "") throw "Inputkan Jumlah Shift Ke 3";
                         if ($.trim($("#step3_perusahaan_jml_non_permanen").val()) === "") throw "Inputkan Jumlah Non Permanen";
+
                         if ($.trim($("#step3_perusahaan_negara").combogrid('getValue')) === "") throw "Pilih negara";
-                        if ($.trim($("#step3_perusahaan_provinsi").combogrid('getValue')) === "") throw "Pilih provinsi";
-                        if ($.trim($("#step3_perusahaan_kabupaten").combogrid('getValue')) === "") throw "Pilih kabupaten";
-                        if ($.trim($("#step3_perusahaan_kecamatan").combogrid('getValue')) === "") throw "Pilih kecamatan";
+                        if (this.is_indonesia) {
+                            if ($.trim($("#step3_perusahaan_provinsi").combogrid('getValue')) === "") throw "Pilih provinsi";
+                            if ($.trim($("#step3_perusahaan_kabupaten").combogrid('getValue')) === "") throw "Pilih kabupaten";
+                            if ($.trim($("#step3_perusahaan_kecamatan").combogrid('getValue')) === "") throw "Pilih kecamatan";
+                        }
 
                         if (this.data_pabrik.length > 0) {
                             this.data_pabrik.map(e => {
@@ -828,9 +834,16 @@
                                 // {field: 'negara_kode', title: 'Kode Negara', width: 100, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
-                                console.log(index)
-                                console.log(row)
+                                self.is_indonesia = row.negara_nama.toLowerCase() == "indonesia"
                                 self.updateDataPemohonByValue("negara_id", row.negara_id)
+
+                                if (self.is_indonesia) {
+                                    setTimeout(() => self.setComboProvinsi(), 500)
+                                } else {
+                                    self.updateDataPemohonByValue("prov_id", '--')
+                                    self.updateDataPemohonByValue("kec_id", '--')
+                                    self.updateDataPemohonByValue("kab_id", '--')
+                                }
                             },
                         });
                     },
@@ -864,8 +877,12 @@
                                 self.updateDataPemohonByValue("prov_id", row.prov_id)
                                 self.updateDataPemohonByValue("kec_id", '--')
                                 self.updateDataPemohonByValue("kab_id", '--')
-                                $("#step3_perusahaan_kabupaten").combogrid('clear');
-                                $("#step3_perusahaan_kecamatan").combogrid('clear');
+                                try {
+                                    $("#step3_perusahaan_kecamatan").combogrid('clear');
+                                    $("#step3_perusahaan_kabupaten").combogrid('clear');
+                                } catch (e) {
+                                    console.log(e)
+                                }
                                 self.setComboKabupaten(row.prov_id)
                             },
                         });
@@ -899,7 +916,11 @@
                             onSelect: function (index, row) {
                                 self.updateDataPemohonByValue("kab_id", row.kab_id)
                                 self.updateDataPemohonByValue("kec_id", '--')
-                                $("#step3_perusahaan_kecamatan").combogrid('clear');
+                                try {
+                                    $("#step3_perusahaan_kecamatan").combogrid('clear');
+                                } catch (e) {
+                                    console.log(e)
+                                }
                                 self.setComboKecamatan(row.kab_id);
                             },
                         });
@@ -1085,15 +1106,20 @@
 
                                 // Enable Combogrid Negara
                                 this.setComboNegara(res.negara_id);
-                                this.setComboProvinsi(res.prov_id);
-                                this.setComboKabupaten(res.prov_id, res.kab_id);
-                                this.setComboKecamatan(res.kab_id, res.kec_id);
+                                this.is_indonesia = res.negara_nama.toLowerCase() == "indonesia"
+                                if (this.is_indonesia) {
+                                    this.setComboProvinsi(res.prov_id);
+                                    this.setComboKabupaten(res.prov_id, res.kab_id);
+                                    this.setComboKecamatan(res.kab_id, res.kec_id);
+                                }
 
                                 // Set Provinsi
                                 $("#step3_perusahaan_negara").combogrid('setValue', res.negara_id);
-                                $("#step3_perusahaan_provinsi").combogrid('setValue', res.prov_id);
-                                $("#step3_perusahaan_kabupaten").combogrid('setValue', res.kab_id);
-                                $("#step3_perusahaan_kecamatan").combogrid('setValue', res.kec_id);
+                                if (this.is_indonesia) {
+                                    $("#step3_perusahaan_provinsi").combogrid('setValue', res.prov_id);
+                                    $("#step3_perusahaan_kabupaten").combogrid('setValue', res.kab_id);
+                                    $("#step3_perusahaan_kecamatan").combogrid('setValue', res.kec_id);
+                                }
                             })
                             .fail((xhr) => {
                                 if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})

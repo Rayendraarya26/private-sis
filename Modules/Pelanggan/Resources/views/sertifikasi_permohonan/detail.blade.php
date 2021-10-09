@@ -85,7 +85,7 @@
                                                 <td>
                                                     <a target="_blank" href="{{asset($dok->mohon_dok_filepath)}}">
                                                         <i class="fad fa-download"></i>
-                                                        Download
+                                                        Unduh
                                                     </a>
                                                 </td>
                                             </tr>
@@ -235,7 +235,7 @@
                                             <td>Negara</td>
                                             <td>: {{$dataPemohon->master_negara?->negara_nama}}</td>
                                         </tr>
-                                        @if($dataPemohon->master_negara?->negara_kode == "ID")
+                                        @if(strtolower($dataPemohon->master_negara?->negara_nama) == "indonesia")
                                             <tr>
                                                 <td></td>
                                                 <td>Provinsi</td>
@@ -410,7 +410,7 @@
                                             <td>Pertanyaan Tambahan</td>
                                             <td>: <a target="_blank"
                                                      href="{{url(asset($dataPemohon->mohon_pertanyaan_filepath))}}">
-                                                    <i class="fad fa-download"></i> Download
+                                                    <i class="fad fa-download"></i> Unduh
                                                 </a>
                                             </td>
                                         </tr>
@@ -425,4 +425,5 @@
                 </div>
             </div>
         </div>
+    </div>
 @endsection

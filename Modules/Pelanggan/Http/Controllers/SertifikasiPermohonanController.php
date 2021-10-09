@@ -790,8 +790,10 @@ class SertifikasiPermohonanController extends Controller
     private function ajax_data_pemohon(Request $request)
     {
         try {
-            $dataPemohon = auth()->user()?->sis_pelanggan;
-            return responseJSON(200, $dataPemohon, "Data ditemukan");
+            $dataPelanggan              = auth()->user()?->sis_pelanggan;
+            $dataPelanggan->negara_nama = $dataPelanggan->master_negara->negara_nama;
+
+            return responseJSON(200, $dataPelanggan, "Data ditemukan");
         } catch (Exception $e) {
             return responseJSON(500, null, $e->getMessage());
         }
@@ -962,6 +964,7 @@ class SertifikasiPermohonanController extends Controller
         try {
             $request->validate(["mohon_id" => "required|integer"]);
             $dataPemohon = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
+            $dataPemohon->negara_nama = $dataPemohon->master_negara->negara_nama;
 
             return responseJSON(200, $dataPemohon, "Data ditemukan");
         } catch (Exception $e) {

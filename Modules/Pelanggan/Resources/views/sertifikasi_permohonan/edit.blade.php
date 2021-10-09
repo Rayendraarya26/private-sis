@@ -114,7 +114,7 @@
             // Smart Wizard
             $('#smartwizard').smartWizard({
                 selected: 0,
-                cycleSteps: false,
+                cycleSteps: true,
                 theme: 'arrows', // default, arrows, dots, progress
                 enableURLhash: false,
                 // darkMode: true,
@@ -129,8 +129,8 @@
                     toolbarExtraButtons: [] // Extra buttons to show on toolbar, array of jQuery input/buttons elements
                 },
                 anchorSettings: {
-                    anchorClickable: false, // Enable/Disable anchor navigation
-                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    removeDoneStepOnNavigateBack: false, // While navigate back done step after active step will be cleared
                 },
                 keyboardSettings: {
                     keyNavigation: false,
