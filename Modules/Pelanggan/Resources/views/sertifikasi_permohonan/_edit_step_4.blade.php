@@ -21,7 +21,7 @@
                         :class="{'btn': true, 'btn-primary':agreement, 'btn-outline-primary':!agreement,'btn-block':true}"
                         @click="submitPermohonan"
                 >
-                    <i class="fad fa-paper-plane"></i> Kirim
+                    <i class="fad fa-save"></i> Simpan
                 </button>
             </template>
         </div>
@@ -41,7 +41,7 @@
                 methods: {
                     submitPermohonan() {
                         swalWithBootstrapButtons({
-                            title: `Kirim Permohonan ?`,
+                            title: `Simpan Permohonan ?`,
                             text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
                             type: 'info',
                             showCancelButton: true,

@@ -575,38 +575,52 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Provinsi
+                                                <td>Negara
                                                     <x-linked-icon></x-linked-icon>
                                                 </td>
                                                 <td>
                                                     <input style="width: 100%"
-                                                           :id="'step3_pabrik_provinsi_'+n.mohon_pabrik_id"
-                                                           :name="'step3_pabrik_provinsi_'+n.mohon_pabrik_id"
-                                                           type="text" class="form-control" aria-label="Provinsi">
+                                                           :id="'step3_pabrik_negara_'+n.mohon_pabrik_id"
+                                                           :name="'step3_pabrik_negara_'+n.mohon_pabrik_id"
+                                                           type="text" class="form-control" aria-label="Negara">
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>Kabupaten
-                                                    <x-linked-icon></x-linked-icon>
-                                                </td>
-                                                <td>
-                                                    <input style="width: 100%"
-                                                           :id="'step3_pabrik_kabupaten_'+n.mohon_pabrik_id"
-                                                           :name="'step3_pabrik_kabupaten_'+n.mohon_pabrik_id"
-                                                           type="text" class="form-control" aria-label="Kabupaten">
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Kecamatan
-                                                    <x-linked-icon></x-linked-icon>
-                                                </td>
-                                                <td>
-                                                    <input style="width: 100%"
-                                                           :id="'step3_pabrik_kecamatan_'+n.mohon_pabrik_id"
-                                                           :name="'step3_pabrik_kecamatan_'+n.mohon_pabrik_id"
-                                                           type="text" class="form-control" aria-label="Kecamatan">
-                                                </td>
-                                            </tr>
+                                            <template
+                                                v-if="n.negara_nama != null && n.negara_nama.toLowerCase() == 'indonesia'">
+                                                <tr>
+                                                    <td>Provinsi
+                                                        <x-linked-icon></x-linked-icon>
+                                                    </td>
+                                                    <td>
+                                                        <input style="width: 100%"
+                                                               :id="'step3_pabrik_provinsi_'+n.mohon_pabrik_id"
+                                                               :name="'step3_pabrik_provinsi_'+n.mohon_pabrik_id"
+                                                               type="text" class="form-control" aria-label="Provinsi">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Kabupaten
+                                                        <x-linked-icon></x-linked-icon>
+                                                    </td>
+                                                    <td>
+                                                        <input style="width: 100%"
+                                                               :id="'step3_pabrik_kabupaten_'+n.mohon_pabrik_id"
+                                                               :name="'step3_pabrik_kabupaten_'+n.mohon_pabrik_id"
+                                                               type="text" class="form-control" aria-label="Kabupaten">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Kecamatan
+                                                        <x-linked-icon></x-linked-icon>
+                                                    </td>
+                                                    <td>
+                                                        <input style="width: 100%"
+                                                               :id="'step3_pabrik_kecamatan_'+n.mohon_pabrik_id"
+                                                               :name="'step3_pabrik_kecamatan_'+n.mohon_pabrik_id"
+                                                               type="text" class="form-control" aria-label="Kecamatan">
+                                                    </td>
+                                                </tr>
+                                            </template>
                                             <tr>
                                                 <td>KodePos
                                                     <x-linked-icon></x-linked-icon>
@@ -782,9 +796,12 @@
                                 if ($.trim(e.mohon_pabrik_nomor_telp) === "" || $.trim(e.mohon_pabrik_nomor_telp) == null) throw `${pabrikNama}: Inputkan Nomor Telp`;
                                 if ($.trim(e.mohon_pabrik_nomor_fax) === "" || $.trim(e.mohon_pabrik_nomor_fax) == null) throw `${pabrikNama}: Inputkan Fax`;
                                 if ($.trim(e.mohon_pabrik_nomor_hp) === "" || $.trim(e.mohon_pabrik_nomor_hp) == null) throw `${pabrikNama}: Inputkan Nomor HP`;
-                                if ($.trim(e.prov_id) === "" || $.trim(e.prov_id) == null) throw `${pabrikNama}: Pilih Provinsi`;
-                                if ($.trim(e.kab_id) === "" || $.trim(e.kab_id) == null) throw `${pabrikNama}: Pilih Kabupaten`;
-                                if ($.trim(e.kec_id) === "" || $.trim(e.kec_id) == null) throw `${pabrikNama}: Pilih Kecamatan`;
+                                if ($.trim(e.negara_id) === "" || $.trim(e.negara_id) == null) throw `${pabrikNama}: Pilih Negara`;
+                                if ($.trim(e.negara_nama).toLowerCase() == "indonesia") {
+                                    if ($.trim(e.prov_id) === "" || $.trim(e.prov_id) == null) throw `${pabrikNama}: Pilih Provinsi`;
+                                    if ($.trim(e.kab_id) === "" || $.trim(e.kab_id) == null) throw `${pabrikNama}: Pilih Kabupaten`;
+                                    if ($.trim(e.kec_id) === "" || $.trim(e.kec_id) == null) throw `${pabrikNama}: Pilih Kecamatan`;
+                                }
                                 if ($.trim(e.mohon_pabrik_alamat) === "" || $.trim(e.mohon_pabrik_alamat) == null) throw `${pabrikNama}: Inputkan Alamat Pabrik`;
                                 if ($.trim(e.mohon_pabrik_kode_pos) === "" || $.trim(e.mohon_pabrik_kode_pos) == null) throw `${pabrikNama}: Inputkan Kode Pos`;
                                 if ($.trim(e.mohon_pabrik_jumlah_karyawan) === "" || $.trim(e.mohon_pabrik_jumlah_karyawan) == null) throw `${pabrikNama}: Inputkan Jumlah Karyawan`;
@@ -956,6 +973,59 @@
                             },
                         });
                     },
+                    setComboPabrikNegara(pabrikId, search) {
+                        let self = this;
+                        let url  = `{{ url("$url/ajax?action=combogrid_negara") }}`
+                        if (search != null) {
+                            url += '&q=' + search
+                        }
+
+                        $('#step3_pabrik_negara_' + pabrikId).combogrid({
+                            pageSize: '50',
+                            panelWidth: 400,
+                            pagination: true,
+                            idField: 'negara_id',
+                            nowrap: false,
+                            textField: 'negara_nama',
+                            editable: true,
+                            url: url,
+                            method: 'get',
+                            mode: 'remote',
+                            multiSort: true,
+                            fitColumns: true,
+                            required: true,
+                            columns: [[
+                                {field: 'negara_id', hidden: true},
+                                {field: 'negara_nama', title: 'Provinsi', width: 250, sortable: true,},
+                            ]],
+                            onSelect: function (index, row) {
+                                // update vue model
+                                let idx = self.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
+
+                                self.data_pabrik[idx].negara_id   = row.negara_id
+                                self.data_pabrik[idx].negara_nama = row.negara_nama
+                                self.data_pabrik[idx].prov_id     = null
+                                self.data_pabrik[idx].kab_id      = null
+                                self.data_pabrik[idx].kec_id      = null
+
+
+                                // update server
+                                self.updateDataPabrikByValue(pabrikId, "negara_id", row.negara_id)
+                                self.updateDataPabrikByValue(pabrikId, "prov_id", '--')
+                                self.updateDataPabrikByValue(pabrikId, "kec_id", '--')
+                                self.updateDataPabrikByValue(pabrikId, "kab_id", '--')
+                                try {
+                                    $("#step3_pabrik_provinsi_" + pabrikId).combogrid('clear');
+                                    $("#step3_pabrik_kabupaten_" + pabrikId).combogrid('clear');
+                                    $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
+                                } catch (e) {
+                                    console.log(e)
+                                }
+
+                                setTimeout(() => self.setComboPabrikProvinsi(pabrikId, null), 500)
+                            },
+                        });
+                    },
                     setComboPabrikProvinsi(pabrikId, search) {
                         let self = this;
                         let url  = `{{ url("$url/ajax?action=combogrid_provinsi") }}`
@@ -992,9 +1062,15 @@
                                 self.updateDataPabrikByValue(pabrikId, "prov_id", row.prov_id)
                                 self.updateDataPabrikByValue(pabrikId, "kec_id", '--')
                                 self.updateDataPabrikByValue(pabrikId, "kab_id", '--')
-                                $("#step3_pabrik_kabupaten_" + pabrikId).combogrid('clear');
-                                $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
-                                self.setComboPabrikKabupaten(pabrikId, row.prov_id)
+
+                                try {
+                                    $("#step3_pabrik_kabupaten_" + pabrikId).combogrid('clear');
+                                    $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
+                                } catch (e) {
+                                    console.log(e)
+                                }
+
+                                setTimeout(() => self.setComboPabrikKabupaten(pabrikId, row.prov_id), 500)
                             },
                         });
                     },
@@ -1025,15 +1101,22 @@
                             ]],
                             onSelect: function (index, row) {
                                 // update vue model
-                                let idx                      = self.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
+                                let idx = self.data_pabrik.findIndex(e => e.mohon_pabrik_id === pabrikId)
+
                                 self.data_pabrik[idx].kab_id = row.kab_id
                                 self.data_pabrik[idx].kec_id = null
 
                                 // update server
                                 self.updateDataPabrikByValue(pabrikId, "kab_id", row.kab_id)
                                 self.updateDataPabrikByValue(pabrikId, "kec_id", '--')
-                                $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
-                                self.setComboPabrikKecamatan(pabrikId, row.kab_id);
+
+                                try {
+                                    $("#step3_pabrik_kecamatan_" + pabrikId).combogrid('clear');
+                                } catch (e) {
+                                    console.log(e)
+                                }
+
+                                setTimeout(() => self.setComboPabrikKecamatan(pabrikId, row.kab_id), 500)
                             },
                         });
                     },
@@ -1133,12 +1216,18 @@
                                 setTimeout(() => {
                                     if (this.data_pabrik.length > 0) {
                                         this.data_pabrik.map(e => {
-                                            this.setComboPabrikProvinsi(e.mohon_pabrik_id, e.prov_id)
-                                            this.setComboPabrikKabupaten(e.mohon_pabrik_id, e.prov_id, e.kab_id);
-                                            this.setComboPabrikKecamatan(e.mohon_pabrik_id, e.kab_id, e.kec_id);
-                                            $("#step3_pabrik_provinsi_" + e.mohon_pabrik_id).combogrid('setValue', e.prov_id);
-                                            $("#step3_pabrik_kabupaten_" + e.mohon_pabrik_id).combogrid('setValue', e.kab_id);
-                                            $("#step3_pabrik_kecamatan_" + e.mohon_pabrik_id).combogrid('setValue', e.kec_id);
+                                            this.setComboPabrikNegara(e.mohon_pabrik_id, e.negara_id)
+                                            $("#step3_pabrik_negara_" + e.mohon_pabrik_id).combogrid('setValue', e.negara_id);
+                                            if (e.negara_nama != null && e.negara_nama != "") {
+                                                if (e.negara_nama.toLowerCase() == "indonesia") {
+                                                    this.setComboPabrikProvinsi(e.mohon_pabrik_id, e.prov_id)
+                                                    this.setComboPabrikKabupaten(e.mohon_pabrik_id, e.prov_id, e.kab_id);
+                                                    this.setComboPabrikKecamatan(e.mohon_pabrik_id, e.kab_id, e.kec_id);
+                                                    $("#step3_pabrik_provinsi_" + e.mohon_pabrik_id).combogrid('setValue', e.prov_id);
+                                                    $("#step3_pabrik_kabupaten_" + e.mohon_pabrik_id).combogrid('setValue', e.kab_id);
+                                                    $("#step3_pabrik_kecamatan_" + e.mohon_pabrik_id).combogrid('setValue', e.kec_id);
+                                                }
+                                            }
                                         })
                                     }
                                     $(".tab-content").height("100%");

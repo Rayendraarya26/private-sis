@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $pabrik_nomor_fax
  * @property string|null $pabrik_nomor_hp
  * @property string|null $pabrik_nama
+ * @property int|null $negara_id
  * @property int|null $kec_id
  * @property int|null $kab_id
  * @property int|null $prov_id
@@ -34,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterKecamatan|null $master_kecamatan
  * @property MasterProvinsi|null $master_provinsi
  * @property SisPelanggan|null $sis_pelanggan
+ * @property MasterNegara|null $master_negara
  *
  * @package App\Models\BbkkpSis
  */
@@ -44,6 +46,7 @@ class SisPelangganPabrik extends Model
 
 	protected $casts = [
 		'cust_id' => 'int',
+		'negara_id' => 'int',
 		'kec_id' => 'int',
 		'kab_id' => 'int',
 		'prov_id' => 'int',
@@ -56,6 +59,7 @@ class SisPelangganPabrik extends Model
 		'pabrik_nomor_fax',
 		'pabrik_nomor_hp',
 		'pabrik_nama',
+		'negara_id',
 		'kec_id',
 		'kab_id',
 		'prov_id',
@@ -85,5 +89,10 @@ class SisPelangganPabrik extends Model
 	public function sis_pelanggan()
 	{
 		return $this->belongsTo(SisPelanggan::class, 'cust_id');
+	}
+
+	public function master_negara()
+	{
+		return $this->belongsTo(MasterNegara::class, 'negara_id');
 	}
 }
