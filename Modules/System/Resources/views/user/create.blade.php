@@ -6,7 +6,7 @@
     <div class="dt-content">
         <div class="row">
             <div class="col-xl-12">
-                <a class="btn btn-sm btn-default" href="{{ url("$module") }}" style="margin-bottom: 20px">
+                <a class="btn btn-sm btn-default" href="{{ url("$url") }}" style="margin-bottom: 20px">
                     <i class="fad fa-arrow-left"></i> Kembali
                 </a>
                 <div class="dt-card">
@@ -28,13 +28,13 @@
                                         {{ session('message') }}
                                     </div>
                                 @endif
-                                <form method="post" action="{{url("$module")}}" enctype="multipart/form-data">
+                                <form method="post" action="{{action("$module@store")}}" enctype="multipart/form-data">
                                     @csrf
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
                                                for="fullname">Fullname*</label>
                                         <div class="col-sm-8">
-                                            <input class="form-control" placeholder="Masukkan kode template ..."
+                                            <input class="form-control" placeholder="Masukkan nama lengkap ..."
                                                    type="text"
                                                    name="fullname" id="fullname" value="{{old('fullname')}}">
                                         </div>

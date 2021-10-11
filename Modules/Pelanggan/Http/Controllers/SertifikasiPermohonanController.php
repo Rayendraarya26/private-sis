@@ -3,6 +3,8 @@
 namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\MasterBadanHukum;
 use App\Models\BbkkpSis\MasterJenisPerusahaan;
 use App\Models\BbkkpSis\MasterKabupaten;
@@ -20,6 +22,8 @@ use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
+use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -231,8 +235,43 @@ class SertifikasiPermohonanController extends Controller
                     $newSisPermohonanKomoditas->save();
                 }
             }
-
             DB::commit();
+
+            // Send Notification to Marketing
+            $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
+            if ($groupMarketing) {
+                foreach ($groupMarketing as $marketing) {
+                    // Send Push
+                    $notifStruct            = new NotifStruct();
+                    $notifStruct->title     = $newSisPermohonan->mohon_jenis_status == 'baru' ? "Permohonan Pengajuan Sertifikasi " : "Permohonan Perpanjangan sertifikasi";
+                    $notifStruct->message   = sprintf("%s mengajukan permohonan %s", $newSisPermohonan->mohon_cust_nama, $dataMasterSertifiaksi->sert_nama);
+                    $notifStruct->user_id   = $marketing?->user?->user_id;
+                    $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+                    sendNotification($notifStruct);
+
+                    // Send Email
+                    $structEmail          = new EmailStruct();
+                    $structEmail->subject = "Verifikasi Akun";
+                    $structEmail->body    = view('pelanggan::sertifikasi_permohonan.mails.marketing_permohonan_baru')
+                        ->with([
+                            'pemohonNama'       => $newSisPermohonan->mohon_cust_nama,
+                            'pemohonSertifNama' => $dataMasterSertifiaksi->sert_nama,
+                            'link_verif'        => url('/marketing/verifikasi-permohonan'),
+                        ])->render();
+                    $structEmail->to      = $marketing?->user?->user_email;
+                    sendEmail($structEmail);
+                }
+            }
+
+            // Add Pengajuan Status
+            SisPermohonanStatus::create([
+                "status_mohon_id" => $newSisPermohonan->mohon_id,
+                "status_tipe"     => "informasi",
+                "status_judul"    => "Pengajuan Permohonan",
+                "status_pesan"    => sprintf("%s mengajukan permohonan sertifikasi %s", auth()->user()->user_fullname, $dataMasterSertifiaksi->sert_nama),
+                "created_at"      => Carbon::now(),
+                "updated_at"      => Carbon::now(),
+            ]);
 
             return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
         } catch (Exception $e) {
@@ -457,7 +496,7 @@ class SertifikasiPermohonanController extends Controller
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("sis_permohonan.*", "master_sertifikasi.sert_nama", "master_sertifikasi.sert_id")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
         // Result
         $result = [];
