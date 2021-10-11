@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\View\Components\LinkedIcon;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Paginator::useBootstrap();
+        Carbon::setLocale('id');
         Blade::component('linked-icon', LinkedIcon::class);
     }
 }

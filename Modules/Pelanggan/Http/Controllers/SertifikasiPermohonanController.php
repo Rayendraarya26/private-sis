@@ -391,7 +391,7 @@ class SertifikasiPermohonanController extends Controller
 
     }
 
-    public function detail(Request $request, $mohonID)
+    public function detail($mohonID)
     {
         $dataPemohon = SisPermohonan::with([
             'sis_pelanggan_sertifikasi',
@@ -422,6 +422,24 @@ class SertifikasiPermohonanController extends Controller
             'dataPemohon' => $dataPemohon,
         ];
         return view('pelanggan::sertifikasi_permohonan.detail')->with($parser);
+    }
+
+    public function track($mohonID)
+    {
+        $dataPemohon = SisPermohonan::with('sis_permohonan_statuses')->findOrFail($mohonID);
+
+        $breadcrumbs = [
+            new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Permohonan Sertifikasi', url($this->url)),
+            new BreadcrumbsStruct('Lacak'),
+        ];
+        $parser      = [
+            'breadcrumbs' => $breadcrumbs,
+            'module'      => $this->module,
+            'url'         => $this->url,
+            'dataPemohon' => $dataPemohon,
+        ];
+        return view('pelanggan::sertifikasi_permohonan.track')->with($parser);
     }
 
     public function destroy(Request $request)

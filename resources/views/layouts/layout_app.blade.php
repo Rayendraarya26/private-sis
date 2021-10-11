@@ -125,7 +125,8 @@
                             <!-- Dropdown Link -->
                             <a href="#" class="dt-nav__link dropdown-toggle no-arrow" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
-                                <i class="icon icon-notification icon-fw {{$total->total > 0 ? 'dt-icon-alert' : ''}}"></i>
+                                <i class="icon icon-notification icon-fw {{$total->total > 0 ? 'dt-icon-alert' : ''}}"
+                                style="font-size: 20px"></i>
                             </a>
                             <!-- /dropdown link -->
 

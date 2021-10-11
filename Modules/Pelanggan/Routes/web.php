@@ -3,10 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
 
-Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
+Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
     Route::prefix("sertifikasi/permohonan")->group(function () {
         Route::get('/', [SertifikasiPermohonanController::class, 'index']);
         Route::get('/detail/{mohon_id}', [SertifikasiPermohonanController::class, 'detail']);
+        Route::get('/track/{mohon_id}', [SertifikasiPermohonanController::class, 'track']);
         Route::any('/ajax', [SertifikasiPermohonanController::class, 'ajax']);
         Route::get('/edit/{mohon_id}', [SertifikasiPermohonanController::class, 'edit']);
         Route::post('/update', [SertifikasiPermohonanController::class, 'update']);
