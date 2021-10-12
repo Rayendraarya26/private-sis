@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Modules\System\Http\Traits\MenuTraits;
 
 class ManageMenuController extends Controller
@@ -48,7 +49,14 @@ class ManageMenuController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'menu_name'      => 'required|unique:App\Models\BbkkpSis\SysMenu,menu_name',
+            'menu_name'      => [
+                'required',
+                Rule::unique('sys_menu')->where(function ($query) use ($request) {
+                    return $query
+                        ->where('menu_parent_id', $request['menu_parent_id'])
+                        ->where('menu_name', $request['menu_name']);
+                }),
+            ],
             'menu_is_active' => 'required',
         ]);
 
