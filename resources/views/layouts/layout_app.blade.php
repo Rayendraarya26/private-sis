@@ -134,7 +134,7 @@
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-media">
                                 <!-- Dropdown Menu Header -->
                                 <div class="dropdown-menu-header">
-                                    <h4 class="title">Notifikasi @if($total->total) {{$total->total}}) @endif</h4>
+                                    <h4 class="title">@if($total->total) {{$total->total}} @endif Notifikasi</h4>
 
                                     @if($total->total)
                                         <div class="ml-auto action-area">

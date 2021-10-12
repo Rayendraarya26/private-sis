@@ -4,6 +4,7 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Structs\EmailStruct;
 use App\Models\BbkkpSis\SysUser;
+use App\Models\BbkkpSis\SysUserFbToken;
 use App\Models\BbkkpSis\SysUserGroup;
 use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
@@ -148,8 +149,9 @@ class LoginController extends Controller
 
     }
 
-    public function logout()  // Khusus yang sudah login
+    public function logout(Request $request)  // Khusus yang sudah login
     {
+        SysUserFbToken::where('fbtoken_user_id', auth()->id())->where("fbtoken_agent", $request->userAgent())->delete();
         session()->flush();
         Auth::logout();
         return redirect(route("auth.login"));
