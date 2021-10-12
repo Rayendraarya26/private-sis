@@ -154,7 +154,7 @@
             let index = getRowIndex(target);
             // let row = $('#dgTable').edatagrid('getRows')[index];
             $('#dgTable').edatagrid('endEdit', index);
-            $('#dgTable').edatagrid('reload');
+            setTimeout(() => $('#dgTable').edatagrid('reload'), 500)
         }
 
         function cancelrow(target) {

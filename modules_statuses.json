@@ -10,5 +10,7 @@
     "Pelanggan": true,
     "Pegawai": true,
     "OperatorLs": true,
-    "Marketing": true
+    "Marketing": true,
+    "Admin": true,
+    "Public": true
 }
