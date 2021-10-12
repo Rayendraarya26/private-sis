@@ -1,9 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Pelanggan\Http\Controllers\AuditController;
+use Modules\Pelanggan\Http\Controllers\BillingController;
+use Modules\Pelanggan\Http\Controllers\JadwalController;
+use Modules\Pelanggan\Http\Controllers\ProfilPerusahaanController;
+use Modules\Pelanggan\Http\Controllers\SertifikasiDataController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
 
 Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
+    Route::get("profil-perusahaan", [ProfilPerusahaanController::class, 'index']);
+
     Route::prefix("sertifikasi/permohonan")->group(function () {
         Route::get('/', [SertifikasiPermohonanController::class, 'index']);
         Route::get('/detail/{mohon_id}', [SertifikasiPermohonanController::class, 'detail']);
@@ -15,4 +22,12 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::post('/create', [SertifikasiPermohonanController::class, 'store']);
         Route::delete('/delete', [SertifikasiPermohonanController::class, 'destroy']);
     });
+
+    Route::get("sertifikasi/data", [SertifikasiDataController::class, 'index']);
+
+    Route::get("billing", [BillingController::class, 'index']);
+
+    Route::get("jadwal", [JadwalController::class, 'index']);
+
+    Route::get("audit", [AuditController::class, 'index']);
 });

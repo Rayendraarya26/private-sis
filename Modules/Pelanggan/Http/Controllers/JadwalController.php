@@ -5,7 +5,7 @@ namespace Modules\Pelanggan\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use Illuminate\Routing\Controller;
 
-class SertifikasiDataController extends Controller
+class JadwalController extends Controller
 {
     public $module = self::class;
     private $url = 'pelanggan/jadwal';
@@ -14,10 +14,10 @@ class SertifikasiDataController extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),
-            new BreadcrumbsStruct('Data Sertifikasi'),
+            new BreadcrumbsStruct('Jadwal'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
-        return view('pelanggan::sertifikasi_data.index')->with($parser);
+        return view('pelanggan::jadwal.index')->with($parser);
     }
 }
