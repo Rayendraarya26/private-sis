@@ -28,10 +28,15 @@ Route::prefix('operatorls')->group(function () {
         Route::post('/update', [KelengkapanPermohonanController::class, 'update']);
     });
 	
-	
 	Route::prefix("billing")->group(function () {
         Route::get('/', [BillingController::class, 'index']);
+        Route::get('/detail', [BillingController::class, 'detail']);
         Route::get('/ajax', [BillingController::class, 'ajax']);
+        Route::get('/create', [BillingController::class, 'create']);
+        Route::post('/store', [BillingController::class, 'store']);
+        Route::get('/edit', [BillingController::class, 'edit']);
+        Route::post('/update', [BillingController::class, 'update']);
+        Route::delete('/delete', [BillingController::class, 'destroy']);
     });
 	
 	Route::prefix("penjadwalan")->group(function () {
