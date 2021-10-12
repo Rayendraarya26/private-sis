@@ -267,7 +267,7 @@
                         formData.append("sert_dok_id", id)
                         formData.append("file", doc)
                         $.ajax({
-                            url: `{{url("$url/ajax?action=upload_document")}}`,
+                            url: `{{url("$url/ajax?action=upload_dokumen")}}`,
                             type: 'post',
                             processData: false,
                             contentType: false,
