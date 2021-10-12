@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisBillingItems
  * 
  * @property int $itms_bil_id
- * @property int $bil_id
+ * @property int $bill_id
  * @property string $itms_bil_tipe
  * @property int|null $mohon_id
  * @property string|null $itms_bil_desc
@@ -31,14 +31,14 @@ class SisBillingItems extends Model
 	public $timestamps = false;
 
 	protected $casts = [
-		'bil_id' => 'int',
+		'bill_id' => 'int',
 		'mohon_id' => 'int',
 		'itms_bil_rate' => 'float',
 		'itms_bil_total' => 'float'
 	];
 
 	protected $fillable = [
-		'bil_id',
+		'bill_id',
 		'itms_bil_tipe',
 		'mohon_id',
 		'itms_bil_desc',
@@ -48,7 +48,7 @@ class SisBillingItems extends Model
 
 	public function sis_billing()
 	{
-		return $this->belongsTo(SisBilling::class, 'bil_id');
+		return $this->belongsTo(SisBilling::class, 'bill_id');
 	}
 
 	public function sis_permohonan()

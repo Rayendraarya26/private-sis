@@ -14,12 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisJadwal
  * 
  * @property int $jadw_id
- * @property string|null $jadw_bil_nomor
- * @property float|null $jadw_bil_total
- * @property string|null $jadw_bil_harus_lunas
- * @property string|null $jadw_bil_status
- * @property string|null $jadw_bil_invoice
- * @property string|null $jadw_bil_bukti_bayar
+ * @property int|null $bill_id
  * @property string|null $jadw_tanggal_status
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
@@ -32,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
+ * @property SisBilling|null $sis_billing
  * @property SisPelanggan $sis_pelanggan
  * @property Collection|SisAuditDaftarPeriksa[] $sis_audit_daftar_periksas
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
@@ -54,7 +50,7 @@ class SisJadwal extends Model
 	protected $primaryKey = 'jadw_id';
 
 	protected $casts = [
-		'jadw_bil_total' => 'float',
+		'bill_id' => 'int',
 		'cust_id' => 'int'
 	];
 
@@ -64,12 +60,7 @@ class SisJadwal extends Model
 	];
 
 	protected $fillable = [
-		'jadw_bil_nomor',
-		'jadw_bil_total',
-		'jadw_bil_harus_lunas',
-		'jadw_bil_status',
-		'jadw_bil_invoice',
-		'jadw_bil_bukti_bayar',
+		'bill_id',
 		'jadw_tanggal_status',
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
@@ -80,6 +71,11 @@ class SisJadwal extends Model
 		'jadw_file_jadwal',
 		'jadw_status_audit'
 	];
+
+	public function sis_billing()
+	{
+		return $this->belongsTo(SisBilling::class, 'bill_id');
+	}
 
 	public function sis_pelanggan()
 	{

@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property SisPelanggan $sis_pelanggan
  * @property Collection|SisBillingItems[] $sis_billing_items
+ * @property Collection|SisJadwal[] $sis_jadwals
  *
  * @package App\Models\BbkkpSis
  */
@@ -71,6 +72,11 @@ class SisBilling extends Model
 
 	public function sis_billing_items()
 	{
-		return $this->hasMany(SisBillingItems::class, 'bil_id');
+		return $this->hasMany(SisBillingItems::class, 'bill_id');
+	}
+
+	public function sis_jadwals()
+	{
+		return $this->hasMany(SisJadwal::class, 'bill_id');
 	}
 }
