@@ -116,9 +116,6 @@ class SertifikasiPermohonanController extends Controller
             $newSisPermohonan->sert_id                           = $request['jenis_sertifikasi'];
             $newSisPermohonan->mohon_jenis_status                = $request['jenis_permohonan'];
             $newSisPermohonan->cust_sert_id                      = $request['sertifikat_lama_id'];
-            $newSisPermohonan->mohon_kajian_permohonan_file      = null;
-            $newSisPermohonan->mohon_pernyataan_persetujuan_file = null;
-            $newSisPermohonan->mohon_spk_file                    = null;
             $newSisPermohonan->mohon_cust_email                  = $dataSisPelanggan->cust_email;
             $newSisPermohonan->mohon_cust_nomor_telp             = $dataSisPelanggan->cust_nomor_telp;
             $newSisPermohonan->mohon_cust_nomor_fax              = $dataSisPelanggan->cust_nomor_fax;

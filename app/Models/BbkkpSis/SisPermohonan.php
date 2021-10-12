@@ -22,9 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $cust_sert_id
  * @property string|null $mohon_kajian_permohonan_file
  * @property string|null $mohon_pernyataan_persetujuan_file
- * @property string|null $mohon_spk_file
  * @property string|null $mohon_harus_lunas_status
- * @property string|null $mohon_pembayaran_status
+ * @property float|null $mohon_harga_permohonan
  * @property string|null $mohon_cust_email
  * @property string|null $mohon_cust_nomor_telp
  * @property string|null $mohon_cust_nomor_fax
@@ -87,6 +86,7 @@ class SisPermohonan extends Model
 		'user_id' => 'int',
 		'sert_id' => 'int',
 		'cust_sert_id' => 'int',
+		'mohon_harga_permohonan' => 'float',
 		'jenis_perusahaan_id' => 'int',
 		'badan_hukum_id' => 'int',
 		'negara_id' => 'int',
@@ -114,9 +114,8 @@ class SisPermohonan extends Model
 		'cust_sert_id',
 		'mohon_kajian_permohonan_file',
 		'mohon_pernyataan_persetujuan_file',
-		'mohon_spk_file',
 		'mohon_harus_lunas_status',
-		'mohon_pembayaran_status',
+		'mohon_harga_permohonan',
 		'mohon_cust_email',
 		'mohon_cust_nomor_telp',
 		'mohon_cust_nomor_fax',
