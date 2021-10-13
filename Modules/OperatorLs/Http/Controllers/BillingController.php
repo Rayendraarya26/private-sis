@@ -199,7 +199,7 @@ class BillingController extends Controller
             $newSisBilling->save();
 
             // DEFINE BASE UPLOAD AND UPDATE bill_invoice_file
-            $baseFileUpload     = sprintf(config("app.path_file_pengajuan"), $newSisBilling->bill_id);
+            $baseFileUpload     = sprintf(config("app.path_file_billing"), $newSisBilling->bill_id);
             $fileInvoice     = $request->file('bill_invoice_file');
             $fileInvoiceName = Str::slug('pertanyaan-tambahan' . $fileInvoice->getClientOriginalName()) . '-' . time() . '.' . $fileInvoice->getClientOriginalExtension();
             $fileInvoicePath = sprintf("%s/%s", $baseFileUpload, $fileInvoiceName);

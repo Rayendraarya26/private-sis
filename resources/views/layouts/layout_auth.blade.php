@@ -76,14 +76,16 @@
 
 <script>
     window.idb = new Dexie("bbkkp_sis");
-    window.idb.version(5).stores({
+    window.idb.version(6).stores({
         pelanggan_permohonan: "++id, &name, value",
+        bill_data: "++id, &name, value",
         pelanggan_permohonan_komoditas: "++id, komoditi_id, komoditi_nama, sni, merk, tipe, ukuran, produksi_tahunan, satuan_produksi",
 		bill_data_itms: "++id, bil_tipe, mohon_id, bil_desc, bil_total, bil_lunas",
     });
 
     idb.pelanggan_permohonan.clear();
     idb.pelanggan_permohonan_komoditas.clear();
+    idb.bill_data.clear();
     idb.bill_data_itms.clear();
 
 </script>

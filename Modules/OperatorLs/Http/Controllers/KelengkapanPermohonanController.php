@@ -213,7 +213,7 @@ class KelengkapanPermohonanController extends Controller
         if ($request->hasFile("mohon_pernyataan_persetujuan_file")) {
             $file     = $request->file('mohon_pernyataan_persetujuan_file');
             $namaFile = Str::slug($request->mohon_id) . '_pernyataan_persetujuan_file_'. time() . '.' . $file->getClientOriginalExtension();
-            $path     = config('app.path_file_pengajuan');
+            $path     = sprintf(config("app.path_file_pengajuan"), $request->mohon_id);
             $file->move(public_path($path), $namaFile);
             $dataInsert['mohon_pernyataan_persetujuan_file'] = $path . '/' . $namaFile;
 

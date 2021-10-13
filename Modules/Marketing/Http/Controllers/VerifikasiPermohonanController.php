@@ -310,7 +310,7 @@ class VerifikasiPermohonanController extends Controller
         if ($request->hasFile("mohon_kajian_permohonan_file")) {
             $file     = $request->file('mohon_kajian_permohonan_file');
             $namaFile = Str::slug($request->mohon_id) . '_kajian_permohonan_file_'. time() . '.' . $file->getClientOriginalExtension();
-            $path     = config('app.path_file_pengajuan'); // "files/master"| lokasi di config/app.php
+            $path     = sprintf(config("app.path_file_pengajuan"), $request->mohon_id); 
             $file->move(public_path($path), $namaFile);
             $dataInsert['mohon_kajian_permohonan_file'] = $path . '/' . $namaFile;
 

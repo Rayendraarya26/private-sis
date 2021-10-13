@@ -165,7 +165,7 @@
                     start() {
                         setTimeout(async () => {
                             // Load to set initial Index DB
-                            let currentData = await idb.pelanggan_permohonan
+                            let currentData = await idb.bill_data
                                 .where({name: "billing"})
                                 .first()
 
@@ -302,7 +302,7 @@
 						let self = this;
                         let itms_bil_tipe = $('input[name=itms_bil_tipe]:checked', '#myForm').val();
 						
-						const currentaData = await idb.pelanggan_permohonan
+						const currentaData = await idb.bill_data
                             .where({name: "billing"})
                             .first();
 							

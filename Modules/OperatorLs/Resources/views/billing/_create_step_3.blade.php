@@ -74,7 +74,7 @@
 									// Step 1
 									const dataPelanggan = window.vueStepOne.cust_id;
 									formData.append("cust_id", dataPelanggan)
-									const currentaData = await idb.pelanggan_permohonan.where({name: "billing"}).first();
+									const currentaData = await idb.bill_data.where({name: "billing"}).first();
 									if (currentaData != null) {
 										formData.append("bill_nomor_billing", currentaData.value.bill_nomor_billing)
 										formData.append("bill_billing_date", currentaData.value.bill_billing_date)
@@ -104,7 +104,7 @@
 												title: res.message
 											})
 
-											await window.idb.pelanggan_permohonan.clear();
+											await window.idb.bill_data.clear();
 											await window.idb.bill_data_itms.clear();
 											setTimeout(() => location.href = "{{url("$url")}}", 1000)
 										},

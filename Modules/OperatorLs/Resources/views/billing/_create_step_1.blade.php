@@ -83,12 +83,12 @@
 					},
 					async setBillNomor(val) {
 						this.bill_nomor_billing = val;
-						const currentaData = await idb.pelanggan_permohonan.where({name: "billing"}).first();
+						const currentaData = await idb.bill_data.where({name: "billing"}).first();
 						let dbData = {name: "billing", value: { cust_id:currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: val, bill_billing_date: currentaData.value.bill_billing_date, bill_due_date: currentaData.value.bill_due_date,}}
 						if (currentaData == null) {
-							await idb.pelanggan_permohonan.put(dbData);
+							await idb.bill_data.put(dbData);
 						} else {
-							await idb.pelanggan_permohonan.update(currentaData.id, dbData);
+							await idb.bill_data.update(currentaData.id, dbData);
 						}
 					},
                     validate() {
@@ -98,7 +98,7 @@
                         if (this.bill_due_date == null) throw "Isi Tanggal Jatuh Tempo"
                     },
                     async loadIdb() {
-						let currentData = await idb.pelanggan_permohonan
+						let currentData = await idb.bill_data
                                 .where({name: "billing"})
                                 .first()
 						
@@ -111,14 +111,14 @@
                             url += "&q=" + this.cust_nama;
                         }
 						
-						const currentaData = await idb.pelanggan_permohonan
+						const currentaData = await idb.bill_data
                             .where({name: "billing"})
                             .first();
 							
 						let dbData;
                         if (currentaData == null) {
 							dbData = {name: "billing", value: { cust_id: null, cust_nama: null, bill_nomor_billing: null, bill_billing_date: null, bill_due_date: null,}};
-                            await idb.pelanggan_permohonan.put(dbData);
+                            await idb.bill_data.put(dbData);
                         } else {
 							self.setBillingDate(currentaData.value.bill_due_date);
 							self.setDueDate(currentaData.value.bill_due_date);
@@ -126,7 +126,7 @@
 							
 							$('#bill_nomor_billing').val(currentaData.value.bill_nomor_billing)
 							dbData = {name: "billing", value: { cust_id: currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: currentaData.value.bill_billing_date, bill_due_date: currentaData.value.bill_due_date,}}
-                            await idb.pelanggan_permohonan.update(currentaData.id, dbData);
+                            await idb.bill_data.update(currentaData.id, dbData);
                         }
 						
 						$('#bill_due_date').datebox({
@@ -137,12 +137,12 @@
 							onSelect: async function(date){
 								self.setBillingDate(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
 								
-								const currentaData = await idb.pelanggan_permohonan.where({name: "billing"}).first();
+								const currentaData = await idb.bill_data.where({name: "billing"}).first();
                                 let dbData = {name: "billing", value: { cust_id:currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: currentaData.value.bill_billing_date, bill_due_date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(),}}
                                 if (currentaData == null) {
-                                    await idb.pelanggan_permohonan.put(dbData);
+                                    await idb.bill_data.put(dbData);
                                 } else {
-                                    await idb.pelanggan_permohonan.update(currentaData.id, dbData);
+                                    await idb.bill_data.update(currentaData.id, dbData);
                                 }
 							}
 						});
@@ -155,12 +155,12 @@
 							onSelect: async function(date){
 								self.setDueDate(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
 								
-								const currentaData = await idb.pelanggan_permohonan.where({name: "billing"}).first();
+								const currentaData = await idb.bill_data.where({name: "billing"}).first();
                                 let dbData = {name: "billing", value: { cust_id:currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), bill_due_date: currentaData.value.bill_due_date,}}
                                 if (currentaData == null) {
-                                    await idb.pelanggan_permohonan.put(dbData);
+                                    await idb.bill_data.put(dbData);
                                 } else {
-                                    await idb.pelanggan_permohonan.update(currentaData.id, dbData);
+                                    await idb.bill_data.update(currentaData.id, dbData);
                                 }
 							}
 						});
@@ -188,12 +188,12 @@
                             onSelect: async function (index, row) {
                                 self.setCustId(row.cust_id);
 								
-								const currentaData = await idb.pelanggan_permohonan.where({name: "billing"}).first();
+								const currentaData = await idb.bill_data.where({name: "billing"}).first();
                                 let dbData = {name: "billing", value: { cust_id:row.cust_id, cust_nama: row.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: currentaData.value.bill_billing_date, bill_due_date: currentaData.value.bill_due_date,}}
                                 if (currentaData == null) {
-                                    await idb.pelanggan_permohonan.put(dbData);
+                                    await idb.bill_data.put(dbData);
                                 } else {
-                                    await idb.pelanggan_permohonan.update(currentaData.id, dbData);
+                                    await idb.bill_data.update(currentaData.id, dbData);
                                 }
                             },
                         });
