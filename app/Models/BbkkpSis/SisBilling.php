@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $bill_file_spk
  * @property Carbon|null $bill_billing_date
  * @property Carbon|null $bill_due_date
+ * @property string|null $bill_harus_lunas
  * @property string|null $bill_invoice_file
  * @property string|null $bill_invoice_desc
  * @property string|null $bill_payment_tipe
@@ -56,6 +57,7 @@ class SisBilling extends Model
 		'bill_file_spk',
 		'bill_billing_date',
 		'bill_due_date',
+		'bill_harus_lunas',
 		'bill_invoice_file',
 		'bill_invoice_desc',
 		'bill_payment_tipe',

@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property MasterSertifikasi $master_sertifikasi
  * @property SisPelanggan $sis_pelanggan
+ * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisPermohonan[] $sis_permohonans
  *
  * @package App\Models\BbkkpSis
@@ -85,6 +86,11 @@ class SisPelangganSertifikasi extends Model
 	public function sis_pelanggan()
 	{
 		return $this->belongsTo(SisPelanggan::class, 'cust_id');
+	}
+
+	public function sis_billing_items()
+	{
+		return $this->hasMany(SisBillingItems::class, 'cust_sert_id');
 	}
 
 	public function sis_permohonans()

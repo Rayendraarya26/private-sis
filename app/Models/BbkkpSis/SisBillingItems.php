@@ -6,6 +6,7 @@
 
 namespace App\Models\BbkkpSis;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,11 +16,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $bill_id
  * @property string $itms_bil_tipe
  * @property int|null $mohon_id
+ * @property int|null $cust_sert_id
  * @property string|null $itms_bil_desc
- * @property float|null $itms_bil_rate
  * @property float|null $itms_bil_total
+ * @property Carbon|null $created_at
+ * @property Carbon $updated_at
  * 
  * @property SisBilling $sis_billing
+ * @property SisPelangganSertifikasi|null $sis_pelanggan_sertifikasi
  * @property SisPermohonan|null $sis_permohonan
  *
  * @package App\Models\BbkkpSis
@@ -28,12 +32,11 @@ class SisBillingItems extends Model
 {
 	protected $table = 'sis_billing_items';
 	protected $primaryKey = 'itms_bil_id';
-	public $timestamps = false;
 
 	protected $casts = [
 		'bill_id' => 'int',
 		'mohon_id' => 'int',
-		'itms_bil_rate' => 'float',
+		'cust_sert_id' => 'int',
 		'itms_bil_total' => 'float'
 	];
 
@@ -41,14 +44,19 @@ class SisBillingItems extends Model
 		'bill_id',
 		'itms_bil_tipe',
 		'mohon_id',
+		'cust_sert_id',
 		'itms_bil_desc',
-		'itms_bil_rate',
 		'itms_bil_total'
 	];
 
 	public function sis_billing()
 	{
 		return $this->belongsTo(SisBilling::class, 'bill_id');
+	}
+
+	public function sis_pelanggan_sertifikasi()
+	{
+		return $this->belongsTo(SisPelangganSertifikasi::class, 'cust_sert_id');
 	}
 
 	public function sis_permohonan()
