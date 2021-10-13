@@ -133,10 +133,10 @@ class VerifikasiPermohonanController extends Controller
 		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
 		
 		$dataPermohon->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
-		$dataPermohon->join('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
-		$dataPermohon->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
-		$dataPermohon->join('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
-		$dataPermohon->join('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
+		$dataPermohon->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
+		$dataPermohon->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
+		$dataPermohon->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
+		$dataPermohon->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
 		$dataPermohon->select('*');
         $breadcrumbs = [			
             new BreadcrumbsStruct('Marketing'),
@@ -149,9 +149,9 @@ class VerifikasiPermohonanController extends Controller
 		
 		
 		$dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $mohonID);
-		$dataPermohonPabrik->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
-		$dataPermohonPabrik->join('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
-		$dataPermohonPabrik->join('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
+		$dataPermohonPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
+		$dataPermohonPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
+		$dataPermohonPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
 		$dataPermohonPabrik->select('*');
 		
 		$dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID);

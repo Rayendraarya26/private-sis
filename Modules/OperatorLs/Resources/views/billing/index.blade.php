@@ -36,14 +36,6 @@
 									<div class="datagrid-btn-separator"></div>
 									&nbsp;&nbsp;&nbsp;
 									<div>
-										<button class="btn btn-outline-warning btn-xs" onclick="confirmBelumLunas()">
-											<i class="fas fa-ban"></i> Set Belum Lunas
-										</button>
-									</div>
-									&nbsp;&nbsp;&nbsp;
-									<div class="datagrid-btn-separator"></div>
-									&nbsp;&nbsp;&nbsp;
-									<div>
 										<button class="btn btn-outline-danger btn-xs" onclick="confirmDelete()">
 											<i class="fas fa-trash"></i> Hapus
 										</button>
@@ -87,13 +79,24 @@
                             let btnEdit = ``;
 							let btnDetail = ``;
 							if(row.bill_payment_status != 'lunas'){
-								btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=data&bill_id=${row.bill_id}'">Edit</div>`;
-								btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=pelunasan&bill_id=${row.bill_id}'">Pelunasan</div>`;
+								if(row.status_payment != 'ya'){
+									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=data&bill_id=${row.bill_id}'">Edit</div>`;
+								}
+								else{
+									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=pelunasan&bill_id=${row.bill_id}'">Pelunasan</div>`;
+								}
 							}
 							else{
-								btnDetail = `<div data-options="iconCls:'fad fa-folder-open'" onclick="location.href = '{{ url("$url/detail") }}?bill_id=${row.bill_id}'">Detail</div>`;
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="confirmBelumLunas(${row.bill_id})'">Set Belum Lunas</div>`;
+								btnDetail += `<div data-options="iconCls:'fad fa-folder-open'" onclick="location.href = '{{ url("$url/detail") }}?bill_id=${row.bill_id}'">Detail</div>`;
 							}
-                            btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Upload SPK</div>`;
+							if(row.bill_file_spk != 'ya'){
+								btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Upload SPK</div>`;
+							}
+							else{
+								btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Lihat SPK</div>`;
+							}
+							
 
                             return `
 								<div>
@@ -109,6 +112,7 @@
                     }
                 ]],
                 columns: [[
+                    {field: 'bill_file_spk', title: 'File<br/>SPK', width: 120, sortable: false},
                     {field: 'bill_nomor_billing', title: 'No.<br/>Billing', width: 120, sortable: true},
                     {field: 'bill_billing_date', title: 'Tanggal<br/>Billing', width: 100, sortable: true},
                     {field: 'bill_due_date', title: 'Jatuh<br/>Tempo', width: 100, sortable: true},
@@ -127,6 +131,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'bill_file_spk', type: 'label'},
                     {field: 'itms_bil_total', type: 'label'},
                     {
                         field: 'bill_payment_status',
@@ -152,6 +157,59 @@
                     },
                 ]);
         });
+		
+		function confirmBelumLunas(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Menghapus Data ?`,
+                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+					var idData = []; 
+					var data = $('#ttData').datagrid('getData');
+					var opts = $('#ttData').datagrid('options');
+					for (var i = 0; i < data.rows.length; i++) {
+						var tr = opts.finder.getTr($('#ttData')[0],i);
+						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
+						if(atLeastOneIsChecked == true){
+							idData.push(data.rows[i].bill_id);
+						}
+					}
+                    $.ajax({
+                        url: `{{url("$url/delete")}}`,
+						data: { 'ids[]': idData },
+						type: 'DELETE',
+                        success: function (response) {
+                            toastCenter({
+                                type: 'success',
+                                title: response.message
+                            })
+
+                            let dg = $('#ttData');
+                            dg.datagrid('reload');
+                        },
+                        error: function (err) {
+                            if (err.responseJSON.message) {
+                                toastCenter({
+                                    type: 'error',
+                                    title: err.responseJSON.message
+                                })
+                            }
+                        }
+                    });
+                }
+            });
+        }
 		
 		function confirmDelete() {
             const swalWithBootstrapButtons = swal.mixin({
@@ -182,7 +240,7 @@
 					}
                     $.ajax({
                         url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData },
+						data: { 'ids[]': idData, 'tipe': 'data_billing' },
 						type: 'DELETE',
                         success: function (response) {
                             toastCenter({

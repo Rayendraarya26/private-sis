@@ -4,6 +4,7 @@ namespace Modules\OperatorLs\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisPelanggan;
+use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
@@ -41,11 +42,57 @@ class BillingController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-billing'       => $this->ajax_datagrid_billing($request),
+            'datagrid-billing-items'       => $this->ajax_datagrid_billing_items($request),
             'combogrid-pelanggan'       => $this->ajax_combogrid_pelanggan($request),
             'combogrid-permohonan'       => $this->ajax_combogrid_permohonan($request),
+            'combogrid-sertifikat'       => $this->ajax_combogrid_sertifikat($request),
+            'combobox-tipe'       => $this->ajax_combobox_tipe($request),
             default                     => null,
         };
     }
+	
+	private function ajax_combobox_tipe(Request $request)
+	{
+		$data = [
+			['id' => 'lain-lain', 'name' => 'lain-lain'],
+			['id' => 'sertifikasi', 'name' => 'sertifikasi'],
+			['id' => 're-sertifikasi', 'name' => 're-sertifikasi'],
+			['id' => 'survailan', 'name' => 'survailan'],
+		];
+
+        return response()->json($data);
+	}
+	
+	
+	private function ajax_combogrid_sertifikat(Request $request)
+	{
+		$data = SisPelangganSertifikasi::join('master_sertifikasi', "sis_pelanggan_sertifikasi.sert_id", "=", "master_sertifikasi.sert_id");
+        // Filter
+		$data->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_pelanggan_sertifikasi.komodt_id");
+		$data->where('cust_id', '=', $request->cust_id);
+		
+        if (!empty($request->q)) {
+            $data->where('sert_nama', 'LIKE', '%' . $request->q . '%');
+        }
+        // Total
+        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['deskripsi']          = "Survailan untuk sertifikat ".$d->sert_nama." nomor referensi ".$d->cust_sert_nomor_referensi;
+            $x['id']              = $d->cust_sert_id;
+            $x['nama']              = $d->sert_nama;
+            $x['cust_sert_nomor_referensi'] = $d->cust_sert_nomor_referensi;
+            $x['cust_sert_tgl_sertifikat_awal'] = $d->cust_sert_tgl_sertifikat_awal?->format("Y-m-d");
+            $x['cust_sert_tgl_sertifikat_perubahan'] = $d->cust_sert_tgl_sertifikat_perubahan?->format("Y-m-d");
+            array_push($result, $x);
+        }
+
+        return response()->json(["total" => $total, "rows" => $result]);
+	}
 	
 	private function ajax_combogrid_permohonan(Request $request)
 	{
@@ -74,6 +121,9 @@ class BillingController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['deskripsi']          = "Permohonan nomor #".$d->mohon_id." ".$d->sert_nama;
+            $x['id']              = $d->mohon_id;
+            $x['nama']              = $d->sert_nama;
             $x['cust_sert_id']          = $d->cust_sert_id;
             $x['mohon_id']              = $d->mohon_id;
             $x['cust_id']               = $d->cust_id;
@@ -148,7 +198,9 @@ class BillingController extends Controller
 			$x['bill_id']         = $d->bill_id;
             $x['cust_nama']       = $d->cust_nama;
             $x['bill_nomor_billing']    = $d->bill_nomor_billing;
-            $x['bill_file_spk']    = $d->bill_file_spk;
+            $x['bill_file_spk']    = ($d->bill_file_spk != '') ? 'ya' : 'tidak';
+            $x['status_payment']    = ($d->bill_payment_file != '') ? 'ya' : 'tidak';
+            $x['bill_file_spk']    = ($d->bill_file_spk != '') ? '<a href="'.url($d->bill_file_spk).'" target="_blank" class="btn btn-xs btn-primary btn-block">Download File</a>' : '';
             $x['bill_invoice_file']    = $d->bill_invoice_file;
             $x['bill_payment_date']            = $d->bill_payment_date?->format("Y-m-d");
             $x['bill_due_date']            = $d->bill_due_date?->format("Y-m-d");
@@ -159,6 +211,39 @@ class BillingController extends Controller
         return response()->json(["total" => $total, "rows" => $result]);
     }
 
+	private function ajax_datagrid_billing_items(Request $request)
+    {
+        $data = SisBilling::join('sis_billing_items', "sis_billing.bill_id", "=", "sis_billing_items.bill_id");
+		$data->join('sis_pelanggan', "sis_billing.cust_id", "=", "sis_pelanggan.cust_id");
+		$data->leftJoin('sis_pelanggan_sertifikasi', "sis_billing_items.cust_sert_id", "=", "sis_pelanggan_sertifikasi.cust_sert_id");
+		
+        $data->where('sis_billing.bill_id', '=', $request['bill_id']);
+        if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+            }
+        }
+        // Pagination
+        $data->select("*");
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+			$x['itms_bil_id']         = $d->itms_bil_id;
+			$x['itms_bil_total']         = $d->itms_bil_total;
+			$x['itms_bil_tipe']         = $d->itms_bil_tipe;
+            $x['itms_bil_desc']       = $d->itms_bil_desc;
+            $x['mohon_id']    = $d->mohon_id;
+            $x['cust_sert_id']    = $d->cust_sert_id;
+            $x['is_new']    = false;
+            $x['tipe']    = 'data-billing';
+            $x['bill_id']    = $d->bill_id;
+            array_push($result, $x);
+        }
+
+        return response()->json(["rows" => $result]);
+    }
+	
     public function create()
     {
         $breadcrumbs = [
@@ -201,10 +286,9 @@ class BillingController extends Controller
             // DEFINE BASE UPLOAD AND UPDATE bill_invoice_file
             $baseFileUpload     = sprintf(config("app.path_file_billing"), $newSisBilling->bill_id);
             $fileInvoice     = $request->file('bill_invoice_file');
-            $fileInvoiceName = Str::slug('pertanyaan-tambahan' . $fileInvoice->getClientOriginalName()) . '-' . time() . '.' . $fileInvoice->getClientOriginalExtension();
+            $fileInvoiceName = Str::slug('file-invoice-' . $fileInvoice->getClientOriginalName()) . '-' . time() . '.' . $fileInvoice->getClientOriginalExtension();
             $fileInvoicePath = sprintf("%s/%s", $baseFileUpload, $fileInvoiceName);
             $fileInvoice->move($baseFileUpload, $fileInvoiceName);
-            array_push($uploadedPath, $fileInvoicePath);
             $newSisBilling->bill_invoice_file = $fileInvoicePath;
             $newSisBilling->save();
 
@@ -212,17 +296,7 @@ class BillingController extends Controller
             $dataItems = json_decode($request['data_billing_item']);
 			$harus_lunas = 'ya';
 			foreach ($dataItems as $itm) {
-				$newSisBillingItems                                                = new SisBillingItems();
-				$newSisBillingItems->bill_id                                       = $newSisBilling->bill_id;
-				$newSisBillingItems->itms_bil_tipe                                      = $itm->bil_tipe;
-				$newSisBillingItems->mohon_id                                      = $itm->mohon_id;
-				$newSisBillingItems->itms_bil_desc                                      = $itm->bil_desc;
-				$newSisBillingItems->itms_bil_total                                      = $itm->bil_total;
-				$newSisBillingItems->created_at                                     = Carbon::now();
-				$newSisBillingItems->updated_at                                     = Carbon::now();
-				$newSisBillingItems->save();
-				
-				if(!is_null($itm->mohon_id)){
+				if(!is_null($itm->mohon_id) && $itm->bil_tipe != 'survailan'){
 					SisPermohonanStatus::create([
 						"status_mohon_id" => $itm->mohon_id,
 						"status_tipe"     => "informasi",
@@ -236,6 +310,26 @@ class BillingController extends Controller
 						$harus_lunas = 'tidak';
 					}
 				}
+				$cust_sert_id = null;
+				$mohon_id = null;
+				
+				if(!is_null($itm->mohon_id) && $itm->bil_tipe != 'survailan'){
+					$mohon_id = $itm->mohon_id;
+				}
+				else if(!is_null($itm->mohon_id) && $itm->bil_tipe == 'survailan'){
+					$cust_sert_id = $itm->mohon_id;
+				}
+				
+				$newSisBillingItems                                                = new SisBillingItems();
+				$newSisBillingItems->bill_id                                       = $newSisBilling->bill_id;
+				$newSisBillingItems->itms_bil_tipe                                      = $itm->bil_tipe;
+				$newSisBillingItems->mohon_id                                      = $mohon_id;
+				$newSisBillingItems->cust_sert_id                                      = $cust_sert_id;
+				$newSisBillingItems->itms_bil_desc                                      = $itm->bil_desc;
+				$newSisBillingItems->itms_bil_total                                      = $itm->bil_total;
+				$newSisBillingItems->created_at                                     = Carbon::now();
+				$newSisBillingItems->updated_at                                     = Carbon::now();
+				$newSisBillingItems->save();
 			}
 			
 			$newSisBilling->bill_harus_lunas = $harus_lunas;
@@ -243,7 +337,7 @@ class BillingController extends Controller
 			
             DB::commit();
 
-            return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
+            return responseJSON(200, null, "Data billing berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -254,50 +348,212 @@ class BillingController extends Controller
             return responseJSON(500, null, $e->getMessage());
         }
     }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
+	
     public function detail(Request $request)
     {
-        return view('operatorls::show');
+		
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
+	
+    public function edit(Request $request)
     {
-        return view('operatorls::edit');
+        $request->validate(['tipe' => 'required']);
+		return match ($request['tipe']) {
+            'data' => $this->edit_data($request),
+            'upload-spk' => $this->edit_upload_spk($request),
+            default => null,
+        };
     }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
+	
+	private function edit_data(Request $request)
     {
-        //
+		$breadcrumbs = [
+            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Billing'),
+            new BreadcrumbsStruct('Edit Billing'),
+        ];
+		
+		$dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+		$dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
+		$dataBilling->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
+        return view("operatorls::billing.edit_data")->with($parser);
     }
+	
+	private function edit_upload_spk(Request $request)
+    {
+		$breadcrumbs = [
+            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Billing'),
+            new BreadcrumbsStruct('Upload SPK'),
+        ];
+		
+		$dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+		$dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
+		$dataBilling->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
+        return view("operatorls::billing.edit_upload_spk")->with($parser);
+    }
+	
+    public function update(Request $request)
+    {
+		$request->validate(['tipe' => 'required']);
+		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
+            'data' => $this->update_data($request),
+            'data-billing' => $this->update_data_billing($request),
+            'upload-spk' => $this->update_upload_spk($request),
+            default => null,
+        };
+    }
+	
+	private function update_upload_spk(Request $request)
+    {
+		$request->validate([
+            "bil_id" => 'required',
+            "bill_file_spk"   => 'required',
+        ]);
+        if ($request->hasFile("bill_file_spk")) {
+			$baseFileUpload     = sprintf(config("app.path_file_billing"), $request->bil_id);
+			$fileSpk     = $request->file('bill_file_spk');
+			$fileSpkName = Str::slug('file-spk-' . $fileSpk->getClientOriginalName()) . '-' . time() . '.' . $fileSpk->getClientOriginalExtension();
+			$fileSpkPath = sprintf("%s/%s", $baseFileUpload, $fileSpkName);
+			$fileSpk->move($baseFileUpload, $fileSpkName);
+			$dataUpdate['bill_file_spk'] = $fileSpkPath;
+			SisBilling::findOrFail($request['bil_id'])->update($dataUpdate);
+			return redirect($this->url)->with('message', "Upload SPK untuk nomor biling #".$request->bill_nomor_billing." sudah berhasil disimpan.");
+		}
+		else{
+			return redirect()->back()->withInput($request->all())->withErrors(['message' => "File tidak dapat di upload, untuk nomor biling #".$request->bill_nomor_billing]);
+		}
+		
+    }
+	
+	private function update_data_billing(Request $request)
+    {
+		$request->validate([
+			"bill_id" => 'required',
+			"itms_bil_tipe"    => 'required',
+			"itms_bil_total"   => 'required',
+			"itms_bil_desc"   => 'required',
+			"mohon_id"   => 'nullable',
+			"cust_sert_id"   => 'nullable',
+			"itms_bil_id"   => 'nullable',
+		]);
+		
+		try {
+			$cust_sert_id = null;
+			$mohon_id = null;
+			
+			if($request->itms_bil_tipe == 'sertifikasi' || $request->itms_bil_tipe == 're-sertifikasi'){
+				$mohon_id = $request->mohon_id;
+			}
+			else if($request->itms_bil_tipe == 'survailan'){
+				$cust_sert_id = $request->cust_sert_id;
+			}
+			
+            if($request->itms_bil_id != ''){
+				$dataUpdate = [
+					'bill_id' => $request->bill_id,
+					'itms_bil_tipe' => $request->itms_bil_tipe,
+					'itms_bil_total' => $request->itms_bil_total,
+					'itms_bil_desc' => $request->itms_bil_desc,
+					'mohon_id' => $mohon_id,
+					'cust_sert_id' => $cust_sert_id,
+				];
+				SisBillingItems::findOrFail($request['itms_bil_id'])->update($dataUpdate);
+			}
+			else{
+				$dataInsert = [
+					'bill_id' => $request->bill_id,
+					'itms_bil_tipe' => $request->itms_bil_tipe,
+					'itms_bil_total' => $request->itms_bil_total,
+					'itms_bil_desc' => $request->itms_bil_desc,
+					'mohon_id' => $mohon_id,
+					'cust_sert_id' => $cust_sert_id,
+				];
+				SisBillingItems::create($dataInsert);
+			}
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
+			
+			
+			return responseJSON(200, [], 'Berhasil menyimpan data');
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+		
+    }
+	
+	private function update_data(Request $request)
+    {
+		$request->validate([
+            "bil_id" => 'required',
+            "bill_nomor_billing"    => 'required',
+            "bill_billing_date"   => 'required',
+            "bill_due_date"   => 'required',
+            "bill_invoice_file"   => 'nullable',
+        ]);
+
+		$dataUpdate = [
+            'bill_nomor_billing' => $request->bill_nomor_billing,
+            'bill_billing_date' => $request->bill_billing_date,
+            'bill_due_date' => $request->bill_due_date,
+        ];
+
+        if ($request->hasFile("bill_invoice_file")) {
+            
+			$baseFileUpload     = sprintf(config("app.path_file_billing"), $request->bil_id);
+            $fileInvoice     = $request->file('bill_invoice_file');
+            $fileInvoiceName = Str::slug('file-invoice-' . $fileInvoice->getClientOriginalName()) . '-' . time() . '.' . $fileInvoice->getClientOriginalExtension();
+            $fileInvoicePath = sprintf("%s/%s", $baseFileUpload, $fileInvoiceName);
+            $fileInvoice->move($baseFileUpload, $fileInvoiceName);
+			$dataUpdate['bill_invoice_file'] = $fileInvoicePath;
+        }
+		
+		SisBilling::findOrFail($request['bil_id'])->update($dataUpdate);
+		
+		return redirect($this->url)->with('message', "Upload Billing Berhasil untuk nomor #".$request->bill_nomor_billing." sudah berhasil disimpan.");
+    }
+	
     public function destroy(Request $request)
     {
-        /*
-        responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
-        Lokasi helper ada di App\Helpers\GlobalHelper
-        */
-        try {
+		$request->validate(['tipe' => 'required']);
+		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
+            'data_billing' => $this->delete_data_billing($request),
+            'data_items' => $this->delete_data_items($request),
+            default => null,
+        };
+		
+       
+    }
+	
+	private function delete_data_items(Request $request)
+    {
+		try {
+            $status_return = TRUE;
+            foreach ($request->ids as $id) {
+                $data = SisBillingItems::where("itms_bil_id", $id)->firstOrFail();
+                if ($data->delete()) {
+
+                } else {
+                    $status_return = FALSE;
+                    break;
+                }
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+            }
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
+	
+	private function delete_data_billing(Request $request)
+    {
+		try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
                 $data = SisBilling::where("bill_id", $id)->firstOrFail();

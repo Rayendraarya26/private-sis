@@ -110,11 +110,11 @@ class KelengkapanPermohonanController extends Controller
 		$dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->whereNotNull('mohon_kajian_permohonan_file');
 		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
 		
-		$dataPermohon->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
-		$dataPermohon->join('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
-		$dataPermohon->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
-		$dataPermohon->join('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
-		$dataPermohon->join('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
+		$dataPermohon->leftJoin('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
+		$dataPermohon->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
+		$dataPermohon->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
+		$dataPermohon->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
+		$dataPermohon->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
 		$dataPermohon->select('*');
         $breadcrumbs = [			
             new BreadcrumbsStruct('Lembaga Sertifikasi'),
@@ -127,9 +127,9 @@ class KelengkapanPermohonanController extends Controller
 		
 		
 		$dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $mohonID);
-		$dataPermohonPabrik->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
-		$dataPermohonPabrik->join('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
-		$dataPermohonPabrik->join('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
+		$dataPermohonPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
+		$dataPermohonPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
+		$dataPermohonPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
 		$dataPermohonPabrik->select('*');
 		
 		$dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID);
@@ -201,7 +201,7 @@ class KelengkapanPermohonanController extends Controller
             'mohon_pernyataan_persetujuan_file' => 'required|mimes:pdf'
         ]);
 
-       $dataInsert = [
+		$dataInsert = [
             'mohon_id' => $request->mohon_id,
             'mohon_pernyataan_persetujuan_file' => $request->mohon_pernyataan_persetujuan_file,
             'status_mohon_id' => $request->mohon_id,
@@ -233,7 +233,5 @@ class KelengkapanPermohonanController extends Controller
 		else{
 			return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
 		}
-		
-        
 	}
 }

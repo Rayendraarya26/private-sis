@@ -57,9 +57,10 @@
 								</div>
 							</div>
 							<div class="form-group form-row" id="data_permohonan" style="display:none;">
-								<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >Data Permohonan</label>
+								<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >Data Permohonan/Sertifikat</label>
 								<div class="col-xl-8">
 								  <input type="text" class="form-control" id="mohon_id">
+								  <small id="itms_bil_tipeHelp" class="form-text">Note: Data re-sertifikasi dan sertifikasi untuk data permohonan; Data survailan untuk data sertifikat.</small>
 								</div>
 							</div>
 							<div class="form-group form-row">
@@ -150,7 +151,7 @@
                     total_biaya: 0,
                     mohon_id: null,
                     bil_lunas: null,
-                    mohon_text: "-- Pilih Komoditas --",
+                    mohon_text: "-- Pilih Data --",
                     bill_items: [], // upload to server
                 },
                 mounted() {
@@ -260,17 +261,15 @@
                     },
                     async editItem(id) {
                         let selectedItem = await window.idb.bill_data_itms.get(id);
-						$("#itms_bil_desc").val(selectedItem.bil_desc);
-                        $("#itms_bil_total").val(selectedItem.bil_total);
 						var $radios = $('input:radio[name=itms_bil_tipe]');
-						if($radios.is(':checked') === false) {
-							$radios.filter(`[value=${selectedItem.bil_tipe}]`).prop('checked', true);
-						}
+						$radios.filter(`[value=${selectedItem.bil_tipe}]`).prop('checked', true);
 						
                         await this.setComboDataPermohonan()
                         $("#mohon_id").combogrid('setValue', selectedItem.mohon_id);
                         this.jenis_item_form_type = "update";
                         this.jenis_item_form_edited_id = selectedItem.id;
+						$("#itms_bil_desc").val(selectedItem.bil_desc);
+                        $("#itms_bil_total").val(selectedItem.bil_total);
                     },
                     async updateItem() {
                         try {
@@ -308,6 +307,11 @@
 							
 						if(currentaData != null){
 							let url = ``;
+							this.mohon_id = null;
+							this.bil_lunas = null;
+							$("#itms_bil_desc").val('');
+							$("#itms_bil_total").val('');
+										
 							if(itms_bil_tipe === 'sertifikasi' || itms_bil_tipe === 're-sertifikasi'){
 								$("#data_permohonan").show();
 								url = `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${currentaData.value.cust_id}&jenis_status=${itms_bil_tipe}`;
@@ -315,27 +319,61 @@
 									pageSize: '50',
 									panelWidth: 650,
 									pagination: true,
-									idField: 'mohon_id',
+									idField: 'id',
 									nowrap: false,
-									textField: 'sert_nama',
+									textField: 'nama',
 									editable: true,
 									url: url,
 									method: 'get',
 									mode: 'remote',
-									value: self.jenis_komoditas_text,
+									value: '',
 									multiSort: true,
 									fitColumns: true,
 									required: false,
 									columns: [[
-										{field: 'mohon_id', hidden: true},
-										{field: 'sert_nama', title: 'Permohonan', width: 250, sortable: true,},
+										{field: 'id', hidden: true},
+										{field: 'nama', title: 'Permohonan', width: 250, sortable: true,},
 									]],
 									onSelect: function (index, row) {
-										self.mohon_id = row.mohon_id;
+										self.mohon_id = row.id;
 										self.bil_lunas = row.mohon_harus_lunas_status;
-										self.mohon_text = row.sert_nama;
-										$("#itms_bil_desc").val(`Permohonan nomor #${row.mohon_id} ${row.sert_nama}`)
+										self.mohon_text = row.deskripsi;
+										$("#itms_bil_desc").val(row.deskripsi)
 										$("#itms_bil_total").val(`${row.mohon_harga_permohonan}`)
+									},
+								});
+							}
+							else if(itms_bil_tipe === 'survailan'){
+								$("#data_permohonan").show();
+								url = `{{ url("$url/ajax?action=combogrid-sertifikat") }}&cust_id=${currentaData.value.cust_id}`;
+								$('#mohon_id').combogrid({
+									pageSize: '50',
+									panelWidth: 650,
+									pagination: true,
+									idField: 'id',
+									nowrap: false,
+									textField: 'nama',
+									editable: true,
+									url: url,
+									method: 'get',
+									mode: 'remote',
+									multiSort: true,
+									fitColumns: true,
+									required: false,
+									value: '',
+									columns: [[
+										{field: 'id', hidden: true},
+										{field: 'nama', title: 'Nama Sertifikat', width: 250, sortable: true,},
+										{field: 'cust_sert_nomor_referensi', title: 'No. Referensi', width: 250, sortable: true,},
+										{field: 'cust_sert_tgl_sertifikat_awal', title: 'Tgl. Awal', width: 100, sortable: true,},
+										{field: 'cust_sert_tgl_sertifikat_perubahan', title: 'Tgl. Perubahan', width: 100, sortable: true,},
+									]],
+									onSelect: function (index, row) {
+										self.mohon_id = row.id;
+										self.bil_lunas = 'ya';
+										self.mohon_text = row.deskripsi;
+										$("#itms_bil_desc").val(row.deskripsi)
+										$("#itms_bil_total").val(0)
 									},
 								});
 							}

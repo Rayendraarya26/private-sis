@@ -1,28 +1,28 @@
 <div class="row" id="vueStepOne">
 	<div class="col-xl-12">
 		<form action="#">
-		<div class="form-group form-row">
+		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Pilih Data Pelanggan</label>
-			<div class="col-xl-9">
+			<div class="col-xl-7">
 			  <input class="form-control" name="cust_id" id="cust_id" aria-describedby="cust_idHelp" style="min-width:300px;">
 				<small id="cust_idHelp" class="form-text">Note: Silahkan pilih pelanggan.</small>
 			</div>
 		</div>
-		<div class="form-group form-row">
+		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="bill_nomor_billing" >Nomor Billing</label>
-			<div class="col-xl-8">
+			<div class="col-xl-5">
 			  <input type="text" class="form-control" id="bill_nomor_billing" v-model="bill_nomor_billing">
 			</div>
 		</div>
-		<div class="form-group form-row">
+		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="bill_billing_date">Tanggal Billing</label>
-			<div class="col-xl-4">
+			<div class="col-xl-3">
 			  <input type="text" class="form-control" id="bill_billing_date">
 			</div>
 		</div>
-		<div class="form-group form-row">
+		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="bill_due_date">Due Date/Tanggal Jatuh Tempo</label>
-			<div class="col-xl-4">
+			<div class="col-xl-3">
 			  <input type="text" class="form-control" id="bill_due_date">
 			</div>
 		</div>
