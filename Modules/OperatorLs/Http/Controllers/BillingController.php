@@ -173,7 +173,15 @@ class BillingController extends Controller
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				if($f->field == 'bill_status_pembayaran'){
+					if($f->value == 'belum')
+						$data->whereNull('bill_payment_file');
+					else
+						$data->whereNotNull('bill_payment_file');
+				}
+				else{
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				}
             }
         }
         // Sorter
@@ -193,6 +201,7 @@ class BillingController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+			$x['bill_status_pembayaran']         = ($d->bill_payment_file != '') ? 'sudah' : 'belum';
 			$x['bill_payment_status']         = $d->bill_payment_status;
 			$x['itms_bil_total']         = number_format($d->itms_bil_total, 2, ',', '.');
 			$x['bill_id']         = $d->bill_id;
@@ -351,7 +360,18 @@ class BillingController extends Controller
 	
     public function detail(Request $request)
     {
+		$breadcrumbs = [
+            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Billing'),
+            new BreadcrumbsStruct('Detail Billing'),
+        ];
 		
+		$dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+		$dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
+		$dataBilling->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
+        return view("operatorls::billing.detail")->with($parser);
     }
 	
     public function edit(Request $request)
@@ -360,8 +380,25 @@ class BillingController extends Controller
 		return match ($request['tipe']) {
             'data' => $this->edit_data($request),
             'upload-spk' => $this->edit_upload_spk($request),
+            'pelunasan' => $this->edit_pelunasan($request),
             default => null,
         };
+    }
+	
+	private function edit_pelunasan(Request $request)
+    {
+		$breadcrumbs = [
+            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Billing'),
+            new BreadcrumbsStruct('Set Pelunasan'),
+        ];
+		
+		$dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+		$dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
+		$dataBilling->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
+        return view("operatorls::billing.edit_pelunasan")->with($parser);
     }
 	
 	private function edit_data(Request $request)
@@ -403,8 +440,28 @@ class BillingController extends Controller
             'data' => $this->update_data($request),
             'data-billing' => $this->update_data_billing($request),
             'upload-spk' => $this->update_upload_spk($request),
+            'pelunasan' => $this->update_pelunasan($request),
+            'reset-pelunasan' => $this->update_belum_pelunasan($request),
             default => null,
         };
+    }
+	
+	private function update_belum_pelunasan(Request $request)
+    {
+		$request->validate([
+            "bil_id" => 'required',
+        ]);
+		SisBilling::findOrFail($request['bil_id'])->update(['bill_payment_status' => 'proses']);
+		return responseJSON(200, [], "Data berhasil di-set menjadi belum lunas atau proses.");
+    }
+	
+	private function update_pelunasan(Request $request)
+    {
+		$request->validate([
+            "bil_id" => 'required',
+        ]);
+		SisBilling::findOrFail($request['bil_id'])->update(['bill_payment_status' => 'lunas']);
+		return redirect($this->url)->with('message', "Nomor biling #".$request->bill_nomor_billing." sudah berhasil dilunaskan.");
     }
 	
 	private function update_upload_spk(Request $request)
@@ -523,8 +580,6 @@ class BillingController extends Controller
             'data_items' => $this->delete_data_items($request),
             default => null,
         };
-		
-       
     }
 	
 	private function delete_data_items(Request $request)

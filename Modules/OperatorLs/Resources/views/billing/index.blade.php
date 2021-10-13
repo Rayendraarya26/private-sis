@@ -87,15 +87,11 @@
 								}
 							}
 							else{
-								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="confirmBelumLunas(${row.bill_id})'">Set Belum Lunas</div>`;
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="confirmBelumLunas(${row.bill_id})">Set Belum Lunas</div>`;
 								btnDetail += `<div data-options="iconCls:'fad fa-folder-open'" onclick="location.href = '{{ url("$url/detail") }}?bill_id=${row.bill_id}'">Detail</div>`;
 							}
-							if(row.bill_file_spk != 'ya'){
-								btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Upload SPK</div>`;
-							}
-							else{
-								btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Lihat SPK</div>`;
-							}
+							
+							btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Upload SPK</div>`;
 							
 
                             return `
@@ -113,10 +109,11 @@
                 ]],
                 columns: [[
                     {field: 'bill_file_spk', title: 'File<br/>SPK', width: 120, sortable: false},
+                    {field: 'bill_status_pembayaran', title: 'Sudah<br>Dibayar?', width: 100, sortable: true},
+                    {field: 'bill_payment_status', title: 'Lunas ?', width: 100, sortable: true},
                     {field: 'bill_nomor_billing', title: 'No.<br/>Billing', width: 120, sortable: true},
                     {field: 'bill_billing_date', title: 'Tanggal<br/>Billing', width: 100, sortable: true},
                     {field: 'bill_due_date', title: 'Jatuh<br/>Tempo', width: 100, sortable: true},
-                    {field: 'bill_payment_status', title: 'Status', width: 100, sortable: true},
                     {field: 'cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                     {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true},
                 ]],
@@ -155,6 +152,29 @@
                             }
                         }
                     },
+					{
+                        field: 'bill_status_pembayaran',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            value: '',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'belum', text: 'Belum'},
+                                {value: 'sudah', text: 'Sudah'},
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'bill_status_pembayaran',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
+					
                 ]);
         });
 		
@@ -166,37 +186,26 @@
             });
 
             swalWithBootstrapButtons({
-                title: `Menghapus Data ?`,
-                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
+                title: `Set Belum Lunas ?`,
+                text: "Apakah anda yakin untuk men-set data ini menjadi belum lunas?",
                 type: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Hapus',
+                confirmButtonText: 'OK',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-					var idData = []; 
-					var data = $('#ttData').datagrid('getData');
-					var opts = $('#ttData').datagrid('options');
-					for (var i = 0; i < data.rows.length; i++) {
-						var tr = opts.finder.getTr($('#ttData')[0],i);
-						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
-						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].bill_id);
-						}
-					}
-                    $.ajax({
-                        url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData },
-						type: 'DELETE',
+					$.ajax({
+                        url: `{{url("$url/update")}}`,
+						data: { 'bil_id': id, 'tipe':'reset-pelunasan' },
+						type: 'POST',
                         success: function (response) {
                             toastCenter({
                                 type: 'success',
                                 title: response.message
                             })
 
-                            let dg = $('#ttData');
-                            dg.datagrid('reload');
+                            $('#ttData').datagrid({url:`{{ url("$url/ajax?action=datagrid-billing") }}`});
                         },
                         error: function (err) {
                             if (err.responseJSON.message) {
