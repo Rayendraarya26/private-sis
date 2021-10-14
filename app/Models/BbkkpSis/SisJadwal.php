@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|SisAuditSertifikatProduk[] $sis_audit_sertifikat_produks
  * @property Collection|SisAuditTimKomite[] $sis_audit_tim_komites
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
+ * @property Collection|SisJadwalLog[] $sis_jadwal_logs
  *
  * @package App\Models\BbkkpSis
  */
@@ -125,5 +126,10 @@ class SisJadwal extends Model
 	public function sis_jadwal_audits()
 	{
 		return $this->hasMany(SisJadwalAudit::class, 'jadw_id');
+	}
+
+	public function sis_jadwal_logs()
+	{
+		return $this->hasMany(SisJadwalLog::class, 'jadw_id');
 	}
 }
