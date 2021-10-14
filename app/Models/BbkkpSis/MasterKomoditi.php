@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
+ * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
  *
  * @package App\Models\BbkkpSis
@@ -30,6 +31,11 @@ class MasterKomoditi extends Model
 	protected $fillable = [
 		'komodt_nama'
 	];
+
+	public function sis_pelanggan_sertifikasis()
+	{
+		return $this->hasMany(SisPelangganSertifikasi::class, 'komodt_id');
+	}
 
 	public function sis_permohonan_komoditis()
 	{

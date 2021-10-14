@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
+ * @property MasterKomoditi|null $master_komoditi
  * @property MasterSertifikasi $master_sertifikasi
  * @property SisPelanggan $sis_pelanggan
  * @property Collection|SisBillingItems[] $sis_billing_items
@@ -77,6 +78,11 @@ class SisPelangganSertifikasi extends Model
 		'cust_sert_status_survailen',
 		'cust_sert_filepath'
 	];
+
+	public function master_komoditi()
+	{
+		return $this->belongsTo(MasterKomoditi::class, 'komodt_id');
+	}
 
 	public function master_sertifikasi()
 	{

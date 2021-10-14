@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $sert_id
  * @property int|null $komodt_id
  * @property int|null $cust_sert_id
- * @property string|null $jadw_audit_is_tahap1
  * @property string|null $jadw_audit_nomor_referensi
  * @property string|null $jadw_audit_kode_nace
  * @property string|null $jadw_audit_standart_acuan
@@ -35,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisJadwal|null $sis_jadwal
  * @property SisPermohonan|null $sis_permohonan
  * @property Collection|SisAuditTahap1[] $sis_audit_tahap1s
+ * @property Collection|SisJadwalTim[] $sis_jadwal_tims
  *
  * @package App\Models\BbkkpSis
  */
@@ -58,7 +58,6 @@ class SisJadwalAudit extends Model
 		'sert_id',
 		'komodt_id',
 		'cust_sert_id',
-		'jadw_audit_is_tahap1',
 		'jadw_audit_nomor_referensi',
 		'jadw_audit_kode_nace',
 		'jadw_audit_standart_acuan',
@@ -82,5 +81,10 @@ class SisJadwalAudit extends Model
 	public function sis_audit_tahap1s()
 	{
 		return $this->hasMany(SisAuditTahap1::class, 'jadw_audit_id');
+	}
+
+	public function sis_jadwal_tims()
+	{
+		return $this->hasMany(SisJadwalTim::class, 'jadw_audit_id');
 	}
 }
