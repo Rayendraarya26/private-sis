@@ -19,6 +19,12 @@ Route::prefix('admin')->group(function () {
 
     Route::prefix("data/pegawai")->group(function () {
         Route::get('/', [PegawaiController::class, 'index']);
+        Route::get('/create', [PegawaiController::class, 'create']);
+        Route::post('/create', [PegawaiController::class, 'store']);
+        Route::get('/edit/{user_id}', [PegawaiController::class, 'edit']);
+        Route::post('/edit/{user_id}', [PegawaiController::class, 'update']);
+        Route::delete('/delete/{user_id}', [PegawaiController::class, 'destroy']);
+        Route::post('/banned', [PegawaiController::class, 'banned']);
         Route::get("ajax", [PegawaiController::class, 'ajax']);
     });
 });

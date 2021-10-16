@@ -66,7 +66,7 @@
                         field: 'action', title: 'Aksi', sortable: false, width: 105, align: 'center',
                         formatter: function (value, row) {
                             let dom       = `dropdownMenu_${row.user_id}`;
-                            let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url") }}/${row.user_id}/edit'">Edit</div>`;
+                            let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url") }}/edit/${row.user_id}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="remove(${row.user_id}, '${row.user_email}')">Delete</div>`;
 
                             return `
@@ -86,16 +86,17 @@
 
                     {field: 'user_fullname', title: 'Fullname', width: 200, sortable: true},
                     {field: 'user_email', title: 'Email', width: 200, sortable: true},
-                    {field: 'user_is_active', title: 'Aktif ?', width: 80},
-                    {field: 'user_is_banned', title: 'Banned ?', width: 80},
                     {
                         field: 'user_picture', title: 'Foto', width: 70, align: 'center',
                         formatter: function (val) {
-                            return `<img src="${val}" style="width: 50px">`
+                            return `<img src="${val}" style="height: 20px">`
                         }
                     },
+                    {field: 'user_is_active', title: 'Aktif ?', width: 80},
                     {field: 'user_last_login', title: 'Tgl Login', width: 200, sortable: true},
                     {field: 'user_created_at', title: 'Tgl Daftar', width: 200, sortable: true},
+                    {field: 'user_is_banned', title: 'Banned ?', width: 80},
+                    {field: 'user_banned_at', title: 'Tgl Banned', width: 200, sortable: true},
                 ]],
                 onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
@@ -175,7 +176,7 @@
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        url: `{{ url("$url") }}/${id}`,
+                        url: `{{ url("$url/delete") }}/${id}`,
                         type: 'DELETE',
                         success: function (response) {
                             console.log(response)
@@ -189,7 +190,7 @@
             });
         }
 
-        @if(authorized("{$module}@ajaxBanned"))
+        @if(authorized("{$module}@banned"))
         function banned(status) {
             let rows = $('#ttData').datagrid('getSelections');
             if (rows.length > 0) {
@@ -201,7 +202,7 @@
                     });
                     let formData = {ids: dataId, status};
                     $.ajax({
-                        url: `{{ url("$url/ajax/banned") }}`,
+                        url: `{{ url("$url/banned") }}`,
                         data: formData,
                         type: 'POST',
                         success: function (response) {

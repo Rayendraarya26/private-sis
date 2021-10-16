@@ -90,6 +90,7 @@ class PelangganController extends Controller
                 'ug_is_default' => 'yes'
             ]);
 
+            // Insert to Sis Pelanggan
             $sisPelanggan             = new SisPelanggan();
             $sisPelanggan->user_id    = $newUser->user_id;
             $sisPelanggan->cust_email = $newUser->user_email;
@@ -117,7 +118,7 @@ class PelangganController extends Controller
         ];
 
         $data          = SysUser::findOrFail($id);
-        $groups        = SysGroup::all();
+        $groups        = SysGroup::where('group_id', 3)->get();
         $defaultGroup  = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
         $selectedGroup = $data->user_group->toArray();
         $parse         = [

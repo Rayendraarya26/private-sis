@@ -3,7 +3,6 @@
 namespace App\Models\BbkkpSis;;
 
 use Carbon\Carbon;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -94,9 +93,9 @@ class SysUser extends Authenticatable
         return $this->hasMany(SysUserGroup::class, "ug_user_id", "user_id");
     }
 
-    public function master_pegawais()
+    public function master_pegawai()
     {
-        return $this->hasMany(MasterPegawai::class, 'user_id');
+        return $this->hasOne(MasterPegawai::class, 'user_id');
     }
 
     public function sis_audit_lks()

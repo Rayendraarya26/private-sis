@@ -18,10 +18,11 @@ return [
     'cipher' => 'AES-256-CBC',
 
     'path_file_master'    => "files/master",
+    'path_file_pegawai'   => "files/pegawai/%d",
     'path_file_customer'  => "files/customer/%d",
     'path_file_pengajuan' => "files/pengajuan/%d",
-    'path_file_billing' => "files/billing/%d",
-    'path_file_audit' => "files/audit/%d",
+    'path_file_billing'   => "files/billing/%d",
+    'path_file_audit'     => "files/audit/%d",
 
     /*
     |--------------------------------------------------------------------------

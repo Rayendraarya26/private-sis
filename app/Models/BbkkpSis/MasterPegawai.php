@@ -18,7 +18,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $peg_nama
  * @property string|null $peg_alamat
  * @property string|null $peg_telp
+ * @property string|null $peg_nip
  * @property string|null $peg_ttd_file
+ * @property string|null $peg_ttd_base64
  * @property string $peg_status
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -43,7 +45,9 @@ class MasterPegawai extends Model
 		'peg_nama',
 		'peg_alamat',
 		'peg_telp',
+		'peg_nip',
 		'peg_ttd_file',
+		'peg_ttd_base64',
 		'peg_status'
 	];
 
