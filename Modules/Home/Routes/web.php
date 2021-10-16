@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('account')->group(function () {
         Route::redirect("/", "account/profile");
+        Route::get('ajax', [AccountController::class, 'ajax'])->name('ajax');;
         Route::get('profile', [AccountController::class, 'index'])->name('profile');
         Route::get('update/profile', [AccountController::class, 'editProfile'])->name('update_profile');
         Route::post('update/profile', [AccountController::class, 'updateProfile']);
