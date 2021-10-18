@@ -11,7 +11,7 @@ class PublicController extends Controller
 
     public function index()
     {
-        return redirect('auth/login');
-        // return view('public::public.index');
+        // return redirect('auth/login');
+        return view('public::public.index');
     }
 }

@@ -1,0 +1,24 @@
+#isian{
+	margin-top: 30%;
+}
+
+.bonus-poin-text{
+	font-size: 30px;
+}
+
+.hightlight{
+	font-size: 40px;
+}
+
+@media only screen and (max-width: 600px) {
+	#isian{
+		margin-top: none;
+	}
+	.bonus-poin-text{
+		font-size: 20px;
+	}
+	.hightlight{
+		font-size: 30px;
+	}
+
+}
