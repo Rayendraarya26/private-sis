@@ -85,7 +85,18 @@ class BillingController extends Controller
             $x['deskripsi']          = "Survailan untuk sertifikat ".$d->sert_nama." nomor referensi ".$d->cust_sert_nomor_referensi;
             $x['id']              = $d->cust_sert_id;
             $x['nama']              = $d->sert_nama;
-            $x['cust_sert_nomor_referensi'] = $d->cust_sert_nomor_referensi;
+			
+            $x['komodt_id'] = $d->komodt_id;
+            $x['komodt_nama'] = $d->komodt_nama;
+            $x['kode_ea'] = $d->kode_ea_nama;
+            $x['kode_nace'] = $d->kode_nace_nama;
+            $x['tipe'] = $d->cust_sert_tipe;
+            $x['merk'] = $d->cust_sert_merk;
+            $x['nomor_sertifikat'] = $d->cust_sert_nomor_sertifikat;
+            $x['nomor_referensi'] = $d->cust_sert_nomor_referensi;
+            $x['nomor_sni'] = $d->cust_sert_nomor_sni;
+            $x['lingkup'] = $d->cust_sert_lingkup;
+			
             $x['cust_sert_tgl_sertifikat_awal'] = $d->cust_sert_tgl_sertifikat_awal?->format("Y-m-d");
             $x['cust_sert_tgl_sertifikat_perubahan'] = $d->cust_sert_tgl_sertifikat_perubahan?->format("Y-m-d");
             array_push($result, $x);

@@ -41,6 +41,12 @@ Route::prefix('operatorls')->group(function () {
 	
 	Route::prefix("penjadwalan")->group(function () {
         Route::get('/', [PenjadwalanController::class, 'index']);
+        Route::get('/detail', [PenjadwalanController::class, 'detail']);
         Route::get('/ajax', [PenjadwalanController::class, 'ajax']);
+        Route::get('/create', [PenjadwalanController::class, 'create']);
+        Route::post('/store', [PenjadwalanController::class, 'store']);
+        Route::get('/edit', [PenjadwalanController::class, 'edit']);
+        Route::post('/update', [PenjadwalanController::class, 'update']);
+        Route::delete('/delete', [PenjadwalanController::class, 'destroy']);
     });
 });
