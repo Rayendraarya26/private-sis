@@ -18,11 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
  * @property string|null $jadw_jenis
- * @property string|null $jadw_team_status
- * @property string|null $jadw_team_alasan
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
- * @property string|null $jadw_status_audit
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -61,11 +58,8 @@ class SisJadwal extends Model
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
 		'jadw_jenis',
-		'jadw_team_status',
-		'jadw_team_alasan',
 		'cust_id',
-		'jadw_file_jadwal',
-		'jadw_status_audit'
+		'jadw_file_jadwal'
 	];
 
 	public function sis_pelanggan()

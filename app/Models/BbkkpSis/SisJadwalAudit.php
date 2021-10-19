@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $jadw_audit_id
  * @property int|null $jadw_id
+ * @property string|null $jadw_audit_status
+ * @property string|null $jadw_audit_team_status
  * @property string|null $jadw_audit_jenis
  * @property int|null $mohon_id
  * @property int|null $sert_id
@@ -26,7 +28,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_audit_ruang_lingkup
  * @property string|null $jadw_audit_kegiatan
  * @property string|null $jadw_audit_tujuan_audit
- * @property string|null $jadw_audit_sertifikat_status
+ * @property string|null $jadw_audit_sni
+ * @property string|null $jadw_audit_merk
+ * @property string|null $jadw_audit_tipe
+ * @property string|null $jadw_audit_ukuran
  * @property string|null $jadw_audit_sertifikat_filepath
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
@@ -53,6 +58,8 @@ class SisJadwalAudit extends Model
 
 	protected $fillable = [
 		'jadw_id',
+		'jadw_audit_status',
+		'jadw_audit_team_status',
 		'jadw_audit_jenis',
 		'mohon_id',
 		'sert_id',
@@ -64,7 +71,10 @@ class SisJadwalAudit extends Model
 		'jadw_audit_ruang_lingkup',
 		'jadw_audit_kegiatan',
 		'jadw_audit_tujuan_audit',
-		'jadw_audit_sertifikat_status',
+		'jadw_audit_sni',
+		'jadw_audit_merk',
+		'jadw_audit_tipe',
+		'jadw_audit_ukuran',
 		'jadw_audit_sertifikat_filepath'
 	];
 
