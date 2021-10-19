@@ -22,8 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $sert_id
  * @property int|null $komodt_id
  * @property int|null $cust_sert_id
+ * @property string|null $jadw_audit_nomor_sertifikat
  * @property string|null $jadw_audit_nomor_referensi
  * @property string|null $jadw_audit_kode_nace
+ * @property string|null $jadw_audit_kode_ea
  * @property string|null $jadw_audit_standart_acuan
  * @property string|null $jadw_audit_ruang_lingkup
  * @property string|null $jadw_audit_kegiatan
@@ -65,8 +67,10 @@ class SisJadwalAudit extends Model
 		'sert_id',
 		'komodt_id',
 		'cust_sert_id',
+		'jadw_audit_nomor_sertifikat',
 		'jadw_audit_nomor_referensi',
 		'jadw_audit_kode_nace',
+		'jadw_audit_kode_ea',
 		'jadw_audit_standart_acuan',
 		'jadw_audit_ruang_lingkup',
 		'jadw_audit_kegiatan',
