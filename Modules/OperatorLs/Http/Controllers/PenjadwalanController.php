@@ -15,6 +15,7 @@ use App\Models\BbkkpSis\SisBillingItems;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalAudit;
 use App\Models\BbkkpSis\SisJadwalTim;
+use App\Models\BbkkpSis\SisJadwalLog;
 
 use App\Models\BbkkpSis\MasterKodeEa;
 use App\Models\BbkkpSis\MasterKodeNace;
@@ -37,7 +38,7 @@ class PenjadwalanController extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
-            new BreadcrumbsStruct('Penjadwalan'),
+            new BreadcrumbsStruct('Penjadwalan Tanggal'),
         ];
 		
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
@@ -50,7 +51,6 @@ class PenjadwalanController extends Controller
         return match ($request['action']) {
             'datagrid-jadwal'       => $this->ajax_datagrid_jadwal($request),
             'datagrid-jadwal-audit'       => $this->ajax_datagrid_jadwal_audit($request),
-            'datagrid-jadwal-team'       => $this->ajax_datagrid_jadwal_team($request),
             'combogrid-pelanggan'       => $this->ajax_combogrid_pelanggan($request),
             'combogrid-permohonan'       => $this->ajax_combogrid_permohonan($request),
             'combogrid-permohonan-komoditi'       => $this->ajax_combogrid_permohonan_komoditi($request),
@@ -270,8 +270,10 @@ class PenjadwalanController extends Controller
 	private function ajax_datagrid_jadwal(Request $request)
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
-		$data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+		// $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			
         // Filter
+		$data->where('jadw_tanggal_status', '!=', 'accepted');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				$data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -288,8 +290,12 @@ class PenjadwalanController extends Controller
         // Total
         $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_id) as total'))->first()->total;
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("*");
+		// $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) AS total_audit_belum_selesai", "SUM(IF(sis_jadwal_audit.jadw_audit_team_status = 'rejected', 1, 0)) AS total_tim_ditolak");
+		$data->skip(($request->page - 1) * $request->rows);
+		$data->take($request->rows);
 		$data->groupBy('sis_jadwal.jadw_id');
+		// $data->havingRaw('total_audit_belum_selesai > ?', [0]);
         // Result
         $result = [];
         foreach ($data->get() as $d) {
@@ -305,12 +311,49 @@ class PenjadwalanController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
+	
+	private function ajax_datagrid_jadwal_audit(Request $request)
+    {
+        $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
+		$data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			
+        // Filter
+		$data->where('jadw_id', '=', $request['jadw_id']);
+        if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+				$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+            }
+        }
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+        // Total
+        $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_audit_id) as total'))->first()->total;
+		
+        // Pagination
+        $data->select("*");
+		$data->skip(($request->page - 1) * $request->rows);
+		$data->take($request->rows);
+		
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['jadw_id']            = $d->jadw_id;
+            array_push($result, $x);
+        }
 
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+	
     public function create()
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
-            new BreadcrumbsStruct('Penjadwalan'),
+            new BreadcrumbsStruct('Penjadwalan Tanggal'),
             new BreadcrumbsStruct('Input Penjadwalan'),
         ];
 		
@@ -337,11 +380,8 @@ class PenjadwalanController extends Controller
             "jadwal_items"   => 'required',
         ]);
 
-        // Set data uploaded file path (digunakan untuk delete file yang diupload ketika catch error)
-        $uploadedPath = [];
         try {
             DB::beginTransaction();
-            // 3.1 add sis_permohonan
             $newSisJadwal = new SisJadwal();
             $newSisJadwal->cust_id = $request['cust_id'];
             $newSisJadwal->jadw_tanggal_status = $request['jadw_tanggal_status'];
@@ -352,7 +392,7 @@ class PenjadwalanController extends Controller
             $newSisJadwal->updated_at = Carbon::now();
             $newSisJadwal->save();
 
-            // add billing items
+            // add items
             $dataItems = json_decode($request['jadwal_items']);
 			foreach ($dataItems as $itm) {
 				if($itm->mohon_id != ''){
@@ -396,36 +436,64 @@ class PenjadwalanController extends Controller
 			
             DB::commit();
 
-            return responseJSON(200, null, "Data billing berhasil disimpan.");
+            return responseJSON(200, null, "Data jadwal berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
-
-            foreach ($uploadedPath as $delPath) { // delete uploaded file
-                @unlink($delPath);
-            }
-
             return responseJSON(500, null, $e->getMessage());
         }
     }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+	
+	public function detail(Request $request)
     {
-        return view('operatorls::show');
+        $request->validate(['tipe' => 'required']);
+		return match ($request['tipe']) {
+            'log-jadwal' => $this->log_jadwal($request),
+            default => null,
+        };
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
+	
+	private function log_jadwal(Request $request)
     {
-        return view('operatorls::edit');
+		$breadcrumbs = [
+            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Penjadwalan Tanggal'),
+            new BreadcrumbsStruct('Log Revisi'),
+        ];
+		
+		$dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
+		$dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+		$dataJadwal->select('*');
+		
+		$dataLog = SisJadwalLog::where('jadw_id', $request['jadw_id']);
+		$dataLog->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_jadwal' => $dataJadwal->get()[0], 'dataLog' => $dataLog->get()];
+        return view("operatorls::penjadwalan.log_jadwal")->with($parser);
+    }
+	
+    public function edit(Request $request)
+    {
+        $request->validate(['tipe' => 'required']);
+		return match ($request['tipe']) {
+            'edit-jadwal' => $this->edit_jadwal($request),
+            default => null,
+        };
+    }
+	
+	private function edit_jadwal(Request $request)
+    {
+		$breadcrumbs = [
+            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Penjadwalan Tanggal'),
+            new BreadcrumbsStruct('Edit Jadwal'),
+        ];
+		
+		$dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
+		$dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+		$dataJadwal->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
+        return view("operatorls::penjadwalan.edit_jadwal")->with($parser);
     }
 
     /**
@@ -434,9 +502,54 @@ class PenjadwalanController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $request->validate(['tipe' => 'required']);
+		return match ($request['tipe']) {
+            'edit-jadwal' => $this->update_jadwal($request),
+            default => null,
+        };
+    }
+	
+	private function update_jadwal(Request $request)
+    {
+        $request->validate([
+            "jadw_id" => 'required',
+            "cust_id" => 'required',
+            "jadw_tanggal_status"    => 'required',
+            "jadw_tanggal_mulai"   => 'required',
+            "jadw_tanggal_selesai"   => 'required',
+            "jadw_jenis"   => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+			$dt_update = [
+							// 'cust_id' => $request['jadw_id'],
+							'jadw_tanggal_status' => 'on-going',
+							'jadw_tanggal_mulai' => $request['jadw_tanggal_mulai'],
+							'jadw_tanggal_selesai' => $request['jadw_tanggal_selesai'],
+							'jadw_jenis' => $request['jadw_jenis'],
+						];
+			SisJadwal::findOrFail($request['jadw_id'])->update($dt_update);
+			
+			if($request['jadw_tanggal_status'] == 'rejected'){
+				$newSisJadwalLog = new SisJadwalLog();
+				$newSisJadwalLog->jadw_id = $request['jadw_id'];
+				$newSisJadwalLog->jlog_tipe = 'revisi-tanggal';
+				$newSisJadwalLog->jlog_judul = 'Koreksi Data Tanggal';
+				$newSisJadwalLog->jlog_pesan = 'Telah dilakukan update untuk tanggal sesuai dengan kesepakatan.';
+				$newSisJadwalLog->created_at = Carbon::now();
+				$newSisJadwalLog->updated_at = Carbon::now();
+				$newSisJadwalLog->save();
+			}
+            DB::commit();
+
+            return responseJSON(200, null, "Data jadwal berhasil disimpan.");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
     }
 
     /**

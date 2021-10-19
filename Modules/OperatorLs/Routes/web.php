@@ -16,6 +16,8 @@ use Modules\OperatorLs\Http\Controllers\OperatorLsController;
 use Modules\OperatorLs\Http\Controllers\KelengkapanPermohonanController;
 use Modules\OperatorLs\Http\Controllers\BillingController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
+use Modules\OperatorLs\Http\Controllers\TimController;
+use Modules\OperatorLs\Http\Controllers\KomiteController;
 
 Route::prefix('operatorls')->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
@@ -48,5 +50,27 @@ Route::prefix('operatorls')->group(function () {
         Route::get('/edit', [PenjadwalanController::class, 'edit']);
         Route::post('/update', [PenjadwalanController::class, 'update']);
         Route::delete('/delete', [PenjadwalanController::class, 'destroy']);
+    });
+	
+	Route::prefix("tim")->group(function () {
+        Route::get('/', [TimController::class, 'index']);
+        Route::get('/detail', [TimController::class, 'detail']);
+        Route::get('/ajax', [TimController::class, 'ajax']);
+        Route::get('/create', [TimController::class, 'create']);
+        Route::post('/store', [TimController::class, 'store']);
+        Route::get('/edit', [TimController::class, 'edit']);
+        Route::post('/update', [TimController::class, 'update']);
+        Route::delete('/delete', [TimController::class, 'destroy']);
+    });
+	
+	Route::prefix("komite")->group(function () {
+        Route::get('/', [KomiteController::class, 'index']);
+        Route::get('/detail', [KomiteController::class, 'detail']);
+        Route::get('/ajax', [KomiteController::class, 'ajax']);
+        Route::get('/create', [KomiteController::class, 'create']);
+        Route::post('/store', [KomiteController::class, 'store']);
+        Route::get('/edit', [KomiteController::class, 'edit']);
+        Route::post('/update', [KomiteController::class, 'update']);
+        Route::delete('/delete', [KomiteController::class, 'destroy']);
     });
 });

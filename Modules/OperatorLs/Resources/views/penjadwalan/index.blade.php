@@ -77,7 +77,14 @@
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;							
-
+							if(row.jadw_tanggal_status == 'on-going')
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-jadwal&jadw_id=${row.jadw_id}'">Edit Jadwal</div>`;
+							
+							if(row.jadw_tanggal_status == 'rejected')
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=revisi-jadwal&jadw_id=${row.jadw_id}'">Revisi Jadwal</div>`;
+							
+							btnEdit += `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{ url("$url/detail") }}?tipe=log-jadwal&jadw_id=${row.jadw_id}'">Log Revisi</div>`;
+							
                             return `
 								<div>
 									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
@@ -93,7 +100,6 @@
                 columns: [[
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis', width: 100, sortable: true},
-                    {field: 'jadw_audit_team_status', title: 'Persetujuan<br/>Tim', width: 100, sortable: true},
                     {field: 'jadw_tanggal_status', title: 'Persetujuan<br/>Tanggal', width: 100, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
@@ -109,29 +115,6 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {
-                        field: 'jadw_audit_team_status',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            value: '',
-                            data: [
-                                {value: 'rejected', text: 'Revisi'},
-                                {value: 'accepted', text: 'Accepted'},
-                                {value: 'on-going', text: 'On-going'},
-                                {value: '', text: 'Semua'}
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'jadw_audit_team_status',
-                                    op: 'equal',
-                                    value: value
-                                });
-
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
 					{
                         field: 'jadw_tanggal_status',
                         type: 'combobox',
@@ -140,7 +123,6 @@
                             value: '',
                             data: [
                                 {value: 'rejected', text: 'Revisi'},
-                                {value: 'accepted', text: 'Accepted'},
                                 {value: 'on-going', text: 'On-going'},
                                 {value: '', text: 'Semua'}
                             ],
