@@ -232,7 +232,6 @@ class SertifikasiPermohonanController extends Controller
                     $newSisPermohonanKomoditas->save();
                 }
             }
-            DB::commit();
 
             // Send Notification to Marketing
             $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
@@ -242,7 +241,7 @@ class SertifikasiPermohonanController extends Controller
                     $notifStruct            = new NotifStruct();
                     $notifStruct->title     = $newSisPermohonan->mohon_jenis_status == 'baru' ? "Permohonan Pengajuan Sertifikasi " : "Permohonan Perpanjangan sertifikasi";
                     $notifStruct->message   = sprintf("%s mengajukan permohonan %s", $newSisPermohonan->mohon_cust_nama, $dataMasterSertifiaksi->sert_nama);
-                    $notifStruct->user_id   = $marketing?->user?->user_id;
+                    $notifStruct->user_id   = $marketing?->ug_user_id;
                     $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
                     sendNotification($notifStruct);
 
@@ -270,6 +269,7 @@ class SertifikasiPermohonanController extends Controller
                 "updated_at"      => Carbon::now(),
             ]);
 
+            DB::commit();
             return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
         } catch (Exception $e) {
             DB::rollBack();

@@ -212,8 +212,8 @@
                                 <ul class="{{$status->status_tipe == "informasi" ? 'timeline' : 'timeline-revisi'}}">
                                     <li class="event"
                                         data-date="{{$status->created_at->isoFormat('LLLL')}}">
-                                        <h3>{{$status->status_judul}}</h3>
-                                        <p>{{$status->status_pesan}}</p>
+                                        <h3>{!! $status->status_judul  !!}</h3>
+                                        <p>{!! $status->status_pesan !!}</p>
                                     </li>
                                 </ul>
                             @endforeach

@@ -23,9 +23,18 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::delete('/delete', [SertifikasiPermohonanController::class, 'destroy']);
     });
 
-    Route::get("sertifikasi/data", [SertifikasiDataController::class, 'index']);
+    Route::prefix("sertifikasi/data")->group(function () {
+        Route::get("/", [SertifikasiDataController::class, 'index']);
+        Route::get("/ajax", [SertifikasiDataController::class, 'ajax']);
+    });
 
-    Route::get("billing", [BillingController::class, 'index']);
+    Route::prefix("billing")->group(function () {
+        Route::get("/", [BillingController::class, 'index']);
+        Route::get("/ajax", [BillingController::class, 'ajax']);
+        Route::get('download-invoice', [BillingController::class, 'downloadInvoice']);
+        Route::get('upload/{nomor_billing}', [BillingController::class, 'upload']);
+        Route::post('upload/{nomor_billing}', [BillingController::class, 'processUpload']);
+    });
 
     Route::get("jadwal", [JadwalController::class, 'index']);
 
