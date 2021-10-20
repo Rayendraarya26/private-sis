@@ -88,6 +88,7 @@
         });
 
         $(document).ready(function () {
+			
             // ============================================ SmartWizard ============================================
             $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
                 $("#prev-btn").removeClass('disabled');
@@ -142,6 +143,7 @@
                         case 0:
                             vueStepOne.validate();
                             vueStepTwo.start();
+							
                             break;
                     }
 

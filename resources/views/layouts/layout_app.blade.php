@@ -644,7 +644,7 @@
 			bill_data: "++id, &name, value",
 			bill_data_itms: "++id, bil_tipe, mohon_id, bil_desc, bil_total, bil_lunas",
 			jadwal_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id",
-			jadwal_data_itms: "++id, jenis, mohon_id, sert_id, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran",
+			jadwal_data_itms: "++id, jenis, mohon_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran",
         });
     }
 

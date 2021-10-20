@@ -139,6 +139,7 @@ class PenjadwalanController extends Controller
             $x['nama']              = $d->sert_nama;
 			
 			
+            $x['sert_nama'] = $d->sert_nama;
             $x['komodt_id'] = $d->komodt_id;
             $x['komodt_nama'] = $d->komodt_nama;
             $x['kode_ea'] = $d->kode_ea_nama;
@@ -184,16 +185,18 @@ class PenjadwalanController extends Controller
 		}
 		
         if (!empty($request->q)) {
-            $data->where('sert_nama', 'LIKE', '%' . $request->q . '%');
+            $data->where('master_sertifikasi.sert_nama', 'LIKE', '%' . $request->q . '%');
         }
         // Total
         $total = $data->select(DB::raw('count(distinct sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
+        $data->select("*", "master_sertifikasi.sert_id AS sert_id")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+		$data->groupBy('sis_permohonan.mohon_id');
+		
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+			
 			if($request->jenis_status == 're-sertifikasi'){
 				$x['komodt_id'] = $d->komodt_id;
 				$x['komodt_nama'] = $d->komodt_nama;
@@ -316,9 +319,10 @@ class PenjadwalanController extends Controller
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
 		$data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+		$data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
 			
         // Filter
-		$data->where('jadw_id', '=', $request['jadw_id']);
+		$data->where('sis_jadwal_audit.jadw_id', '=', $request['jadw_id']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				$data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -333,7 +337,7 @@ class PenjadwalanController extends Controller
             }
         }
         // Total
-        $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_audit_id) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(distinct sis_jadwal_audit.jadw_audit_id) as total'))->first()->total;
 		
         // Pagination
         $data->select("*");
@@ -342,7 +346,27 @@ class PenjadwalanController extends Controller
 		
         $result = [];
         foreach ($data->get() as $d) {
-            $x['jadw_id']            = $d->jadw_id;
+            $x['jadw_audit_id'] = $d->jadw_audit_id;
+            $x['jadw_audit_team_status'] = $d->jadw_audit_team_status;
+            $x['jadw_audit_jenis'] = $d->jadw_audit_jenis;
+            $x['mohon_id'] = $d->mohon_id;
+            $x['sert_id'] = $d->sert_id;
+            $x['sert_nama'] = $d->sert_nama;
+            $x['komodt_id'] = $d->komodt_id;
+            $x['komodt_nama'] = $d->komodt_nama;
+            $x['cust_sert_id'] = $d->cust_sert_id;
+            $x['jadw_audit_nomor_sertifikat'] = $d->jadw_audit_nomor_sertifikat;
+            $x['jadw_audit_nomor_referensi'] = $d->jadw_audit_nomor_referensi;
+            $x['jadw_audit_kode_nace'] = $d->jadw_audit_kode_nace;
+            $x['jadw_audit_kode_ea'] = $d->jadw_audit_kode_ea;
+            $x['jadw_audit_standart_acuan'] = $d->jadw_audit_standart_acuan;
+            $x['jadw_audit_ruang_lingkup'] = $d->jadw_audit_ruang_lingkup;
+            $x['jadw_audit_kegiatan'] = $d->jadw_audit_kegiatan;
+            $x['jadw_audit_tujuan_audit'] = $d->jadw_audit_tujuan_audit;
+            $x['jadw_audit_sni'] = $d->jadw_audit_sni;
+            $x['jadw_audit_merk'] = $d->jadw_audit_merk;
+            $x['jadw_audit_tipe'] = $d->jadw_audit_tipe;
+            $x['jadw_audit_ukuran'] = $d->jadw_audit_ukuran;
             array_push($result, $x);
         }
 
@@ -507,8 +531,67 @@ class PenjadwalanController extends Controller
         $request->validate(['tipe' => 'required']);
 		return match ($request['tipe']) {
             'edit-jadwal' => $this->update_jadwal($request),
+            'update-item-jadwal' => $this->update_item_jadwal($request),
             default => null,
         };
+    }
+	
+	private function update_item_jadwal(Request $request)
+    {
+        $request->validate([
+            "jadw_id" => 'required',
+            "jadw_audit_id" => 'nullable',
+            "jadw_audit_jenis" => 'required',
+            "sert_id" => 'required',
+            "komodt_id" => 'nullable',
+            "mohon_id" => 'nullable',
+            "cust_sert_id" => 'nullable',
+            "jadw_audit_nomor_sertifikat" => 'nullable',
+            "jadw_audit_nomor_referensi" => 'nullable',
+            "jadw_audit_kode_nace" => 'required',
+            "jadw_audit_kode_ea" => 'required',
+            "jadw_audit_standart_acuan" => 'required',
+            "jadw_audit_ruang_lingkup" => 'required',
+            "jadw_audit_kegiatan" => 'required',
+            "jadw_audit_tujuan_audit" => 'required',
+            "jadw_audit_sni" => 'nullable',
+            "jadw_audit_merk" => 'nullable',
+            "jadw_audit_tipe" => 'nullable',
+            "jadw_audit_ukuran" => 'nullable',
+        ]);
+		
+        try {
+			$dt_update = [
+							'jadw_audit_jenis' => $request['jadw_audit_jenis'],
+							'jadw_id' => $request['jadw_id'],
+							'sert_id' => $request['sert_id'],
+							'komodt_id' => $request['komodt_id'],
+							'mohon_id' => $request['mohon_id'],
+							'cust_sert_id' => $request['cust_sert_id'],
+							'jadw_audit_nomor_sertifikat' => $request['jadw_audit_nomor_sertifikat'],
+							'jadw_audit_nomor_referensi' => $request['jadw_audit_nomor_referensi'],
+							'jadw_audit_kode_nace' => $request['jadw_audit_kode_nace'],
+							'jadw_audit_kode_ea' => $request['jadw_audit_kode_ea'],
+							'jadw_audit_standart_acuan' => $request['jadw_audit_standart_acuan'],
+							'jadw_audit_ruang_lingkup' => $request['jadw_audit_ruang_lingkup'],
+							'jadw_audit_kegiatan' => $request['jadw_audit_kegiatan'],
+							'jadw_audit_tujuan_audit' => $request['jadw_audit_tujuan_audit'],
+							'jadw_audit_sni' => $request['jadw_audit_sni'],
+							'jadw_audit_merk' => $request['jadw_audit_merk'],
+							'jadw_audit_tipe' => $request['jadw_audit_tipe'],
+							'jadw_audit_ukuran' => $request['jadw_audit_ukuran'],
+						];
+			if($request['jadw_audit_id'] != ''){
+				SisJadwalAudit::findOrFail($request['jadw_audit_id'])->update($dt_update);
+			}
+			else{
+				SisJadwalAudit::create($dt_update);
+			}
+            return responseJSON(200, null, "Data jadwal berhasil disimpan.");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
     }
 	
 	private function update_jadwal(Request $request)
@@ -551,19 +634,39 @@ class PenjadwalanController extends Controller
             return responseJSON(500, null, $e->getMessage());
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-     public function destroy(Request $request)
+	
+	public function destroy(Request $request)
     {
 		$request->validate(['tipe' => 'required']);
 		return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'data-jadwal' => $this->delete_data_jadwal($request),
+            'data-jadwal-audit' => $this->delete_data_jadwal_audit($request),
             default => null,
         };
+    }
+	
+	private function delete_data_jadwal_audit(Request $request)
+    {
+		try {
+            $status_return = TRUE;
+            foreach ($request->ids as $id) {
+                $data = SisJadwalAudit::where("jadw_audit_id", $id)->firstOrFail();
+                if ($data->delete()) {
+
+                } else {
+                    $status_return = FALSE;
+                    break;
+                }
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+            }
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
     }
 	
 	private function delete_data_jadwal(Request $request)

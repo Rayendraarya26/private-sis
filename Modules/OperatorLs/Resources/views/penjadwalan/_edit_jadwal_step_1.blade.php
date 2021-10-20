@@ -147,6 +147,7 @@
 						
 						$('#jadw_tanggal_mulai').datebox({
 							required:true,
+							editable:false,
 							formatter:myformatter,
 							parser:myparser,
 							value:self.jadw_tanggal_mulai,
@@ -158,6 +159,7 @@
 						
 						$('#jadw_tanggal_selesai').datebox({
 							required:true,
+							editable:false,
 							formatter:myformatter,
 							parser:myparser,
 							value:self.jadw_tanggal_selesai,

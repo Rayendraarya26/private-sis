@@ -93,31 +93,21 @@
                     this.loadIdb();
                 },
                 methods: {
-					async setCustId(id, dtData) {
+					async setCustId(id) {
 						this.cust_id = id
-						var dbData = {name: "penjadwalan", tanggal_mulai: dtData.tanggal_mulai, tanggal_selesai: dtData.tanggal_selesai, jenis: dtData.jenis, cust_id: id};
-						await this.updateDatabase(dbData)
+						await this.updateDatabase()
 					},
-					async setTanggalMulai(date, dtData) {
-						this.jadw_tanggal_mulai = date
-						var dbData = {name: "penjadwalan", tanggal_mulai: date, tanggal_selesai: dtData.tanggal_selesai, jenis: dtData.jenis, cust_id: dtData.cust_id};
-						await this.updateDatabase(dbData)
+					async setTanggalMulai(date) {
+						this.jadw_tanggal_mulai = date;
+						await this.updateDatabase()
 					},
-					async setTanggalSelesai(date, dtData) {
-						this.jadw_tanggal_selesai = date
-						var dbData = {name: "penjadwalan", tanggal_mulai: dtData.tanggal_mulai, tanggal_selesai: date, jenis: dtData.jenis, cust_id: dtData.cust_id};
-						await this.updateDatabase(dbData)
+					async setTanggalSelesai(date) {
+						this.jadw_tanggal_selesai = date;
+						await this.updateDatabase()
 					},
 					async setJenisJadwal(dt) {
-						const currentData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
-						if (currentData == null) {
-							var dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, jenis: dt, cust_id: null};
-							await idb.jadwal_data.put(dbData);
-                        } else {
-							var dtData = {name: "penjadwalan", tanggal_mulai: currentData.tanggal_mulai, tanggal_selesai: currentData.tanggal_selesai, jenis: dt, cust_id: currentData.cust_id};
-							await idb.jadwal_data.update(currentData.id, dtData);
-                        }
 						this.jenis = dt;
+						await this.updateDatabase()
 					},
                     validate() {
                         if (this.cust_id == null) throw "Pilih Pelanggan"
@@ -125,12 +115,13 @@
                         if (this.jadw_tanggal_mulai == null) throw "Isi Tanggal Mulai"
                         if (this.jadw_tanggal_selesai == null) throw "Isi Tanggal Selesai"
                     },
-					async updateDatabase(dtData) {
+					async updateDatabase() {
+						let dbData = {name: "penjadwalan", tanggal_mulai: this.jadw_tanggal_mulai, tanggal_selesai: this.jadw_tanggal_selesai, jenis: this.jenis, cust_id: this.cust_id};
 						const currentData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
 						if (currentData == null) {
-							await idb.jadwal_data.put(dtData);
+							await idb.jadwal_data.put(dbData);
                         } else {
-							await idb.jadwal_data.update(currentData.id, dtData);
+							await idb.jadwal_data.update(currentData.id, dbData);
                         }
 					},
                     async loadIdb() {
@@ -141,7 +132,7 @@
                     async setForm(currentData) {
                         // jadwal_data_itms
 						if (currentData == null) {
-							var dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, jenis: null, cust_id: null};
+							let dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, jenis: null, cust_id: null};
 							currentData = dbData;
                             await idb.jadwal_data.put(dbData);
                         }
@@ -151,7 +142,7 @@
 							this.jadw_tanggal_mulai= currentData.tanggal_mulai;
 							this.jadw_tanggal_selesai= currentData.tanggal_selesai;
 							
-							var $radios = $('input:radio[name=jadw_jenis_tipe]');
+							let $radios = $('input:radio[name=jadw_jenis_tipe]');
 							if($radios.is(':checked') === false) {
 								$radios.filter('[value='+ currentData.jenis +']').prop('checked', true);
 							}
@@ -180,30 +171,31 @@
                                 {field: 'bill_nomor_billing', title: 'Nomor Billing', width: 200, sortable: true,},
                             ]],
                             onSelect: async function (index, row) {
-								await self.setCustId(row.cust_id, currentData);
+								await self.setCustId(row.cust_id);
                             },
                         });
 						
 						$('#jadw_tanggal_mulai').datebox({
 							required:true,
+							editable: false,
 							formatter:myformatter,
 							parser:myparser,
 							value:this.jadw_tanggal_mulai,
 							onSelect: async function(date){
 								var data_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
-								await self.setTanggalMulai(data_date, currentData);
+								await self.setTanggalMulai(data_date);
 							}
 						});
 						
 						$('#jadw_tanggal_selesai').datebox({
 							required:true,
+							editable: false,
 							formatter:myformatter,
 							parser:myparser,
 							value:this.jadw_tanggal_selesai,
 							onSelect: async function(date){
 								var data_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
-								await self.setTanggalSelesai(data_date, currentData);
-								
+								await self.setTanggalSelesai(data_date);
 							}
 						});
 						

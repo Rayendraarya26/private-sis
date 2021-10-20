@@ -49,6 +49,7 @@
 								
 								<input type="hidden"  id="mohon_id" value="">
 								<input type="hidden" id="sert_id" value="">
+								<input type="hidden" id="sert_nama" value="">
 								<input type="hidden" id="cust_sert_id" value="">
 								<input type="hidden" id="nomor_sertifikat" value="">
 								<input type="hidden" id="nomor_referensi" value="">
@@ -69,7 +70,7 @@
 							</div>
 						</div>
 						
-						<div class="form-group form-row" id="sertifikasi_komoditi">
+						<div class="form-group form-row" id="sertifikasi_komoditi1">
 							<label class="col-xl-3 col-form-label text-sm-left" >Kode NACE</label>
 							<div class="col-xl-8">
 								<select id="kode_nace" name="kode_nace" style="max-width:300px;">
@@ -77,7 +78,7 @@
 							</div>
 						</div>
 						
-						<div class="form-group form-row" id="sertifikasi_komoditi">
+						<div class="form-group form-row" id="sertifikasi_komoditi2">
 							<label class="col-xl-3 col-form-label text-sm-left" >Kode EA</label>
 							<div class="col-xl-8">
 								<select id="kode_ea" name="kode_ea" style="max-width:300px;">
@@ -152,6 +153,7 @@
 							<tr>
 								<th>Aksi</th>
 								<th>Jenis</th>
+								<th>Sertifikasi</th>
 								<th>Nomor Sertifikat</th>
 								<th>Nomor<br>Referensi</th>
 								<th>Kode NACE</th>
@@ -180,6 +182,7 @@
 										</div>
 									</td>
 									<td>@{{ itm.jenis }}</td>
+									<td>@{{ itm.sert_nama }}</td>
 									<td>@{{ itm.nomor_sertifikat }}</td>
 									<td>@{{ itm.nomor_referensi }}</td>
 									<td>@{{ itm.kode_nace }}</td>
@@ -299,11 +302,15 @@
 							.where({name: "penjadwalan"})
 							.first();
 						
-						if (currentData != null) {								
+						if (currentData != null) {
 							setTimeout(async () => {
 								this.jadwal_items = await window.idb.jadwal_data_itms.toArray();
-								if(this.jadwal_items !== []){
+								if (typeof this.jadwal_items !== 'undefined' && this.jadwal_items.length > 0) {
+									console.log(this.jadwal_items);
 									this.status_submit = true;
+								}
+								else{
+									this.status_submit = false;
 								}
 							}, 500);
 							
@@ -330,6 +337,8 @@
 							this.form_edited_id = null;
 							$("#form-tambah").show();
 							$("#sertifikasi_komoditi").hide();
+							$("#sertifikasi_komoditi1").hide();
+							$("#sertifikasi_komoditi2").hide();
 
 							$(".tab-content").height("100%");
 						}, 500);						
@@ -338,6 +347,7 @@
 						$("#mohon_id").val("");
 						$("#cust_sert_id").val("");
 						$("#sert_id").val("");
+						$("#sert_nama").val("");
 						$("#nomor_sertifikat").val("");
 						$("#nomor_referensi").val("");
 						$("#komodt_id").val("");
@@ -369,6 +379,13 @@
 						
 						if(dt_jenis === 'sertifikasi' || dt_jenis === 'tahap-1'){
 							$("#sertifikasi_komoditi").show();
+							$("#sertifikasi_komoditi1").show();
+							$("#sertifikasi_komoditi2").show();
+						}
+						else{
+							$("#sertifikasi_komoditi").hide();
+							$("#sertifikasi_komoditi1").hide();
+							$("#sertifikasi_komoditi2").hide();
 						}
 						
 						const currentaData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
@@ -386,8 +403,12 @@
 									onSelect: function (index, row) {
 										$("#cust_sert_id").val("");
 										$("#sert_id").val(row.sert_id);
+										$("#sert_nama").val(row.sert_nama);
 										$("#mohon_id").val(row.mohon_id);
 										
+										if(row.cust_sert_id != ''){
+											$("#cust_sert_id").val(row.cust_sert_id);
+										}
 										if(dt_jenis === 're-sertifikasi'){
 											$("#nomor_sertifikat").val(row.nomor_sertifikat);
 											$("#nomor_referensi").val(row.nomor_referensi);
@@ -444,6 +465,7 @@
 									onSelect: function (index, row) {
 										$("#cust_sert_id").val(row.cust_sert_id);
 										$("#sert_id").val(row.sert_id);
+										$("#sert_nama").val(row.sert_nama);
 										$("#mohon_id").val("");
 										$("#nomor_sertifikat").val(row.nomor_sertifikat);
 										$("#nomor_referensi").val(row.nomor_referensi);
@@ -495,6 +517,7 @@
 								$("#mohon_id").val(selectedItem.mohon_id);
 								$("#cust_sert_id").val(selectedItem.cust_sert_id);
 								$("#sert_id").val(selectedItem.sert_id);
+								$("#sert_nama").val(selectedItem.sert_nama);
 								$("#nomor_sertifikat").val(selectedItem.nomor_sertifikat);
 								$("#nomor_referensi").val(selectedItem.nomor_referensi);
 								$("#komodt_id").val(selectedItem.komodt_id);
@@ -533,6 +556,12 @@
                             if (result.value) {
 								await window.idb.jadwal_data_itms.where('id').equals(id).delete();
 								this.jadwal_items = await window.idb.jadwal_data_itms.toArray();
+								if (typeof this.jadwal_items !== 'undefined' && this.jadwal_items.length > 0) {
+									this.status_submit = true;
+								}
+								else{
+									this.status_submit = false;
+								}
                             }
                         });
                     },
@@ -544,6 +573,8 @@
 							this.form_edited_id = id;
 							$("#form-tambah").show();
 							$("#sertifikasi_komoditi").hide();
+							$("#sertifikasi_komoditi1").hide();
+							$("#sertifikasi_komoditi2").hide();
 
 							$(".tab-content").height("100%");
 							
@@ -564,6 +595,7 @@
 									"mohon_id": $("#mohon_id").val(),
 									"cust_sert_id": $("#cust_sert_id").val(),
 									"sert_id": $("#sert_id").val(),
+									"sert_nama": $("#sert_nama").val(),
 									"nomor_sertifikat": $("#nomor_sertifikat").val(),
 									"nomor_referensi": $("#nomor_referensi").val(),
 									"komodt_id": $("#komodt_id").val(),
@@ -603,6 +635,7 @@
                                 "mohon_id": $("#mohon_id").val(),
 								"cust_sert_id": $("#cust_sert_id").val(),
 								"sert_id": $("#sert_id").val(),
+								"sert_nama": $("#sert_nama").val(),
 								"nomor_sertifikat": $("#nomor_sertifikat").val(),
 								"nomor_referensi": $("#nomor_referensi").val(),
 								"komodt_id": $("#komodt_id").val(),
@@ -620,8 +653,13 @@
                             };
 							
                             await idb.jadwal_data_itms.put(newItem);
-                            this.jadwal_items = await window.idb.jadwal_data_itms.toArray();
-							
+							this.jadwal_items = await window.idb.jadwal_data_itms.toArray();
+							if (typeof this.jadwal_items !== 'undefined' && this.jadwal_items.length > 0) {
+								this.status_submit = true;
+							}
+							else{
+								this.status_submit = false;
+							}
                             await this.cancelAction();
                         } catch (message) {
                             swalWithBootstrapButtons({
