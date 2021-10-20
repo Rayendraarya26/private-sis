@@ -81,7 +81,7 @@
 								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-jadwal&jadw_id=${row.jadw_id}'">Edit Jadwal</div>`;
 							
 							if(row.jadw_tanggal_status == 'rejected')
-								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=revisi-jadwal&jadw_id=${row.jadw_id}'">Revisi Jadwal</div>`;
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-jadwal&jadw_id=${row.jadw_id}'">Revisi Jadwal</div>`;
 							
 							btnEdit += `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{ url("$url/detail") }}?tipe=log-jadwal&jadw_id=${row.jadw_id}'">Log Revisi</div>`;
 							

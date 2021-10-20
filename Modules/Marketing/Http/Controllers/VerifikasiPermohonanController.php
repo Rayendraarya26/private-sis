@@ -280,7 +280,10 @@ class VerifikasiPermohonanController extends Controller
         ];
 
         try {
-            SisPermohonanStatus::create($dataInsert);
+			DB::beginTransaction();
+				SisPermohonanStatus::create($dataInsert);
+				SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'revisi']);
+			DB::commit();
             return redirect()->back()->with('message', "Tambah informasi revisi berhasil");
         } catch (Exception $e) {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
