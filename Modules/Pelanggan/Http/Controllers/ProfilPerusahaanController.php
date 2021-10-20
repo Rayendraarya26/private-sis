@@ -11,6 +11,6 @@ class ProfilPerusahaanController extends Controller
 
     public function index()
     {
-        return redirect(url("account/profile"));
+        return redirect(url("account/update/profile"));
     }
 }
