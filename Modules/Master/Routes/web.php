@@ -127,7 +127,7 @@ Route::prefix('master')->group(function () {
         });
         Route::prefix("sertifikasi")->group(function () {
             Route::get("/", [SisSertifikasiController::class, 'index']);
-			Route::get('/ajax', [SisSertifikasiController::class, 'ajax']);
+			Route::any('/ajax', [SisSertifikasiController::class, 'ajax']);
 			Route::get('/detail', [SisSertifikasiController::class, 'detail']);
 			Route::get('/create', [SisSertifikasiController::class, 'create']);
 			Route::post('/store', [SisSertifikasiController::class, 'store']);

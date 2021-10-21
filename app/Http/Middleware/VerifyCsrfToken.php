@@ -13,5 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'email/template/ajax',
+        'marketing/verifikasi-permohonan/ajax',
+        'master/sis/sertifikasi/ajax',
     ];
 }
