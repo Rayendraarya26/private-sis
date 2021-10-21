@@ -552,8 +552,8 @@
                                         <br>
                                         <br>
                                         <div class="w-100 text-center">
-                                            <a target="_blank" rel="noopener noreferrer" href="http://bbkkp.kemenperin.go.id/storage/files/page/JECA.png">
-                                                <img alt="" src="http://bbkkp.kemenperin.go.id/storage/files/page/JECA.png" draggable="false" style="width: 20vh;"/>
+                                            <a target="_blank" rel="noopener noreferrer" href="{{asset('assets/images/JECA.png')}}">
+                                                <img alt="" src="{{asset('assets/images/JECA.png')}}" draggable="false" style="width: 20vh;"/>
                                             </a>
                                         </div>
                                     </section>
@@ -565,8 +565,8 @@
                                         <br>
                                         <br>
                                         <div class="w-100 text-center">
-                                            <a target="_blank" rel="noopener noreferrer" href="http://bbkkp.kemenperin.go.id/storage/files/page/JPA.png">
-                                                <img alt="" src="http://bbkkp.kemenperin.go.id/storage/files/page/JPA.png" draggable="false" style="width: 30vh;"/>
+                                            <a target="_blank" rel="noopener noreferrer" href="{{asset('assets/images/JPA.png')}}">
+                                                <img alt="" src="{{asset('assets/images/JPA.png')}}" draggable="false" style="width: 30vh;"/>
                                             </a>
                                         </div>
                                     </section>
@@ -578,8 +578,8 @@
                                         <br>
                                         <br>
                                         <div class="w-100 text-center">
-                                            <a target="_blank" rel="noopener noreferrer" href="http://bbkkp.kemenperin.go.id/storage/files/page/SOP.png">
-                                                <img alt="" src="http://bbkkp.kemenperin.go.id/storage/files/page/SOP.png" draggable="false" style="width: 35vh;"/>
+                                            <a target="_blank" rel="noopener noreferrer" href="{{asset('assets/images/SOP.png')}}"">
+                                                <img alt="" src="{{asset('assets/images/SOP.png')}}" draggable="false" style="width: 35vh;"/>
                                             </a>
                                         </div>
                                     </section>
