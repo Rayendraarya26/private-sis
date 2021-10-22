@@ -1,0 +1,13 @@
+{
+    "name": "TimAudit",
+    "alias": "timaudit",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\TimAudit\\Providers\\TimAuditServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

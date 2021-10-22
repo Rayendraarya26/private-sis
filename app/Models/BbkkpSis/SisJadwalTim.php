@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisJadwalTim
  * 
  * @property int $jadw_tim_id
- * @property int|null $jadw_audit_id
+ * @property int|null $jadw_id
  * @property int $peg_id
  * @property string|null $jadw_tim_kode
  * @property string|null $jadw_tim_posisi
@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property MasterPegawai $master_pegawai
- * @property SisJadwalAudit|null $sis_jadwal_audit
+ * @property SisJadwal|null $sis_jadwal
  *
  * @package App\Models\BbkkpSis
  */
@@ -33,7 +33,7 @@ class SisJadwalTim extends Model
 	protected $primaryKey = 'jadw_tim_id';
 
 	protected $casts = [
-		'jadw_audit_id' => 'int',
+		'jadw_id' => 'int',
 		'peg_id' => 'int'
 	];
 
@@ -42,7 +42,7 @@ class SisJadwalTim extends Model
 	];
 
 	protected $fillable = [
-		'jadw_audit_id',
+		'jadw_id',
 		'peg_id',
 		'jadw_tim_kode',
 		'jadw_tim_posisi',
@@ -55,8 +55,8 @@ class SisJadwalTim extends Model
 		return $this->belongsTo(MasterPegawai::class, 'peg_id');
 	}
 
-	public function sis_jadwal_audit()
+	public function sis_jadwal()
 	{
-		return $this->belongsTo(SisJadwalAudit::class, 'jadw_audit_id');
+		return $this->belongsTo(SisJadwal::class, 'jadw_id');
 	}
 }

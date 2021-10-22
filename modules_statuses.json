@@ -12,5 +12,6 @@
     "OperatorLs": true,
     "Marketing": true,
     "Admin": true,
-    "Public": true
+    "Public": true,
+    "TimAudit": true
 }
