@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $obsvasi_id
  * @property int $jadw_id
  * @property string|null $obsvasi_uraian
- * @property Carbon|null $obsvasi_tgl
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -32,14 +31,9 @@ class SisAuditObservasi extends Model
 		'jadw_id' => 'int'
 	];
 
-	protected $dates = [
-		'obsvasi_tgl'
-	];
-
 	protected $fillable = [
 		'jadw_id',
-		'obsvasi_uraian',
-		'obsvasi_tgl'
+		'obsvasi_uraian'
 	];
 
 	public function sis_jadwal()

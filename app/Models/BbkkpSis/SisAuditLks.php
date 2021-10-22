@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisAuditLks
  * 
  * @property int $lks_id
- * @property int $jadw_id
+ * @property int $jadw_audit_id
  * @property int $user_id
  * @property string|null $jadw_team_kode
  * @property string|null $lks_uraian_ketidaksesuaian
@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
- * @property SisJadwal $sis_jadwal
+ * @property SisJadwalAudit $sis_jadwal_audit
  * @property SysUser $sys_user
  * @property Collection|SisAuditLksFile[] $sis_audit_lks_files
  * @property Collection|SisAuditLksRevisi[] $sis_audit_lks_revisis
@@ -44,7 +44,7 @@ class SisAuditLks extends Model
 	protected $primaryKey = 'lks_id';
 
 	protected $casts = [
-		'jadw_id' => 'int',
+		'jadw_audit_id' => 'int',
 		'user_id' => 'int'
 	];
 
@@ -54,7 +54,7 @@ class SisAuditLks extends Model
 	];
 
 	protected $fillable = [
-		'jadw_id',
+		'jadw_audit_id',
 		'user_id',
 		'jadw_team_kode',
 		'lks_uraian_ketidaksesuaian',
@@ -70,9 +70,9 @@ class SisAuditLks extends Model
 		'lks_status'
 	];
 
-	public function sis_jadwal()
+	public function sis_jadwal_audit()
 	{
-		return $this->belongsTo(SisJadwal::class, 'jadw_id');
+		return $this->belongsTo(SisJadwalAudit::class, 'jadw_audit_id');
 	}
 
 	public function sys_user()

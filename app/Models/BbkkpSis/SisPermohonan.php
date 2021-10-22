@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $prov_id
  * @property string|null $mohon_cust_alamat
  * @property string|null $mohon_cust_nomor_akta_pendirian
+ * @property string|null $mohon_cust_npwp
+ * @property string|null $mohon_cust_api
  * @property string|null $mohon_cust_nama_pemilik
  * @property string|null $mohon_cust_nama_pimpinan
  * @property string|null $mohon_cust_nama_wakil_manajemen
@@ -130,6 +132,8 @@ class SisPermohonan extends Model
 		'prov_id',
 		'mohon_cust_alamat',
 		'mohon_cust_nomor_akta_pendirian',
+		'mohon_cust_npwp',
+		'mohon_cust_api',
 		'mohon_cust_nama_pemilik',
 		'mohon_cust_nama_pimpinan',
 		'mohon_cust_nama_wakil_manajemen',

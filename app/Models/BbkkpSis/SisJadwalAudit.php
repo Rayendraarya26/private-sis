@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $jadw_id
  * @property string|null $jadw_audit_status
  * @property string|null $jadw_audit_team_status
+ * @property string|null $jadw_audit_status_komite
  * @property string|null $jadw_audit_jenis
  * @property int|null $mohon_id
  * @property int|null $sert_id
@@ -40,8 +41,8 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property SisJadwal|null $sis_jadwal
  * @property SisPermohonan|null $sis_permohonan
+ * @property Collection|SisAuditLks[] $sis_audit_lks
  * @property Collection|SisAuditTahap1[] $sis_audit_tahap1s
- * @property Collection|SisJadwalLog[] $sis_jadwal_logs
  * @property Collection|SisJadwalTim[] $sis_jadwal_tims
  *
  * @package App\Models\BbkkpSis
@@ -63,6 +64,7 @@ class SisJadwalAudit extends Model
 		'jadw_id',
 		'jadw_audit_status',
 		'jadw_audit_team_status',
+		'jadw_audit_status_komite',
 		'jadw_audit_jenis',
 		'mohon_id',
 		'sert_id',
@@ -93,14 +95,14 @@ class SisJadwalAudit extends Model
 		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
 	}
 
+	public function sis_audit_lks()
+	{
+		return $this->hasMany(SisAuditLks::class, 'jadw_audit_id');
+	}
+
 	public function sis_audit_tahap1s()
 	{
 		return $this->hasMany(SisAuditTahap1::class, 'jadw_audit_id');
-	}
-
-	public function sis_jadwal_logs()
-	{
-		return $this->hasMany(SisJadwalLog::class, 'jadw_audit_id');
 	}
 
 	public function sis_jadwal_tims()

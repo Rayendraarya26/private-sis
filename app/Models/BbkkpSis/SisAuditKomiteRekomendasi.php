@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $rekmd_komte_id
  * @property int $jadw_id
+ * @property string $rekmd_komte_status
  * @property string|null $rekmd_komte_isi
  * @property string|null $rekmd_komte_kronologin
  * @property Carbon $created_at
@@ -32,6 +33,7 @@ class SisAuditKomiteRekomendasi extends Model
 
 	protected $fillable = [
 		'jadw_id',
+		'rekmd_komte_status',
 		'rekmd_komte_isi',
 		'rekmd_komte_kronologin'
 	];

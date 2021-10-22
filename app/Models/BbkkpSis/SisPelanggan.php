@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $prov_id
  * @property string|null $cust_alamat
  * @property string|null $cust_nomor_akta_pendirian
+ * @property string|null $cust_npwp
+ * @property string|null $cust_api
  * @property string|null $cust_nama_pemilik
  * @property string|null $cust_nama_pimpinan
  * @property string|null $cust_nama_wakil_manajemen
@@ -104,6 +106,8 @@ class SisPelanggan extends Model
 		'prov_id',
 		'cust_alamat',
 		'cust_nomor_akta_pendirian',
+		'cust_npwp',
+		'cust_api',
 		'cust_nama_pemilik',
 		'cust_nama_pimpinan',
 		'cust_nama_wakil_manajemen',
