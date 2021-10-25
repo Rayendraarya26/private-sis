@@ -35,6 +35,8 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("auditor")->group(function () {
             Route::get('/', [PersetujuanTimAuditController::class, 'index']);
             Route::get('/ajax', [PersetujuanTimAuditController::class, 'ajax']);
+            Route::get('/edit', [PersetujuanTimAuditController::class, 'edit']);
+            Route::post('/update', [PersetujuanTimAuditController::class, 'update']);
         });
 
         Route::prefix("komite")->group(function () {
