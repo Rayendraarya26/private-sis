@@ -311,7 +311,8 @@ class BillingController extends Controller
             $fileInvoice->move($baseFileUpload, $fileInvoiceName);
             $newSisBilling->bill_invoice_file = $fileInvoicePath;
             $newSisBilling->save();
-
+			
+			array_push($uploadedPath, $fileInvoicePath);
             // add billing items
             $dataItems = json_decode($request['data_billing_item']);
 			$harus_lunas = 'ya';

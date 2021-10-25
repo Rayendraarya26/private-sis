@@ -51,6 +51,8 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("upload-jadwal")->group(function () {
             Route::get('/', [AuUploadJadwalController::class, 'index']);
             Route::get('/ajax', [AuUploadJadwalController::class, 'ajax']);
+            Route::get('/edit', [AuUploadJadwalController::class, 'edit']);
+            Route::post('/update', [AuUploadJadwalController::class, 'update']);
         });
 
         Route::prefix("tahap1")->group(function () {

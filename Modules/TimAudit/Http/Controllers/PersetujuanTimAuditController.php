@@ -95,7 +95,8 @@ class PersetujuanTimAuditController extends Controller
             $x['jadw_jenis'] = $d->jadw_jenis;
             $x['jadw_audit_jenis'] = $d->jadw_audit_jenis;
             $x['jadw_tim_kesanggupan'] = $d->jadw_tim_kesanggupan;
-            $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl?->format("Y-m-d");
+            $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
+            // $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl?->format("Y-m-d");
             array_push($result, $x);
         }
 
@@ -177,7 +178,7 @@ class PersetujuanTimAuditController extends Controller
 			DB::table('sis_jadwal_tim')
               ->where('jadw_id', $request['jadw_id'])
               ->where('peg_id', $request['peg_id'])
-              ->update(['jadw_tim_kesanggupan' => Carbon::now(), 'jadw_tim_kesanggupan_tgl' => Carbon::now()]);
+              ->update(['jadw_tim_kesanggupan' => 'ya', 'jadw_tim_kesanggupan_tgl' => Carbon::now()]);
 			
 			// Notifikasi ke LS sanggup
 			/* 

@@ -36,7 +36,7 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: false,
+                rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -45,7 +45,6 @@
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
                         title: "Aksi",
