@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_tanggal_status
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
+ * @property string|null $jadw_team_status
  * @property string|null $jadw_jenis
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
@@ -57,6 +58,7 @@ class SisJadwal extends Model
 		'jadw_tanggal_status',
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
+		'jadw_team_status',
 		'jadw_jenis',
 		'cust_id',
 		'jadw_file_jadwal'

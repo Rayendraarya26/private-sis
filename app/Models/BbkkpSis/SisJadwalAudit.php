@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $jadw_audit_id
  * @property int|null $jadw_id
  * @property string|null $jadw_audit_status
- * @property string|null $jadw_audit_team_status
  * @property string|null $jadw_audit_status_komite
  * @property string|null $jadw_audit_jenis
  * @property int|null $mohon_id
@@ -62,7 +61,6 @@ class SisJadwalAudit extends Model
 	protected $fillable = [
 		'jadw_id',
 		'jadw_audit_status',
-		'jadw_audit_team_status',
 		'jadw_audit_status_komite',
 		'jadw_audit_jenis',
 		'mohon_id',
