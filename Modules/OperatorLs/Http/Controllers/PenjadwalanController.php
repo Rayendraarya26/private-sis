@@ -294,7 +294,7 @@ class PenjadwalanController extends Controller
         $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_id) as total'))->first()->total;
         // Pagination
         $data->select("*");
-		// $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) AS total_audit_belum_selesai", "SUM(IF(sis_jadwal_audit.jadw_audit_team_status = 'rejected', 1, 0)) AS total_tim_ditolak");
+		
 		$data->skip(($request->page - 1) * $request->rows);
 		$data->take($request->rows);
 		$data->groupBy('sis_jadwal.jadw_id');
@@ -305,7 +305,6 @@ class PenjadwalanController extends Controller
             $x['jadw_id']            = $d->jadw_id;
             $x['jadw_jenis']            = $d->jadw_jenis;
             $x['cust_nama']            = $d->cust_nama;
-            $x['jadw_audit_team_status']            = $d->jadw_audit_team_status;
             $x['jadw_tanggal_status']            = $d->jadw_tanggal_status;
             $x['jadw_tanggal_mulai']            = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai']            = $d->jadw_tanggal_selesai?->format("Y-m-d");
@@ -347,7 +346,6 @@ class PenjadwalanController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['jadw_audit_id'] = $d->jadw_audit_id;
-            $x['jadw_audit_team_status'] = $d->jadw_audit_team_status;
             $x['jadw_audit_jenis'] = $d->jadw_audit_jenis;
             $x['mohon_id'] = $d->mohon_id;
             $x['sert_id'] = $d->sert_id;
@@ -433,7 +431,6 @@ class PenjadwalanController extends Controller
 				$newSisJadwalAudit = new SisJadwalAudit();
 				$newSisJadwalAudit->jadw_id = $newSisJadwal->jadw_id;
 				$newSisJadwalAudit->jadw_audit_status = 'on-going';
-				$newSisJadwalAudit->jadw_audit_team_status = 'on-going';
 				$newSisJadwalAudit->jadw_audit_jenis = $itm->jenis;
 				$newSisJadwalAudit->mohon_id = ($itm->mohon_id != '') ? $itm->mohon_id : null;
 				$newSisJadwalAudit->sert_id = $itm->sert_id;

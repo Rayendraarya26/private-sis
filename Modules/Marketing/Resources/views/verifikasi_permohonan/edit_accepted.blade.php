@@ -38,7 +38,7 @@
 									<div class="form-group row">
 										<label class="col-form-label col-sm-3" for="mohon_kajian_permohonan_file">Kajian Permohonan *</label>
 										<div class="col-sm-8">
-											<input class="form-control" type="file" name="mohon_kajian_permohonan_file">
+											<input accept="application/pdf" class="form-control" type="file" name="mohon_kajian_permohonan_file">
 											<small id="" class="form-text">Note: Upload file Kajian Permohonan yang sudah ditanda tangani ; file format berupa *.pdf</small>
 										</div>
 									</div>

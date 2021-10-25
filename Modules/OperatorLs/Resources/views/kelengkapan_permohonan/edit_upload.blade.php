@@ -38,7 +38,7 @@
 									<div class="form-group row">
 										<label class="col-form-label col-sm-3" for="mohon_pernyataan_persetujuan_file">Pernyataan Persetujuan *</label>
 										<div class="col-sm-8">
-											<input class="form-control" type="file" name="mohon_pernyataan_persetujuan_file">
+											<input class="form-control" accept="application/pdf" type="file" name="mohon_pernyataan_persetujuan_file">
 											<small id="" class="form-text">Note: Upload file upload pernyataan persetujuan ; file format berupa *.pdf</small>
 										</div>
 									</div>
