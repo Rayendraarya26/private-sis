@@ -18,6 +18,7 @@ use Modules\OperatorLs\Http\Controllers\BillingController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
 use Modules\OperatorLs\Http\Controllers\TimController;
 use Modules\OperatorLs\Http\Controllers\KomiteController;
+use Modules\OperatorLs\Http\Controllers\SertifikatUjiController;
 
 Route::prefix('operatorls')->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
@@ -72,5 +73,10 @@ Route::prefix('operatorls')->group(function () {
         Route::get('/edit', [KomiteController::class, 'edit']);
         Route::post('/update', [KomiteController::class, 'update']);
         Route::delete('/delete', [KomiteController::class, 'destroy']);
+    });
+	
+	Route::prefix("sertifikat-uji")->group(function () {
+        Route::get('/', [SertifikatUjiController::class, 'index']);
+        Route::get('/ajax', [SertifikatUjiController::class, 'ajax']);
     });
 });
