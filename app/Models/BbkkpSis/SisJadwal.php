@@ -29,7 +29,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
  * @property Collection|SisAuditLapLengkap[] $sis_audit_lap_lengkaps
  * @property Collection|SisAuditLapRingkas[] $sis_audit_lap_ringkas
- * @property Collection|SisAuditLogbook[] $sis_audit_logbooks
  * @property Collection|SisAuditObservasi[] $sis_audit_observasis
  * @property Collection|SisAuditPpc[] $sis_audit_ppcs
  * @property Collection|SisAuditSertifikatProduk[] $sis_audit_sertifikat_produks
@@ -87,11 +86,6 @@ class SisJadwal extends Model
 	public function sis_audit_lap_ringkas()
 	{
 		return $this->hasMany(SisAuditLapRingkas::class, 'jadw_id');
-	}
-
-	public function sis_audit_logbooks()
-	{
-		return $this->hasMany(SisAuditLogbook::class, 'jadw_id');
 	}
 
 	public function sis_audit_observasis()

@@ -7,6 +7,7 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property MasterPegawai $master_pegawai
  * @property SisJadwal|null $sis_jadwal
+ * @property Collection|SisAuditLogbook[] $sis_audit_logbooks
  *
  * @package App\Models\BbkkpSis
  */
@@ -58,5 +60,10 @@ class SisJadwalTim extends Model
 	public function sis_jadwal()
 	{
 		return $this->belongsTo(SisJadwal::class, 'jadw_id');
+	}
+
+	public function sis_audit_logbooks()
+	{
+		return $this->hasMany(SisAuditLogbook::class, 'jadw_tim_id');
 	}
 }

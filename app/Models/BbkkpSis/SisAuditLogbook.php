@@ -13,13 +13,13 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisAuditLogbook
  * 
  * @property int $logbook_id
- * @property int $jadw_id
+ * @property int $jadw_tim_id
  * @property string|null $logbook_filepath
  * @property string|null $logbook_jenis
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisJadwal $sis_jadwal
+ * @property SisJadwalTim $sis_jadwal_tim
  *
  * @package App\Models\BbkkpSis
  */
@@ -29,17 +29,17 @@ class SisAuditLogbook extends Model
 	protected $primaryKey = 'logbook_id';
 
 	protected $casts = [
-		'jadw_id' => 'int'
+		'jadw_tim_id' => 'int'
 	];
 
 	protected $fillable = [
-		'jadw_id',
+		'jadw_tim_id',
 		'logbook_filepath',
 		'logbook_jenis'
 	];
 
-	public function sis_jadwal()
+	public function sis_jadwal_tim()
 	{
-		return $this->belongsTo(SisJadwal::class, 'jadw_id');
+		return $this->belongsTo(SisJadwalTim::class, 'jadw_tim_id');
 	}
 }
