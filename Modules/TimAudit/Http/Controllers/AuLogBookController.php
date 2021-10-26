@@ -49,10 +49,9 @@ class AuLogBookController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
 		$data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
 		$data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		$data->leftJoin('sis_jadwal_tim', function($join)
+		$data->join('sis_jadwal_tim', function($join)
                          {
                              $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-                             $join->on('sis_jadwal_tim.jadw_tim_posisi','=',DB::raw("'auditor'"));
                          });
 						 
 		$data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");		
@@ -67,7 +66,7 @@ class AuLogBookController extends Controller
 		$data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
 		$data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
 		$data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
-		$data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'auditor');
+		$data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
 		// tambah jika not null file jadwal
 		$data->whereNotNull('sis_jadwal.jadw_file_jadwal');
         if (!empty($request->filterRules)) {
@@ -140,10 +139,8 @@ class AuLogBookController extends Controller
 		$dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
 		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
 		$dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-		$dataJadwal->join('sis_jadwal_tim', function($join)
-                         {
+		$dataJadwal->join('sis_jadwal_tim', function($join) {
                              $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-                             $join->on('sis_jadwal_tim.jadw_tim_posisi','=',DB::raw("'auditor'"));
                          });
 						 
 		$dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");		
@@ -197,7 +194,7 @@ class AuLogBookController extends Controller
 		
 		$uploadedPath = [];
 		try {
-			if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file jadwal", 400);
+			if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file logbook", 400);
 			
 			$dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
 			$dataJadwal->select('*');

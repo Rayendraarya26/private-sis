@@ -197,7 +197,7 @@ class PpcLogBookController extends Controller
 		
 		$uploadedPath = [];
 		try {
-			if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file jadwal", 400);
+			if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file logbook", 400);
 			
 			$dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
 			$dataJadwal->select('*');
