@@ -58,11 +58,18 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("tahap1")->group(function () {
             Route::get('/', [AuTahap1Controller::class, 'index']);
             Route::get('/ajax', [AuTahap1Controller::class, 'ajax']);
+			Route::get('/create', [AuTahap1Controller::class, 'create']);
+			Route::post('/store', [AuTahap1Controller::class, 'store']);
+			Route::get('/edit', [AuTahap1Controller::class, 'edit']);
+			Route::post('/update', [AuTahap1Controller::class, 'update']);
+			Route::delete('/delete', [AuTahap1Controller::class, 'destroy']);
         });
 
         Route::prefix("daftar-periksa")->group(function () {
             Route::get('/', [AuDaftarPeriksaController::class, 'index']);
             Route::get('/ajax', [AuDaftarPeriksaController::class, 'ajax']);
+            Route::get('/edit', [AuDaftarPeriksaController::class, 'edit']);
+            Route::post('/update', [AuDaftarPeriksaController::class, 'update']);
         });
         Route::prefix("lks")->group(function () {
             Route::get('/', [AuLksController::class, 'index']);
@@ -87,6 +94,8 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("log-book")->group(function () {
             Route::get('/', [AuLogBookController::class, 'index']);
             Route::get('/ajax', [AuLogBookController::class, 'ajax']);
+            Route::get('/edit', [AuLogBookController::class, 'edit']);
+            Route::post('/update', [AuLogBookController::class, 'update']);
         });
 
         Route::prefix("pengajuan-komite")->group(function () {
@@ -115,11 +124,15 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("laporan")->group(function () {
             Route::get('/', [PpcLaporanController::class, 'index']);
             Route::get('/ajax', [PpcLaporanController::class, 'ajax']);
+            Route::get('/edit', [PpcLaporanController::class, 'edit']);
+            Route::post('/update', [PpcLaporanController::class, 'update']);
         });
 
         Route::prefix("log-book")->group(function () {
             Route::get('/', [PpcLogBookController::class, 'index']);
             Route::get('/ajax', [PpcLogBookController::class, 'ajax']);
+            Route::get('/edit', [PpcLogBookController::class, 'edit']);
+            Route::post('/update', [PpcLogBookController::class, 'update']);
         });
     });
 });

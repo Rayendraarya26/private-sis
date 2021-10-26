@@ -188,16 +188,8 @@ class AuUploadJadwalController extends Controller
               ->where('jadw_id', $request['jadw_id'])
               ->update(['jadw_file_jadwal' => $fileJadwalPath]);
 			
-			// Notifikasi ke LS sanggup
+			// Notifikasi
 			/* 
-			$newSisJadwalLog = new SisJadwalLog();
-			$newSisJadwalLog->jadw_id = $request['jadw_id'];
-			$newSisJadwalLog->jlog_tipe = 'Informasi';
-			$newSisJadwalLog->jlog_judul = 'Pengajuan Data Komite Audit';
-			$newSisJadwalLog->jlog_pesan = 'Telah dilakukan pengajuan Komite untuk jadwal nomor #'.$request['jadw_id'].'.';
-			$newSisJadwalLog->created_at = Carbon::now();
-			$newSisJadwalLog->updated_at = Carbon::now();
-			$newSisJadwalLog->save();
 			 */
 			DB::commit();
 			return responseJSON(200, [], 'Berhasil menyimpan data');
