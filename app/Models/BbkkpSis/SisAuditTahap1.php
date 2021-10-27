@@ -15,10 +15,14 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $aud_thp1_id
  * @property int $jadw_audit_id
- * @property string|null $aud_thp1_status_audit
- * @property string|null $aud_thp1_kesimpulan
- * @property string|null $aud_thp1_rekomendasi
- * @property string|null $aud_thp1_ditijau_oleh
+ * @property string|null $aud_thp1_kolom_v
+ * @property string|null $aud_thp1_kolom_vi
+ * @property string|null $aud_thp1_kolom_vii
+ * @property string|null $aud_thp1_kolom_viii
+ * @property string|null $aud_thp1_kolom_ix
+ * @property string|null $aud_thp1_kolom_x
+ * @property string|null $aud_thp1_kolom_xi
+ * @property string|null $aud_thp1_kolom_xii
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -38,10 +42,14 @@ class SisAuditTahap1 extends Model
 
 	protected $fillable = [
 		'jadw_audit_id',
-		'aud_thp1_status_audit',
-		'aud_thp1_kesimpulan',
-		'aud_thp1_rekomendasi',
-		'aud_thp1_ditijau_oleh'
+		'aud_thp1_kolom_v',
+		'aud_thp1_kolom_vi',
+		'aud_thp1_kolom_vii',
+		'aud_thp1_kolom_viii',
+		'aud_thp1_kolom_ix',
+		'aud_thp1_kolom_x',
+		'aud_thp1_kolom_xi',
+		'aud_thp1_kolom_xii'
 	];
 
 	public function sis_jadwal_audit()
