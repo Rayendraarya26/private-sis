@@ -9,6 +9,6 @@ class DashboardController extends Controller
     public function index()
     {
         //dd(session()->all());
-        return view('home::index');
+        return view('home::dashboard.index');
     }
 }

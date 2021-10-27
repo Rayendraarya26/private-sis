@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Home\Http\Controllers\AccountController;
 use Modules\Home\Http\Controllers\DashboardController;
+use Modules\Home\Http\Controllers\ExampleController;
 use Modules\Home\Http\Controllers\NotificationController;
 
 
@@ -26,4 +27,6 @@ Route::middleware('auth')->group(function () {
         Route::get('update/password', [AccountController::class, 'editPassword'])->name('change_password');
         Route::post('update/password', [AccountController::class, 'updatePassword']);
     });
+
+    Route::get("example/pdf", [ExampleController::class, 'domPdf']);
 });
