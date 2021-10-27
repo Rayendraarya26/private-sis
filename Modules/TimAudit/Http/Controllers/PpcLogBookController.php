@@ -110,7 +110,7 @@ class PpcLogBookController extends Controller
             $x['jadw_jenis'] = $d->jadw_jenis;
             $x['jadw_audit_jenis'] = $d->jadw_audit_jenis;
 			
-            $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "'.url($d->logbook_filepath).'"><i class="fas fa-cloud-download"></i> Download</div>' : '';
+            $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "'.url($d->logbook_filepath).'"><i class="fas fa-cloud-download"></i> Download</a>' : '';
             array_push($result, $x);
         }
 
@@ -205,23 +205,23 @@ class PpcLogBookController extends Controller
 			$restJadwal = $dataJadwal->get()[0];
 			// DEFINE BASE UPLOAD AND UPDATE logbook_filepath
             $baseFileUpload     = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
-            $fileJadwal     = $request->file('logbook_filepath');
-            $fileJadwalName = Str::slug('file-logbook-ppc-' . $fileJadwal->getClientOriginalName()) . '-' . time() . '.' . $fileJadwal->getClientOriginalExtension();
-            $fileJadwalPath = sprintf("%s/%s", $baseFileUpload, $fileJadwalName);
-            $fileJadwal->move($baseFileUpload, $fileJadwalName);
-			array_push($uploadedPath, $fileJadwalPath);
+            $fileLogbook     = $request->file('logbook_filepath');
+            $fileLogbookName = Str::slug('file-logbook-ppc-' . $fileLogbook->getClientOriginalName()) . '-' . time() . '.' . $fileLogbook->getClientOriginalExtension();
+            $fileLogbookPath = sprintf("%s/%s", $baseFileUpload, $fileLogbookName);
+            $fileLogbook->move($baseFileUpload, $fileLogbookName);
+			array_push($uploadedPath, $fileLogbookPath);
 			DB::beginTransaction();
 			if (DB::table('sis_audit_logbook')->where('jadw_tim_id', $request['jadw_tim_id'])->where('logbook_jenis', 'ppc')->exists()) {
 				DB::table('sis_audit_logbook')
 				  ->where('jadw_tim_id', $request['jadw_tim_id'])
 				  ->where('logbook_jenis', 'ppc')
-				  ->update(['logbook_filepath' => $fileJadwalPath]);
+				  ->update(['logbook_filepath' => $fileLogbookPath]);
 			}
 			else{
 				DB::table('sis_audit_logbook')->insert([
 					'jadw_tim_id' => $request['jadw_tim_id'],
 					'logbook_jenis' => 'ppc',
-					'logbook_filepath' => $fileJadwalPath,
+					'logbook_filepath' => $fileLogbookPath,
 				]);
 			}
 			

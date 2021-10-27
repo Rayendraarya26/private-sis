@@ -180,12 +180,6 @@
 												   Kode Pos : {{$dpp->mohon_pabrik_kode_pos}};<hr/> Fax : {{$dpp->mohon_pabrik_nomor_fax}};<hr/> Telp : {{$dpp->mohon_pabrik_nomor_telp}};<hr/> Hp : {{$dpp->mohon_pabrik_nomor_hp}}
 												  </td>
 												</tr>
-												<tr>
-												  <td>E-mail</td>
-												  <td>:</td>
-												  <td>{{$dpp->komodt_nama}}</td>
-												</tr>
-												<tr>
 												  <td>Kegiatan Utama</td>
 												  <td>:</td>
 												  <td>{{$dpp->mohon_pabrik_kegiatan_utama}}</td>
@@ -198,12 +192,12 @@
 												<tr>
 												  <td>Luas Tanah</td>
 												  <td>:</td>
-												  <td>{{$dpp->mohon_pabrik_luas_tanah}} Orang</td>
+												  <td>{{$dpp->mohon_pabrik_luas_tanah}}</td>
 												</tr>
 												<tr>
 												  <td>Luas Bangunan</td>
 												  <td>:</td>
-												  <td>{{$dpp->mohon_pabrik_luas_bangunan}} Orang</td>
+												  <td>{{$dpp->mohon_pabrik_luas_bangunan}}</td>
 												</tr>
 											</tbody>
 										</table>

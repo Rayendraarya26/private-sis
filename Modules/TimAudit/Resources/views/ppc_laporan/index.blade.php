@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Upload Log Book PPC')
+@section('title', 'Upload Laporan PPC')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal Audit dan File Upload Log Book PPC</h3>
+                            <h3 class="dt-card__title">Data Jadwal Audit dan File Upload Laporan PPC</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -47,13 +47,13 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
+                        title: "<br/><br/><br/>",
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;			
-							btnEdit += `<div data-options="iconCls:'fas fa-cloud-upload'" onclick="location.href = '{{ url("$url/edit") }}?tipe=upload-logbook&jadw_id=${row.jadw_id}'">Upload Logbook</div>`;
+							btnEdit += `<div data-options="iconCls:'fas fa-cloud-upload'" onclick="location.href = '{{ url("$url/edit") }}?tipe=upload-laporan&jadw_id=${row.jadw_id}'">Upload Laporan</div>`;
 							
                             return `
 								<div>
@@ -68,16 +68,7 @@
                     }
                 ]],
                 columns: [[
-                    {field: 'logbook_filepath', title: 'File<br>Logbook', width: 100, sortable: true,
-						formatter: function (val, row) {
-                            let btnDownload = ``;		
-							if(row.logbook_filepath != ''){
-								btnDownload += `${row.logbook_filepath}`;
-							}
-							
-                            return `${btnDownload}`
-                        }
-					},
+                    {field: 'total_file', title: 'Total<br/>Laporan<br>Ter-Upload', width: 100, sortable: false, align:'center'},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
@@ -95,7 +86,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {field: 'logbook_filepath', type: 'label'},
+                    {field: 'total_file', type: 'label'},
                 ]);
         });
     </script>

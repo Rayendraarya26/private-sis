@@ -7,6 +7,9 @@ use App\Models\BbkkpSis\SisJadwalAudit;
 use App\Models\BbkkpSis\SisAuditTimKomite;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SisAuditLogbook;
+use App\Models\BbkkpSis\SisAuditPpc;
+
+use App\Models\BbkkpSis\SisPelangganPabrik;
 
 use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
@@ -40,27 +43,62 @@ class PpcLaporanController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit'       => $this->ajax_datagrid_jadwal_audit($request),
+            'datagrid-ppc-laporan'       => $this->ajax_datagrid_ppc_laporan($request),
             default                     => null,
         };
     }
+	
+	private function ajax_datagrid_ppc_laporan(Request $request)
+	{
+		
+		$data = SisAuditPpc::join('sis_jadwal', "sis_audit_ppc.jadw_id", "=", "sis_jadwal.jadw_id");
+		
+		$data->where('sis_jadwal.jadw_id', '=', $request->jadw_id);
+        if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+				$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+            }
+        }
+		
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+		
+        // Pagination
+        $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
+		
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['audit_ppc_id'] = $d->audit_ppc_id;
+            $x['jadw_id'] = $d->jadw_id;
+            $x['audit_ppc_jenis_file'] = $d->audit_ppc_jenis_file;
+            $x['audit_ppc_filepath'] = ($d->audit_ppc_filepath != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "'.url($d->audit_ppc_filepath).'"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+			
+            $x['created_at'] = $d->created_at?->format("Y-m-d");
+            $x['updated_at'] = $d->updated_at?->format("Y-m-d");
+            array_push($result, $x);
+        }
+
+        return response()->json(["rows" => $result]);
+	}
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
 		$data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
 		$data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		$data->leftJoin('sis_jadwal_tim', function($join)
+		$data->join('sis_jadwal_tim', function($join)
                          {
                              $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
                              $join->on('sis_jadwal_tim.jadw_tim_posisi','=',DB::raw("'ppc'"));
                          });
 						 
-		$data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");		
-		$data->leftJoin('sis_audit_logbook', function($join)
-                         {
-                             $join->on("sis_audit_logbook.jadw_tim_id", "=", "sis_jadwal_tim.jadw_tim_id");
-                             $join->on('logbook_jenis','=',DB::raw("'ppc'"));
-                         });
+		$data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+		$data->leftJoin('sis_audit_ppc', "sis_audit_ppc.jadw_id", "=", "sis_jadwal.jadw_id");
 			
         // Filter
 		$data->where('master_pegawai.user_id', '=', auth()->id());
@@ -94,6 +132,7 @@ class PpcLaporanController extends Controller
 		$data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
 		$data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
 		$data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
+		$data->selectRaw("count(distinct sis_audit_ppc.audit_ppc_id) as total_file");
 		$data->skip(($request->page - 1) * $request->rows);
 		$data->take($request->rows);
 		$data->havingRaw('total_submit_komite > ?', [0]);
@@ -109,8 +148,7 @@ class PpcLaporanController extends Controller
             $x['sert_nama'] = $d->sert_nama;
             $x['jadw_jenis'] = $d->jadw_jenis;
             $x['jadw_audit_jenis'] = $d->jadw_audit_jenis;
-			
-            $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "'.url($d->logbook_filepath).'"><i class="fas fa-cloud-download"></i> Download</div>' : '';
+            $x['total_file'] = $d->total_file;
             array_push($result, $x);
         }
 
@@ -121,12 +159,12 @@ class PpcLaporanController extends Controller
     {
         $request->validate(['tipe' => 'required']);
 		return match ($request['tipe']) {
-            'upload-logbook' => $this->edit_upload_logbook($request),
+            'upload-laporan' => $this->edit_upload_laporan($request),
             default => null,
         };
     }
 	
-	private function edit_upload_logbook(Request $request)
+	private function edit_upload_laporan(Request $request)
     {
 		$breadcrumbs = [
             new BreadcrumbsStruct('Tim Audit'),
@@ -140,21 +178,13 @@ class PpcLaporanController extends Controller
 		$dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
 		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
 		$dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-		$dataJadwal->join('sis_jadwal_tim', function($join)
-                         {
-                             $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-                             $join->on('sis_jadwal_tim.jadw_tim_posisi','=',DB::raw("'ppc'"));
-                         });
+		$dataJadwal->join('sis_jadwal_tim', function($join) {
+							$join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
+							$join->on('sis_jadwal_tim.jadw_tim_posisi','=',DB::raw("'ppc'"));
+						});
 						 
-		$dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");		
-		/* $dataJadwal->leftJoin('sis_audit_logbook', function($join)
-                         {
-                             $join->on("sis_audit_logbook.jadw_tim_id", "=", "sis_jadwal_tim.jadw_tim_id");
-                             $join->on('logbook_jenis','=',DB::raw("'ppc'"));
-                         }); */
-						 
+		$dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
 		$dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
-		
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
@@ -166,14 +196,18 @@ class PpcLaporanController extends Controller
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
-		$dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.jadw_tim_posisi) AS jadw_tim_posisi");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.peg_id) AS peg_id");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.jadw_tim_id) AS jadw_tim_id");
-		
-						 
 		$dataJadwal->groupBy('sis_jadwal.jadw_id');
+		$restJadwal = $dataJadwal->get()[0];
 		
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];		
+		$dataPabrik = SisPelangganPabrik::where('cust_id', $restJadwal->cust_id);
+		$dataPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_pelanggan_pabrik.kab_id');
+		$dataPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_pelanggan_pabrik.kec_id');
+		$dataPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_pelanggan_pabrik.prov_id');
+		$dataPabrik->select('*');
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $restJadwal, 'dataPabrik' => $dataPabrik->get()];		
         return view("$this->view.edit_upload_laporan")->with($parser);
     }
 	
@@ -190,44 +224,44 @@ class PpcLaporanController extends Controller
 	{
 		$request->validate([
 			"jadw_id" => 'required',
-			"jadw_tim_id" => 'required',
-			"logbook_filepath" => 'required',
-			"logbook_filepath_lama" => 'nullable',
+			"audit_ppc_filepath" => 'nullable',
+			"audit_ppc_jenis_file" => 'required',
 		]);
 		
 		$uploadedPath = [];
 		try {
-			if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file jadwal", 400);
+			if (!$request->hasFile('audit_ppc_filepath')) throw new Exception("Mohon unggah file jadwal", 400);
 			
 			$dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
 			$dataJadwal->select('*');
 			
 			$restJadwal = $dataJadwal->get()[0];
-			// DEFINE BASE UPLOAD AND UPDATE logbook_filepath
             $baseFileUpload     = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
-            $fileJadwal     = $request->file('logbook_filepath');
-            $fileJadwalName = Str::slug('file-logbook-ppc-' . $fileJadwal->getClientOriginalName()) . '-' . time() . '.' . $fileJadwal->getClientOriginalExtension();
-            $fileJadwalPath = sprintf("%s/%s", $baseFileUpload, $fileJadwalName);
-            $fileJadwal->move($baseFileUpload, $fileJadwalName);
-			array_push($uploadedPath, $fileJadwalPath);
+            $fileLaporan     = $request->file('audit_ppc_filepath');
+            $fileLaporanName = Str::slug('file-laporan-ppc-' . $fileLaporan->getClientOriginalName()) . '-' . time() . '.' . $fileLaporan->getClientOriginalExtension();
+            $fileLaporanPath = sprintf("%s/%s", $baseFileUpload, $fileLaporanName);
+            $fileLaporan->move($baseFileUpload, $fileLaporanName);
+			array_push($uploadedPath, $fileLaporanPath);
 			DB::beginTransaction();
-			if (DB::table('sis_audit_logbook')->where('jadw_tim_id', $request['jadw_tim_id'])->where('logbook_jenis', 'ppc')->exists()) {
-				DB::table('sis_audit_logbook')
-				  ->where('jadw_tim_id', $request['jadw_tim_id'])
-				  ->where('logbook_jenis', 'ppc')
-				  ->update(['logbook_filepath' => $fileJadwalPath]);
+			
+			$restLaporan = DB::table('sis_audit_ppc')->where('jadw_id', $request['jadw_id'])->where('audit_ppc_jenis_file', $request['audit_ppc_jenis_file'])->first();
+			if ($restLaporan !== null) {
+				@unlink($restLaporan->audit_ppc_filepath);
+				
+				DB::table('sis_audit_ppc')
+				  ->where('jadw_id', $request['jadw_id'])
+				  ->where('audit_ppc_jenis_file', $request['audit_ppc_jenis_file'])
+				  ->update(['audit_ppc_filepath' => $fileLaporanPath]);
 			}
 			else{
-				DB::table('sis_audit_logbook')->insert([
-					'jadw_tim_id' => $request['jadw_tim_id'],
-					'logbook_jenis' => 'ppc',
-					'logbook_filepath' => $fileJadwalPath,
+				DB::table('sis_audit_ppc')->insert([
+					'jadw_id' => $request['jadw_id'],
+					'audit_ppc_jenis_file' => $request['audit_ppc_jenis_file'],
+					'audit_ppc_filepath' => $fileLaporanPath,
 				]);
 			}
 			
-			if($request['logbook_filepath_lama'] != ''){
-				@unlink($request['logbook_filepath_lama']);
-			}
+			
 			
 			// Notifikasi
 			/* 
