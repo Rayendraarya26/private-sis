@@ -13,13 +13,12 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisAuditDaftarPeriksa
  * 
  * @property int $dftr_periksa_id
- * @property int $jadw_id
+ * @property int $jadw_tim_id
  * @property string|null $dftr_periksa_file
- * @property string|null $dftr_periksa_oleh
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisJadwal $sis_jadwal
+ * @property SisJadwalTim $sis_jadwal_tim
  *
  * @package App\Models\BbkkpSis
  */
@@ -29,17 +28,16 @@ class SisAuditDaftarPeriksa extends Model
 	protected $primaryKey = 'dftr_periksa_id';
 
 	protected $casts = [
-		'jadw_id' => 'int'
+		'jadw_tim_id' => 'int'
 	];
 
 	protected $fillable = [
-		'jadw_id',
-		'dftr_periksa_file',
-		'dftr_periksa_oleh'
+		'jadw_tim_id',
+		'dftr_periksa_file'
 	];
 
-	public function sis_jadwal()
+	public function sis_jadwal_tim()
 	{
-		return $this->belongsTo(SisJadwal::class, 'jadw_id');
+		return $this->belongsTo(SisJadwalTim::class, 'jadw_tim_id');
 	}
 }

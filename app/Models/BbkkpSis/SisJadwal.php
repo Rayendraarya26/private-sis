@@ -25,7 +25,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SisPelanggan $sis_pelanggan
- * @property Collection|SisAuditDaftarPeriksa[] $sis_audit_daftar_periksas
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
  * @property Collection|SisAuditLapLengkap[] $sis_audit_lap_lengkaps
  * @property Collection|SisAuditLapRingkas[] $sis_audit_lap_ringkas
@@ -66,11 +65,6 @@ class SisJadwal extends Model
 	public function sis_pelanggan()
 	{
 		return $this->belongsTo(SisPelanggan::class, 'cust_id');
-	}
-
-	public function sis_audit_daftar_periksas()
-	{
-		return $this->hasMany(SisAuditDaftarPeriksa::class, 'jadw_id');
 	}
 
 	public function sis_audit_komite_periksa()
