@@ -25,7 +25,6 @@ use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
 use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
-use Modules\TimAudit\Http\Controllers\PersetujuanTimKomiteController;
 use Modules\TimAudit\Http\Controllers\PpcLaporanController;
 use Modules\TimAudit\Http\Controllers\PpcLogBookController;
 
@@ -37,11 +36,6 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::get('/ajax', [PersetujuanTimAuditController::class, 'ajax']);
             Route::get('/edit', [PersetujuanTimAuditController::class, 'edit']);
             Route::post('/update', [PersetujuanTimAuditController::class, 'update']);
-        });
-
-        Route::prefix("komite")->group(function () {
-            Route::get('/', [PersetujuanTimKomiteController::class, 'index']);
-            Route::get('/ajax', [PersetujuanTimKomiteController::class, 'ajax']);
         });
     });
 
