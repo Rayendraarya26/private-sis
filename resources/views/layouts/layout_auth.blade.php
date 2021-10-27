@@ -30,6 +30,9 @@
     <link rel="stylesheet" href="{{asset('assets/fontawesome/css/all.min.css')}}">
     <!-- /load styles -->
 
+    <script>
+        window.APP_URL = {{env('APP_URL')}}
+    </script>
     @stack("css")
 </head>
 <body class="dt-sidebar--fixed dt-header--fixed">

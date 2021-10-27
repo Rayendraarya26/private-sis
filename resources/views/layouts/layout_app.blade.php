@@ -56,6 +56,10 @@
         }
     </style>
 
+    <script>
+        window.APP_URL = `{{env('APP_URL')}}`
+    </script>
+
     @stack('css')
 </head>
 
