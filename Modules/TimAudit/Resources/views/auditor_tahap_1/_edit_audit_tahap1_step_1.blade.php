@@ -35,34 +35,34 @@
 							@if($dpk->aud_thp1_det_hasil_tinjauan == 'ok')
 								<div class="col-md-12 col-sm-12">
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]" id="hasil_tinjauan_ok" value="ok" checked>
-									<label class="form-check-label" for="hasil_tinjauan_ok">OK</label>
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}" value="ok" checked>
+									<label class="form-check-label" for="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}">OK</label>
 								</div>
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]" id="hasil_tinjauan_no" value="no">
-									<label class="form-check-label" for="hasil_tinjauan_no">NO</label>
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}" value="no">
+									<label class="form-check-label" for="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}">NO</label>
 								</div>
 								</div>
 							@elseif($dpk->aud_thp1_det_hasil_tinjauan == 'no')
 							<div class="col-md-12 col-sm-12">
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]" id="hasil_tinjauan_ok" value="ok">
-									<label class="form-check-label" for="hasil_tinjauan_ok">OK</label>
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}" value="ok">
+									<label class="form-check-label" for="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}">OK</label>
 								</div>
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]" id="hasil_tinjauan_no" value="no" checked>
-									<label class="form-check-label" for="hasil_tinjauan_no">NO</label>
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}" value="no" checked>
+									<label class="form-check-label" for="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}">NO</label>
 								</div>
 								</div>
 							@else
 								<div class="col-md-12 col-sm-12">
 									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]" id="hasil_tinjauan_ok" value="ok">
-										<label class="form-check-label" for="hasil_tinjauan_ok">OK</label>
+										<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}" value="ok">
+										<label class="form-check-label" for="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}">OK</label>
 									</div>
 									<div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]" id="hasil_tinjauan_no" value="no">
-										<label class="form-check-label" for="hasil_tinjauan_no">NO</label>
+										<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}" value="no">
+										<label class="form-check-label" for="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}">NO</label>
 									</div>
 								</div>
 							@endif 
@@ -70,7 +70,7 @@
 					  </td>
 					  <td>
 						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
-							<textarea type="text" class="form-control" name="keterangan[{{$dpk->aud_thp1_det_id}}]" id="keterangan" placeholder="Keterangan" value="{{$dpk->aud_thp1_det_keterangan}}"></textarea>
+							<textarea type="text" class="form-control" name="keterangan_{{$dpk->aud_thp1_det_id}}" id="keterangan" placeholder="Keterangan">{{$dpk->aud_thp1_det_keterangan}}</textarea>
 						@endif 
 					  </td>
 					</tr>
@@ -95,7 +95,21 @@
                 },
                 methods: {
                     validate() {
-                        // if (this.cust_id == null) throw "Pilih Pelanggan"
+						@foreach($dataAuditKlausul as $dpk)
+							@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+								if($('input[name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}').is(':checked')) { 
+					
+								}
+								else{
+									throw "Pilih Hasil Tinjauan untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}}"
+								}
+								
+								if ($('input[name="kode_dok[{{$dpk->aud_thp1_det_id}}]').val() == '') throw "Kode Dokumen untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}} masih kosong" 
+								if ($('input[name="judul_dok[{{$dpk->aud_thp1_det_id}}]').val() == '') throw "Judul Dokumen untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}} masih kosong" 
+								console.log($('textarea[name="keterangan_{{$dpk->aud_thp1_det_id}}').val());
+							@endif
+						@endforeach
+						
                     },
                     async setForm() {
                         

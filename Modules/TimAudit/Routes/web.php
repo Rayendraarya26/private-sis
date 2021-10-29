@@ -55,6 +55,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
 			Route::get('/edit', [AuTahap1Controller::class, 'edit']);
 			Route::post('/update', [AuTahap1Controller::class, 'update']);
 			Route::delete('/delete', [AuTahap1Controller::class, 'destroy']);
+			Route::get('/print', [AuTahap1Controller::class, 'print']);
         });
 
         Route::prefix("daftar-periksa")->group(function () {

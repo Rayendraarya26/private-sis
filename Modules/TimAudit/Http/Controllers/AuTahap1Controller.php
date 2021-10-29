@@ -43,8 +43,27 @@ class AuTahap1Controller extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit'       => $this->ajax_datagrid_jadwal_audit($request),
+            'tinymce-uploadimage'       => $this->ajax_tinymce_uploadimage($request),
             default                     => null,
         };
+    }
+	
+	private function ajax_tinymce_uploadimage(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
+            ]);
+
+            $img = $request->file('file');
+            $imgName = $img->hashName();
+            $img->move(public_path(config('app.path_file_master')), $imgName);
+            $publicUrl = asset(config('app.path_file_master') . '/' . $imgName);
+
+            return response()->json(["location" => $publicUrl]);
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
     }
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)
@@ -69,7 +88,7 @@ class AuTahap1Controller extends Controller
 		$data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
 		$data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
 		$data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-		$data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
+		$data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
 		$data->whereIn('sis_jadwal_audit.jadw_audit_jenis', ['tahap-1']);
 		$data->whereNotNull('sis_jadwal.jadw_file_jadwal');
 		
@@ -89,7 +108,6 @@ class AuTahap1Controller extends Controller
         // Total
         $total = $data->select(DB::raw('count(distinct sis_jadwal_audit.jadw_audit_id) as total'))->first()->total;
 		
-		
         // Pagination
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
 		$data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
@@ -101,6 +119,7 @@ class AuTahap1Controller extends Controller
 		
         $result = [];
         foreach ($data->get() as $d) {
+            $x['jadw_audit_status'] = $d->jadw_audit_status;
             $x['jadw_id'] = $d->jadw_id;
             $x['jadw_audit_id'] = $d->jadw_audit_id;
             $x['jadw_tanggal_mulai'] = $d->jadw_tanggal_mulai?->format("Y-m-d");
@@ -152,7 +171,6 @@ class AuTahap1Controller extends Controller
 		$dataAudit->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
 		$status_entry = false;
 		
-		
 		$dataAuditKlausul = SisAuditTahap1::join('sis_jadwal_audit', "sis_audit_tahap1.jadw_audit_id", "=", "sis_jadwal_audit.jadw_audit_id");
 		$dataAuditKlausul->join('sis_audit_detail_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_detail_tahap1.aud_thp1_id");
 		$dataAuditKlausul->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
@@ -161,7 +179,7 @@ class AuTahap1Controller extends Controller
 			$status_entry = true;
 		}
 		
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get() ];		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' => $dataAudit->get()[0] ];		
         return view("$this->view.edit_audit_tahap1")->with($parser);
     }
 
@@ -170,9 +188,71 @@ class AuTahap1Controller extends Controller
         $request->validate(['tipe' => 'required']);
 		return match ($request['tipe']) {
             'update-generate-tahap1' => $this->update_generate_tahap1($request),
+            'update-audit-tahap1' => $this->update_audit_tahap1($request),
             default => null,
         };
     }
+	
+	private function update_audit_tahap1(Request $request)
+	{
+		$request->validate([
+			"jadw_audit_id" => 'required',
+			"sert_id" => 'required',
+			"mohon_id" => 'required',
+			"kolom_v" => 'required',
+			"kolom_vi" => 'required',
+			"kolom_vii" => 'required',
+			"kolom_viii" => 'required',
+			"kolom_ix" => 'required',
+			"kolom_xi" => 'required',
+			"kolom_xii" => 'required',
+			"status_audit" => 'required',
+			"detail_hasil_tinjauan" => 'required',
+			"detail_judul_dok" => 'required',
+			"detail_keterangan" => 'required',
+			"detail_kode_dok" => 'required',
+		]);
+		try {
+			DB::beginTransaction();			
+			DB::table('sis_jadwal_audit')
+				  ->where('jadw_audit_id', $request['jadw_audit_id'])
+				  ->update([
+					"jadw_audit_status" => $request['status_audit'],
+					"updated_at" => Carbon::now(),
+				  ]);
+				  
+			DB::table('sis_audit_tahap1')
+				  ->where('jadw_audit_id', $request['jadw_audit_id'])
+				  ->update([
+					"aud_thp1_kolom_v" => $request['kolom_v'],
+					"aud_thp1_kolom_vi" => $request['kolom_vi'],
+					"aud_thp1_kolom_vii" => $request['kolom_vii'],
+					"aud_thp1_kolom_viii" => $request['kolom_viii'],
+					"aud_thp1_kolom_ix" => $request['kolom_ix'],
+					"aud_thp1_kolom_xi" => $request['kolom_xi'],
+					"aud_thp1_kolom_xii" => $request['kolom_xii'],
+					"updated_at" => Carbon::now(),
+				  ]);
+			
+			if (!empty($request['detail_kode_dok'])) {
+				foreach ($request['detail_kode_dok'] as $key => $val) {
+					DB::table('sis_audit_detail_tahap1')
+					->where('aud_thp1_det_id', $key)
+					->update([
+						'aud_thp1_det_kode_dok' => $val,
+						'aud_thp1_det_judul_dok' => isset($request['detail_judul_dok'][$key]) ? $request['detail_judul_dok'][$key] : NULL,
+						'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
+						'aud_thp1_det_keterangan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+					]);
+				}
+			}
+			
+			DB::commit();
+			return responseJSON(200, [], 'Berhasil menyimpan data');
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+	}
 	
 	private function update_generate_tahap1(Request $request)
 	{

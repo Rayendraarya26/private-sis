@@ -40,28 +40,8 @@ class AuDaftarPeriksaController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit'       => $this->ajax_datagrid_jadwal_audit($request),
-            'tinymce-uploadimage'       => $this->ajax_tinymce_uploadimage($request),
             default                     => null,
         };
-    }
-	
-	private function ajax_tinymce_uploadimage(Request $request)
-    {
-        try {
-            $request->validate([
-                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
-            ]);
-
-            $img = $request->file('file');
-            $imgName = $img->hashName();
-            $img->move(public_path(config('app.path_file_master')), $imgName);
-            $publicUrl = asset(config('app.path_file_master') . '/' . $imgName);
-
-            return response()->json(["location" => $publicUrl]);
-        } catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
-        }
-
     }
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)

@@ -36,7 +36,7 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: true,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -52,8 +52,15 @@
                         align: 'center',
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.jadw_audit_id}`;
-                            let btnEdit = ``;			
-							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}'">Input Audit</div>`;
+                            let btnEdit = ``;	
+							if(row.jadw_audit_status != 'on-going'){
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}'">Revisi Audit</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&jadw_audit_id=${row.jadw_audit_id}')">Hasil Tinjauan</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}')">Laporan Tahap 1</div>`;
+							}
+							else {
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}'">Input Audit</div>`;
+							}
 							
                             return `
 								<div>
@@ -78,6 +85,7 @@
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
+                    {field: 'jadw_audit_status', title: 'Status<br/>Audit', width: 100, sortable: true},
                 ]],
 				onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
@@ -90,6 +98,28 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+					{
+                        field: 'jadw_audit_status',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            value: '',
+                            data: [
+                                {value: 'memenuhi', text: 'Memenuhi'},
+                                {value: 'tidak-memenuhi', text: 'Tidak Memenuhi'},
+                                {value: '', text: 'Semua'}
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'jadw_audit_status',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
                 ]);
         });
     </script>

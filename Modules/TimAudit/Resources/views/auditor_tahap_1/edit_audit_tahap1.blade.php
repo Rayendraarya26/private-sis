@@ -74,12 +74,14 @@
             </div>
         </div>
     </div>
+	
 @endsection
 
 
 @push("javascript")
     <script src="{{asset("assets/plugins/smartwizard/js/jquery.smartWizard.min.js")}}"></script>
 	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js" referrerpolicy="origin"></script>
     <script>
 		
 		
@@ -189,7 +191,6 @@
                         case 0:
                             vueStepOne.validate();
                             vueStepTwo.start();
-							
                             break;
                     }
 
