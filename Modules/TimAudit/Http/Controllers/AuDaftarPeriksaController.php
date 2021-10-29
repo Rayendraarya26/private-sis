@@ -40,8 +40,28 @@ class AuDaftarPeriksaController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit'       => $this->ajax_datagrid_jadwal_audit($request),
+            'tinymce-uploadimage'       => $this->ajax_tinymce_uploadimage($request),
             default                     => null,
         };
+    }
+	
+	private function ajax_tinymce_uploadimage(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
+            ]);
+
+            $img = $request->file('file');
+            $imgName = $img->hashName();
+            $img->move(public_path(config('app.path_file_master')), $imgName);
+            $publicUrl = asset(config('app.path_file_master') . '/' . $imgName);
+
+            return response()->json(["location" => $publicUrl]);
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+
     }
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)
@@ -137,7 +157,7 @@ class AuDaftarPeriksaController extends Controller
 		$dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
 		$dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
 		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		$dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+		$dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
 		$dataJadwal->join('sis_jadwal_tim', function($join) {
                              $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
                          });
@@ -166,7 +186,6 @@ class AuDaftarPeriksaController extends Controller
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.peg_id) AS peg_id");
 		$dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.jadw_tim_id) AS jadw_tim_id");
 		
-						 
 		$dataJadwal->groupBy('sis_jadwal.jadw_id');
 		
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];		

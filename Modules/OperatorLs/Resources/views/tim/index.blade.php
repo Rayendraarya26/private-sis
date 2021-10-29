@@ -45,7 +45,7 @@
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
+                    // {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
                         title: "Aksi",
@@ -55,10 +55,10 @@
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;			
 							if(row.jadw_team_status != 'accepted'){
-								if(row.jadw_team_status != 'on-going'){
+								if(row.jadw_team_status == 'on-going'){
 									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-tim&jadw_id=${row.jadw_id}'">Input Tim</div>`;
 								}
-								else if(row.jadw_team_status != 'revisi'){
+								else if(row.jadw_team_status == 'revisi'){
 									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-tim&jadw_id=${row.jadw_id}'">Revisi Tim</div>`;
 								}
 							}
@@ -80,6 +80,7 @@
                     }
                 ]],
                 columns: [[
+                    {field: 'jadw_id', title: 'No.<br>Jadwal', width: 100, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 100, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},

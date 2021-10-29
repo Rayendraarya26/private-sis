@@ -51,9 +51,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
 
         Route::prefix("tahap1")->group(function () {
             Route::get('/', [AuTahap1Controller::class, 'index']);
-            Route::get('/ajax', [AuTahap1Controller::class, 'ajax']);
-			Route::get('/create', [AuTahap1Controller::class, 'create']);
-			Route::post('/store', [AuTahap1Controller::class, 'store']);
+            Route::any('/ajax', [AuTahap1Controller::class, 'ajax']);
 			Route::get('/edit', [AuTahap1Controller::class, 'edit']);
 			Route::post('/update', [AuTahap1Controller::class, 'update']);
 			Route::delete('/delete', [AuTahap1Controller::class, 'destroy']);

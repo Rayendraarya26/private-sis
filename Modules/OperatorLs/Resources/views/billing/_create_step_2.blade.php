@@ -332,6 +332,7 @@
 									required: false,
 									columns: [[
 										{field: 'id', hidden: true},
+										{field: 'id', title: 'No.<br/>Permohonan', width: 150, sortable: true,},
 										{field: 'nama', title: 'Permohonan', width: 250, sortable: true,},
 									]],
 									onSelect: function (index, row) {

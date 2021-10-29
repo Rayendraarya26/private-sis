@@ -170,6 +170,13 @@ class PenjadwalanController extends Controller
 		$data->whereNotNull('mohon_kajian_permohonan_file');
 		$data->whereNotNull('mohon_pernyataan_persetujuan_file');
 		$data->where('sis_permohonan.cust_id', '=', $request->cust_id);
+		$cust_id = $request->cust_id;
+		$data->whereNotIn('sis_permohonan.mohon_id', function ($query) use ($cust_id) {
+				$query->select(DB::raw('IFNULL(mohon_id, 0)'))
+					->from('sis_jadwal_audit')
+					->join('sis_jadwal', "sis_jadwal.jadw_id", "=", "sis_jadwal.jadw_id")
+					->where('sis_jadwal.cust_id', '=', $cust_id);
+			});
 		
 		if($request->jenis_status == 're-sertifikasi'){
 			$data->where('mohon_jenis_status', '=', 'lama');

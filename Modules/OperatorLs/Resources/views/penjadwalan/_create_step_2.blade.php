@@ -394,10 +394,10 @@
 							if(dt_jenis !== 'survailan'){
 								urlCombo = `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${currentaData.cust_id}&jenis_status=${dt_jenis}`;
 								$('#cb_data_id').combogrid({
-									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: true, required: false,
+									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
 									columns: [[
-										{field: 'id', hidden: true},
-										{field: 'mohon_jenis_status', title: 'Jenis', width: 250, sortable: true,},
+										{field: 'mohon_jenis_status', title: 'Jenis<br>Permohonan', width: 100, sortable: true,},
+										{field: 'id', title: 'No.<br>Permohonan', width: 100, sortable: true,},
 										{field: 'nama', title: 'Permohonan', width: 250, sortable: true,},
 									]],
 									onSelect: function (index, row) {
@@ -429,7 +429,7 @@
 										else{
 											let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${row.mohon_id}`;
 											$('#cb_komoditi').combogrid({
-												pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: true, required: false,
+												pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
 												columns: [[
 													{field: 'komodt_id', hidden: true},
 													{field: 'komodt_nama', title: 'Komoditi', width: 250, sortable: true,},
@@ -454,7 +454,7 @@
 							else if(dt_jenis === 'survailan'){
 								urlCombo = `{{ url("$url/ajax?action=combogrid-sertifikat") }}&cust_id=${currentaData.cust_id}`;
 								$('#cb_data_id').combogrid({
-									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: true, required: false,
+									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
 									columns: [[
 										{field: 'id', hidden: true},
 										{field: 'nama', title: 'Nama Sertifikat', width: 250, sortable: true,},
@@ -496,7 +496,7 @@
 									if(dt_jenis !== 're-sertifikasi'){
 										let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${selectedItem.mohon_id}`;
 										$('#cb_komoditi').combogrid({
-											pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: `${selectedItem.komodt_id}`, multiSort: true, fitColumns: true, required: false,
+											pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: `${selectedItem.komodt_id}`, multiSort: true, fitColumns: false, required: false,
 											columns: [[
 												{field: 'komodt_id', hidden: true},
 												{field: 'komodt_nama', title: 'Komoditi', width: 250, sortable: true,},
