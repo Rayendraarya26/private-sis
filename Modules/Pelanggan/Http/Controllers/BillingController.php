@@ -136,7 +136,7 @@ class BillingController extends Controller
             $x['bill_due_date']       = $d->bill_due_date->format("Y-m-d");
             $x['bill_billing_date']   = $d->bill_billing_date->format("Y-m-d");
             $x['bill_payment_status'] = $d->bill_payment_status;
-            $x['bill_payment_date']   = $d->bill_payment_date->isoFormat('LLLL');
+            $x['bill_payment_date']   = $d->bill_payment_date?->isoFormat('LLLL');
             $x['bill_payment_file']   = asset($d->bill_payment_file);
             $x['bill_payment_note']   = $d->bill_payment_note;
             $x['bill_invoice_file']   = asset($d->bill_invoice_file);

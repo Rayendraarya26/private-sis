@@ -247,7 +247,7 @@ class SertifikasiPermohonanController extends Controller
 
                     // Send Email
                     $structEmail          = new EmailStruct();
-                    $structEmail->subject = "Verifikasi Akun";
+                    $structEmail->subject = "Pengajuan permohonan sertifikasi";
                     $structEmail->body    = view('pelanggan::sertifikasi_permohonan.mails.marketing_permohonan_baru')
                         ->with([
                             'pemohonNama'       => $newSisPermohonan->mohon_cust_nama,
@@ -373,6 +373,36 @@ class SertifikasiPermohonanController extends Controller
                 array_push($uploadedPath, $filePertanyaanPath);
                 $dataPemohon->mohon_pertanyaan_filepath = $filePertanyaanPath;
                 $dataPemohon->save();
+            }
+
+            if ($dataPemohon->mohon_approved_status == "revisi") {
+                // Send Notification to Marketing
+                $dataPemohon->mohon_approved_status = "fix";
+                $dataPemohon->save();
+                $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
+                if ($groupMarketing) {
+                    foreach ($groupMarketing as $marketing) {
+                        // Send Push
+                        $notifStruct            = new NotifStruct();
+                        $notifStruct->title     = sprintf("Perbaikan permohonan no #%d", $dataPemohon->mohon_id);
+                        $notifStruct->message   = sprintf("%s telah memperbaiki permohonan %s pada sertifikasi", $dataPemohon->mohon_cust_nama, $dataPemohon->master_sertifikasi->sert_nama);
+                        $notifStruct->user_id   = $marketing?->ug_user_id;
+                        $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+                        sendNotification($notifStruct);
+
+                        // Send Email
+                        $structEmail          = new EmailStruct();
+                        $structEmail->subject = "Pengajuan permohonan sertifikasi";
+                        $structEmail->body    = view('pelanggan::sertifikasi_permohonan.mails.marketing_permohonan_fix')
+                            ->with([
+                                'pemohonNama'       => $dataPemohon->mohon_cust_nama,
+                                'pemohonSertifNama' => $dataPemohon->master_sertifikasi->sert_nama,
+                                'link_verif'        => url('/marketing/verifikasi-permohonan'),
+                            ])->render();
+                        $structEmail->to      = $marketing?->user?->user_email;
+                        sendEmail($structEmail);
+                    }
+                }
             }
 
             DB::commit();

@@ -36,7 +36,11 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::post('upload/{nomor_billing}', [BillingController::class, 'processUpload']);
     });
 
-    Route::get("jadwal", [JadwalController::class, 'index']);
+    Route::prefix("jadwal")->group(function () {
+        Route::get("/", [JadwalController::class, 'index']);
+        Route::get("/ajax", [JadwalController::class, 'index']);
+    });
+
 
     Route::get("audit", [AuditController::class, 'index']);
 });

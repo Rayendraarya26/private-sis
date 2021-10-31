@@ -77,7 +77,7 @@
 
                             if (row.mohon_approved_status !== "on-progress") {
                                 btnDelete = "";
-                                if (row.mohon_approved_status !== "revisi") {
+                                if (row.mohon_approved_status !== "revisi" && row.mohon_approved_status !== "fix") {
                                     btnEdit = "";
                                 }
                             }
@@ -103,7 +103,7 @@
                     {
                         field: 'mohon_approved_status',
                         title: 'Status <br> Permohonan',
-                        width: 100,
+                        width: 120,
                         sortable: true,
                         formatter: function (val) {
                             switch (val) {
@@ -115,6 +115,8 @@
                                     return "Disetujui";
                                 case 'revisi':
                                     return "Revisi";
+                                case 'fix':
+                                    return "Perbaikan Revisi";
                             }
                         }
                     },
@@ -158,6 +160,7 @@
                                 {value: 'rejected', text: 'Ditolak'},
                                 {value: 'accepted', text: 'Disetujui'},
                                 {value: 'revisi', text: 'Revisi'},
+                                {value: 'fix', text: 'Perbaikan Revisi'},
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
