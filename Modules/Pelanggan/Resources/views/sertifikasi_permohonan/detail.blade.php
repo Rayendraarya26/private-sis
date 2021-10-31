@@ -66,6 +66,17 @@
                     <div class="dt-card__body">
                         <div class="row no-gutters">
                             <div class="col-md-12">
+                                @if($dataPemohon->mohon_approved_status == "revisi")
+                                    <div class="alert alert-danger" style="width: 100%">
+                                        <b>Revisi Permohonan: </b><br>
+                                        @php
+                                            $dataRevisi = $dataPemohon->sis_permohonan_statuses()->where('status_tipe', 'revisi')->orderBy("status_id", 'desc')->first();
+                                        @endphp
+                                        {{ $dataRevisi->status_judul }} <br>
+                                        {!!  $dataRevisi->status_pesan  !!}
+                                    </div>
+                                @endif
+
                                 <h4>Kelengkapan Dokumen</h4>
 
                                 <div class="table-responsive">

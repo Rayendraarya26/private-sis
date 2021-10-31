@@ -493,7 +493,12 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_datagrid(Request $request)
     {
-        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
+        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id")
+            ->with([
+                "sis_permohonan_statuses" => function ($query) {
+                    $query->where("status_tipe", "revisi");
+                }
+            ]);
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -516,6 +521,16 @@ class SertifikasiPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $dtRevisi = [];
+            foreach ($d->sis_permohonan_statuses as $rev) {
+                array_push($dtRevisi, [
+                    'status_id'    => $rev->status_id,
+                    'status_judul' => $rev->status_judul,
+                    'status_pesan' => $rev->status_pesan,
+                    'created_at'   => $rev->created_at?->isoFormat('LLLL'),
+                ]);
+            }
+
             $x['cust_sert_id']          = $d->cust_sert_id;
             $x['mohon_id']              = $d->mohon_id;
             $x['cust_id']               = $d->cust_id;
@@ -526,6 +541,7 @@ class SertifikasiPermohonanController extends Controller
             $x['mohon_jenis_status']    = $d->mohon_jenis_status;
             $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']             = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['revisi']                = $dtRevisi;
             array_push($result, $x);
         }
 

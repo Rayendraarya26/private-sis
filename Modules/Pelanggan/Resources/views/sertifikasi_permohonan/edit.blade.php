@@ -16,6 +16,18 @@
             <div class="col-md-12">
                 <div class="dt-card">
                     <div class="dt-card__body">
+
+                        @if($dataPemohon->mohon_approved_status == "revisi")
+                            <div class="alert alert-danger" style="width: 100%">
+                                <b>Revisi Permohonan: </b><br>
+                                @php
+                                    $dataRevisi = $dataPemohon->sis_permohonan_statuses()->where('status_tipe', 'revisi')->orderBy("status_id", 'desc')->first();
+                                @endphp
+                                {{ $dataRevisi->status_judul }} <br>
+                                {!!  $dataRevisi->status_pesan  !!}
+                            </div>
+                        @endif
+
                         <!-- SmartWizard html -->
                         <div id="smartwizard">
 

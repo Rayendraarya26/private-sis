@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div class="col-md-12" v-if="jenis_sertifikasi_id != null && jenis_sertifikasi_is_product == 'ya'"
+    <div class="col-md-12" v-if="jenis_sertifikasi_id != null"
          style="padding-bottom: 20px">
         <div class="row">
             <div class="col-md-12">

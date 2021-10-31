@@ -32,10 +32,12 @@
 @endsection
 
 @push("javascript")
+    <script src="{{asset('assets/plugins/easyui/datagrid-detailview.js')}}"></script>
     <script>
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
+                view: detailview,
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid") }}`,
                 rownumbers: true,
@@ -48,6 +50,18 @@
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
+                detailFormatter: function (index, row) {
+                    let htmls = `<div style="padding: 20px 0 20px 0"><h4>Revisi</h4><ul>`;
+                    if (row.revisi.length > 0) {
+                        row.revisi.map(e => {
+                            htmls += `<li>${e.status_judul}: ${e.status_pesan} <br><i>${e.created_at}</i></li>`;
+                        })
+                    }
+
+                    htmls += "</ul></div>"
+
+                    return htmls
+                },
                 frozenColumns: [[
                     {
                         field: 'action',
@@ -63,8 +77,11 @@
 
                             if (row.mohon_approved_status !== "on-progress") {
                                 btnDelete = "";
-                                btnEdit   = "";
+                                if (row.mohon_approved_status !== "revisi") {
+                                    btnEdit = "";
+                                }
                             }
+
 
                             return `
                         <div>
@@ -96,6 +113,8 @@
                                     return "Ditolak";
                                 case 'accepted':
                                     return "Disetujui";
+                                case 'revisi':
+                                    return "Revisi";
                             }
                         }
                     },
@@ -138,6 +157,7 @@
                                 {value: 'on-progress', text: 'Proses'},
                                 {value: 'rejected', text: 'Ditolak'},
                                 {value: 'accepted', text: 'Disetujui'},
+                                {value: 'revisi', text: 'Revisi'},
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
