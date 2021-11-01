@@ -230,7 +230,7 @@ class PenjadwalanController extends Controller
             $x['mohon_harga_permohonan']       = $d->mohon_harga_permohonan;
             $x['mohon_harus_lunas_status']       = $d->mohon_harus_lunas_status;
             $x['mohon_cust_nama']       = $d->mohon_cust_nama;
-            $x['mohon_jenis_status']    = $d->mohon_jenis_status;
+            $x['mohon_jenis_status']    = ($d->mohon_jenis_status == 'lama') ? 're-sertifikasi' : 'sertifikasi baru';
             $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']             = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);

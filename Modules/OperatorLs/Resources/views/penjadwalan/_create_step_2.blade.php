@@ -396,8 +396,8 @@
 								$('#cb_data_id').combogrid({
 									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
 									columns: [[
-										{field: 'mohon_jenis_status', title: 'Jenis<br>Permohonan', width: 100, sortable: true,},
-										{field: 'id', title: 'No.<br>Permohonan', width: 100, sortable: true,},
+										{field: 'mohon_jenis_status', title: 'Jenis<br>Permohonan', width: 120, sortable: true,},
+										{field: 'id', title: 'No.<br>Permohonan', width: 120, sortable: true,},
 										{field: 'nama', title: 'Permohonan', width: 250, sortable: true,},
 									]],
 									onSelect: function (index, row) {

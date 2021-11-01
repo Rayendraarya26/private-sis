@@ -18,45 +18,45 @@
             <div class="col-md-12">
 				<div class="form-group">
 					<label>V. Audit kecukupan informasi terdokumentasi: *</label>
-					<textarea class="form-control" name="kolom_v" id="kolom_v">{{$dataAudit->aud_thp1_kolom_v}}</textarea>
+					<textarea class="form-control" name="kolom_v" id="kolom_v">@if(isset($dataAudit->aud_thp1_kolom_v)) {{$dataAudit->aud_thp1_kolom_v}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>VI. Kondisi Lapangan</label>
-					<textarea class="form-control" name="kolom_vi" id="kolom_vi">{{$dataAudit->aud_thp1_kolom_vi}}</textarea>
+					<textarea class="form-control" name="kolom_vi" id="kolom_vi">@if(isset($dataAudit->aud_thp1_kolom_vi)) {{$dataAudit->aud_thp1_kolom_vi}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>VII. Status dan pemahaman persyaratan standar</label>
-					<textarea class="form-control" name="kolom_vii" id="kolom_vii">{{$dataAudit->aud_thp1_kolom_vii}}</textarea>
+					<textarea class="form-control" name="kolom_vii" id="kolom_vii">@if(isset($dataAudit->aud_thp1_kolom_vii)) {{$dataAudit->aud_thp1_kolom_vii}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>VIII. Informasi yang diperlukan yang berkenaan dengan (lingkup sistem manajemen K3, proses dan lokasi perusahaan, identifikasi bahaya dan risiko dan perundang-undangan/peraturan K3, dari operasi perusahaan dan risiko) tersedia.</label>
-					<textarea class="form-control" name="kolom_viii" id="kolom_viii">{{$dataAudit->aud_thp1_kolom_viii}}</textarea>
+					<textarea class="form-control" name="kolom_viii" id="kolom_viii">@if(isset($dataAudit->aud_thp1_kolom_viii)) {{$dataAudit->aud_thp1_kolom_viii}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>IX. Sumber daya yang tersedia</label>
-					<textarea class="form-control" name="kolom_ix" id="kolom_ix">{{$dataAudit->aud_thp1_kolom_ix}}</textarea>
+					<textarea class="form-control" name="kolom_ix" id="kolom_ix">@if(isset($dataAudit->aud_thp1_kolom_ix)) {{$dataAudit->aud_thp1_kolom_ix}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>X. Konfirmasi program audit sertifikasi tahap 2</label>
-					<textarea class="form-control" name="kolom_x" id="kolom_x">{{$dataAudit->aud_thp1_kolom_x}}</textarea>
+					<textarea class="form-control" name="kolom_x" id="kolom_x">@if(isset($dataAudit->aud_thp1_kolom_x)) {{$dataAudit->aud_thp1_kolom_x}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>XI. Informasi pelaksanaan audit internal dan kaji ulang manajemen</label>
-					<textarea class="form-control" name="kolom_xi" id="kolom_xi">{{$dataAudit->aud_thp1_kolom_xi}}</textarea>
+					<textarea class="form-control" name="kolom_xi" id="kolom_xi">@if(isset($dataAudit->aud_thp1_kolom_xi)) {{$dataAudit->aud_thp1_kolom_xi}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>XII. Kesimpulan</label>
-					<textarea class="form-control" name="kolom_xii" id="kolom_xii">{{$dataAudit->aud_thp1_kolom_xii}}</textarea>
+					<textarea class="form-control" name="kolom_xii" id="kolom_xii">@if(isset($dataAudit->aud_thp1_kolom_xii)) {{$dataAudit->aud_thp1_kolom_xii}} @endif</textarea>
 				</div>
 				<div class="form-group">
 					<label>Hasil Akhir Audit Tahap I?</label>
 					<div class="col-md-12">
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="jadw_audit_status" id="jadw_audit_status1" value="memenuhi" @click="setStatusAudit('memenuhi')" @if($dataAudit->jadw_audit_status == 'memenuhi') checked @endif >
+                        <input class="form-check-input" type="radio" name="jadw_audit_status" id="jadw_audit_status1" value="memenuhi" @click="setStatusAudit('memenuhi')" @if(isset($dataAudit->jadw_audit_status)) @if($dataAudit->jadw_audit_status == 'memenuhi') checked @endif @endif>
                         <label class="form-check-label" for="jadw_audit_status1">Sudah Memenuhi Kecukupan Minimal</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="jadw_audit_status" id="jadw_audit_status2" value="tidak-memenuhi" @click="setStatusAudit('tidak-memenuhi')" @if($dataAudit->jadw_audit_status == 'tidak-memenuhi') checked @endif>
+                        <input class="form-check-input" type="radio" name="jadw_audit_status" id="jadw_audit_status2" value="tidak-memenuhi" @click="setStatusAudit('tidak-memenuhi')" @if(isset($dataAudit->jadw_audit_status)) @if($dataAudit->jadw_audit_status == 'tidak-memenuhi') checked @endif @endif>
                         <label class="form-check-label" for="jadw_audit_status2">Belum Memenuhi Kecukupan Minimal</label>
                       </div>
                     </div>
@@ -88,7 +88,7 @@
             window.vueStepTwo = new Vue({
                 el: "#vueStepTwo",
                 data: {	
-                    status_audit: @if($dataAudit->jadw_audit_status != '') `{{$dataAudit->jadw_audit_status}}` @else `` @endif,
+                    status_audit: @if(isset($dataAudit->jadw_audit_status)) @if($dataAudit->jadw_audit_status != '') `{{$dataAudit->jadw_audit_status}}` @else `` @endif @endif,
                     status_submit: false,
                     loading_submit: false,
                 },
@@ -171,7 +171,7 @@
                         setTimeout(async () => {
 							$(".tab-content").height("100%");
 							this.tynimceForm();
-							this.status_submit = @if($dataAudit->jadw_audit_status != '') true @else false @endif;
+							this.status_submit = @if(isset($dataAudit->jadw_audit_status)) @if($dataAudit->jadw_audit_status != '') true @else false @endif @endif;  
 						}, 1000);					
                     },
 					async tynimceForm() {

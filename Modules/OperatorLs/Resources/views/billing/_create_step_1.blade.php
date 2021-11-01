@@ -17,13 +17,13 @@
 		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="bill_billing_date">Tanggal Billing</label>
 			<div class="col-xl-3">
-			  <input type="text" class="form-control" id="bill_billing_date">
+			  <input type="text" class="form-control" id="bill_billing_date" style="max-width:300px;">
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="bill_due_date">Due Date/Tanggal Jatuh Tempo</label>
 			<div class="col-xl-3">
-			  <input type="text" class="form-control" id="bill_due_date">
+			  <input type="text" class="form-control" id="bill_due_date" style="max-width:300px;">
 			</div>
 		</div>
 		</form>
@@ -120,7 +120,7 @@
 							dbData = {name: "billing", value: { cust_id: null, cust_nama: null, bill_nomor_billing: null, bill_billing_date: null, bill_due_date: null,}};
                             await idb.bill_data.put(dbData);
                         } else {
-							self.setBillingDate(currentaData.value.bill_due_date);
+							self.setBillingDate(currentaData.value.bill_billing_date);
 							self.setDueDate(currentaData.value.bill_due_date);
 							self.setCustId(currentaData.value.cust_id);
 							
@@ -131,6 +131,7 @@
 						
 						$('#bill_due_date').datebox({
 							required:true,
+							editable: false,
 							formatter:myformatter,
 							parser:myparser,
 							value:this.bill_due_date,
@@ -149,6 +150,7 @@
 						
 						$('#bill_billing_date').datebox({
 							required:true,
+							editable: false,
 							formatter:myformatter,
 							parser:myparser,
 							value:this.bill_billing_date,

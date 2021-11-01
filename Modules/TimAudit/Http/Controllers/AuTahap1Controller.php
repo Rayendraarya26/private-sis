@@ -170,16 +170,17 @@ class AuTahap1Controller extends Controller
 		$dataAudit = SisAuditTahap1::join('sis_jadwal_audit', "sis_audit_tahap1.jadw_audit_id", "=", "sis_jadwal_audit.jadw_audit_id");
 		$dataAudit->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
 		$status_entry = false;
-		
+		$restAudit = [];
 		$dataAuditKlausul = SisAuditTahap1::join('sis_jadwal_audit', "sis_audit_tahap1.jadw_audit_id", "=", "sis_jadwal_audit.jadw_audit_id");
 		$dataAuditKlausul->join('sis_audit_detail_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_detail_tahap1.aud_thp1_id");
 		$dataAuditKlausul->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
 		
 		if ($dataAudit->exists()) {
 			$status_entry = true;
+			$restAudit = $dataAudit->get()[0];
 		}
 		
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' => $dataAudit->get()[0] ];		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' =>  $restAudit];		
         return view("$this->view.edit_audit_tahap1")->with($parser);
     }
 
