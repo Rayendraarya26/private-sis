@@ -26,7 +26,7 @@ class BillingController extends Controller
         return view('pelanggan::billing.index')->with($parser);
     }
 
-    public function upload(Request $request, $noBilling)
+    public function upload(Request $request, $billing_id)
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),
@@ -35,14 +35,14 @@ class BillingController extends Controller
         ];
 
         $data   = SisBilling::with('sis_billing_items')
-            ->where("bill_nomor_billing", $noBilling)
+            ->where("bill_id", $billing_id)
             ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
             ->firstOrFail();
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
         return view("pelanggan::billing.upload")->with($parser);
     }
 
-    public function processUpload(Request $request, $noBilling)
+    public function processUpload(Request $request, $billing_id)
     {
         $request->validate([
             'bill_payment_tipe' => 'required',
@@ -50,7 +50,7 @@ class BillingController extends Controller
             'bill_payment_file' => 'required',
         ]);
         $billing = SisBilling::with('sis_billing_items')
-            ->where("bill_nomor_billing", $noBilling)
+            ->where("bill_id", $billing_id)
             ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
             ->firstOrFail();
 
@@ -132,6 +132,7 @@ class BillingController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['bill_id']             = $d->bill_id;
             $x['bill_nomor_billing']  = $d->bill_nomor_billing;
             $x['bill_due_date']       = $d->bill_due_date->format("Y-m-d");
             $x['bill_billing_date']   = $d->bill_billing_date->format("Y-m-d");

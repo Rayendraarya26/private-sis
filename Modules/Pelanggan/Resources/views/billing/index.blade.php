@@ -79,7 +79,7 @@
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.bill_payment_status != 'lunas') {
-                                return `<a href="{{url("$url/upload")}}/${row.bill_nomor_billing}" class="btn btn-xs btn-success"><i class="fad fa-upload"></i> Bukti Pembayaran </a>`
+                                return `<a href="{{url("$url/upload")}}/${row.bill_id}" class="btn btn-xs btn-success"><i class="fad fa-upload"></i> Bukti Pembayaran </a>`
                             }
                         }
                     }
