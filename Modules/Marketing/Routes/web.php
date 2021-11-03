@@ -3,9 +3,10 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Marketing\Http\Controllers\MarketingController;
+use Modules\Marketing\Http\Controllers\UploadKajianPermohonanController;
 use Modules\Marketing\Http\Controllers\VerifikasiPermohonanController;
 
-Route::prefix('marketing')->group(function() {
+Route::prefix('marketing')->middleware(['auth', 'restrict'])->group(function() {
     Route::get('/', [MarketingController::class, 'index']);
 
 	Route::prefix("verifikasi-permohonan")->group(function () {
@@ -14,5 +15,10 @@ Route::prefix('marketing')->group(function() {
         Route::get('/detail/{mohon_id}', [VerifikasiPermohonanController::class, 'detail']);
         Route::get('/edit', [VerifikasiPermohonanController::class, 'edit']);
         Route::post('/update', [VerifikasiPermohonanController::class, 'update']);
+    });
+
+    Route::prefix("kajian-permohonan")->group(function () {
+        Route::get('/', [UploadKajianPermohonanController::class, 'index']);
+        Route::any('/ajax', [UploadKajianPermohonanController::class, 'ajax']);
     });
 });

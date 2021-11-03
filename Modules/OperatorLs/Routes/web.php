@@ -12,17 +12,16 @@
 */
 
 use Illuminate\Support\Facades\Route;
-use Modules\OperatorLs\Http\Controllers\OperatorLsController;
 use Modules\OperatorLs\Http\Controllers\KelengkapanPermohonanController;
-use Modules\OperatorLs\Http\Controllers\BillingController;
-use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
-use Modules\OperatorLs\Http\Controllers\TimController;
 use Modules\OperatorLs\Http\Controllers\KomiteController;
+use Modules\OperatorLs\Http\Controllers\OperatorLsController;
+use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
 use Modules\OperatorLs\Http\Controllers\SertifikatUjiController;
+use Modules\OperatorLs\Http\Controllers\TimController;
 
-Route::prefix('operatorls')->group(function () {
+Route::prefix('operatorls')->middleware(['auth', 'restricted'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
-	
+
 	Route::prefix("kelengkapan-permohonan")->group(function () {
         Route::get('/', [KelengkapanPermohonanController::class, 'index']);
         Route::get('/ajax', [KelengkapanPermohonanController::class, 'ajax']);
@@ -30,18 +29,7 @@ Route::prefix('operatorls')->group(function () {
         Route::get('/edit', [KelengkapanPermohonanController::class, 'edit']);
         Route::post('/update', [KelengkapanPermohonanController::class, 'update']);
     });
-	
-	Route::prefix("billing")->group(function () {
-        Route::get('/', [BillingController::class, 'index']);
-        Route::get('/detail', [BillingController::class, 'detail']);
-        Route::get('/ajax', [BillingController::class, 'ajax']);
-        Route::get('/create', [BillingController::class, 'create']);
-        Route::post('/store', [BillingController::class, 'store']);
-        Route::get('/edit', [BillingController::class, 'edit']);
-        Route::post('/update', [BillingController::class, 'update']);
-        Route::delete('/delete', [BillingController::class, 'destroy']);
-    });
-	
+
 	Route::prefix("penjadwalan")->group(function () {
         Route::get('/', [PenjadwalanController::class, 'index']);
         Route::get('/detail', [PenjadwalanController::class, 'detail']);
@@ -52,7 +40,7 @@ Route::prefix('operatorls')->group(function () {
         Route::post('/update', [PenjadwalanController::class, 'update']);
         Route::delete('/delete', [PenjadwalanController::class, 'destroy']);
     });
-	
+
 	Route::prefix("tim")->group(function () {
         Route::get('/', [TimController::class, 'index']);
         Route::get('/detail', [TimController::class, 'detail']);
@@ -63,7 +51,7 @@ Route::prefix('operatorls')->group(function () {
         Route::post('/update', [TimController::class, 'update']);
         Route::delete('/delete', [TimController::class, 'destroy']);
     });
-	
+
 	Route::prefix("komite")->group(function () {
         Route::get('/', [KomiteController::class, 'index']);
         Route::get('/detail', [KomiteController::class, 'detail']);
@@ -74,7 +62,7 @@ Route::prefix('operatorls')->group(function () {
         Route::post('/update', [KomiteController::class, 'update']);
         Route::delete('/delete', [KomiteController::class, 'destroy']);
     });
-	
+
 	Route::prefix("sertifikat-uji")->group(function () {
         Route::get('/', [SertifikatUjiController::class, 'index']);
         Route::get('/ajax', [SertifikatUjiController::class, 'ajax']);

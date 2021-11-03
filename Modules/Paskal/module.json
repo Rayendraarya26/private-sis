@@ -1,0 +1,13 @@
+{
+    "name": "Paskal",
+    "alias": "paskal",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Paskal\\Providers\\PaskalServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

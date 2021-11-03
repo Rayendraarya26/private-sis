@@ -13,5 +13,9 @@
     "Marketing": true,
     "Admin": true,
     "Public": true,
-    "TimAudit": true
+    "TimAudit": true,
+    "Keuangan": true,
+    "KerjaSama": true,
+    "Paskal": true,
+    "Pjt": true
 }

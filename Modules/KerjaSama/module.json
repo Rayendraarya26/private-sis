@@ -1,0 +1,13 @@
+{
+    "name": "KerjaSama",
+    "alias": "kerjasama",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KerjaSama\\Providers\\KerjaSamaServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Pjt",
+    "alias": "pjt",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Pjt\\Providers\\PjtServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
