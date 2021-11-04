@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Upload Kajian Permohonan PASKAL')
+@section('title', 'Upload Kajian Permohonan PJT')
 
 @section('content')
 	<div class="dt-content">
@@ -42,18 +42,10 @@
 											<small id="" class="form-text">Note: Upload file Kajian Permohonan yang sudah ditanda tangani ; file format berupa *.pdf</small>
 											@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '')
 												<hr/>
-												<a target="_blank" href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}"><span class="fad fa-download"></span> File Kajian Permohonan PASKAL lama</a>
+												<a target="_blank" href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}"><span class="fad fa-download"></span> File Kajian Permohonan PJT lama</a>
 											@endif
 										</div>
 									</div>
-									
-									<div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="mohon_harga_permohonan">Harga Akhir (Rp.) *</label>
-                                        <div class="col-sm-8">
-											<input type="hidden" id="mohon_kajian_permohonan_file_lama" name="mohon_kajian_permohonan_file_lama" class="form-control" value="{{$dataPermohon->mohon_kajian_permohonan_paskal_file}}"/>
-                                            <input type="number" id="mohon_harga_permohonan" name="mohon_harga_permohonan" class="form-control" value="{{old('mohon_harga_permohonan') ?? $dataPermohon->mohon_harga_permohonan}}"/>
-                                        </div>
-                                    </div>
 									
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">

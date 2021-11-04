@@ -98,16 +98,6 @@
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
-								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
-								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-primary">Download File</a></th>
-								</tr>
-							</thead>
-						  </table>
-							
-						  <table class="table table-hover mb-0">
-							<thead>
-								<tr>
 								  <th scope="col">#</th>
 								  <th class="text-uppercase" scope="col"></th>
 								  <th class="text-uppercase" scope="col"></th>

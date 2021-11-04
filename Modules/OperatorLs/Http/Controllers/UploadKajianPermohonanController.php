@@ -45,8 +45,7 @@ class UploadKajianPermohonanController extends Controller
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
 		$data->whereIn('mohon_approved_status', ['accepted']);
-		$data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
-		// $data->WhereNull('mohon_kajian_permohonan_paskal_file');
+		$data->whereIn('mohon_verif_kajian_permohonan_pjt', ['proses']);
 		$data->whereIn('mohon_verif_kajian_permohonan_paskal', ['proses']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -70,7 +69,7 @@ class UploadKajianPermohonanController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
 			$x['status_step']       = 'upload';
-			if(!is_null($d->mohon_kajian_permohonan_paskal_file)){
+			if(!is_null($d->mohon_kajian_permohonan_pjt_file)){
 				$x['status_step']       = 're-upload';
 			}
 
@@ -194,14 +193,12 @@ class UploadKajianPermohonanController extends Controller
             'mohon_id' => 'required|integer',
 			'status_tipe' => 'required|string',
 			'mohon_kajian_permohonan_file_lama' => 'nullable|string',
-			'mohon_harga_permohonan' => 'numeric|string',
             'mohon_kajian_permohonan_file' => 'required|mimes:pdf'
         ]);
 
        $dataInsert = [
             'mohon_id' => $request->mohon_id,
             'status_mohon_id' => $request->mohon_id,
-            'mohon_harga_permohonan' => $request->mohon_harga_permohonan,
         ];
 
         if ($request->hasFile("mohon_kajian_permohonan_file")) {
@@ -209,20 +206,19 @@ class UploadKajianPermohonanController extends Controller
 				@unlink($request["mohon_kajian_permohonan_file_lama"]);
 			
             $file     = $request->file('mohon_kajian_permohonan_file');
-            $namaFile = Str::slug($request->mohon_id) . '_kajian_permohonan_file_paskal_' . time() . '.' . $file->getClientOriginalExtension();
+            $namaFile = Str::slug($request->mohon_id) . '_kajian_permohonan_file_pjt_' . time() . '.' . $file->getClientOriginalExtension();
             $path     = sprintf(config("app.path_file_pengajuan"), $request->mohon_id);
             $file->move(public_path($path), $namaFile);
-            $dataInsert['mohon_kajian_permohonan_paskal_file'] = $path . '/' . $namaFile;
+            $dataInsert['mohon_kajian_permohonan_pjt_file'] = $path . '/' . $namaFile;
 
 			DB::transaction(function () use ($request, $dataInsert) {
 				SisPermohonan::findOrFail($request['mohon_id'])->update([
-					'mohon_verif_kajian_permohonan_paskal' => 'proses',
-					'mohon_kajian_permohonan_paskal_file' => $dataInsert['mohon_kajian_permohonan_paskal_file'],
-					'mohon_harga_permohonan' => $dataInsert['mohon_harga_permohonan']
+					'mohon_verif_kajian_permohonan_pjt' => 'proses',
+					'mohon_kajian_permohonan_pjt_file' => $dataInsert['mohon_kajian_permohonan_pjt_file'],
 				]);
 			});
 
-            return redirect($this->url)->with('message', "Upload Kajian Permohonan #".$request->mohon_id." telah disimpan, silahkan menunggu konfirmasi validasi oleh PASKAL.");
+            return redirect($this->url)->with('message', "Upload Kajian Permohonan #".$request->mohon_id." telah disimpan, silahkan menunggu konfirmasi validasi oleh PJT.");
         }
 		else{
 			return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);

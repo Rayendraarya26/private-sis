@@ -21,7 +21,7 @@ use Modules\OperatorLs\Http\Controllers\TimController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanTahap1Controller;
 use Modules\OperatorLs\Http\Controllers\UploadKajianPermohonanController;
 
-Route::prefix('operatorls')->middleware(['auth', 'restricted'])->group(function () {
+Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
 	
 	Route::prefix("kajian-permohonan")->group(function () {
