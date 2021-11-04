@@ -27,14 +27,18 @@ class SisKomoditiController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['komodt_nama' => 'required|string']); // auto redirect back jika tidak valid
+        
+        $request->validate([
+            'komodt_nama' => 'required|string',
+            'komodt_sni' => 'required|string'
+        ]); // auto redirect back jika tidak valid
 
         // Aktifkan dd jika ingin melihat data
         //dump($request->except('_token'));
         //dump($request->all());
 
         try {
-            MasterKomoditi::create($request->except("_token"));
+            MasterKomoditi::create(['komodt_nama' => $request['komodt_nama'], 'komodt_sni' => $request['komodt_sni']]);
             return redirect()->back()->with('message', "Tambah data berhasil");
         } catch (Exception $e) {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
@@ -54,13 +58,14 @@ class SisKomoditiController extends Controller
     {
         $request->validate([
             'komodt_id' => 'required|integer',
-            'komodt_nama' => 'required|string'
+            'komodt_nama' => 'required|string',
+            'komodt_sni' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterKomoditi::findOrFail($request['komodt_id'])
-                ->update($request->only("komodt_nama"));
+                ->update(['komodt_nama' => $request['komodt_nama'], 'komodt_sni' => $request['komodt_sni']]);
             //DB::commit();
             return redirect()->back()->with('message', "Update data berhasil");
         } catch (Exception $e) {
@@ -136,6 +141,8 @@ class SisKomoditiController extends Controller
         foreach ($data->get() as $d) {
             $x['komodt_id'] = $d->komodt_id;
             $x['komodt_nama'] = $d->komodt_nama;
+            $x['komodt_sni'] = $d->komodt_sni;
+			
             array_push($result, $x);
         }
 

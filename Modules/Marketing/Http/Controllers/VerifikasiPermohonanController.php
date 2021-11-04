@@ -191,8 +191,8 @@ class VerifikasiPermohonanController extends Controller
 			'mohon_id' => $request['mohon_id'],
 			'status_mohon_id' => $request['mohon_id'],
 			'status_tipe' => 'Informasi',
-			'status_pesan' => 'Permohonan anda untuk nomor #'.$request->mohon_id.' telah diterima.',
-			'status_judul' => 'Informasi Pengajuan Permohonan'
+			'status_pesan' => 'Permohonan anda untuk nomor #'.$request->mohon_id.' telah ditolak.',
+			'status_judul' => 'Permohonan Ditolak'
 		];
 
         DB::transaction(function () use ($request, $dataInsert) {
@@ -233,7 +233,30 @@ class VerifikasiPermohonanController extends Controller
 
     private function edit_accepted( Request $request)
 	{
-        $breadcrumbs = [
+		$data = SisPermohonan::findOrFail($request['mohon_id']);
+		$dataInsert = [
+			'mohon_id' => $request['mohon_id'],
+			'status_mohon_id' => $request['mohon_id'],
+			'status_tipe' => 'Informasi',
+			'status_pesan' => 'Permohonan anda untuk nomor #'.$request->mohon_id.' telah diterima.',
+			'status_judul' => 'Permohonan Diterima'
+		];
+
+        DB::transaction(function () use ($request, $dataInsert) {
+				SisPermohonanStatus::create([
+					'status_mohon_id' => $dataInsert['status_mohon_id'],
+					'status_tipe' => $dataInsert['status_tipe'],
+					'status_pesan' => $dataInsert['status_pesan'],
+					'status_judul' => $dataInsert['status_judul']
+				]);
+				// Delete User Group
+				SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted']);
+			});
+
+        return redirect($this->url)->with('message', "Data permohonan #".$request->mohon_id." sudah diverifikasi dengan status '<strong>Diterima</strong>'.");
+		
+        /* 
+		$breadcrumbs = [
             new BreadcrumbsStruct('Marketing'),
             new BreadcrumbsStruct('Verifikasi Sertifikasi', url($this->url)),
             new BreadcrumbsStruct('Detail Permohonan "#' . $request['mohon_id'] . '"', url($this->url . '/' . 'detail/' . $request['mohon_id'] . '?action=verifikasi')),
@@ -250,7 +273,8 @@ class VerifikasiPermohonanController extends Controller
             'dataPermohon' => $dataPermohon->get()[0],
             'breadcrumbs'  => $breadcrumbs
         ];
-        return view("marketing::verifikasi_permohonan.edit_accepted")->with($parser);
+        return view("marketing::verifikasi_permohonan.edit_accepted")->with($parser); 
+		*/
 	}
 
     public function update(Request $request)

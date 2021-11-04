@@ -1,21 +1,19 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Verifikasi Permohonan Sertifikasi ')
+@section('title', 'Detail Permohonan dan Upload Kajian Permohonan Marketing')
 
 @section('content')
-	<style>
+<style>
 	.datagrid-btable, .datagrid-header-inner, .datagrid-htable {
-   width : 100%;
-}
-	</style>
+		width : 100%;
+	}
+</style>
     <div class="dt-content">
         <div class="row">
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@edit"))
-                <a class="btn btn-sm btn-warning" href="{{url("$url/edit?status=revisi&mohon_id=$dataPermohon->mohon_id")}}" style="margin-bottom: 20px"> <i class="icon icon-chat-new"></i> Revisi</a>
-				<button class="btn btn-sm btn-success" style="margin-bottom: 20px" onClick="confirmAccepted()"> <i class="icon icon-list-select-o"></i> Terima Pengajuan ?</button>
-                <button class="btn btn-sm btn-danger" style="margin-bottom: 20px" onClick="confirmRejected()"> <i class="icon icon-exclamation"></i> Tolak Pengajuan ?</button>
+                <a class="btn btn-sm btn-info" href="{{url("$url/edit?status=upload-kajian-permohonan&mohon_id=$dataPermohon->mohon_id")}}" style="margin-bottom: 20px"> <i class="fad fa-upload"></i> Upload Kajian Permohonan</a>
 				@endif
 			</div>
 		</div>
@@ -97,6 +95,16 @@
                       <div id="pane1" class="tab-pane active">
                         <!-- List -->
 						<div class="table-responsive">
+						  <table class="table table-hover mb-0">
+							<thead>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-primary">Download File</a></th>
+								</tr>
+							</thead>
+						  </table>
+							
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
@@ -257,7 +265,7 @@
 								<div class="card-body py-sm-0 px-0 px-sm-6 px-md-8">
 
 								  <!-- Badges -->
-								  <span class="badge bg-teal text-white text-uppercase mb-2">Revisi Pengajuan</span>
+								  <span class="badge bg-teal text-white text-uppercase mb-2">{{$dps->status_tipe}}</span>
 								  <!-- /badges -->
 
 								  <!-- Card Title-->

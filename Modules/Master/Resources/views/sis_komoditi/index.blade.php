@@ -77,6 +77,7 @@
                 ]],
                 columns: [[
                     {field: 'komodt_nama', title: 'Komoditi', width: 400, sortable: true},
+                    {field: 'komodt_sni', title: 'SNI', width: 250, sortable: true},
                 ]],
             });
             dg.datagrid(

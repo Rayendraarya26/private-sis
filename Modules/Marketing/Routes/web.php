@@ -20,5 +20,8 @@ Route::prefix('marketing')->middleware(['auth', 'restrict'])->group(function() {
     Route::prefix("kajian-permohonan")->group(function () {
         Route::get('/', [UploadKajianPermohonanController::class, 'index']);
         Route::any('/ajax', [UploadKajianPermohonanController::class, 'ajax']);
+        Route::get('/detail/{mohon_id}', [UploadKajianPermohonanController::class, 'detail']);
+        Route::get('/edit', [UploadKajianPermohonanController::class, 'edit']);
+        Route::post('/update', [UploadKajianPermohonanController::class, 'update']);
     });
 });

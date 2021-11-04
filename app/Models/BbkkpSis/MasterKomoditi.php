@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $komodt_id
  * @property string|null $komodt_nama
+ * @property string|null $komodt_sni
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -29,7 +30,8 @@ class MasterKomoditi extends Model
 	protected $primaryKey = 'komodt_id';
 
 	protected $fillable = [
-		'komodt_nama'
+		'komodt_nama',
+		'komodt_sni'
 	];
 
 	public function sis_pelanggan_sertifikasis()

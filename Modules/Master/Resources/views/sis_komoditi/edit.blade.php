@@ -42,12 +42,16 @@
                                     @csrf
                                     <input type="hidden" name="komodt_id" value="{{$data->komodt_id}}">
                                     <div class="form-group row">
-                                        <label class="col-form-label col-sm-3"
-                                               for="komodt_nama">Nama Komoditi*</label>
+                                        <label class="col-form-label col-sm-3" for="komodt_nama">Nama Komoditi*</label>
                                         <div class="col-sm-8">
-                                            <input class="form-control" placeholder="Masukkan nama Komoditi ..."
-                                                   type="text" name="komodt_nama" id="komodt_nama"
-                                                   value="{{old('komodt_nama') ?? $data->komodt_nama}}">
+                                            <input class="form-control" placeholder="Masukkan nama Komoditi ..." type="text" name="komodt_nama" id="komodt_nama" value="{{old('komodt_nama') ?? $data->komodt_nama}}">
+                                        </div>
+                                    </div>
+									
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="komodt_sni">SNI Komoditi*</label>
+                                        <div class="col-sm-8">
+                                            <input class="form-control" placeholder="Masukkan SNI Komoditi ..." type="text" name="komodt_sni" id="komodt_sni" value="{{old('komodt_sni') ?? $data->komodt_sni}}">
                                         </div>
                                     </div>
 

@@ -22,9 +22,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $mohon_perlu_tahap1
  * @property int|null $cust_sert_id
  * @property string|null $mohon_verif_kajian_permohonan_pjt
- * @property string|null $mohon_kajian_permohonan_file
+ * @property string|null $mohon_kajian_permohonan_pjt_file
  * @property string|null $mohon_verif_kajian_permohonan_paskal
- * @property string|null $mohon_kajian_permohonan_teknis_file
+ * @property string|null $mohon_kajian_permohonan_paskal_file
  * @property string|null $mohon_pernyataan_persetujuan_file
  * @property string|null $mohon_harus_lunas_status
  * @property float|null $mohon_harga_permohonan
@@ -121,9 +121,9 @@ class SisPermohonan extends Model
 		'mohon_perlu_tahap1',
 		'cust_sert_id',
 		'mohon_verif_kajian_permohonan_pjt',
-		'mohon_kajian_permohonan_file',
+		'mohon_kajian_permohonan_pjt_file',
 		'mohon_verif_kajian_permohonan_paskal',
-		'mohon_kajian_permohonan_teknis_file',
+		'mohon_kajian_permohonan_paskal_file',
 		'mohon_pernyataan_persetujuan_file',
 		'mohon_harus_lunas_status',
 		'mohon_harga_permohonan',
