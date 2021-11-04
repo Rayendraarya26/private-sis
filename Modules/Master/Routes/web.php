@@ -16,136 +16,134 @@ use Modules\Master\Http\Controllers\SisKomoditiController;
 use Modules\Master\Http\Controllers\SisSertifikasiController;
 
 Route::prefix('master')->middleware(['auth', 'restrict'])->group(function () {
-    Route::prefix('master')->group(function () {
-        Route::prefix("provinsi")->group(function () {
-            Route::get('/', [ProvinsiController::class, 'index']);
-            Route::get('/ajax', [ProvinsiController::class, 'ajax']);
-            Route::get('/create', [ProvinsiController::class, 'create']);
-            Route::post('/store', [ProvinsiController::class, 'store']);
-            Route::get('/edit/{provId}', [ProvinsiController::class, 'edit']);
-            Route::post('/update', [ProvinsiController::class, 'update']);
-            Route::delete('/delete', [ProvinsiController::class, 'destroy']);
-        });
+    Route::prefix("provinsi")->group(function () {
+		Route::get('/', [ProvinsiController::class, 'index']);
+		Route::get('/ajax', [ProvinsiController::class, 'ajax']);
+		Route::get('/create', [ProvinsiController::class, 'create']);
+		Route::post('/store', [ProvinsiController::class, 'store']);
+		Route::get('/edit/{provId}', [ProvinsiController::class, 'edit']);
+		Route::post('/update', [ProvinsiController::class, 'update']);
+		Route::delete('/delete', [ProvinsiController::class, 'destroy']);
+	});
 
-        Route::prefix("kabupaten")->group(function () {
-            Route::get('/', [KabupatenController::class, 'index']);
-            Route::get('/ajax', [KabupatenController::class, 'ajax']);
-            Route::get('/create', [KabupatenController::class, 'create']);
-            Route::post('/store', [KabupatenController::class, 'store']);
-            Route::get('/edit/{kabId}', [KabupatenController::class, 'edit']);
-            Route::post('/update', [KabupatenController::class, 'update']);
-            Route::delete('/delete', [KabupatenController::class, 'destroy']);
-        });
+	Route::prefix("kabupaten")->group(function () {
+		Route::get('/', [KabupatenController::class, 'index']);
+		Route::get('/ajax', [KabupatenController::class, 'ajax']);
+		Route::get('/create', [KabupatenController::class, 'create']);
+		Route::post('/store', [KabupatenController::class, 'store']);
+		Route::get('/edit/{kabId}', [KabupatenController::class, 'edit']);
+		Route::post('/update', [KabupatenController::class, 'update']);
+		Route::delete('/delete', [KabupatenController::class, 'destroy']);
+	});
 
-        Route::prefix("kecamatan")->group(function () {
-            Route::get('/', [KecamatanController::class, 'index']);
-            Route::get('/ajax', [KecamatanController::class, 'ajax']);
-            Route::get('/create', [KecamatanController::class, 'create']);
-            Route::post('/store', [KecamatanController::class, 'store']);
-            Route::get('/edit/{kecId}', [KecamatanController::class, 'edit']);
-            Route::post('/update', [KecamatanController::class, 'update']);
-            Route::delete('/delete', [KecamatanController::class, 'destroy']);
-        });
+	Route::prefix("kecamatan")->group(function () {
+		Route::get('/', [KecamatanController::class, 'index']);
+		Route::get('/ajax', [KecamatanController::class, 'ajax']);
+		Route::get('/create', [KecamatanController::class, 'create']);
+		Route::post('/store', [KecamatanController::class, 'store']);
+		Route::get('/edit/{kecId}', [KecamatanController::class, 'edit']);
+		Route::post('/update', [KecamatanController::class, 'update']);
+		Route::delete('/delete', [KecamatanController::class, 'destroy']);
+	});
 
-        Route::prefix("jenis-dok-perusahaan")->group(function () {
-            Route::get('/', [JenisDokPerusahaanController::class, 'index']);
-            Route::get('/ajax', [JenisDokPerusahaanController::class, 'ajax']);
-            Route::get('/create', [JenisDokPerusahaanController::class, 'create']);
-            Route::post('/store', [JenisDokPerusahaanController::class, 'store']);
-            Route::get('/edit/{jenisDokPerusahaanId}', [JenisDokPerusahaanController::class, 'edit']);
-            Route::post('/update', [JenisDokPerusahaanController::class, 'update']);
-            Route::post('/delete', [JenisDokPerusahaanController::class, 'destroy']);
-        });
+	Route::prefix("jenis-dok-perusahaan")->group(function () {
+		Route::get('/', [JenisDokPerusahaanController::class, 'index']);
+		Route::get('/ajax', [JenisDokPerusahaanController::class, 'ajax']);
+		Route::get('/create', [JenisDokPerusahaanController::class, 'create']);
+		Route::post('/store', [JenisDokPerusahaanController::class, 'store']);
+		Route::get('/edit/{jenisDokPerusahaanId}', [JenisDokPerusahaanController::class, 'edit']);
+		Route::post('/update', [JenisDokPerusahaanController::class, 'update']);
+		Route::post('/delete', [JenisDokPerusahaanController::class, 'destroy']);
+	});
 
-        Route::prefix("badan-hukum")->group(function () {
-            Route::get('/', [BadanHukumController::class, 'index']);
-            Route::get('/ajax', [BadanHukumController::class, 'ajax']);
-            Route::get('/create', [BadanHukumController::class, 'create']);
-            Route::post('/store', [BadanHukumController::class, 'store']);
-            Route::get('/edit/{badanHukumId}', [BadanHukumController::class, 'edit']);
-            Route::post('/update', [BadanHukumController::class, 'update']);
-            Route::post('/delete/', [BadanHukumController::class, 'destroy']);
-        });
+	Route::prefix("badan-hukum")->group(function () {
+		Route::get('/', [BadanHukumController::class, 'index']);
+		Route::get('/ajax', [BadanHukumController::class, 'ajax']);
+		Route::get('/create', [BadanHukumController::class, 'create']);
+		Route::post('/store', [BadanHukumController::class, 'store']);
+		Route::get('/edit/{badanHukumId}', [BadanHukumController::class, 'edit']);
+		Route::post('/update', [BadanHukumController::class, 'update']);
+		Route::post('/delete/', [BadanHukumController::class, 'destroy']);
+	});
 
-        Route::prefix("negara")->group(function () {
-            Route::get('/', [NegaraController::class, 'index']);
-            Route::get('/ajax', [NegaraController::class, 'ajax']);
-            Route::get('/create', [NegaraController::class, 'create']);
-            Route::post('/store', [NegaraController::class, 'store']);
-            Route::get('/edit/{negaraId}', [NegaraController::class, 'edit']);
-            Route::post('/update', [NegaraController::class, 'update']);
-            Route::post('/delete', [NegaraController::class, 'destroy']);
-        });
+	Route::prefix("negara")->group(function () {
+		Route::get('/', [NegaraController::class, 'index']);
+		Route::get('/ajax', [NegaraController::class, 'ajax']);
+		Route::get('/create', [NegaraController::class, 'create']);
+		Route::post('/store', [NegaraController::class, 'store']);
+		Route::get('/edit/{negaraId}', [NegaraController::class, 'edit']);
+		Route::post('/update', [NegaraController::class, 'update']);
+		Route::post('/delete', [NegaraController::class, 'destroy']);
+	});
 
-        Route::prefix("kode-pos")->group(function () {
-            Route::get('/', [KodePosController::class, 'index']);
-            Route::get('/ajax', [KodePosController::class, 'ajax']);
-            Route::get('/create', [KodePosController::class, 'create']);
-            Route::post('/store', [KodePosController::class, 'store']);
-            Route::get('/edit/{kodePosId}', [KodePosController::class, 'edit']);
-            Route::post('/update', [KodePosController::class, 'update']);
-            Route::post('/delete', [KodePosController::class, 'destroy']);
-        });
+	Route::prefix("kode-pos")->group(function () {
+		Route::get('/', [KodePosController::class, 'index']);
+		Route::get('/ajax', [KodePosController::class, 'ajax']);
+		Route::get('/create', [KodePosController::class, 'create']);
+		Route::post('/store', [KodePosController::class, 'store']);
+		Route::get('/edit/{kodePosId}', [KodePosController::class, 'edit']);
+		Route::post('/update', [KodePosController::class, 'update']);
+		Route::post('/delete', [KodePosController::class, 'destroy']);
+	});
 
-        Route::prefix("jenis-perusahaan")->group(function () {
-            Route::get('/', [JenisPerusahaanController::class, 'index']);
-            Route::get('/ajax', [JenisPerusahaanController::class, 'ajax']);
-            Route::get('/create', [JenisPerusahaanController::class, 'create']);
-            Route::post('/store', [JenisPerusahaanController::class, 'store']);
-            Route::get('/edit/{jenisPerusahaanId}', [JenisPerusahaanController::class, 'edit']);
-            Route::post('/update', [JenisPerusahaanController::class, 'update']);
-            Route::post('/delete', [JenisPerusahaanController::class, 'destroy']);
-        });
+	Route::prefix("jenis-perusahaan")->group(function () {
+		Route::get('/', [JenisPerusahaanController::class, 'index']);
+		Route::get('/ajax', [JenisPerusahaanController::class, 'ajax']);
+		Route::get('/create', [JenisPerusahaanController::class, 'create']);
+		Route::post('/store', [JenisPerusahaanController::class, 'store']);
+		Route::get('/edit/{jenisPerusahaanId}', [JenisPerusahaanController::class, 'edit']);
+		Route::post('/update', [JenisPerusahaanController::class, 'update']);
+		Route::post('/delete', [JenisPerusahaanController::class, 'destroy']);
+	});
 
-        Route::prefix("ruang-lingkip")->group(function () {
-            Route::get('/', [RuangLingkupController::class, 'index']);
-            Route::get('/ajax', [RuangLingkupController::class, 'ajax']);
-            Route::get('/create', [RuangLingkupController::class, 'create']);
-            Route::post('/store', [RuangLingkupController::class, 'store']);
-            Route::get('/edit/{jenisPerusahaanId}', [RuangLingkupController::class, 'edit']);
-            Route::post('/update', [RuangLingkupController::class, 'update']);
-            Route::post('/delete', [RuangLingkupController::class, 'destroy']);
-        });
+	Route::prefix("ruang-lingkup")->group(function () {
+		Route::get('/', [RuangLingkupController::class, 'index']);
+		Route::get('/ajax', [RuangLingkupController::class, 'ajax']);
+		Route::get('/create', [RuangLingkupController::class, 'create']);
+		Route::post('/store', [RuangLingkupController::class, 'store']);
+		Route::get('/edit/{id}', [RuangLingkupController::class, 'edit']);
+		Route::post('/update', [RuangLingkupController::class, 'update']);
+		Route::post('/delete', [RuangLingkupController::class, 'destroy']);
+	});
 
-        // ======================================== SIS ========================================
-        Route::prefix("sis")->group(function () {
-            Route::prefix("kode-ea")->group(function () {
-                Route::get("/", [SisKodeEaController::class, 'index']);
-                Route::get('/ajax', [SisKodeEaController::class, 'ajax']);
-                Route::get('/create', [SisKodeEaController::class, 'create']);
-                Route::post('/store', [SisKodeEaController::class, 'store']);
-                Route::get('/edit/{id}', [SisKodeEaController::class, 'edit']);
-                Route::post('/update', [SisKodeEaController::class, 'update']);
-                Route::delete('/delete', [SisKodeEaController::class, 'destroy']);
-            });
-            Route::prefix("kode-nace")->group(function () {
-                Route::get("/", [SisKodeNaceController::class, 'index']);
-                Route::get('/ajax', [SisKodeNaceController::class, 'ajax']);
-                Route::get('/create', [SisKodeNaceController::class, 'create']);
-                Route::post('/store', [SisKodeNaceController::class, 'store']);
-                Route::get('/edit/{id}', [SisKodeNaceController::class, 'edit']);
-                Route::post('/update', [SisKodeNaceController::class, 'update']);
-                Route::delete('/delete', [SisKodeNaceController::class, 'destroy']);
-            });
-            Route::prefix("komoditi")->group(function () {
-                Route::get("/", [SisKomoditiController::class, 'index']);
-                Route::get('/ajax', [SisKomoditiController::class, 'ajax']);
-                Route::get('/create', [SisKomoditiController::class, 'create']);
-                Route::post('/store', [SisKomoditiController::class, 'store']);
-                Route::get('/edit/{id}', [SisKomoditiController::class, 'edit']);
-                Route::post('/update', [SisKomoditiController::class, 'update']);
-                Route::delete('/delete', [SisKomoditiController::class, 'destroy']);
-            });
-            Route::prefix("sertifikasi")->group(function () {
-                Route::get("/", [SisSertifikasiController::class, 'index']);
-                Route::any('/ajax', [SisSertifikasiController::class, 'ajax']);
-                Route::get('/detail', [SisSertifikasiController::class, 'detail']);
-                Route::get('/create', [SisSertifikasiController::class, 'create']);
-                Route::post('/store', [SisSertifikasiController::class, 'store']);
-                Route::get('/edit', [SisSertifikasiController::class, 'edit']);
-                Route::post('/update', [SisSertifikasiController::class, 'update']);
-                Route::delete('/delete', [SisSertifikasiController::class, 'destroy']);
-            });
-        });
-    });
+	// ======================================== SIS ========================================
+	Route::prefix("sis")->group(function () {
+		Route::prefix("kode-ea")->group(function () {
+			Route::get("/", [SisKodeEaController::class, 'index']);
+			Route::get('/ajax', [SisKodeEaController::class, 'ajax']);
+			Route::get('/create', [SisKodeEaController::class, 'create']);
+			Route::post('/store', [SisKodeEaController::class, 'store']);
+			Route::get('/edit/{id}', [SisKodeEaController::class, 'edit']);
+			Route::post('/update', [SisKodeEaController::class, 'update']);
+			Route::delete('/delete', [SisKodeEaController::class, 'destroy']);
+		});
+		Route::prefix("kode-nace")->group(function () {
+			Route::get("/", [SisKodeNaceController::class, 'index']);
+			Route::get('/ajax', [SisKodeNaceController::class, 'ajax']);
+			Route::get('/create', [SisKodeNaceController::class, 'create']);
+			Route::post('/store', [SisKodeNaceController::class, 'store']);
+			Route::get('/edit/{id}', [SisKodeNaceController::class, 'edit']);
+			Route::post('/update', [SisKodeNaceController::class, 'update']);
+			Route::delete('/delete', [SisKodeNaceController::class, 'destroy']);
+		});
+		Route::prefix("komoditi")->group(function () {
+			Route::get("/", [SisKomoditiController::class, 'index']);
+			Route::get('/ajax', [SisKomoditiController::class, 'ajax']);
+			Route::get('/create', [SisKomoditiController::class, 'create']);
+			Route::post('/store', [SisKomoditiController::class, 'store']);
+			Route::get('/edit/{id}', [SisKomoditiController::class, 'edit']);
+			Route::post('/update', [SisKomoditiController::class, 'update']);
+			Route::delete('/delete', [SisKomoditiController::class, 'destroy']);
+		});
+		Route::prefix("sertifikasi")->group(function () {
+			Route::get("/", [SisSertifikasiController::class, 'index']);
+			Route::any('/ajax', [SisSertifikasiController::class, 'ajax']);
+			Route::get('/detail', [SisSertifikasiController::class, 'detail']);
+			Route::get('/create', [SisSertifikasiController::class, 'create']);
+			Route::post('/store', [SisSertifikasiController::class, 'store']);
+			Route::get('/edit', [SisSertifikasiController::class, 'edit']);
+			Route::post('/update', [SisSertifikasiController::class, 'update']);
+			Route::delete('/delete', [SisSertifikasiController::class, 'destroy']);
+		});
+	});
 });

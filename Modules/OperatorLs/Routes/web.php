@@ -18,6 +18,7 @@ use Modules\OperatorLs\Http\Controllers\OperatorLsController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
 use Modules\OperatorLs\Http\Controllers\SertifikatUjiController;
 use Modules\OperatorLs\Http\Controllers\TimController;
+use Modules\OperatorLs\Http\Controllers\PenjadwalanTahap1Controller;
 
 Route::prefix('operatorls')->middleware(['auth', 'restricted'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
@@ -40,6 +41,18 @@ Route::prefix('operatorls')->middleware(['auth', 'restricted'])->group(function 
         Route::post('/update', [PenjadwalanController::class, 'update']);
         Route::delete('/delete', [PenjadwalanController::class, 'destroy']);
     });
+	
+	Route::prefix("penjadwalan-tahap1")->group(function () {
+        Route::get('/', [PenjadwalanTahap1Controller::class, 'index']);
+        Route::get('/detail', [PenjadwalanTahap1Controller::class, 'detail']);
+        Route::get('/ajax', [PenjadwalanTahap1Controller::class, 'ajax']);
+        Route::get('/create', [PenjadwalanTahap1Controller::class, 'create']);
+        Route::post('/store', [PenjadwalanTahap1Controller::class, 'store']);
+        Route::get('/edit', [PenjadwalanTahap1Controller::class, 'edit']);
+        Route::post('/update', [PenjadwalanTahap1Controller::class, 'update']);
+        Route::delete('/delete', [PenjadwalanTahap1Controller::class, 'destroy']);
+    });
+	
 
 	Route::prefix("tim")->group(function () {
         Route::get('/', [TimController::class, 'index']);
