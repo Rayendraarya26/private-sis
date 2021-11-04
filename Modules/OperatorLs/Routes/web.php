@@ -23,7 +23,7 @@ use Modules\OperatorLs\Http\Controllers\UploadKajianPermohonanController;
 
 Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
-	
+
 	Route::prefix("kajian-permohonan")->group(function () {
         Route::get('/', [UploadKajianPermohonanController::class, 'index']);
         Route::any('/ajax', [UploadKajianPermohonanController::class, 'ajax']);
@@ -31,7 +31,7 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::get('/edit', [UploadKajianPermohonanController::class, 'edit']);
         Route::post('/update', [UploadKajianPermohonanController::class, 'update']);
     });
-	
+
 	Route::prefix("kelengkapan-permohonan")->group(function () {
         Route::get('/', [KelengkapanPermohonanController::class, 'index']);
         Route::get('/ajax', [KelengkapanPermohonanController::class, 'ajax']);
@@ -50,7 +50,7 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::post('/update', [PenjadwalanController::class, 'update']);
         Route::delete('/delete', [PenjadwalanController::class, 'destroy']);
     });
-	
+
 	Route::prefix("penjadwalan-tahap1")->group(function () {
         Route::get('/', [PenjadwalanTahap1Controller::class, 'index']);
         Route::get('/detail', [PenjadwalanTahap1Controller::class, 'detail']);
@@ -61,7 +61,7 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::post('/update', [PenjadwalanTahap1Controller::class, 'update']);
         Route::delete('/delete', [PenjadwalanTahap1Controller::class, 'destroy']);
     });
-	
+
 
 	Route::prefix("tim")->group(function () {
         Route::get('/', [TimController::class, 'index']);
@@ -84,7 +84,7 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::post('/update', [KomiteController::class, 'update']);
         Route::delete('/delete', [KomiteController::class, 'destroy']);
     });
-	
+
 	Route::prefix("sertifikat-uji")->group(function () {
         Route::get('/', [SertifikatUjiController::class, 'index']);
         Route::get('/ajax', [SertifikatUjiController::class, 'ajax']);

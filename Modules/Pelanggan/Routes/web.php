@@ -38,7 +38,11 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
 
     Route::prefix("jadwal")->group(function () {
         Route::get("/", [JadwalController::class, 'index']);
-        Route::get("/ajax", [JadwalController::class, 'index']);
+        Route::get("/ajax", [JadwalController::class, 'ajax']);
+        Route::get('approve/tanggal/{jadwal_id}', [JadwalController::class, 'approveTanggal']);
+        Route::post('approve/tanggal/{jadwal_id}', [JadwalController::class, 'processApproveTanggal']);
+        Route::get('approve/tim/{jadwal_id}', [JadwalController::class, 'approveTim']);
+        Route::post('approve/tim/{jadwal_id}', [JadwalController::class, 'processApproveTim']);
     });
 
 
