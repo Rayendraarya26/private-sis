@@ -35,7 +35,7 @@ class RuangLingkupController extends Controller
         ];
 		
         $parser = ['module' => $this->module, 'url' => $this->url];
-        return view("master::negara.create")->with($parser); // Lokasi di Modules\Master\Resources\views\negara
+        return view("master::ruang_lingkup.create")->with($parser);
     }
 
     public function store(Request $request)
@@ -59,13 +59,13 @@ class RuangLingkupController extends Controller
         }
     }
 
-    public function edit(Request $request, $negaraId) // menerima parameter ID dari Modules\Master\Routes\web.php
+    public function edit(Request $request, $rlId)
     {
         // Check apakah ID tersedia
-        $data = MasterRuangLingkup::findOrFail($negaraId); // SELECT * FROM master_negara where ruang_ling_id = $negaraId | findOrFail akan otomatis redirect 404 jika data tidak ditemukan primary key degan id tersebut
+        $data = MasterRuangLingkup::findOrFail($rlId); // SELECT * FROM master_negara where ruang_ling_id = $negaraId | findOrFail akan otomatis redirect 404 jika data tidak ditemukan primary key degan id tersebut
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data];
-        return view("master::negara.edit")->with($parser); // Lokasi di Modules\Master\Resources\views\negara
+        return view("master::ruang_lingkup.edit")->with($parser);
     }
 
     public function update(Request $request)
