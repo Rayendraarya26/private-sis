@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $cust_sert_id
  * @property int $sert_id
  * @property int $cust_id
+ * @property int|null $mohon_id
  * @property string|null $cust_sert_nomor_sertifikat
  * @property string|null $cust_sert_nomor_referensi
  * @property string|null $cust_sert_nomor_sni
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterKomoditi|null $master_komoditi
  * @property MasterSertifikasi $master_sertifikasi
  * @property SisPelanggan $sis_pelanggan
+ * @property SisPermohonan|null $sis_permohonan
  * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisPermohonan[] $sis_permohonans
  *
@@ -50,6 +52,7 @@ class SisPelangganSertifikasi extends Model
 	protected $casts = [
 		'sert_id' => 'int',
 		'cust_id' => 'int',
+		'mohon_id' => 'int',
 		'komodt_id' => 'int'
 	];
 
@@ -62,6 +65,7 @@ class SisPelangganSertifikasi extends Model
 	protected $fillable = [
 		'sert_id',
 		'cust_id',
+		'mohon_id',
 		'cust_sert_nomor_sertifikat',
 		'cust_sert_nomor_referensi',
 		'cust_sert_nomor_sni',
@@ -92,6 +96,11 @@ class SisPelangganSertifikasi extends Model
 	public function sis_pelanggan()
 	{
 		return $this->belongsTo(SisPelanggan::class, 'cust_id');
+	}
+
+	public function sis_permohonan()
+	{
+		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
 	}
 
 	public function sis_billing_items()

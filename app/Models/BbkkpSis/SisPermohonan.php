@@ -19,8 +19,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $sert_id
  * @property string $mohon_approved_status
  * @property string $mohon_jenis_status
+ * @property string|null $mohon_perlu_tahap1
  * @property int|null $cust_sert_id
+ * @property string|null $mohon_verif_kajian_permohonan_pjt
  * @property string|null $mohon_kajian_permohonan_file
+ * @property string|null $mohon_verif_kajian_permohonan_paskal
+ * @property string|null $mohon_kajian_permohonan_teknis_file
  * @property string|null $mohon_pernyataan_persetujuan_file
  * @property string|null $mohon_harus_lunas_status
  * @property float|null $mohon_harga_permohonan
@@ -71,6 +75,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterKecamatan|null $master_kecamatan
  * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
+ * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
  * @property Collection|SisPermohonanDokumen[] $sis_permohonan_dokumens
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
  * @property Collection|SisPermohonanPabrik[] $sis_permohonan_pabriks
@@ -113,8 +118,12 @@ class SisPermohonan extends Model
 		'sert_id',
 		'mohon_approved_status',
 		'mohon_jenis_status',
+		'mohon_perlu_tahap1',
 		'cust_sert_id',
+		'mohon_verif_kajian_permohonan_pjt',
 		'mohon_kajian_permohonan_file',
+		'mohon_verif_kajian_permohonan_paskal',
+		'mohon_kajian_permohonan_teknis_file',
 		'mohon_pernyataan_persetujuan_file',
 		'mohon_harus_lunas_status',
 		'mohon_harga_permohonan',
@@ -210,6 +219,11 @@ class SisPermohonan extends Model
 	public function sis_jadwal_audits()
 	{
 		return $this->hasMany(SisJadwalAudit::class, 'mohon_id');
+	}
+
+	public function sis_pelanggan_sertifikasis()
+	{
+		return $this->hasMany(SisPelangganSertifikasi::class, 'mohon_id');
 	}
 
 	public function sis_permohonan_dokumens()

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $lks_revisi_id
  * @property int $lks_id
  * @property string|null $lks_revisi_catatan
+ * @property string|null $lks_revisi_oleh
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -35,7 +36,8 @@ class SisAuditLksRevisi extends Model
 
 	protected $fillable = [
 		'lks_id',
-		'lks_revisi_catatan'
+		'lks_revisi_catatan',
+		'lks_revisi_oleh'
 	];
 
 	public function sis_audit_lks()

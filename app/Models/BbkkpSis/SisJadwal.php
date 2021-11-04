@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisJadwal
  * 
  * @property int $jadw_id
+ * @property int|null $bill_id
  * @property string|null $jadw_tanggal_status
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
+ * @property SisBilling|null $sis_billing
  * @property SisPelanggan $sis_pelanggan
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
  * @property Collection|SisAuditLapLengkap[] $sis_audit_lap_lengkaps
@@ -44,6 +46,7 @@ class SisJadwal extends Model
 	protected $primaryKey = 'jadw_id';
 
 	protected $casts = [
+		'bill_id' => 'int',
 		'cust_id' => 'int'
 	];
 
@@ -53,6 +56,7 @@ class SisJadwal extends Model
 	];
 
 	protected $fillable = [
+		'bill_id',
 		'jadw_tanggal_status',
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
@@ -61,6 +65,11 @@ class SisJadwal extends Model
 		'cust_id',
 		'jadw_file_jadwal'
 	];
+
+	public function sis_billing()
+	{
+		return $this->belongsTo(SisBilling::class, 'bill_id');
+	}
 
 	public function sis_pelanggan()
 	{
