@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use Modules\Paskal\Http\Controllers\VerifKajianPermohonanController;
 
 Route::prefix('paskal')->middleware(['auth', 'restrict'])->group(function () {
-    Route::get("/verifikasi", [VerifKajianPermohonanController::class, 'index']);
-    Route::any("/verifikasi/ajax", [VerifKajianPermohonanController::class, 'ajax']);
+	Route::prefix("verifikasi")->group(function () {
+        Route::get('/', [VerifKajianPermohonanController::class, 'index']);
+        Route::any('/ajax', [VerifKajianPermohonanController::class, 'ajax']);
+        Route::get('/detail/{mohon_id}', [VerifKajianPermohonanController::class, 'detail']);
+        Route::get('/edit', [VerifKajianPermohonanController::class, 'edit']);
+        Route::post('/update', [VerifKajianPermohonanController::class, 'update']);
+    });
 });

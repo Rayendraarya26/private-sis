@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Detail Permohonan dan Upload Kajian Permohonan Marketing')
+@section('title', 'Verifikasi Kajian Permohonan PJT')
 
 @section('content')
 <style>
@@ -13,7 +13,7 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@edit"))
-                <a class="btn btn-sm btn-info" href="{{url("$url/edit?status=upload-kajian-permohonan&mohon_id=$dataPermohon->mohon_id")}}" style="margin-bottom: 20px"> <i class="fad fa-upload"></i> Upload Kajian Permohonan</a>
+                <a class="btn btn-sm btn-info" href="#" onClick="confirmVerif()" style="margin-bottom: 20px"> <i class="fas fa-badge-check"></i> Verifikasi?</a>
 				@endif
 			</div>
 		</div>
@@ -104,7 +104,7 @@
 								</tr>
 							</thead>
 						  </table>
-							
+						  
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
@@ -388,4 +388,29 @@
         </div>
     </div>
 @endsection
+@push("javascript")
+    <script>
+		function confirmVerif() {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Verifikasi Kajian Permohonan PJT?`,
+                text: `Apakah anda ingin mem-verifikasi kajian permohonan PJT untuk permohonan ini? (NB: Mengubah status verifikasi menjadi 'Diterima' bersifat permanen dan tidak dapat di kembalikan)`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Diterima',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+					window.location.href = `{{url("$url")}}/edit?action=edit-accepted&mohon_id={{$dataPermohon->mohon_id}}`;
+                }
+            });
+        }
+    </script>
+@endpush
 

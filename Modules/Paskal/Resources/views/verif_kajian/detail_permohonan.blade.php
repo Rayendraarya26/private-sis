@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Detail Permohonan dan Upload Kajian Permohonan Marketing')
+@section('title', 'Verifikasi Kajian Permohonan PASKAL')
 
 @section('content')
 <style>
@@ -13,7 +13,7 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@edit"))
-                <a class="btn btn-sm btn-info" href="{{url("$url/edit?status=upload-kajian-permohonan&mohon_id=$dataPermohon->mohon_id")}}" style="margin-bottom: 20px"> <i class="fad fa-upload"></i> Upload Kajian Permohonan</a>
+                <a class="btn btn-sm btn-info" href="#" onClick="confirmVerif()" style="margin-bottom: 20px"> <i class="fas fa-badge-check"></i> Verifikasi?</a>
 				@endif
 			</div>
 		</div>
@@ -98,13 +98,13 @@
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
-								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
+								  <th class="text-uppercase" scope="col">File Kajian Permohonan(PASKAL)</th>
 								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-primary">Download File</a></th>
+								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-primary">Download File</a></th>
 								</tr>
 							</thead>
 						  </table>
-							
+						  
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
@@ -388,4 +388,29 @@
         </div>
     </div>
 @endsection
+@push("javascript")
+    <script>
+		function confirmVerif() {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Verifikasi Kajian Permohonan PASKAL?`,
+                text: `Apakah anda ingin mem-verifikasi kajian permohonan PASKAL untuk permohonan ini? (NB: Mengubah status verifikasi menjadi 'Diterima' bersifat permanen dan tidak dapat di kembalikan)`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Diterima',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+					window.location.href = `{{url("$url")}}/edit?action=edit-accepted&mohon_id={{$dataPermohon->mohon_id}}`;
+                }
+            });
+        }
+    </script>
+@endpush
 
