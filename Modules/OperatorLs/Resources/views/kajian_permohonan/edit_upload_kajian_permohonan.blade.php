@@ -47,6 +47,21 @@
 										</div>
 									</div>
 									
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="mohon_perlu_tahap1">Perlu Proses Tahap 1?*</label>
+                                        <div class="col-sm-8">
+											<input type="hidden" id="mohon_kajian_permohonan_file_lama" name="mohon_kajian_permohonan_file_lama" class="form-control" value="{{$dataPermohon->mohon_kajian_permohonan_paskal_file}}"/>
+											<div class="form-check form-check-inline">
+												<input class="form-check-input" type="radio" name="mohon_perlu_tahap1" id="mohon_perlu_tahap1" value="ya" {{old('mohon_perlu_tahap1') == "ya" || $dataPermohon->mohon_perlu_tahap1 == "ya" ? "checked" :""}} >
+												<label class="form-check-label" for="mohon_perlu_tahap1">Ya</label>
+											</div>
+											<div class="form-check form-check-inline">
+												<input class="form-check-input" type="radio" name="mohon_perlu_tahap1" id="mohon_perlu_tahap1" value="tidak" {{old('mohon_perlu_tahap1') == "tidak"  || $dataPermohon->mohon_perlu_tahap1 == "tidak" ? "checked" :""}}>
+												<label class="form-check-label" for="mohon_perlu_tahap1">Tidak</label>
+											</div>
+                                        </div>
+                                    </div>
+									
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
                                             <i class="fas fa-save"></i> Simpan

@@ -221,7 +221,7 @@ class BillingController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['deskripsi'] = "Survailan untuk sertifikat " . $d->sert_nama . " nomor referensi " . $d->cust_sert_nomor_referensi;
+            $x['deskripsi'] = "Surveilans untuk sertifikat " . $d->sert_nama . " nomor referensi " . $d->cust_sert_nomor_referensi;
             $x['id']        = $d->cust_sert_id;
             $x['nama']      = $d->sert_nama;
 
@@ -250,7 +250,7 @@ class BillingController extends Controller
             ['id' => 'lain-lain', 'name' => 'lain-lain'],
             ['id' => 'sertifikasi', 'name' => 'sertifikasi'],
             ['id' => 're-sertifikasi', 'name' => 're-sertifikasi'],
-            ['id' => 'survailan', 'name' => 'survailan'],
+            ['id' => 'surveilans', 'name' => 'surveilans'],
         ];
 
         return response()->json($data);
@@ -309,7 +309,7 @@ class BillingController extends Controller
             $dataItems   = json_decode($request['data_billing_item']);
             $harus_lunas = 'ya';
             foreach ($dataItems as $itm) {
-                if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'survailan') {
+                if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'surveilans') {
                     SisPermohonanStatus::create([
                         "status_mohon_id" => $itm->mohon_id,
                         "status_tipe"     => "informasi",
@@ -326,9 +326,9 @@ class BillingController extends Controller
                 $cust_sert_id = null;
                 $mohon_id     = null;
 
-                if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'survailan') {
+                if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'surveilans') {
                     $mohon_id = $itm->mohon_id;
-                } else if (!is_null($itm->mohon_id) && $itm->bil_tipe == 'survailan') {
+                } else if (!is_null($itm->mohon_id) && $itm->bil_tipe == 'surveilans') {
                     $cust_sert_id = $itm->mohon_id;
                 }
 
@@ -498,7 +498,7 @@ class BillingController extends Controller
 
             if ($request->itms_bil_tipe == 'sertifikasi' || $request->itms_bil_tipe == 're-sertifikasi') {
                 $mohon_id = $request->mohon_id;
-            } else if ($request->itms_bil_tipe == 'survailan') {
+            } else if ($request->itms_bil_tipe == 'surveilans') {
                 $cust_sert_id = $request->cust_sert_id;
             }
 

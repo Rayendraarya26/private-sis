@@ -49,8 +49,8 @@
 
 									  <!-- Radio Button -->
 									  <div class="custom-control custom-radio custom-control-inline">
-										<input value="survailan" aria-describedby="itms_bil_tipeHelp" type="radio" id="itms_bil_tipe4" name="itms_bil_tipe" class="custom-control-input" @click="setComboDataPermohonan()">
-										<label class="custom-control-label" for="itms_bil_tipe4">Survailent</label>
+										<input value="surveilans" aria-describedby="itms_bil_tipeHelp" type="radio" id="itms_bil_tipe4" name="itms_bil_tipe" class="custom-control-input" @click="setComboDataPermohonan()">
+										<label class="custom-control-label" for="itms_bil_tipe4">Surveilans</label>
 									  </div>
 									  <!-- /radio button -->
 									<small id="itms_bil_tipeHelp" class="form-text">Note: Silahkan pilih tipe billing items.</small>
@@ -60,7 +60,7 @@
 								<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >Data Permohonan/Sertifikat</label>
 								<div class="col-xl-8">
 								  <input type="text" class="form-control" id="mohon_id">
-								  <small id="itms_bil_tipeHelp" class="form-text">Note: Data re-sertifikasi dan sertifikasi untuk data permohonan; Data survailan untuk data sertifikat.</small>
+								  <small id="itms_bil_tipeHelp" class="form-text">Note: Data re-sertifikasi dan sertifikasi untuk data permohonan; Data surveilans untuk data sertifikat.</small>
 								</div>
 							</div>
 							<div class="form-group form-row">
@@ -343,7 +343,7 @@
 									},
 								});
 							}
-							else if(itms_bil_tipe === 'survailan'){
+							else if(itms_bil_tipe === 'surveilans'){
 								$("#data_permohonan").show();
 								url = `{{ url("$url/ajax?action=combogrid-sertifikat") }}&cust_id=${currentaData.value.cust_id}`;
 								$('#mohon_id').combogrid({

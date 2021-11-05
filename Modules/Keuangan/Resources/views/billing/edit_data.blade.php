@@ -239,7 +239,7 @@
 								})
 							}
 						}
-						else if(row_tipe.id === 'survailan'){
+						else if(row_tipe.id === 'surveilans'){
 							if (ed_cust_sert_id){
 								$(ed_cust_sert_id).combogrid({
 									url:`{{ url("$url/ajax?action=combogrid-sertifikat") }}&cust_id={{$data_billing->cust_id}}`,

@@ -23,8 +23,8 @@
 							<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Pilih Tipe Jadwal</label>
 							<div class="col-xl-9">
 								  <div class="custom-control custom-radio custom-control-inline">
-									<input value="survailan" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe4" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('survailan')">
-									<label class="custom-control-label" for="jadw_audit_jenis_tipe4">Survailent</label>
+									<input value="surveilans" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe4" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('surveilans')">
+									<label class="custom-control-label" for="jadw_audit_jenis_tipe4">Surveilans</label>
 								  </div>
 								  <div class="custom-control custom-radio custom-control-inline">
 									<input value="tahap-1" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe1" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('tahap-1')">
@@ -45,7 +45,7 @@
 							<label class="col-xl-3 col-form-label text-sm-left" for="cb_data_id" >Data Permohonan/Sertifikat</label>
 							<div class="col-xl-8">
 								<input type="text" class="form-control" id="cb_data_id">
-								<small class="form-text">Note: Data tahap-I, re-sertifikasi dan sertifikasi untuk data permohonan; Data survailan untuk data sertifikat.</small>
+								<small class="form-text">Note: Data tahap-I, re-sertifikasi dan sertifikasi untuk data permohonan; Data surveilans untuk data sertifikat.</small>
 								
 								<input type="hidden"  id="mohon_id" value="">
 								<input type="hidden" id="sert_id" value="">
@@ -391,7 +391,7 @@
 						const currentaData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
 						if(currentaData != null){
 							let urlCombo = ``;										
-							if(dt_jenis !== 'survailan'){
+							if(dt_jenis !== 'surveilans'){
 								urlCombo = `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${currentaData.cust_id}&jenis_status=${dt_jenis}`;
 								$('#cb_data_id').combogrid({
 									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
@@ -451,7 +451,7 @@
 									},
 								});
 							}
-							else if(dt_jenis === 'survailan'){
+							else if(dt_jenis === 'surveilans'){
 								urlCombo = `{{ url("$url/ajax?action=combogrid-sertifikat") }}&cust_id=${currentaData.cust_id}`;
 								$('#cb_data_id').combogrid({
 									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
@@ -489,7 +489,7 @@
 							if(this.form_edited_id != null){
 								
 								let selectedItem = await window.idb.jadwal_data_itms.get(this.form_edited_id);
-								if(dt_jenis !== 'survailan'){
+								if(dt_jenis !== 'surveilans'){
 									$('#cb_data_id').combogrid({
 										value:`${selectedItem.mohon_id}`
 									});

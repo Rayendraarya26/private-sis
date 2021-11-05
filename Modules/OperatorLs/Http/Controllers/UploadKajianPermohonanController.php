@@ -191,6 +191,7 @@ class UploadKajianPermohonanController extends Controller
 	{
 		$request->validate([
             'mohon_id' => 'required|integer',
+			'mohon_perlu_tahap1' => 'required|string',
 			'status_tipe' => 'required|string',
 			'mohon_kajian_permohonan_file_lama' => 'nullable|string',
             'mohon_kajian_permohonan_file' => 'required|mimes:pdf'
@@ -214,6 +215,7 @@ class UploadKajianPermohonanController extends Controller
 			DB::transaction(function () use ($request, $dataInsert) {
 				SisPermohonan::findOrFail($request['mohon_id'])->update([
 					'mohon_verif_kajian_permohonan_pjt' => 'proses',
+					'mohon_perlu_tahap1' => $dataInsert['mohon_perlu_tahap1'],
 					'mohon_kajian_permohonan_pjt_file' => $dataInsert['mohon_kajian_permohonan_pjt_file'],
 				]);
 			});
