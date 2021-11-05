@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $aud_thp1_id
  * @property int|null $bill_id
  * @property int $mohon_id
+ * @property string|null $aud_thp1_status
  * @property Carbon|null $aud_thp1_tanggal_mulai
  * @property Carbon|null $aud_thp1_tanggal_selesai
  * @property string|null $aud_thp1_kolom_v
@@ -53,6 +54,7 @@ class SisAuditTahap1 extends Model
 	protected $fillable = [
 		'bill_id',
 		'mohon_id',
+		'aud_thp1_status',
 		'aud_thp1_tanggal_mulai',
 		'aud_thp1_tanggal_selesai',
 		'aud_thp1_kolom_v',
