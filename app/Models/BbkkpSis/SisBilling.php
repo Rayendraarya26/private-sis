@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $bill_id
  * @property int $cust_id
  * @property string|null $bill_nomor_billing
- * @property string|null $bill_file_spk
  * @property Carbon|null $bill_billing_date
  * @property Carbon|null $bill_due_date
  * @property string|null $bill_harus_lunas
@@ -55,7 +54,6 @@ class SisBilling extends Model
 	protected $fillable = [
 		'cust_id',
 		'bill_nomor_billing',
-		'bill_file_spk',
 		'bill_billing_date',
 		'bill_due_date',
 		'bill_harus_lunas',

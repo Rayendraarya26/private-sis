@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $mohon_verif_kajian_permohonan_paskal
  * @property string|null $mohon_kajian_permohonan_paskal_file
  * @property string|null $mohon_pernyataan_persetujuan_file
+ * @property string|null $mohon_spk_file
  * @property string|null $mohon_harus_lunas_status
  * @property float|null $mohon_harga_permohonan
  * @property string|null $mohon_cust_email
@@ -126,6 +127,7 @@ class SisPermohonan extends Model
 		'mohon_verif_kajian_permohonan_paskal',
 		'mohon_kajian_permohonan_paskal_file',
 		'mohon_pernyataan_persetujuan_file',
+		'mohon_spk_file',
 		'mohon_harus_lunas_status',
 		'mohon_harga_permohonan',
 		'mohon_cust_email',
