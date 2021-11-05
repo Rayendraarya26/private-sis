@@ -40,9 +40,9 @@
 										<div class="col-sm-8">
 											<input accept="application/pdf" class="form-control" type="file" name="mohon_kajian_permohonan_file">
 											<small id="" class="form-text">Note: Upload file Kajian Permohonan yang sudah ditanda tangani ; file format berupa *.pdf</small>
-											@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '')
+											@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '')
 												<hr/>
-												<a target="_blank" href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}"><span class="fad fa-download"></span> File Kajian Permohonan PJT lama</a>
+												<a target="_blank" href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}"><span class="fad fa-download"></span> File Kajian Permohonan PJT lama</a>
 											@endif
 										</div>
 									</div>
@@ -61,6 +61,38 @@
 											</div>
                                         </div>
                                     </div>
+									<div class="form-group row">
+										<div class="table-responsive col-xl-12 col-md-12 col-12">
+											<table class="table table-bordered  mb-0">
+												<thead>
+													<tr>
+													  <th class="text-uppercase" scope="col">Komoditi(Merk, Type, Ukuran, Kapasitas Produksi/tahun)</th>
+													  <th class="text-uppercase" scope="col">SNI</th>
+													  <th class="text-uppercase" scope="col">Ruang Lingkup</th>
+													  <th class="text-uppercase" scope="col">NACE</th>
+													  <th class="text-uppercase" scope="col">EA</th>
+													</tr>
+												</thead>
+												<tbody>
+													@foreach($dataPermohonKomoditi as $dpk)
+													<tr>
+													  <td>
+														Komoditi : {{$dpk->komodt_nama}}<hr/>
+														Merk : {{$dpk->mohon_kmditi_merk}}<hr/>
+														Type : {{$dpk->mohon_kmditi_tipe}}<hr/>
+														Ukuran : {{$dpk->mohon_kmditi_ukuran}}<hr/>
+														Kapasitas Produksi/tahun : {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}<hr/>
+													  </td>
+													  <td>{{$dpk->mohon_kmditi_sni}}</td>
+													  <td><input id="mohon_kmditi_ruang_lingkup_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_ruang_lingkup[{{$dpk->mohon_kmditi_id}}]"></td>
+													  <td><input id="mohon_kmditi_nace_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_nace[{{$dpk->mohon_kmditi_id}}][]"></td>
+													  <td><input id="mohon_kmditi_ea_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_ea[{{$dpk->mohon_kmditi_id}}]"></td>
+													</tr>
+													@endforeach
+												</tbody>
+											</table>
+										</div>
+                                    </div>
 									
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
@@ -76,3 +108,49 @@
         </div>
     </div>
 @endsection
+@push("javascript")
+	<script>
+		$(document).ready(function () {
+			@foreach($dataPermohonKomoditi as $dpk)
+			$('#mohon_kmditi_nace_{{$dpk->mohon_kmditi_id}}').combobox({
+				editable: false,
+				url: `{{ url("$url/ajax?action=combobox-kode-nace") }}`,
+				width: 200,
+				multiple: true,
+				method: 'get',
+				valueField:'nama',
+				textField:'nama',
+			});
+			
+			$('#mohon_kmditi_ruang_lingkup_{{$dpk->mohon_kmditi_id}}').combobox({
+				editable: false,
+				url: `{{ url("$url/ajax?action=combobox-kode-ruang-lingkup") }}`,
+				width: 200,
+				method: 'get',
+				valueField:'nama',
+				textField:'nama',
+			});
+			
+			$('#mohon_kmditi_ea_{{$dpk->mohon_kmditi_id}}').combobox({
+				editable: false,
+				url: `{{ url("$url/ajax?action=combobox-kode-ea") }}`,
+				width: 200,
+				method: 'get',
+				valueField:'nama',
+				textField:'nama',
+			});
+			
+			$('#mohon_kmditi_nace_{{$dpk->mohon_kmditi_id}}').combobox('setValue', [
+			@if ($dpk->mohon_kmditi_nace != "")
+				@foreach(explode(';', $dpk->mohon_kmditi_nace) as $val)
+					`{{$val}}`,
+				@endforeach
+			@endif]);
+			
+			$('#mohon_kmditi_ea_{{$dpk->mohon_kmditi_id}}').combobox('setValue', '{{$dpk->mohon_kmditi_ea}}');
+			
+			$('#mohon_kmditi_ruang_lingkup_{{$dpk->mohon_kmditi_id}}').combobox('setValue', '{{$dpk->mohon_kmditi_ruang_lingkup}}');
+			@endforeach
+        });
+    </script>
+@endpush

@@ -109,7 +109,6 @@
 							<tbody>
 								<tr><th scope="row">1</th><td>Jenis Pengajuan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_jenis_status}}</a></td></tr>
 								<tr><th scope="row">2</th><td>Ruang Lingkup Sertifikasi</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->sert_nama}}</a></td></tr>
-									@if($dataPermohon->sert_is_product == 'ya')
 									<tr>
 										<td colspan="4">
 											<div class="table-responsive col-xl-12 col-md-12 col-12">
@@ -140,9 +139,6 @@
 											</div>
 										</td>
 									</tr>
-								@endif
-								
-								
 								<tr><th scope="row">3</th><td>Nama Klien</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama}}</a></td></tr>
 								<tr><th scope="row">4</th><td>Akta Pendirian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nomor_akta_pendirian}}</a></td></tr>
 								<tr><th scope="row">5</th><td>Nama Pemilik</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_pemilik}}</a></td></tr>

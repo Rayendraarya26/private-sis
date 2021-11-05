@@ -8,6 +8,10 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\MasterKodeEa;
+use App\Models\BbkkpSis\MasterKodeNace;
+use App\Models\BbkkpSis\MasterRuangLingkup;
+
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -36,10 +40,52 @@ class UploadKajianPermohonanController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-permohonan'       => $this->ajax_datagrid_permohonan($request),
+            'combobox-kode-ea'       => $this->ajax_combobox_kode_ea($request),
+            'combobox-kode-nace'       => $this->ajax_combobox_kode_nace($request),
+            'combobox-kode-ruang-lingkup'       => $this->ajax_combobox_ruang_lingkup($request),
             default    => null,
         };
     }
+	
+	private function ajax_combobox_kode_ea(Request $request)
+    {
+        $data   = MasterKodeEa::select('*');
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['id']   = $d->kode_ea_id;
+            $x['nama'] = $d->kode_ea_nama;
+            array_push($result, $x);
+        }
 
+        return response()->json($result);
+    }
+
+    private function ajax_combobox_kode_nace(Request $request)
+    {
+        $data   = MasterKodeNace::select('*');
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['id']   = $d->kode_nace_id;
+            $x['nama'] = $d->kode_nace_nama;
+            array_push($result, $x);
+        }
+
+        return response()->json($result);
+    }
+	
+	private function ajax_combobox_ruang_lingkup(Request $request)
+    {
+        $data   = MasterRuangLingkup::select('*');
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['id']   = $d->ruang_ling_id;
+            $x['nama'] = $d->ruang_ling_nama;
+            array_push($result, $x);
+        }
+
+        return response()->json($result);
+    }
+	
     private function ajax_datagrid_permohonan(Request $request)
     {
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
@@ -169,10 +215,15 @@ class UploadKajianPermohonanController extends Controller
 		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
 		$dataPermohon->select('*');
 
+		$dataPermohonKomoditi = SisPermohonanKomoditi::where('mohon_id', $request['mohon_id']);
+		$dataPermohonKomoditi->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
+		$dataPermohonKomoditi->select('*');
+		
         $parser = [
             'module'       => $this->module,
             'url'          => $this->url,
             'dataPermohon' => $dataPermohon->get()[0],
+            'dataPermohonKomoditi' => $dataPermohonKomoditi->get(),
             'breadcrumbs'  => $breadcrumbs
         ];
         return view("operatorls::kajian_permohonan.edit_upload_kajian_permohonan")->with($parser); 
@@ -193,15 +244,22 @@ class UploadKajianPermohonanController extends Controller
             'mohon_id' => 'required|integer',
 			'mohon_perlu_tahap1' => 'required|string',
 			'status_tipe' => 'required|string',
+			'mohon_kmditi_ruang_lingkup' => 'required|array|min:1',
+			'mohon_kmditi_nace' => 'required|array|min:1',
+			'mohon_kmditi_ea' => 'required|array|min:1',
 			'mohon_kajian_permohonan_file_lama' => 'nullable|string',
             'mohon_kajian_permohonan_file' => 'required|mimes:pdf'
         ]);
-
-       $dataInsert = [
+		
+		$dataInsert = [
             'mohon_id' => $request->mohon_id,
+            'mohon_perlu_tahap1' => $request->mohon_perlu_tahap1,
             'status_mohon_id' => $request->mohon_id,
+            'mohon_kmditi_ruang_lingkup' => $request->mohon_kmditi_ruang_lingkup,
+            'mohon_kmditi_nace' => $request->mohon_kmditi_nace,
+            'mohon_kmditi_ea' => $request->mohon_kmditi_ea,
         ];
-
+		
         if ($request->hasFile("mohon_kajian_permohonan_file")) {
 			if ($request["mohon_kajian_permohonan_file_lama"] != '')
 				@unlink($request["mohon_kajian_permohonan_file_lama"]);
@@ -218,6 +276,19 @@ class UploadKajianPermohonanController extends Controller
 					'mohon_perlu_tahap1' => $dataInsert['mohon_perlu_tahap1'],
 					'mohon_kajian_permohonan_pjt_file' => $dataInsert['mohon_kajian_permohonan_pjt_file'],
 				]);
+				
+				
+				if(!empty($dataInsert['mohon_kmditi_ruang_lingkup'])){
+					foreach($dataInsert['mohon_kmditi_ruang_lingkup'] as $key => $val){
+						DB::table('sis_permohonan_komoditi')
+						  ->where('mohon_kmditi_id', $key)
+						  ->update([
+							"mohon_kmditi_ruang_lingkup" => $val,
+							"mohon_kmditi_nace" => implode( ';', $dataInsert['mohon_kmditi_nace'][$key] ),
+							"mohon_kmditi_ea" => $dataInsert['mohon_kmditi_ea'][$key],
+						  ]);
+					}
+				}
 			});
 
             return redirect($this->url)->with('message', "Upload Kajian Permohonan #".$request->mohon_id." telah disimpan, silahkan menunggu konfirmasi validasi oleh PJT.");
