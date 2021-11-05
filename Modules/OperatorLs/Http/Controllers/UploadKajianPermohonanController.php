@@ -248,7 +248,7 @@ class UploadKajianPermohonanController extends Controller
 			'mohon_kmditi_nace' => 'required|array|min:1',
 			'mohon_kmditi_ea' => 'required|array|min:1',
 			'mohon_kajian_permohonan_file_lama' => 'nullable|string',
-            'mohon_kajian_permohonan_file' => 'required|mimes:pdf'
+            'mohon_kajian_permohonan_file' => 'required|file|mimes:doc,pdf,docx,zip,xls,xlsx'
         ]);
 		
 		$dataInsert = [

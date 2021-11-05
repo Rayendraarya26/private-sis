@@ -24,7 +24,7 @@ class BillingController extends Controller
     public function index()
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Keuangan'),
             new BreadcrumbsStruct('Billing'),
         ];
 
@@ -86,9 +86,7 @@ class BillingController extends Controller
             $x['bill_id']                = $d->bill_id;
             $x['cust_nama']              = $d->cust_nama;
             $x['bill_nomor_billing']     = $d->bill_nomor_billing;
-            $x['bill_file_spk']          = ($d->bill_file_spk != '') ? 'ya' : 'tidak';
             $x['status_payment']         = ($d->bill_payment_file != '') ? 'ya' : 'tidak';
-            $x['bill_file_spk']          = ($d->bill_file_spk != '') ? '<a href="' . url($d->bill_file_spk) . '" target="_blank" class="btn btn-xs btn-primary btn-block">Download File</a>' : '';
             $x['bill_invoice_file']      = $d->bill_invoice_file;
             $x['bill_payment_date']      = $d->bill_payment_date?->format("Y-m-d");
             $x['bill_due_date']          = $d->bill_due_date?->format("Y-m-d");
@@ -161,7 +159,8 @@ class BillingController extends Controller
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('mohon_approved_status', '=', 'accepted');
-        $data->whereNotNull('mohon_kajian_permohonan_file');
+        $data->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya');
+        $data->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya');
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         $data->where('cust_id', '=', $request->cust_id);
 
@@ -259,7 +258,7 @@ class BillingController extends Controller
     public function create()
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Keuangan'),
             new BreadcrumbsStruct('Billing'),
             new BreadcrumbsStruct('Input Billing'),
         ];
@@ -364,7 +363,7 @@ class BillingController extends Controller
     public function detail(Request $request)
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Keuangan'),
             new BreadcrumbsStruct('Billing'),
             new BreadcrumbsStruct('Detail Billing'),
         ];
@@ -382,7 +381,6 @@ class BillingController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'data'       => $this->edit_data($request),
-            'upload-spk' => $this->edit_upload_spk($request),
             'pelunasan'  => $this->edit_pelunasan($request),
             default      => null,
         };
@@ -391,7 +389,7 @@ class BillingController extends Controller
     private function edit_data(Request $request)
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Keuangan'),
             new BreadcrumbsStruct('Billing'),
             new BreadcrumbsStruct('Edit Billing'),
         ];
@@ -404,26 +402,10 @@ class BillingController extends Controller
         return view("keuangan::billing.edit_data")->with($parser);
     }
 
-    private function edit_upload_spk(Request $request)
-    {
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
-            new BreadcrumbsStruct('Billing'),
-            new BreadcrumbsStruct('Upload SPK'),
-        ];
-
-        $dataBilling = SisBilling::where('bill_id', $request['bill_id']);
-        $dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
-        $dataBilling->select('*');
-
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
-        return view("keuangan::billing.edit_upload_spk")->with($parser);
-    }
-
     private function edit_pelunasan(Request $request)
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
+            new BreadcrumbsStruct('Keuangan'),
             new BreadcrumbsStruct('Billing'),
             new BreadcrumbsStruct('Set Pelunasan'),
         ];
@@ -442,7 +424,6 @@ class BillingController extends Controller
         return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'data'            => $this->update_data($request),
             'data-billing'    => $this->update_data_billing($request),
-            'upload-spk'      => $this->update_upload_spk($request),
             'pelunasan'       => $this->update_pelunasan($request),
             'reset-pelunasan' => $this->update_belum_pelunasan($request),
             default           => null,
@@ -528,27 +509,6 @@ class BillingController extends Controller
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
-        }
-
-    }
-
-    private function update_upload_spk(Request $request)
-    {
-        $request->validate([
-            "bil_id"        => 'required',
-            "bill_file_spk" => 'required',
-        ]);
-        if ($request->hasFile("bill_file_spk")) {
-            $baseFileUpload = sprintf(config("app.path_file_billing"), $request->bil_id);
-            $fileSpk        = $request->file('bill_file_spk');
-            $fileSpkName    = Str::slug('file-spk-' . $fileSpk->getClientOriginalName()) . '-' . time() . '.' . $fileSpk->getClientOriginalExtension();
-            $fileSpkPath    = sprintf("%s/%s", $baseFileUpload, $fileSpkName);
-            $fileSpk->move($baseFileUpload, $fileSpkName);
-            $dataUpdate['bill_file_spk'] = $fileSpkPath;
-            SisBilling::findOrFail($request['bil_id'])->update($dataUpdate);
-            return redirect($this->url)->with('message', "Upload SPK untuk nomor biling #" . $request->bill_nomor_billing . " sudah berhasil disimpan.");
-        } else {
-            return redirect()->back()->withInput($request->all())->withErrors(['message' => "File tidak dapat di upload, untuk nomor biling #" . $request->bill_nomor_billing]);
         }
 
     }

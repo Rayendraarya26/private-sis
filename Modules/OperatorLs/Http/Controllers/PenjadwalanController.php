@@ -195,7 +195,8 @@ class PenjadwalanController extends Controller
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('mohon_approved_status', '=', 'accepted');
-        $data->whereNotNull('mohon_kajian_permohonan_file');
+        $data->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya');
+        $data->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya');
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
         $cust_id = $request->cust_id;

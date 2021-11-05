@@ -91,7 +91,6 @@
 								btnDetail += `<div data-options="iconCls:'fad fa-folder-open'" onclick="location.href = '{{ url("$url/detail") }}?bill_id=${row.bill_id}'">Detail</div>`;
 							}
 							
-							btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/edit?tipe=upload-spk") }}&bill_id=${row.bill_id}'">Upload SPK</div>`;
 							
 
                             return `
@@ -108,7 +107,6 @@
                     }
                 ]],
                 columns: [[
-                    {field: 'bill_file_spk', title: 'File<br/>SPK', width: 120, sortable: false},
                     {field: 'bill_status_pembayaran', title: 'Sudah<br>Dibayar?', width: 100, sortable: true},
                     {field: 'bill_payment_status', title: 'Lunas ?', width: 100, sortable: true},
                     {field: 'bill_nomor_billing', title: 'No.<br/>Billing', width: 120, sortable: true},
@@ -128,7 +126,6 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {field: 'bill_file_spk', type: 'label'},
                     {field: 'itms_bil_total', type: 'label'},
                     {
                         field: 'bill_payment_status',

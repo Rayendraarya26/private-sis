@@ -73,15 +73,6 @@
 													<td>:</td>
 													<td><a href="{{url($data_billing->bill_invoice_file)}}" class="btn btn-xs btn-info" target="_blank">Download File</a></td>
 												</tr>
-												<tr>
-													<th scope="row">File SPK</th>
-													<td>:</td>
-													<td>
-														@if ($data_billing->bill_file_spk != '')
-															<a href="{{url($data_billing->bill_file_spk)}}" class="btn btn-xs btn-info" target="_blank">Download File</a></h5>
-														@endif
-													</td>
-												</tr>
 											</tbody>
 										</table>
                                     </div>

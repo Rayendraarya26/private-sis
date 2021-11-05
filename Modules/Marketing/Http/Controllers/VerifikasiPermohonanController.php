@@ -90,11 +90,6 @@ class VerifikasiPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            /*
-            `mohon_kajian_permohonan_file`
-            `mohon_pernyataan_persetujuan_file`
-            `mohon_spk_file`
-             */
 			$x['status_step']       = '';
 			if(is_null($d->mohon_pernyataan_persetujuan_file) && is_null($d->mohon_spk_file)){
 				$x['status_step']       = 'verifikasi';
@@ -356,7 +351,5 @@ class VerifikasiPermohonanController extends Controller
 		else{
 			return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
 		}
-
-
     }
 }

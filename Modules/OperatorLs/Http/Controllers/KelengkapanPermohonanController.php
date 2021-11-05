@@ -43,7 +43,8 @@ class KelengkapanPermohonanController extends Controller
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('mohon_approved_status', '=', 'accepted');
-        $data->whereNotNull('mohon_kajian_permohonan_file');
+        $data->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya');
+        $data->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya');
         $data->whereNull('mohon_pernyataan_persetujuan_file');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -66,11 +67,6 @@ class KelengkapanPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            /*
-            `mohon_kajian_permohonan_file`
-            `mohon_pernyataan_persetujuan_file`
-            `mohon_spk_file`
-             */
             $x['status_step'] = '';
             if (is_null($d->mohon_pernyataan_persetujuan_file) && is_null($d->mohon_spk_file)) {
                 $x['status_step'] = 'verifikasi';
@@ -104,7 +100,7 @@ class KelengkapanPermohonanController extends Controller
 
     private function detail_upload_file(Request $request, $mohonID)
     {
-        $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->whereNotNull('mohon_kajian_permohonan_file');
+        $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->where('mohon_approved_status', '=', 'accepted')->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya');
         $dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
 
         $dataPermohon->leftJoin('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
