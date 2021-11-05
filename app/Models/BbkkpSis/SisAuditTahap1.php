@@ -14,7 +14,10 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisAuditTahap1
  * 
  * @property int $aud_thp1_id
- * @property int $jadw_audit_id
+ * @property int|null $bill_id
+ * @property int $mohon_id
+ * @property Carbon|null $aud_thp1_tanggal_mulai
+ * @property Carbon|null $aud_thp1_tanggal_selesai
  * @property string|null $aud_thp1_kolom_v
  * @property string|null $aud_thp1_kolom_vi
  * @property string|null $aud_thp1_kolom_vii
@@ -26,7 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisJadwalAudit $sis_jadwal_audit
+ * @property SisBilling|null $sis_billing
+ * @property SisPermohonan $sis_permohonan
  * @property Collection|SisAuditDetailTahap1[] $sis_audit_detail_tahap1s
  *
  * @package App\Models\BbkkpSis
@@ -37,11 +41,20 @@ class SisAuditTahap1 extends Model
 	protected $primaryKey = 'aud_thp1_id';
 
 	protected $casts = [
-		'jadw_audit_id' => 'int'
+		'bill_id' => 'int',
+		'mohon_id' => 'int'
+	];
+
+	protected $dates = [
+		'aud_thp1_tanggal_mulai',
+		'aud_thp1_tanggal_selesai'
 	];
 
 	protected $fillable = [
-		'jadw_audit_id',
+		'bill_id',
+		'mohon_id',
+		'aud_thp1_tanggal_mulai',
+		'aud_thp1_tanggal_selesai',
 		'aud_thp1_kolom_v',
 		'aud_thp1_kolom_vi',
 		'aud_thp1_kolom_vii',
@@ -52,9 +65,14 @@ class SisAuditTahap1 extends Model
 		'aud_thp1_kolom_xii'
 	];
 
-	public function sis_jadwal_audit()
+	public function sis_billing()
 	{
-		return $this->belongsTo(SisJadwalAudit::class, 'jadw_audit_id');
+		return $this->belongsTo(SisBilling::class, 'bill_id');
+	}
+
+	public function sis_permohonan()
+	{
+		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
 	}
 
 	public function sis_audit_detail_tahap1s()

@@ -7,6 +7,7 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SisAuditTahap1 $sis_audit_tahap1
+ * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  *
  * @package App\Models\BbkkpSis
  */
@@ -54,5 +56,10 @@ class SisAuditDetailTahap1 extends Model
 	public function sis_audit_tahap1()
 	{
 		return $this->belongsTo(SisAuditTahap1::class, 'aud_thp1_id');
+	}
+
+	public function sis_audit_tahap1_tims()
+	{
+		return $this->hasMany(SisAuditTahap1Tim::class, 'aud_thp1_id');
 	}
 }

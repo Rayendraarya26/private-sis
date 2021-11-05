@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SisPelanggan $sis_pelanggan
+ * @property Collection|SisAuditTahap1[] $sis_audit_tahap1s
  * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisJadwal[] $sis_jadwals
  *
@@ -70,6 +71,11 @@ class SisBilling extends Model
 	public function sis_pelanggan()
 	{
 		return $this->belongsTo(SisPelanggan::class, 'cust_id');
+	}
+
+	public function sis_audit_tahap1s()
+	{
+		return $this->hasMany(SisAuditTahap1::class, 'bill_id');
 	}
 
 	public function sis_billing_items()

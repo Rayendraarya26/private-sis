@@ -73,6 +73,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterProvinsi|null $master_provinsi
  * @property MasterKabupaten|null $master_kabupaten
  * @property MasterKecamatan|null $master_kecamatan
+ * @property Collection|SisAuditTahap1[] $sis_audit_tahap1s
  * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
@@ -209,6 +210,11 @@ class SisPermohonan extends Model
 	public function master_kecamatan()
 	{
 		return $this->belongsTo(MasterKecamatan::class, 'kec_id');
+	}
+
+	public function sis_audit_tahap1s()
+	{
+		return $this->hasMany(SisAuditTahap1::class, 'mohon_id');
 	}
 
 	public function sis_billing_items()

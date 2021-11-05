@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SysUser $sys_user
+ * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  * @property Collection|SisAuditTimKomite[] $sis_audit_tim_komites
  * @property Collection|SisJadwalTim[] $sis_jadwal_tims
  *
@@ -54,6 +55,11 @@ class MasterPegawai extends Model
 	public function sys_user()
 	{
 		return $this->belongsTo(SysUser::class, 'user_id');
+	}
+
+	public function sis_audit_tahap1_tims()
+	{
+		return $this->hasMany(SisAuditTahap1Tim::class, 'peg_id');
 	}
 
 	public function sis_audit_tim_komites()

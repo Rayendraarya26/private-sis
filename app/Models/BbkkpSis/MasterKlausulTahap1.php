@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $klausul_thp1_is_tinjauan
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
+ * 
+ * @property MasterSertifikasi|null $master_sertifikasi
  *
  * @package App\Models\BbkkpSis
  */
@@ -37,4 +39,9 @@ class MasterKlausulTahap1 extends Model
 		'klausul_thp1_peryataan',
 		'klausul_thp1_is_tinjauan'
 	];
+
+	public function master_sertifikasi()
+	{
+		return $this->belongsTo(MasterSertifikasi::class, 'sert_id');
+	}
 }

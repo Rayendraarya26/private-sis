@@ -14,18 +14,18 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisJadwal
  * 
  * @property int $jadw_id
- * @property int|null $bill_id
- * @property string|null $jadw_tanggal_status
+ * @property int $bill_id
+ * @property string $jadw_tanggal_status
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
- * @property string|null $jadw_team_status
+ * @property string $jadw_team_status
  * @property string|null $jadw_jenis
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisBilling|null $sis_billing
+ * @property SisBilling $sis_billing
  * @property SisPelanggan $sis_pelanggan
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
  * @property Collection|SisAuditLapLengkap[] $sis_audit_lap_lengkaps
