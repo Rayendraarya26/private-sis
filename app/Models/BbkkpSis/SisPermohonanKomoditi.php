@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $mohon_kmditi_ukuran
  * @property string|null $mohon_kmditi_nace
  * @property string|null $mohon_kmditi_ea
+ * @property string|null $mohon_kmditi_ruang_lingkup
  * @property string|null $mohon_kmditi_kapasitas_produksi_tahunan
  * @property string|null $mohon_kmditi_kapasitas_produksi_tahunan_satuan
  * @property Carbon $created_at
@@ -50,6 +51,7 @@ class SisPermohonanKomoditi extends Model
 		'mohon_kmditi_ukuran',
 		'mohon_kmditi_nace',
 		'mohon_kmditi_ea',
+		'mohon_kmditi_ruang_lingkup',
 		'mohon_kmditi_kapasitas_produksi_tahunan',
 		'mohon_kmditi_kapasitas_produksi_tahunan_satuan'
 	];
