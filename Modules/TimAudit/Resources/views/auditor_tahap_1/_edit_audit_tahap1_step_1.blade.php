@@ -87,8 +87,8 @@
             window.vueStepOne = new Vue({
                 el: "#vueStepOne",
                 data: {
-                    jadw_id: `{{$dataJadwal->jadw_id}}`,
-                    jadw_audit_id: `{{$dataJadwal->jadw_audit_id}}`,
+                    aud_thp1_id: `{{$dataJadwal->aud_thp1_id}}`,
+                    aud_thp1_id: `{{$dataJadwal->aud_thp1_id}}`,
                 },
                 mounted() {
                     this.setForm();

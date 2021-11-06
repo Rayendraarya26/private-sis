@@ -51,20 +51,20 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-							let dom = `dropdownMenu_${row.jadw_audit_id}`;
+							let dom = `dropdownMenu_${row.aud_thp1_id}`;
                             let btnEdit = ``;	
-							if(row.jadw_audit_status != 'on-going'){
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}'">Revisi Audit</div>`;
-								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&jadw_audit_id=${row.jadw_audit_id}')">Hasil Tinjauan</div>`;
-								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}')">Laporan Tahap 1</div>`;
+							if(row.aud_thp1_status != 'on-going'){
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Revisi Audit</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
 							}
 							else {
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&jadw_audit_id=${row.jadw_audit_id}'">Input Audit</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Audit</div>`;
 							}
 							
                             return `
 								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.jadw_audit_id}" title="Aksi">
+									<button class="btn-action btn-info btn-block" data-index="${row.aud_thp1_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
 									<div id="${dom}" style="width:150px; display: none;">
@@ -75,22 +75,21 @@
                     }
                 ]],
                 columns: [[
-                    {field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',
+                    {field: 'aud_thp1_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',
 						formatter: function (val, row) {
-                            return `${row.jadw_id}`
+                            return `${row.aud_thp1_id}`
                         }
 					},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
-                    {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
-                    {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
-                    {field: 'jadw_audit_status', title: 'Status<br/>Audit', width: 100, sortable: true},
+                    {field: 'aud_thp1_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
+                    {field: 'aud_thp1_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
+                    {field: 'aud_thp1_status', title: 'Status<br/>Audit', width: 100, sortable: true},
                 ]],
 				onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_audit_id
+                            menu: '#dropdownMenu_' + data.rows[idx].aud_thp1_id
                         });
                     });
                 },
@@ -99,7 +98,7 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
 					{
-                        field: 'jadw_audit_status',
+                        field: 'aud_thp1_status',
                         type: 'combobox',
                         options: {
                             panelHeight: 'auto',
@@ -111,7 +110,7 @@
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
-                                    field: 'jadw_audit_status',
+                                    field: 'aud_thp1_status',
                                     op: 'equal',
                                     value: value
                                 });

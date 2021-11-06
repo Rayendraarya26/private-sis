@@ -2,12 +2,8 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Models\BbkkpSis\SisJadwal;
-use App\Models\BbkkpSis\SisJadwalAudit;
-use App\Models\BbkkpSis\SisJadwalTim;
-use App\Models\BbkkpSis\SisJadwalLog;
-use App\Models\BbkkpSis\SisAuditDaftarPeriksa;
 use App\Models\BbkkpSis\SisAuditTahap1;
+use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisAuditDetailTahap1;
 
 use App\Models\BbkkpSis\MasterKlausulTahap1;
@@ -30,7 +26,7 @@ class AuTahap1Controller extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Auditor', url($this->url)),
+            new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
             new BreadcrumbsStruct('Audit Tahap 1'),
         ];
 
@@ -68,30 +64,19 @@ class AuTahap1Controller extends Controller
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)
     {
-        $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
-		$data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-		$data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		$data->join('sis_jadwal_tim', function($join)
-                         {
-                             $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-                         });
-						 
-		$data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");		
-		$data->leftJoin('sis_audit_daftar_periksa', function($join)
-                         {
-                             $join->on("sis_audit_daftar_periksa.jadw_tim_id", "=", "sis_jadwal_tim.jadw_tim_id");
-                         });
+        $data = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
+		$data->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
+		$data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
+		$data->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
+        $data->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+        $data->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
 			
         // Filter
 		$data->where('master_pegawai.user_id', '=', auth()->id());
-		$data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
-		$data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-		$data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
-		$data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-		$data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
-		$data->whereIn('sis_jadwal_audit.jadw_audit_jenis', ['tahap-1']);
-		$data->whereNotNull('sis_jadwal.jadw_file_jadwal');
-		
+		$data->where('sis_audit_tahap1.aud_thp1_ditutup', '!=', 'ya');
+		$data->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya');
+		$data->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua');
+		$data->whereNotNull('sis_audit_tahap1.aud_thp1_file_jadwal');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				$data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -106,30 +91,27 @@ class AuTahap1Controller extends Controller
             }
         }
         // Total
-        $total = $data->select(DB::raw('count(distinct sis_jadwal_audit.jadw_audit_id) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(distinct sis_audit_tahap1.aud_thp1_id) as total'))->first()->total;
+		
 		
         // Pagination
-        $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
+        $data->select("*", "sis_audit_tahap1.aud_thp1_id AS aud_thp1_id");
 		$data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
-		$data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-		$data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
+		$data->selectRaw("GROUP_CONCAT(distinct thp1_tim_kesanggupan) AS thp1_tim_kesanggupan");
 		$data->skip(($request->page - 1) * $request->rows);
 		$data->take($request->rows);
-		$data->groupBy('sis_jadwal_audit.jadw_audit_id');
+		$data->groupBy('sis_audit_tahap1.aud_thp1_id');
 		
         $result = [];
         foreach ($data->get() as $d) {
-            $x['jadw_audit_status'] = $d->jadw_audit_status;
-            $x['jadw_id'] = $d->jadw_id;
-            $x['jadw_audit_id'] = $d->jadw_audit_id;
-            $x['jadw_tanggal_mulai'] = $d->jadw_tanggal_mulai?->format("Y-m-d");
-            $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
+            $x['aud_thp1_status'] = $d->aud_thp1_status;
+            $x['aud_thp1_id'] = $d->aud_thp1_id;
+            $x['aud_thp1_tanggal_mulai'] = $d->aud_thp1_tanggal_mulai;
+            $x['aud_thp1_tanggal_selesai'] = $d->aud_thp1_tanggal_selesai;
             $x['cust_nama'] = $d->cust_nama;
             $x['sert_nama'] = $d->sert_nama;
             $x['jadw_jenis'] = $d->jadw_jenis;
-            $x['jadw_audit_jenis'] = $d->jadw_audit_jenis;
-			
-            $x['dftr_periksa_file'] = ($d->dftr_periksa_file != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "'.url($d->dftr_periksa_file).'"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+            $x['aud_thp1_jenis'] = $d->aud_thp1_jenis;
             array_push($result, $x);
         }
 
@@ -149,35 +131,47 @@ class AuTahap1Controller extends Controller
     {
 		$breadcrumbs = [
             new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Auditor', url($this->url)),
+            new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
             new BreadcrumbsStruct('Audit Tahap 1', url($this->url)),
             new BreadcrumbsStruct('Proses Audit Tahap 1'),
         ];
 		
-		$dataJadwal = SisJadwal::join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-		$dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
-		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");		$dataJadwal->join('sis_jadwal_tim', function($join) {
-							$join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-						});
-		$dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
-		$dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-		$dataJadwal->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
+		$dataJadwal = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
+		$dataJadwal->select(
+			'*', 
+			DB::raw("'tunggal' as jadw_jenis"), 
+			DB::raw("'tahap-1' as jadw_audit_jenis"), 
+			DB::raw("sis_audit_tahap1.aud_thp1_id as jadw_id"), 
+			DB::raw("sis_audit_tahap1.aud_thp1_tujuan as jadw_audit_tujuan_audit"), 
+			DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'), 
+			DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_nace) as jadw_audit_kode_nace'), 
+			DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ea) as jadw_audit_kode_ea'), 
+			DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ruang_lingkup) as jadw_audit_ruang_lingkup'),
+			DB::raw('GROUP_CONCAT(distinct sis_audit_tahap1_tim.thp1_tim_posisi) as jadw_tim_posisi'),
+			DB::raw('GROUP_CONCAT(distinct master_pegawai.peg_id) as peg_id')
+		);
+		
+		$dataJadwal->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
+		$dataJadwal->join('sis_permohonan_komoditi', "sis_permohonan.mohon_id", "=", "sis_permohonan_komoditi.mohon_id");
+		$dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id");
+		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
+		$dataJadwal->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
+		$dataJadwal->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
+		$dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1_tim.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id");
+		$dataJadwal->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
 		$dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
-		$dataJadwal->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-        $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
-		$dataJadwal->groupBy('sis_jadwal_audit.jadw_audit_id');
+		$dataJadwal->where('sis_audit_tahap1.aud_thp1_ditutup', '!=', 'ya');
+		$dataJadwal->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya');
+		$dataJadwal->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua');
+		$dataJadwal->groupBy('sis_audit_tahap1.aud_thp1_id');
 		
-		$dataAudit = SisAuditTahap1::join('sis_jadwal_audit', "sis_audit_tahap1.jadw_audit_id", "=", "sis_jadwal_audit.jadw_audit_id");
-		$dataAudit->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
+		$restAudit = $dataJadwal->get()[0];
+		
+		$dataAuditKlausul = SisAuditTahap1::join('sis_audit_tahap1_detail', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_detail.aud_thp1_id");
+		$dataAuditKlausul->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
 		$status_entry = false;
-		$restAudit = [];
-		$dataAuditKlausul = SisAuditTahap1::join('sis_jadwal_audit', "sis_audit_tahap1.jadw_audit_id", "=", "sis_jadwal_audit.jadw_audit_id");
-		$dataAuditKlausul->join('sis_audit_detail_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_detail_tahap1.aud_thp1_id");
-		$dataAuditKlausul->where('sis_jadwal_audit.jadw_audit_id', $request['jadw_audit_id']);
-		
-		if ($dataAudit->exists()) {
+		if ($dataAuditKlausul->exists()) {
 			$status_entry = true;
-			$restAudit = $dataAudit->get()[0];
 		}
 		
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' =>  $restAudit];		
@@ -197,7 +191,7 @@ class AuTahap1Controller extends Controller
 	private function update_audit_tahap1(Request $request)
 	{
 		$request->validate([
-			"jadw_audit_id" => 'required',
+			"aud_thp1_id" => 'required',
 			"sert_id" => 'required',
 			"mohon_id" => 'required',
 			"kolom_v" => 'required',
@@ -205,9 +199,11 @@ class AuTahap1Controller extends Controller
 			"kolom_vii" => 'required',
 			"kolom_viii" => 'required',
 			"kolom_ix" => 'required',
+			"kolom_x" => 'required',
 			"kolom_xi" => 'required',
 			"kolom_xii" => 'required',
 			"status_audit" => 'required',
+			"tutup_audit" => 'required',
 			"detail_hasil_tinjauan" => 'required',
 			"detail_judul_dok" => 'required',
 			"detail_keterangan" => 'required',
@@ -215,21 +211,23 @@ class AuTahap1Controller extends Controller
 		]);
 		try {
 			DB::beginTransaction();			
-			DB::table('sis_jadwal_audit')
-				  ->where('jadw_audit_id', $request['jadw_audit_id'])
+			DB::table('sis_audit_tahap1')
+				  ->where('aud_thp1_id', $request['aud_thp1_id'])
 				  ->update([
-					"jadw_audit_status" => $request['status_audit'],
+					"aud_thp1_status" => $request['status_audit'],
+					"aud_thp1_ditutup" => $request['tutup_audit'],
 					"updated_at" => Carbon::now(),
 				  ]);
 				  
 			DB::table('sis_audit_tahap1')
-				  ->where('jadw_audit_id', $request['jadw_audit_id'])
+				  ->where('aud_thp1_id', $request['aud_thp1_id'])
 				  ->update([
 					"aud_thp1_kolom_v" => $request['kolom_v'],
 					"aud_thp1_kolom_vi" => $request['kolom_vi'],
 					"aud_thp1_kolom_vii" => $request['kolom_vii'],
 					"aud_thp1_kolom_viii" => $request['kolom_viii'],
 					"aud_thp1_kolom_ix" => $request['kolom_ix'],
+					"aud_thp1_kolom_x" => $request['kolom_x'],
 					"aud_thp1_kolom_xi" => $request['kolom_xi'],
 					"aud_thp1_kolom_xii" => $request['kolom_xii'],
 					"updated_at" => Carbon::now(),
@@ -237,7 +235,7 @@ class AuTahap1Controller extends Controller
 			
 			if (!empty($request['detail_kode_dok'])) {
 				foreach ($request['detail_kode_dok'] as $key => $val) {
-					DB::table('sis_audit_detail_tahap1')
+					DB::table('sis_audit_tahap1_detail')
 					->where('aud_thp1_det_id', $key)
 					->update([
 						'aud_thp1_det_kode_dok' => $val,
@@ -258,36 +256,36 @@ class AuTahap1Controller extends Controller
 	private function update_generate_tahap1(Request $request)
 	{
 		$request->validate([
-			"jadw_audit_id" => 'required',
+			"aud_thp1_id" => 'required',
 			"sert_id" => 'required',
 			"mohon_id" => 'required',
 		]);
 		
 		try {
 			DB::beginTransaction();
-			$restData = DB::table('sis_audit_tahap1')->where('jadw_audit_id', $request['jadw_audit_id'])->first();
+			$restData = DB::table('sis_audit_tahap1')->where('aud_thp1_id', $request['aud_thp1_id'])->first();
 			if ($restData !== null) {
 				DB::table('sis_audit_tahap1')
-				  ->where('jadw_audit_id', $request['jadw_audit_id'])
+				  ->where('aud_thp1_id', $request['aud_thp1_id'])
 				  ->update(["created_at" => Carbon::now(),"updated_at" => Carbon::now(),]);
 				$aud_thp1_id = $restData->aud_thp1_id;
 			}
 			else{
 				$newTahap1 = new SisAuditTahap1();
-				$newTahap1->jadw_audit_id = $request['jadw_audit_id'];
+				$newTahap1->aud_thp1_id = $request['aud_thp1_id'];
 				$newTahap1->created_at = Carbon::now();
 				$newTahap1->updated_at = Carbon::now();
 				$newTahap1->save();
 				$aud_thp1_id = $newTahap1->aud_thp1_id;
 			}
 			
-			$restDataDet = DB::table('sis_audit_detail_tahap1')->where('aud_thp1_id', $request['aud_thp1_id'])->first();
+			$restDataDet = DB::table('sis_audit_tahap1_detail')->where('aud_thp1_id', $request['aud_thp1_id'])->first();
 			if ($restDataDet === null) {
 				$dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
 				
 				if ($dts !== null) {
 					foreach ($dts as $dt) {
-							DB::table('sis_audit_detail_tahap1')->insert([
+							DB::table('sis_audit_tahap1_detail')->insert([
 								'aud_thp1_id' => intval($aud_thp1_id),
 								'klausul_thp1_id' => intval($dt->klausul_thp1_id),
 								'aud_thp1_det_thp1_nomor' => $dt->klausul_thp1_nomor,

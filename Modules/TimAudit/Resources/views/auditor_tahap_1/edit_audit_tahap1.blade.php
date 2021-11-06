@@ -107,7 +107,7 @@
 						$.messager.progress();
 						let formData = new FormData();
 						formData.append("tipe", 'update-generate-tahap1')
-						formData.append("jadw_audit_id", '{{$dataJadwal->jadw_audit_id}}')
+						formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}')
 						formData.append("sert_id", '{{$dataJadwal->sert_id}}')
 						formData.append("mohon_id", '{{$dataJadwal->mohon_id}}')
 						$.ajax({
@@ -122,7 +122,7 @@
 									type: 'success',
 									title: res.message
 								})
-								setTimeout(() => location.href = "{{url("$url")}}/edit?tipe=audit-tahap1&jadw_audit_id={{$dataJadwal->jadw_audit_id}}", 1000)
+								setTimeout(() => location.href = "{{url("$url")}}/edit?tipe=audit-tahap1&aud_thp1_id={{$dataJadwal->aud_thp1_id}}", 1000)
 							},
 							error: function (xhr) {
 								$.messager.progress('close');
