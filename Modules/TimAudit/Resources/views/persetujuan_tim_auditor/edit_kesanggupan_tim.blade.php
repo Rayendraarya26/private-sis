@@ -110,6 +110,7 @@
                                 formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
                                 formData.append("tipe", `kesanggupan-tim`);
                                 formData.append("peg_id", `{{$dataJadwal->peg_id}}`);
+                                formData.append("jenis", `{{$dataJadwal->jadw_audit_jenis}}`);
 								
                                 this.loading_submit = true;
                                 let self = this;

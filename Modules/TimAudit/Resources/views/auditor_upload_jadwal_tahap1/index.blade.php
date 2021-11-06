@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Persetujuan Audit')
+@section('title', 'Upload Jadwal Audit Tahap 1')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal dan Persetujuan Audit</h3>
+                            <h3 class="dt-card__title">Data Jadwal Audit Tahap 1 dan File Jadwal Tahap 1</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -41,7 +41,7 @@
                 singleSelect: false,
                 remoteFilter: true,
                 multiSort: true,
-                pagination: false,
+                pagination: true,
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
@@ -51,13 +51,13 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-							let dom = `dropdownMenu_${row.jadw_id}`;
+							let dom = `dropdownMenu_${row.aud_thp1_id}`;
                             let btnEdit = ``;			
-							btnEdit += `<div data-options="iconCls:'fas fa-handshake'" onclick="location.href = '{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_audit_jenis}'">Persetujuan</div>`;
+							btnEdit += `<div data-options="iconCls:'fas fa-cloud-upload'" onclick="location.href = '{{ url("$url/edit") }}?tipe=upload-jadwal&aud_thp1_id=${row.aud_thp1_id}'">Upload Jadwal</div>`;
 							
                             return `
 								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
+									<button class="btn-action btn-info btn-block" data-index="${row.aud_thp1_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
 									<div id="${dom}" style="width:150px; display: none;">
@@ -68,18 +68,26 @@
                     }
                 ]],
                 columns: [[
-					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
-                    {field: 'jadw_tim_kesanggupan', title: 'Status<br>Kesanggupan?', width: 150, sortable: true},
+                    {field: 'aud_thp1_file_jadwal', title: 'File<br>jadwal', width: 100, sortable: true,
+						formatter: function (val, row) {
+                            let btnDownload = ``;		
+							if(row.aud_thp1_file_jadwal != ''){
+								btnDownload += `${row.aud_thp1_file_jadwal}`;
+							}
+							
+                            return `${btnDownload}`
+                        }
+					},
+					{field: 'aud_thp1_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
-                    {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
-                    {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
+                    {field: 'aud_thp1_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
+                    {field: 'aud_thp1_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
 				onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
+                            menu: '#dropdownMenu_' + data.rows[idx].aud_thp1_id
                         });
                     });
                 },
@@ -87,10 +95,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {field: 'jadw_audit_jenis', type: 'label'},
-                    {field: 'jadw_tim_kesanggupan', type: 'label'},
-                    {field: 'jadw_tanggal_mulai', type: 'label'},
-                    {field: 'jadw_tanggal_selesai', type: 'label'},
+                    {field: 'jadw_file_jadwal', type: 'label'},
                 ]);
         });
     </script>

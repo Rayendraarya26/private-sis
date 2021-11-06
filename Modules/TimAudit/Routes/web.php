@@ -21,6 +21,7 @@ use Modules\TimAudit\Http\Controllers\AuLksController;
 use Modules\TimAudit\Http\Controllers\AuLogBookController;
 use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
 use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
+use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
@@ -48,6 +49,14 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::get('/edit', [AuUploadJadwalController::class, 'edit']);
             Route::post('/update', [AuUploadJadwalController::class, 'update']);
         });
+		
+		Route::prefix("upload-jadwal-tahap1")->group(function () {
+            Route::get('/', [AuUploadJadwalTahap1Controller::class, 'index']);
+            Route::get('/ajax', [AuUploadJadwalTahap1Controller::class, 'ajax']);
+            Route::get('/edit', [AuUploadJadwalTahap1Controller::class, 'edit']);
+            Route::post('/update', [AuUploadJadwalTahap1Controller::class, 'update']);
+        });
+		
 
         Route::prefix("tahap1")->group(function () {
             Route::get('/', [AuTahap1Controller::class, 'index']);

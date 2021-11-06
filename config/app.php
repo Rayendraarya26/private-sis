@@ -23,6 +23,7 @@ return [
     'path_file_pengajuan' => "files/pengajuan/%d",
     'path_file_billing'   => "files/billing/%d",
     'path_file_audit'     => "files/audit/%d",
+    'path_file_tahap1'     => "files/tahap1/%d",
 
     /*
     |--------------------------------------------------------------------------

@@ -43,7 +43,7 @@
 					<div class="dt-card">
 						<div class="dt-card__header">
 							<div class="dt-card__heading">
-								<h3 class="dt-card__title">Data Komite</h3>
+								<h3 class="dt-card__title">Data Tim</h3>
 							</div>
 						</div>
 						<div class="dt-card__body">
