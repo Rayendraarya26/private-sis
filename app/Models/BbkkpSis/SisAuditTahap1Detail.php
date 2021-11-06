@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class SisAuditDetailTahap1
+ * Class SisAuditTahap1Detail
  * 
  * @property int $aud_thp1_det_id
  * @property int $aud_thp1_id
@@ -29,9 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\BbkkpSis
  */
-class SisAuditDetailTahap1 extends Model
+class SisAuditTahap1Detail extends Model
 {
-	protected $table = 'sis_audit_detail_tahap1';
+	protected $table = 'sis_audit_tahap1_detail';
 	protected $primaryKey = 'aud_thp1_det_id';
 
 	protected $casts = [

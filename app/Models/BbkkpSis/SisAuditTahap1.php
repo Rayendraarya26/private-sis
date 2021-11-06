@@ -17,8 +17,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $bill_id
  * @property int $mohon_id
  * @property string|null $aud_thp1_status
+ * @property string|null $aud_thp1_ditutup
  * @property Carbon|null $aud_thp1_tanggal_mulai
  * @property Carbon|null $aud_thp1_tanggal_selesai
+ * @property string|null $aud_thp1_file_jadwal
+ * @property string|null $aud_thp1_jenis
+ * @property string|null $aud_thp1_tujuan
  * @property string|null $aud_thp1_kolom_v
  * @property string|null $aud_thp1_kolom_vi
  * @property string|null $aud_thp1_kolom_vii
@@ -33,6 +37,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisBilling|null $sis_billing
  * @property SisPermohonan $sis_permohonan
  * @property Collection|SisAuditDetailTahap1[] $sis_audit_detail_tahap1s
+ * @property Collection|SisAuditTahap1Detail[] $sis_audit_tahap1_details
+ * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  *
  * @package App\Models\BbkkpSis
  */
@@ -55,8 +61,12 @@ class SisAuditTahap1 extends Model
 		'bill_id',
 		'mohon_id',
 		'aud_thp1_status',
+		'aud_thp1_ditutup',
 		'aud_thp1_tanggal_mulai',
 		'aud_thp1_tanggal_selesai',
+		'aud_thp1_file_jadwal',
+		'aud_thp1_jenis',
+		'aud_thp1_tujuan',
 		'aud_thp1_kolom_v',
 		'aud_thp1_kolom_vi',
 		'aud_thp1_kolom_vii',
@@ -80,5 +90,15 @@ class SisAuditTahap1 extends Model
 	public function sis_audit_detail_tahap1s()
 	{
 		return $this->hasMany(SisAuditDetailTahap1::class, 'aud_thp1_id');
+	}
+
+	public function sis_audit_tahap1_details()
+	{
+		return $this->hasMany(SisAuditTahap1Detail::class, 'aud_thp1_id');
+	}
+
+	public function sis_audit_tahap1_tims()
+	{
+		return $this->hasMany(SisAuditTahap1Tim::class, 'aud_thp1_id');
 	}
 }

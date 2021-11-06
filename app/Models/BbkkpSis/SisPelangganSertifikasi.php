@@ -26,6 +26,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $komodt_id
  * @property string|null $cust_sert_tipe
  * @property string|null $cust_sert_merk
+ * @property string|null $cust_sert_ukuran
+ * @property float|null $cust_sert_produksi_tahunan
+ * @property string|null $cust_sert_produksi_tahunan_satuan
  * @property Carbon|null $cust_sert_tgl_sertifikat_awal
  * @property Carbon|null $cust_sert_tgl_sertifikat_perubahan
  * @property string|null $cust_sert_status
@@ -53,7 +56,8 @@ class SisPelangganSertifikasi extends Model
 		'sert_id' => 'int',
 		'cust_id' => 'int',
 		'mohon_id' => 'int',
-		'komodt_id' => 'int'
+		'komodt_id' => 'int',
+		'cust_sert_produksi_tahunan' => 'float'
 	];
 
 	protected $dates = [
@@ -75,6 +79,9 @@ class SisPelangganSertifikasi extends Model
 		'komodt_id',
 		'cust_sert_tipe',
 		'cust_sert_merk',
+		'cust_sert_ukuran',
+		'cust_sert_produksi_tahunan',
+		'cust_sert_produksi_tahunan_satuan',
 		'cust_sert_tgl_sertifikat_awal',
 		'cust_sert_tgl_sertifikat_perubahan',
 		'cust_sert_status',

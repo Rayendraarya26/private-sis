@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property MasterPegawai $master_pegawai
- * @property SisAuditDetailTahap1 $sis_audit_detail_tahap1
+ * @property SisAuditTahap1 $sis_audit_tahap1
  *
  * @package App\Models\BbkkpSis
  */
@@ -55,8 +55,8 @@ class SisAuditTahap1Tim extends Model
 		return $this->belongsTo(MasterPegawai::class, 'peg_id');
 	}
 
-	public function sis_audit_detail_tahap1()
+	public function sis_audit_tahap1()
 	{
-		return $this->belongsTo(SisAuditDetailTahap1::class, 'aud_thp1_id');
+		return $this->belongsTo(SisAuditTahap1::class, 'aud_thp1_id');
 	}
 }
