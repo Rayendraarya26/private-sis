@@ -50,7 +50,7 @@
                             reverseButtons: true
                         }).then(async (result) => {
                             if (result.value) {
-                                let formData = new FormData();
+                                let formData         = new FormData();
                                 // Step 1
                                 const dataPermohonan = window.vueStepOne.jenis_pengajuan;
                                 const dataSertifikat = window.vueStepOne.sertifikat_lama_id;
@@ -61,9 +61,9 @@
 
                                 // Step 2
                                 const dataSertifikasi = window.vueStepTwo.jenis_sertifikasi_data;
-                                const dataKomoditas = window.vueStepTwo.komoditas;
+                                const dataKomoditas   = window.vueStepTwo.komoditas;
                                 formData.append("jenis_sertifikasi", dataSertifikasi.sert_id)
-                                if (dataSertifikasi.sert_is_product == "ya") {
+                                if (dataKomoditas.length > 0) {
                                     formData.append("data_komoditas", JSON.stringify(dataKomoditas))
                                 }
 

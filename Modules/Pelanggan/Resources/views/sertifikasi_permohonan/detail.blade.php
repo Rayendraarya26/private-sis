@@ -107,7 +107,7 @@
                                 </div>
                             </div>
 
-                            @if($dataPemohon->master_sertifikasi?->sert_is_product == "ya")
+                            @if(count($dataPemohon->sis_permohonan_komoditis) > 0)
                                 <div class="col-md-12">
                                     <h4>Data Komoditas</h4>
                                     <div class="table-responsive">
@@ -139,7 +139,6 @@
                                             @endforeach
                                             </tbody>
                                         </table>
-
                                     </div>
                                 </div>
                             @endif

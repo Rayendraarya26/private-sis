@@ -34,20 +34,22 @@ class BillingController extends Controller
             new BreadcrumbsStruct('Upload'),
         ];
 
-        $data   = SisBilling::with('sis_billing_items')
+        $data = SisBilling::with('sis_billing_items')
             ->where("bill_id", $billing_id)
             ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
             ->firstOrFail();
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
+
+        $totalBiling = $data->sis_billing_items->sum('itms_bil_total');
+
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data, 'total_billing' => $totalBiling];
         return view("pelanggan::billing.upload")->with($parser);
     }
 
     public function processUpload(Request $request, $billing_id)
     {
         $request->validate([
-            'bill_payment_tipe' => 'required',
             'bill_payment_date' => 'required',
-            'bill_payment_file' => 'required',
+            'bill_payment_file' => 'required|mimetypes:application/pdf,image/png,image/jpeg|max:2048000',
         ]);
         $billing = SisBilling::with('sis_billing_items')
             ->where("bill_id", $billing_id)
@@ -76,7 +78,7 @@ class BillingController extends Controller
             $billing->bill_payment_status = 'menunggu konfirmasi';
             $billing->bill_payment_note   = $request['bill_payment_note'];
             $billing->bill_payment_date   = $request['bill_payment_date'];
-            $billing->bill_payment_tipe   = $request['bill_payment_tipe'];
+            $billing->bill_payment_tipe   = 'transfer';
             $billing->bill_payment_file   = $kuitansiPath;
             $billing->save();
 

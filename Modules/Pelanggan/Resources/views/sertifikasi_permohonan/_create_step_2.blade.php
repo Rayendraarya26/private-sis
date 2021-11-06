@@ -81,7 +81,7 @@
                                 <div class="form-group">
                                     <label for="step2_komoditi_sni">No SNI</label>
                                     <input id="step2_komoditi_sni" name="step2_komoditi_sni" class="form-control"
-                                           @keyup.enter="addOrUpdateKomoditas">
+                                           @keyup.enter="addOrUpdateKomoditas" readonly>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -463,14 +463,16 @@
                                 // {field: 'sert_is_product', title: 'Produk?', width: 100, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
-                                self.jenis_komoditas_id = row.komodt_id;
+                                self.jenis_komoditas_id   = row.komodt_id;
                                 self.jenis_komoditas_text = row.komodt_nama;
+
+                                $("#step2_komoditi_sni").val(row.komodt_sni)
                             },
                         });
                     },
                     setComboDataSertifikasi() {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_sertifikasi") }}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_sertifikasi") }}`
                         if (this.jenis_sertifikasi_id != null) {
                             url += "&q=" + this.jenis_sertifikasi_text;
                         }
@@ -518,14 +520,14 @@
                         }
                     },
                     comboDataSertifikasiOnSelect(row) {
-                        this.jenis_sertifikasi_data = row
-                        this.jenis_sertifikasi_id = row.sert_id;
-                        this.jenis_sertifikasi_text = row.sert_nama;
+                        this.jenis_sertifikasi_data       = row
+                        this.jenis_sertifikasi_id         = row.sert_id;
+                        this.jenis_sertifikasi_text       = row.sert_nama;
                         this.jenis_sertifikasi_is_product = row.sert_is_product;
                         this.resetUploadDokumen();
                         this.getDokumenSertifikasi();
 
-                        if (this.jenis_sertifikasi_is_product === "ya") {
+                        if (window.vueStepOne.jenis_pengajuan === "baru") {
                             setTimeout(async () => {
                                 this.setComboDataKomoditas()
                                 this.komoditas = await window.idb.pelanggan_permohonan_komoditas.toArray()

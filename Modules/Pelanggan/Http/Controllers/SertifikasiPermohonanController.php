@@ -627,9 +627,9 @@ class SertifikasiPermohonanController extends Controller
             $x['cust_sert_tipe']                    = $d->cust_sert_tipe;
             $x['cust_sert_merk']                    = $d->cust_sert_merk;
             $x['cust_sert_ukuran']                  = $d->cust_sert_ukuran;
-            $x['cust_sert_produksi_tahunan']        = $d->cust_sert_produksi_tahunan;
-            $x['cust_sert_produksi_tahunan_satuan'] = $d->cust_sert_prodsi_tahunan_satuan;
-            $x['komodt_id']                         = $d->komodt_id;
+            $x['cust_sert_produksi_tahunan'] = $d->cust_sert_produksi_tahunan;
+            $x['cust_sert_produksi_tahunan_satuan'] = $d->cust_sert_produksi_tahunan_satuan;
+            $x['komodt_id'] = $d->komodt_id;
             $x['komodt_nama']                       = $d->komodt_nama;
             array_push($result, $x);
         }
@@ -703,6 +703,7 @@ class SertifikasiPermohonanController extends Controller
         foreach ($data->get() as $d) {
             $x['komodt_id']   = $d->komodt_id;
             $x['komodt_nama'] = $d->komodt_nama;
+            $x['komodt_sni']  = $d->komodt_sni;
             array_push($result, $x);
         }
 

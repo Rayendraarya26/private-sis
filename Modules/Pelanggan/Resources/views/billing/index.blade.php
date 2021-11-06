@@ -57,7 +57,7 @@
 
                     if (row.bill_payment_date != null) {
                         tgl_bayar = row.bill_payment_date
-                        kuitansi  = `<a href='${row.bill_payment_file}'><i class='fad fa-download'></i> Unduh Bukti Pembayaran</a>`;
+                        kuitansi  = `<a target="_blank" href='${row.bill_payment_file}'><i class='fad fa-download'></i> Unduh Bukti Pembayaran</a>`;
                         note      = row.bill_payment_note;
                     }
 

@@ -180,6 +180,8 @@
                                     'produksi_tahunan': row.cust_sert_produksi_tahunan,
                                     'satuan_produksi': row.cust_sert_produksi_tahunan_satuan,
                                 };
+
+                                self.data_komoditas = [];
                                 self.data_komoditas.push(komoditas);
 
                                 const currentaData = await idb.pelanggan_permohonan.where({name: "sertifikat_lama"}).first();

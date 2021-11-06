@@ -89,6 +89,7 @@
                         }
 
                         $('#step1_sertifikat_lama').combogrid({
+                            readonly: true,
                             pageSize: '50',
                             panelWidth: 400,
                             pagination: true,

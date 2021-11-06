@@ -26,35 +26,36 @@
 
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Unggah bukti pembayaran #{{$data->bill_nomor_billing}}</h3>
+                            <h3 class="dt-card__title">Unggah bukti pembayaran #{{$data->bill_id}}</h3>
+                            <i>Total: Rp {{moneyFormat($total_billing)}}</i>
                         </div>
                     </div>
                     <div class="dt-card__body">
                         <div class="row">
                             <div class="col-lg-12">
                                 <form method="post"
-                                      action="{{action("$module@processUpload", $data->bill_nomor_billing)}}"
+                                      action="{{action("$module@processUpload", $data->bill_id)}}"
                                       enctype="multipart/form-data">
                                     @csrf
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3"
                                                for="bill_payment_tipe">Tipe Pembayaran*</label>
                                         <div class="col-sm-8">
-                                            <select name="bill_payment_tipe" id="bill_payment_tipe"
-                                                    class="form-control">
-                                                <option disabled selected>--Pilih Tipe Pembayaran--</option>
-                                                <option value="tunai">Cash</option>
-                                                <option value="non-tunai">Transfer</option>
-                                            </select>
+                                            <input class="form-control" type="text" value="Transfer" disabled
+                                                   id="bill_payment_tipe">
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="bill_payment_file">
-                                            Bukti Pembayaran*</label>
+                                            Bukti Pembayaran*
+                                            <br>
+                                            <small>(pdf/png/jpg)</small>
+                                        </label>
                                         <div class="col-sm-8">
                                             <div class="custom-file">
                                                 <input type="file" name="bill_payment_file" class="custom-file-input"
-                                                       id="bill_payment_file">
+                                                       id="bill_payment_file"
+                                                       accept="image/png,image/jpg,application/pdf">
                                                 <label class="custom-file-label" for="bill_payment_file">Unggah bukti
                                                     pembayaran...</label>
                                             </div>
@@ -121,15 +122,6 @@
                 format: 'YYYY-MM-DD HH:mm:ss',
                 showClose: true,
             });
-
-
-            @if($data->bill_payment_tipe != null )
-            $("#bill_payment_tipe").val('{{$data->bill_payment_tipe}}')
-            @endif
-
-            @if(old('bill_payment_tipe'))
-            $("#bill_payment_tipe").val('{{old('bill_payment_tipe')}}')
-            @endif
         });
     </script>
 @endpush

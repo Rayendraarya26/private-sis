@@ -149,6 +149,13 @@ class JadwalController extends Controller
                     'jlog_judul' => sprintf('Revisi Tanggal Oleh %s', auth()->user()?->sis_pelanggan->cust_nama),
                     'jlog_pesan' => $request['editor_revisi'],
                 ]);
+            } else {
+                SisJadwalLog::create([
+                    'jadw_id'    => $data->jadw_id,
+                    'jlog_tipe'  => 'informasi',
+                    'jlog_judul' => "Jadwal pelaksanaan audit disetujui oleh BBKKP dan Client",
+                    'jlog_pesan' => sprintf('%s menyetujui pelaksanaan audit tanggal %s', auth()->user()?->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai->isoFormat('LL')),
+                ]);
             }
 
             $data->jadw_tanggal_status = $request['jadw_tanggal_status'];

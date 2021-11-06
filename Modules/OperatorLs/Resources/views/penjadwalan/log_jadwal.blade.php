@@ -212,17 +212,17 @@
                     <div class="dt-card__body">
                         <div class="row">
                             <div class="col-lg-12">
-								<div id="content">
-									@foreach($dataLog as $status)
-										<ul class="{{$status->jlog_tipe == "informasi" ? 'timeline' : 'timeline-revisi'}}">
-											<li class="event"
-												data-date="{{$status->created_at->isoFormat('LLLL')}}">
-												<h3>{{$status->jlog_judul}}</h3>
-												<p>{{$status->jlog_pesan}}</p>
-											</li>
-										</ul>
-									@endforeach
-								</div>
+                                <div id="content">
+                                    @foreach($dataLog as $status)
+                                        <ul class="{{$status->jlog_tipe == "informasi" ? 'timeline' : 'timeline-revisi'}}">
+                                            <li class="event"
+                                                data-date="{{$status->created_at->isoFormat('LLLL')}}">
+                                                <h3>{{$status->jlog_judul}}</h3>
+                                                <p>{{strip_tags($status->jlog_pesan)}}</p>
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>

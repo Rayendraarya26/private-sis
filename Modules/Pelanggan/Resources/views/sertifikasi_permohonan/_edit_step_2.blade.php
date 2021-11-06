@@ -82,7 +82,7 @@
                                 <div class="form-group">
                                     <label for="step2_komoditi_sni">No SNI</label>
                                     <input id="step2_komoditi_sni" name="step2_komoditi_sni" class="form-control"
-                                           @keyup.enter="addOrUpdateKomoditas">
+                                           @keyup.enter="addOrUpdateKomoditas" readonly>
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -458,6 +458,8 @@
                             onSelect: function (index, row) {
                                 self.jenis_komoditas_id   = row.komodt_id;
                                 self.jenis_komoditas_text = row.komodt_nama;
+
+                                $("#step2_komoditi_sni").val(row.komodt_sni)
                             },
                         });
                     },
@@ -517,11 +519,11 @@
                         this.resetUploadDokumen();
                         this.getDokumenSertifikasi();
 
-                        if (this.jenis_sertifikasi_is_product === "ya") {
+                        // if (this.jenis_sertifikasi_is_product === "ya") {
                             setTimeout(async () => {
                                 this.setComboDataKomoditas()
                             }, 500)
-                        }
+                        // }
                     }
                 }
             })
