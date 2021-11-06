@@ -69,17 +69,17 @@
                         </ul>
                     </div>`;
                 },
-                frozenColumns: [[
-                    {
-                        field: 'action',
-                        title: "Aksi",
-                        width: 100,
-                        align: 'center',
-                        formatter: function (val, row) {
-                            return ``;
-                        }
-                    }
-                ]],
+                // frozenColumns: [[
+                //     {
+                //         field: 'action',
+                //         title: "Aksi",
+                //         width: 100,
+                //         align: 'center',
+                //         formatter: function (val, row) {
+                //             return ``;
+                //         }
+                //     }
+                // ]],
                 columns: [[
                     {
                         field: 'cust_sert_status', title: 'Status', width: 150, sortable: true,
@@ -98,7 +98,17 @@
                     {field: 'cust_sert_nomor_sertifikat', title: 'No Sertifikat', width: 220, sortable: true},
                     {field: 'cust_sert_nomor_sni', title: 'No SNI', width: 220, sortable: true},
                     {field: 'cust_sert_expired_date', title: 'Tgl <br> Kadaluarsa', width: 150, sortable: true},
-                    {field: 'cust_sert_filepath', title: 'Sertifikat', width: 150, sortable: true},
+                    {
+                        field: 'cust_sert_filepath',
+                        title: 'Sertifikat',
+                        width: 150,
+                        sortable: true,
+                        formatter: function (val) {
+                            if (val != "" && val != null) {
+                                return `<a href="{{ asset("/") }} . ${val}"><i class="fad fa-download"></i> Download</a>`
+                            }
+                        }
+                    },
                 ]],
             });
             dg.datagrid(

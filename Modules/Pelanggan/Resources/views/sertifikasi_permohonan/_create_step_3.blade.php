@@ -720,7 +720,8 @@
                     <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh kuesioner)</a></li>
                 <br>
                 <input type="file" class="form-control" aria-label="Pertanyaan Tambahan"
-                       @change="validateUploadPertanyaanTambahan" accept="application/pdf"
+                       @change="validateUploadPertanyaanTambahan"
+                       accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/octet-stream"
                        name="step3_pertanyaan_tambahan" id="step3_pertanyaan_tambahan">
                 <small><span>Upload file harus berjenis PDF</span></small>
             </ol>
@@ -806,10 +807,14 @@
                     },
                     validateUploadPertanyaanTambahan(event) {
                         let uploaded = event.target.files[0];
-                        if (uploaded.type !== "application/pdf") {
+                        if (uploaded.type !== "application/pdf" &&
+                            uploaded.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+                            uploaded.type !== "application/msword" &&
+                            uploaded.type !== "application/octet-stream" &&
+                            uploaded.type !== "application/vnd.oasis.opendocument.text") {
                             swalWithBootstrapButtons({
                                 title: `Validasi`,
-                                text: "File pertanyaan harus bertipe PDF",
+                                text: "File pertanyaan harus bertipe PDF atau Word Document",
                                 type: 'warning',
                             })
 
@@ -818,7 +823,7 @@
                     },
                     setComboNegara(search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_negara") }}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_negara") }}`
                         if (search != null) {
                             url += '&q=' + search
                         }

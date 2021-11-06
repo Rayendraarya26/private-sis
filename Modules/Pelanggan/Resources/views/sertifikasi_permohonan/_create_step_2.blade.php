@@ -67,7 +67,7 @@
                                           class="custom-cooltipz"
                                           data-cooltipz-size="large"
                                           data-cooltipz-dir="right"><i class="fal fa-database"></i></small></h3>
-                <div class="row">
+                <div class="row" v-if="window.vueStepOne.jenis_pengajuan == 'baru'">
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-12">
@@ -157,7 +157,7 @@
                             <th>Ukuran</th>
                             <th>Produksi Tahunan</th>
                             <th>Satuan Produksi</th>
-                            <th>Aksi</th>
+                            <th v-if="window.vueStepOne.jenis_pengajuan == 'baru'">Aksi</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -170,7 +170,7 @@
                                 <td>@{{ kom.ukuran }}</td>
                                 <td>@{{ kom.produksi_tahunan }}</td>
                                 <td>@{{ kom.satuan_produksi }}</td>
-                                <td>
+                                <td v-if="window.vueStepOne.jenis_pengajuan == 'baru'">
                                     <button class="btn btn-xs btn-danger" @click="deleteKomoditi(kom.id)">
                                         <i class="fad fa-trash"></i> Hapus
                                     </button>
@@ -220,19 +220,31 @@
                 methods: {
                     start() {
                         setTimeout(async () => {
+                            let currentData;
+                            if (window.vueStepOne.jenis_pengajuan == "lama") {
+                                currentData = {
+                                    value: {
+                                        sert_id: window.vueStepOne.master_sertifikat_id,
+                                        sert_nama: window.vueStepOne.master_sertifikat_text,
+                                        sert_is_product: window.vueStepOne.master_sertifikat_is_product,
+                                    },
+                                };
+
+                                this.komoditas = window.vueStepOne.data_komoditas;
+                            } else {
+                                // Load to set initial Index DB
+                                currentData = await idb.pelanggan_permohonan
+                                    .where({name: "jenis_sertifikasi"})
+                                    .first()
+                            }
+
                             await this.setComboDataSertifikasi()
-
-                            // Load to set initial Index DB
-                            let currentData = await idb.pelanggan_permohonan
-                                .where({name: "jenis_sertifikasi"})
-                                .first()
-
-                            console.log(currentData)
 
                             if (currentData != null) {
                                 $('#step2_jenis_sertifikasi').combogrid('setValue', currentData.value.sert_id)
                                 this.comboDataSertifikasiOnSelect(currentData.value)
                             }
+
                         }, 500)
                     },
                     validate() {
@@ -459,11 +471,12 @@
                     setComboDataSertifikasi() {
                         let self = this;
                         let url = `{{ url("$url/ajax?action=combogrid_sertifikasi") }}`
-                        if (self.jenis_sertifikasi_id != null) {
+                        if (this.jenis_sertifikasi_id != null) {
                             url += "&q=" + this.jenis_sertifikasi_text;
                         }
 
                         $('#step2_jenis_sertifikasi').combogrid({
+                            readonly: window.vueStepOne.jenis_pengajuan == "lama",
                             pageSize: '50',
                             panelWidth: 400,
                             pagination: true,

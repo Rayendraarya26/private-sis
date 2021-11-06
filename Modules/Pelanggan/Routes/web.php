@@ -11,6 +11,11 @@ use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
 Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
     Route::get("profil-perusahaan", [ProfilPerusahaanController::class, 'index']);
 
+    Route::prefix("sertifikasi/data")->group(function () {
+        Route::get("/", [SertifikasiDataController::class, 'index']);
+        Route::get("/ajax", [SertifikasiDataController::class, 'ajax']);
+    });
+
     Route::prefix("sertifikasi/permohonan")->group(function () {
         Route::get('/', [SertifikasiPermohonanController::class, 'index']);
         Route::get('/detail/{mohon_id}', [SertifikasiPermohonanController::class, 'detail']);
@@ -21,11 +26,6 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::get('/create', [SertifikasiPermohonanController::class, 'create']);
         Route::post('/create', [SertifikasiPermohonanController::class, 'store']);
         Route::delete('/delete', [SertifikasiPermohonanController::class, 'destroy']);
-    });
-
-    Route::prefix("sertifikasi/data")->group(function () {
-        Route::get("/", [SertifikasiDataController::class, 'index']);
-        Route::get("/ajax", [SertifikasiDataController::class, 'ajax']);
     });
 
     Route::prefix("billing")->group(function () {

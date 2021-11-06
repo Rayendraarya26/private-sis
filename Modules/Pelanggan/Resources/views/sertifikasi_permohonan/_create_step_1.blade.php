@@ -41,8 +41,16 @@
                 el: "#vueStepOne",
                 data: {
                     jenis_pengajuan: null,
-                    sertifikat_lama_id: null,
-                    sertifikat_lama_text: null,
+
+                    // Jika Re-Sertifikasi
+                    sertifikat_lama_id: null, // riwayat sertifikat
+                    sertifikat_lama_text: null, // riwayat sertifikat
+
+                    master_sertifikat_id: null, // master sertifikat
+                    master_sertifikat_text: null, // master sertifikat
+                    master_sertifikat_is_product: null, // master sertifikat
+
+                    data_komoditas: [],
                 },
                 mounted() {
                     this.loadIdb();
@@ -89,8 +97,24 @@
                                     .first()
 
                                 if (currentData != null) {
-                                    this.sertifikat_lama_id = currentData.value.cust_sert_id
-                                    this.sertifikat_lama_text = currentData.value.cust_sert_nomor_sertifikat
+                                    this.sertifikat_lama_id           = currentData.value.cust_sert_id
+                                    this.sertifikat_lama_text         = currentData.value.cust_sert_nomor_sertifikat
+                                    this.master_sertifikat_id         = currentData.value.sert_id;
+                                    this.master_sertifikat_text       = currentData.value.sert_nama;
+                                    this.master_sertifikat_is_product = currentData.value.sert_is_product;
+
+                                    let komoditas = {
+                                        'komoditi_id': currentData.value.komodt_id,
+                                        'komoditi_nama': currentData.value.komodt_nama,
+                                        'sni': currentData.value.cust_sert_nomor_sni,
+                                        'merk': currentData.value.cust_sert_merk,
+                                        'tipe': currentData.value.cust_sert_tipe,
+                                        'ukuran': currentData.value.cust_sert_ukuran,
+                                        'produksi_tahunan': currentData.value.cust_sert_produksi_tahunan,
+                                        'satuan_produksi': currentData.value.cust_sert_produksi_tahunan_satuan,
+                                    };
+                                    this.data_komoditas.push(komoditas);
+
                                     await this.setComboSertifikatLama();
                                     $('#step1_sertifikat_lama').combogrid('setValue', currentData.value.cust_sert_id)
                                 } else {
@@ -110,7 +134,7 @@
 
                         $('#step1_sertifikat_lama').combogrid({
                             pageSize: '50',
-                            panelWidth: 400,
+                            // panelWidth: 400,
                             pagination: true,
                             nowrap: false,
                             idField: 'cust_sert_id',
@@ -132,12 +156,34 @@
                                     sortable: true,
                                 },
                                 {field: 'cust_sert_expired_date', title: 'Expired', width: 200, sortable: true,},
-                                {field: 'sert_nama', title: 'Jenis Sertifikat', width: 200, sortable: true,},
+                                {field: 'sert_nama', title: 'Nama Sertifikat', width: 200, sortable: true,},
+                                {field: 'komodt_nama', title: 'Nama Komoditas', width: 200, sortable: true,},
+                                {field: 'cust_sert_nomor_sni', title: 'Nomor SNI', width: 120, sortable: true,},
+                                {field: 'cust_sert_tipe', title: 'Tipe', width: 90, sortable: true,},
+                                {field: 'cust_sert_merk', title: 'Merk', width: 90, sortable: true,},
                             ]],
                             onSelect: async function (index, row) {
                                 // Insert to Index DB
+                                self.sertifikat_lama_id           = row.cust_sert_id;
+                                self.sertifikat_lama_text         = row.cust_sert_nomor_sertifikat;
+                                self.master_sertifikat_id         = row.sert_id;
+                                self.master_sertifikat_text       = row.sert_nama;
+                                self.master_sertifikat_is_product = row.sert_is_product;
+
+                                let komoditas = {
+                                    'komoditi_id': row.komodt_id,
+                                    'komoditi_nama': row.komodt_nama,
+                                    'sni': row.cust_sert_nomor_sni,
+                                    'merk': row.cust_sert_merk,
+                                    'tipe': row.cust_sert_tipe,
+                                    'ukuran': row.cust_sert_ukuran,
+                                    'produksi_tahunan': row.cust_sert_produksi_tahunan,
+                                    'satuan_produksi': row.cust_sert_produksi_tahunan_satuan,
+                                };
+                                self.data_komoditas.push(komoditas);
+
                                 const currentaData = await idb.pelanggan_permohonan.where({name: "sertifikat_lama"}).first();
-                                let dbData = {name: "sertifikat_lama", value: row}
+                                let dbData         = {name: "sertifikat_lama", value: row}
                                 if (currentaData == null) {
                                     await idb.pelanggan_permohonan.put(dbData);
                                 } else {

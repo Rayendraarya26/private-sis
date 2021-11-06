@@ -215,8 +215,8 @@ class SertifikasiPermohonanController extends Controller
             }
 
             // 3.4 add sis_permohonan_komoditi
-            if ($dataMasterSertifiaksi->sert_is_product == "ya") {
-                $dataKomoditas = json_decode($request['data_komoditas']);
+            $dataKomoditas = json_decode($request['data_komoditas']);
+            if (!empty($dataKomoditas)) {
                 foreach ($dataKomoditas as $komoditi) {
                     $newSisPermohonanKomoditas                                                 = new SisPermohonanKomoditi();
                     $newSisPermohonanKomoditas->mohon_id                                       = $newSisPermohonan->mohon_id;
@@ -580,7 +580,9 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_combogrid_sertifikat_lama(Request $request)
     {
-        $data = SisPelangganSertifikasi::with("master_sertifikasi")->join("master_sertifikasi", "master_sertifikasi.sert_id", '=', "sis_pelanggan_sertifikasi.sert_id");
+        $data = SisPelangganSertifikasi::with(["master_sertifikasi"])
+            ->join("master_sertifikasi", "master_sertifikasi.sert_id", '=', "sis_pelanggan_sertifikasi.sert_id")
+            ->join("master_komoditi", "master_komoditi.komodt_id", '=', "sis_pelanggan_sertifikasi.komodt_id");
         // Filter
         if (!empty($request->q)) {
             $data->where('sert_nama', 'LIKE', '%' . $request->q . '%')
@@ -610,18 +612,25 @@ class SertifikasiPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['sert_id']                    = $d->sert_id;
-            $x['sert_nama']                  = $d->sert_nama;
-            $x['sert_deskripsi']             = $d->sert_deskripsi;
-            $x['sert_expired']               = $d->sert_expired;
-            $x['sert_format_referensi']      = $d->sert_format_referensi;
-            $x['sert_is_product']            = $d->sert_is_product;
-            $x['cust_sert_id']               = $d->cust_sert_id;
-            $x['cust_sert_nomor_sertifikat'] = $d->cust_sert_nomor_sertifikat;
-            $x['cust_sert_expired_date']     = $d->created_at?->format("Y-m-d H:i:s");
-            $x['cust_sert_nomor_referensi']  = $d->cust_sert_nomor_referensi;
-            $x['cust_sert_nomor_sni']        = $d->cust_sert_nomor_sni;
-            $x['cust_sert_lingkup']          = $d->cust_sert_lingkup;
+            $x['sert_id']                           = $d->sert_id;
+            $x['sert_nama']                         = $d->sert_nama;
+            $x['sert_deskripsi']                    = $d->sert_deskripsi;
+            $x['sert_expired']                      = $d->sert_expired;
+            $x['sert_format_referensi']             = $d->sert_format_referensi;
+            $x['sert_is_product']                   = $d->sert_is_product;
+            $x['cust_sert_id']                      = $d->cust_sert_id;
+            $x['cust_sert_nomor_sertifikat']        = $d->cust_sert_nomor_sertifikat;
+            $x['cust_sert_expired_date']            = $d->created_at?->format("Y-m-d H:i:s");
+            $x['cust_sert_nomor_referensi']         = $d->cust_sert_nomor_referensi;
+            $x['cust_sert_nomor_sni']               = $d->cust_sert_nomor_sni;
+            $x['cust_sert_lingkup']                 = $d->cust_sert_lingkup;
+            $x['cust_sert_tipe']                    = $d->cust_sert_tipe;
+            $x['cust_sert_merk']                    = $d->cust_sert_merk;
+            $x['cust_sert_ukuran']                  = $d->cust_sert_ukuran;
+            $x['cust_sert_produksi_tahunan']        = $d->cust_sert_produksi_tahunan;
+            $x['cust_sert_produksi_tahunan_satuan'] = $d->cust_sert_prodsi_tahunan_satuan;
+            $x['komodt_id']                         = $d->komodt_id;
+            $x['komodt_nama']                       = $d->komodt_nama;
             array_push($result, $x);
         }
 
