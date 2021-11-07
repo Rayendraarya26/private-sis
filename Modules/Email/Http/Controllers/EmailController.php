@@ -11,7 +11,7 @@ class EmailController extends Controller
     {
         $dataLog = LogEmailOutbox::where("outbox_uuid", $uuid)->where("outbox_read", "no")->first();
         if ($dataLog) {
-            $dataLog->outbox_read = "yes";
+            $dataLog->outbox_read    = "yes";
             $dataLog->outbox_read_at = date("Y-m-d H:i:s");
             $dataLog->save();
         }

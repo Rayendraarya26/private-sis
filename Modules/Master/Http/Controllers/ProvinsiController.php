@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProvinsiController extends Controller
 {
-	public $module = self::class;
+    public $module = self::class;
     private $url = 'master/provinsi';
 
     public function index()
@@ -19,8 +19,8 @@ class ProvinsiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::provinsi.index")->with($parser); // Lokasi di Modules\Master\Resources\views\provinsi
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::provinsi.create")->with($parser); // Lokasi di Modules\Master\Resources\views\provinsi
@@ -54,7 +54,7 @@ class ProvinsiController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'prov_id' => 'required|integer',
+            'prov_id'   => 'required|integer',
             'prov_nama' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
@@ -72,14 +72,14 @@ class ProvinsiController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
-		try {
+
+        try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
                 $data = MasterProvinsi::where("prov_id", $id)->firstOrFail();
@@ -106,7 +106,7 @@ class ProvinsiController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -121,7 +121,7 @@ class ProvinsiController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -135,7 +135,7 @@ class ProvinsiController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['prov_id'] = $d->prov_id;
+            $x['prov_id']   = $d->prov_id;
             $x['prov_nama'] = $d->prov_nama;
             array_push($result, $x);
         }

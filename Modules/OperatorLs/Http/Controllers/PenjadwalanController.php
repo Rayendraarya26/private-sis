@@ -424,14 +424,14 @@ class PenjadwalanController extends Controller
                     ]);
                 }
 
-                $newSisJadwalAudit                    = new SisJadwalAudit();
-                $newSisJadwalAudit->jadw_id           = $newSisJadwal->jadw_id;
-                $newSisJadwalAudit->jadw_audit_status = 'on-going';
-                $newSisJadwalAudit->jadw_audit_jenis  = $itm->jenis;
-                $newSisJadwalAudit->mohon_id          = ($itm->mohon_id != '') ? $itm->mohon_id : null;
-                $newSisJadwalAudit->sert_id           = $itm->sert_id;
-                $newSisJadwalAudit->komodt_id         = $itm->komodt_id;
-                $newSisJadwalAudit->cust_sert_id      = ($itm->cust_sert_id != '') ? $itm->cust_sert_id : null;
+                $newSisJadwalAudit                              = new SisJadwalAudit();
+                $newSisJadwalAudit->jadw_id                     = $newSisJadwal->jadw_id;
+                $newSisJadwalAudit->jadw_audit_status           = 'on-going';
+                $newSisJadwalAudit->jadw_audit_jenis            = $itm->jenis;
+                $newSisJadwalAudit->mohon_id                    = ($itm->mohon_id != '') ? $itm->mohon_id : null;
+                $newSisJadwalAudit->sert_id                     = $itm->sert_id;
+                $newSisJadwalAudit->komodt_id                   = $itm->komodt_id;
+                $newSisJadwalAudit->cust_sert_id                = ($itm->cust_sert_id != '') ? $itm->cust_sert_id : null;
                 $newSisJadwalAudit->jadw_audit_nomor_sertifikat = $itm->nomor_sertifikat;
                 $newSisJadwalAudit->jadw_audit_nomor_referensi  = $itm->nomor_referensi;
                 $newSisJadwalAudit->jadw_audit_kode_nace        = $itm->kode_nace;

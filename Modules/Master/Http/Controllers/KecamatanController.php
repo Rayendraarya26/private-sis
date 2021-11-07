@@ -2,9 +2,9 @@
 
 namespace Modules\Master\Http\Controllers;
 
-use App\Models\BbkkpSis\MasterProvinsi;
 use App\Models\BbkkpSis\MasterKabupaten;
 use App\Models\BbkkpSis\MasterKecamatan;
+use App\Models\BbkkpSis\MasterProvinsi;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class KecamatanController extends Controller
 {
-	public $module = self::class;
+    public $module = self::class;
     private $url = 'master/kecamatan';
 
     public function index()
@@ -20,8 +20,8 @@ class KecamatanController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::kecamatan.index")->with($parser); // Lokasi di Modules\Master\Resources\views\kecamatan
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::kecamatan.create")->with($parser); // Lokasi di Modules\Master\Resources\views\kecamatan
@@ -30,16 +30,16 @@ class KecamatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-			'kec_nama' => 'required|string',
-			'kab_id' => 'required|string',
-			'prov_id' => 'required|string'
-		]); // auto redirect back jika tidak valid
-		
-		$dataInsert = [
-            'kec_nama'	=> $request->kec_nama,
-            'kab_id' 	=> $request->kab_id,
+            'kec_nama' => 'required|string',
+            'kab_id'   => 'required|string',
+            'prov_id'  => 'required|string'
+        ]); // auto redirect back jika tidak valid
+
+        $dataInsert = [
+            'kec_nama' => $request->kec_nama,
+            'kab_id'   => $request->kab_id,
         ];
-		
+
         // Aktifkan dd jika ingin melihat data
         //dump($request->except('_token'));
         //dump($request->all());
@@ -56,29 +56,29 @@ class KecamatanController extends Controller
     {
         // Check apakah ID tersedia
         $data = MasterKecamatan::where('kec_id', $kecId); // SELECT * FROM master_kecamatan where kec_id = $kecId | findOrFail akan otomatis redirect 404 jika data tidak ditemukan primary key degan id tersebut
-		
-		$data->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'master_kecamatan.kab_id');
-		$data->join('master_provinsi', 'master_kabupaten.prov_id', '=', 'master_provinsi.prov_id');
-		$data->select('*');
+
+        $data->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'master_kecamatan.kab_id');
+        $data->join('master_provinsi', 'master_kabupaten.prov_id', '=', 'master_provinsi.prov_id');
+        $data->select('*');
         $parser = ['module' => $this->module, 'url' => $this->url, 'data' => $data->get()[0]];
-		
+
         return view("master::kecamatan.edit")->with($parser); // Lokasi di Modules\Master\Resources\views\kecamatan
     }
 
     public function update(Request $request)
     {
-		$request->validate([
-            'kec_id' => 'required|integer',
-			'kec_nama' => 'required|string',
-			'kab_id' => 'required|string',
-			'prov_id' => 'required|string'
-		]); // auto redirect back jika tidak valid
-		
-		$dataUpdate = [
-            'kec_nama'	=> $request->kec_nama,
-            'kab_id' 	=> $request->kab_id,
+        $request->validate([
+            'kec_id'   => 'required|integer',
+            'kec_nama' => 'required|string',
+            'kab_id'   => 'required|string',
+            'prov_id'  => 'required|string'
+        ]); // auto redirect back jika tidak valid
+
+        $dataUpdate = [
+            'kec_nama' => $request->kec_nama,
+            'kab_id'   => $request->kab_id,
         ];
-		
+
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterKecamatan::findOrFail($request['kec_id'])
@@ -99,8 +99,8 @@ class KecamatanController extends Controller
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
-		try {
+
+        try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
                 $data = MasterKecamatan::where("kec_id", $id)->firstOrFail();
@@ -126,62 +126,18 @@ class KecamatanController extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
-			'datagrid' => $this->ajax_datagrid($request),
-			'combobox-kabupaten' => $this->ajax_combobox_kabupaten($request),
-			'combobox-provinsi' => $this->ajax_combobox_provinsi($request),
-			default => null,
+            'datagrid'           => $this->ajax_datagrid($request),
+            'combobox-kabupaten' => $this->ajax_combobox_kabupaten($request),
+            'combobox-provinsi'  => $this->ajax_combobox_provinsi($request),
+            default              => null,
         };
     }
 
-    private function ajax_combobox_kabupaten(Request $request){
-        // Result
-        $result = [];
-		if (!empty($request->prov_id)) {
-            $data = MasterKabupaten::select("*");
-			// Filter
-			$data->where('prov_id', '=', $request->prov_id);
-			if (!empty($request->q)) {
-				$data->where('kab_nama', 'LIKE', '%' . $request->q . '%');
-			}
-			// Sorter
-			$data->orderBy('kab_nama', 'ASC');
-
-			foreach ($data->get() as $d) {
-				$x['kab_id'] = $d->kab_id;
-				$x['kab_nama'] = $d->kab_nama;
-				array_push($result, $x);
-			}
-        }
-		
-        return response()->json($result);
-	}
-	
-	private function ajax_combobox_provinsi(Request $request)
-    {
-        $data = MasterProvinsi::select("*");
-        // Filter
-        if (!empty($request->q)) {
-            $data->where('prov_nama', 'LIKE', '%' . $request->q . '%');
-        }
-        // Sorter
-        $data->orderBy('prov_nama', 'ASC');
-
-        // Result
-        $result = [];
-        foreach ($data->get() as $d) {
-            $x['prov_id'] = $d->prov_id;
-            $x['prov_nama'] = $d->prov_nama;
-            array_push($result, $x);
-        }
-
-        return response()->json($result);
-    }
-	
     private function ajax_datagrid(Request $request)
     {
         $data = MasterKecamatan::select("*");
-		$data->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'master_kecamatan.kab_id');
-		$data->join('master_provinsi', 'master_kabupaten.prov_id', '=', 'master_provinsi.prov_id');
+        $data->join('master_kabupaten', 'master_kabupaten.kab_id', '=', 'master_kecamatan.kab_id');
+        $data->join('master_provinsi', 'master_kabupaten.prov_id', '=', 'master_provinsi.prov_id');
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -190,7 +146,7 @@ class KecamatanController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -204,17 +160,62 @@ class KecamatanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['kec_id'] = $d->kec_id;
-            $x['kec_nama'] = $d->kec_nama;
-            $x['kab_id'] = $d->kab_id;
-            $x['kab_nama'] = $d->kab_nama;
-            $x['prov_id'] = $d->prov_id;
-            $x['prov_nama'] = $d->prov_nama;
+            $x['kec_id']     = $d->kec_id;
+            $x['kec_nama']   = $d->kec_nama;
+            $x['kab_id']     = $d->kab_id;
+            $x['kab_nama']   = $d->kab_nama;
+            $x['prov_id']    = $d->prov_id;
+            $x['prov_nama']  = $d->prov_nama;
             $x['created_at'] = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['updated_at'] = $d->updated_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_combobox_kabupaten(Request $request)
+    {
+        // Result
+        $result = [];
+        if (!empty($request->prov_id)) {
+            $data = MasterKabupaten::select("*");
+            // Filter
+            $data->where('prov_id', '=', $request->prov_id);
+            if (!empty($request->q)) {
+                $data->where('kab_nama', 'LIKE', '%' . $request->q . '%');
+            }
+            // Sorter
+            $data->orderBy('kab_nama', 'ASC');
+
+            foreach ($data->get() as $d) {
+                $x['kab_id']   = $d->kab_id;
+                $x['kab_nama'] = $d->kab_nama;
+                array_push($result, $x);
+            }
+        }
+
+        return response()->json($result);
+    }
+
+    private function ajax_combobox_provinsi(Request $request)
+    {
+        $data = MasterProvinsi::select("*");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('prov_nama', 'LIKE', '%' . $request->q . '%');
+        }
+        // Sorter
+        $data->orderBy('prov_nama', 'ASC');
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['prov_id']   = $d->prov_id;
+            $x['prov_nama'] = $d->prov_nama;
+            array_push($result, $x);
+        }
+
+        return response()->json($result);
     }
 }

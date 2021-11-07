@@ -8,6 +8,7 @@ use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -99,7 +100,7 @@ class PelangganController extends Controller
             DB::commit();
 
             return redirect()->back()->with('message', "Data berhasil ditambahkan");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             foreach ($uploadedPath as $path) {
@@ -175,7 +176,7 @@ class PelangganController extends Controller
 
             DB::commit();
             return redirect()->back()->with("message", "Edit data berhasil");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             foreach ($uploadedPath as $path) {

@@ -30,13 +30,13 @@ class ForgetPasswordController extends Controller
             $dataUser->save();
 
             // ================ Send Email ================
-            $structEmail = new EmailStruct();
+            $structEmail          = new EmailStruct();
             $structEmail->subject = "Reset Password";
-            $structEmail->body = view('auth::mails.reset_password')->with([
+            $structEmail->body    = view('auth::mails.reset_password')->with([
                 'name' => $dataUser->user_fullname,
                 'link' => route('auth.reset_password', encrypt($dataUser->user_token))
             ])->render();
-            $structEmail->to = $dataUser->user_email;
+            $structEmail->to      = $dataUser->user_email;
             sendEmail($structEmail);
             // ================ END Send Email ================
 
@@ -47,7 +47,7 @@ class ForgetPasswordController extends Controller
     public function resetPassword($token)
     {
         try {
-            $token = decrypt($token);
+            $token    = decrypt($token);
             $dataUser = SysUser::where("user_token", $token)->first();
             if ($dataUser) {
                 return view("auth::new_password")->with(['data' => $dataUser]);
@@ -67,9 +67,9 @@ class ForgetPasswordController extends Controller
             'password' => 'required|min:4|confirmed'
         ]);
 
-        $data = SysUser::where("user_email", $request['email'])->firstOrFail();
+        $data                = SysUser::where("user_email", $request['email'])->firstOrFail();
         $data->user_password = bcrypt($request['password']);
-        $data->user_token = null;
+        $data->user_token    = null;
         $data->save();
 
         return redirect(route('auth.login'))->with("message", "Kata sandi berhasil diperbarui");

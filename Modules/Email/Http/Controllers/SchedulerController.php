@@ -27,11 +27,11 @@ class SchedulerController extends Controller
             $body = $this->parse($body, "FULLNAME", $user->user_fullname);
             $body = $this->parse($body, "EMAIL", $user->user_email);
 
-            $struct = new EmailStruct();
+            $struct          = new EmailStruct();
             $struct->subject = $subject;
-            $struct->body = $body;
-            $struct->to = $user->user_email;
-            $struct->type = "scheduler";
+            $struct->body    = $body;
+            $struct->to      = $user->user_email;
+            $struct->type    = "scheduler";
 
             sendEmail($struct);
         }

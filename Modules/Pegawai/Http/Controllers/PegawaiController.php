@@ -28,7 +28,9 @@ class PegawaiController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
      * @param Request $request
+     *
      * @return Renderable
      */
     public function store(Request $request)
@@ -38,7 +40,9 @@ class PegawaiController extends Controller
 
     /**
      * Show the specified resource.
+     *
      * @param int $id
+     *
      * @return Renderable
      */
     public function show($id)
@@ -48,7 +52,9 @@ class PegawaiController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
      * @param int $id
+     *
      * @return Renderable
      */
     public function edit($id)
@@ -58,8 +64,10 @@ class PegawaiController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
      * @param Request $request
      * @param int $id
+     *
      * @return Renderable
      */
     public function update(Request $request, $id)
@@ -69,7 +77,9 @@ class PegawaiController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @param int $id
+     *
      * @return Renderable
      */
     public function destroy($id)

@@ -3,7 +3,6 @@
 namespace Modules\Master\Http\Controllers;
 
 use App\Models\BbkkpSis\MasterNegara;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -26,18 +25,18 @@ class NegaraController extends Controller
     }
 
     public function store(Request $request)
-    {		
-		$request->validate([
+    {
+        $request->validate([
             'negara_nama' => 'required|string',
-			// 'negara_kode' => 'nullable|string'
+            // 'negara_kode' => 'nullable|string'
         ]); // auto redirect back jika tidak valid
-		
-		
-		$dataInsert = [
+
+
+        $dataInsert = [
             'negara_nama' => $request->negara_nama,
             // 'negara_kode' => $request->negara_kode,
         ];
-		
+
         try {
             MasterNegara::create($dataInsert);
             //DB::commit();
@@ -60,17 +59,17 @@ class NegaraController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'negara_id' => 'required|integer',
+            'negara_id'   => 'required|integer',
             'negara_nama' => 'required|string',
-			// 'negara_kode' => 'nullable|string'
+            // 'negara_kode' => 'nullable|string'
         ]); // auto redirect back jika tidak valid
-		
-		
-		$dataUpdate = [
-            'negara_nama'      => $request->negara_nama,
+
+
+        $dataUpdate = [
+            'negara_nama' => $request->negara_nama,
             // 'negara_kode' => $request->negara_kode,
         ];
-		
+
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterNegara::findOrFail($request['negara_id'])
@@ -85,7 +84,7 @@ class NegaraController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
@@ -118,7 +117,7 @@ class NegaraController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -133,7 +132,7 @@ class NegaraController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -147,7 +146,7 @@ class NegaraController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['negara_id'] = $d->negara_id;
+            $x['negara_id']   = $d->negara_id;
             $x['negara_nama'] = $d->negara_nama;
             $x['negara_kode'] = $d->negara_kode;
             array_push($result, $x);

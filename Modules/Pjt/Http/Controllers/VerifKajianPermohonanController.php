@@ -8,12 +8,9 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
-use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class VerifKajianPermohonanController extends Controller
 {
@@ -35,8 +32,8 @@ class VerifKajianPermohonanController extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'datagrid-permohonan'       => $this->ajax_datagrid_permohonan($request),
-            default    => null,
+            'datagrid-permohonan' => $this->ajax_datagrid_permohonan($request),
+            default               => null,
         };
     }
 
@@ -44,9 +41,9 @@ class VerifKajianPermohonanController extends Controller
     {
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
-		$data->whereIn('mohon_approved_status', ['accepted']);
-		$data->whereIn('mohon_verif_kajian_permohonan_pjt', ['proses']);
-		$data->whereNotNull('mohon_kajian_permohonan_pjt_file');
+        $data->whereIn('mohon_approved_status', ['accepted']);
+        $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['proses']);
+        $data->whereNotNull('mohon_kajian_permohonan_pjt_file');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -68,101 +65,101 @@ class VerifKajianPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['cust_sert_id']          = $d->cust_sert_id;
-            $x['mohon_id']              = $d->mohon_id;
-            $x['cust_id']               = $d->cust_id;
-            $x['user_id']               = $d->user_id;
-            $x['sert_id']               = $d->sert_id;
-            $x['sert_nama']             = $d->sert_nama;
-            $x['mohon_cust_nama']       = $d->mohon_cust_nama;
-            $x['mohon_jenis_status']    = $d->mohon_jenis_status;
-            $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $x['update_at']             = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['cust_sert_id']       = $d->cust_sert_id;
+            $x['mohon_id']           = $d->mohon_id;
+            $x['cust_id']            = $d->cust_id;
+            $x['user_id']            = $d->user_id;
+            $x['sert_id']            = $d->sert_id;
+            $x['sert_nama']          = $d->sert_nama;
+            $x['mohon_cust_nama']    = $d->mohon_cust_nama;
+            $x['mohon_jenis_status'] = $d->mohon_jenis_status;
+            $x['created_at']         = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['update_at']          = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-	
-	public function detail(Request $request, $mohonID)
+
+    public function detail(Request $request, $mohonID)
     {
-		$request->validate(['action' => 'required']);
+        $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'detail-permohonan'       => $this->detail_permohonan($request, $mohonID),
-            default            => null,
+            'detail-permohonan' => $this->detail_permohonan($request, $mohonID),
+            default             => null,
         };
     }
-	
-	private function detail_permohonan(Request $request, $mohonID)
+
+    private function detail_permohonan(Request $request, $mohonID)
     {
-		$dataPermohon = SisPermohonan::where('mohon_id', $mohonID);
-		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
+        $dataPermohon = SisPermohonan::where('mohon_id', $mohonID);
+        $dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
 
         $dataPermohon->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
-		$dataPermohon->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
-		$dataPermohon->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
-		$dataPermohon->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
-		$dataPermohon->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
-		$dataPermohon->select('*');
-		
-		$dataPermohonKomoditi = SisPermohonanKomoditi::where('mohon_id', $mohonID);
-		$dataPermohonKomoditi->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
-		$dataPermohonKomoditi->select('*');
+        $dataPermohon->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
+        $dataPermohon->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
+        $dataPermohon->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
+        $dataPermohon->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
+        $dataPermohon->select('*');
+
+        $dataPermohonKomoditi = SisPermohonanKomoditi::where('mohon_id', $mohonID);
+        $dataPermohonKomoditi->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
+        $dataPermohonKomoditi->select('*');
 
 
         $dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $mohonID);
-		$dataPermohonPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
-		$dataPermohonPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
-		$dataPermohonPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
-		$dataPermohonPabrik->select('*');
+        $dataPermohonPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
+        $dataPermohonPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
+        $dataPermohonPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
+        $dataPermohonPabrik->select('*');
 
         $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID);
-		$dataPermohonanDokumen->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
-		$dataPermohonanDokumen->select('*');
+        $dataPermohonanDokumen->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
+        $dataPermohonanDokumen->select('*');
 
         $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $mohonID);
-		$dataPermohonanStatus->select('*');
-		
-		$breadcrumbs = [
+        $dataPermohonanStatus->select('*');
+
+        $breadcrumbs = [
             new BreadcrumbsStruct('PJT'),
             new BreadcrumbsStruct('Verifikasi Kajian Permohonan', url($this->url)),
             new BreadcrumbsStruct('Detail Permohonan "#' . $mohonID . '"'),
         ];
-		
-        $parser      = [
-            'module'      => $this->module,
-            'url'         => $this->url,
-            'dataPermohon' => $dataPermohon->get()[0],
-            'dataPermohonKomoditi' => $dataPermohonKomoditi->get(),
-            'dataPermohonPabrik' => $dataPermohonPabrik->get(),
+
+        $parser = [
+            'module'                => $this->module,
+            'url'                   => $this->url,
+            'dataPermohon'          => $dataPermohon->get()[0],
+            'dataPermohonKomoditi'  => $dataPermohonKomoditi->get(),
+            'dataPermohonPabrik'    => $dataPermohonPabrik->get(),
             'dataPermohonanDokumen' => $dataPermohonanDokumen->get(),
-            'dataPermohonanStatus' => $dataPermohonanStatus->get(),
-            'breadcrumbs' => $breadcrumbs
+            'dataPermohonanStatus'  => $dataPermohonanStatus->get(),
+            'breadcrumbs'           => $breadcrumbs
         ];
         return view('pjt::verif_kajian.detail_permohonan')->with($parser);
-	}
-	
-	public function edit( Request $request) // menerima parameter ID dari Modules\Master\Routes\web.php
+    }
+
+    public function edit(Request $request) // menerima parameter ID dari Modules\Master\Routes\web.php
     {
-		$request->validate(['action' => 'required']);
-		return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
+        $request->validate(['action' => 'required']);
+        return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'edit-accepted' => $this->edit_accepted($request),
-            default => null,
+            default         => null,
         };
     }
-	
-	private function edit_accepted( Request $request)
-	{
-       $dataInsert = [
+
+    private function edit_accepted(Request $request)
+    {
+        $dataInsert = [
             'mohon_id' => $request->mohon_id,
         ];
 
         DB::transaction(function () use ($request, $dataInsert) {
-			SisPermohonan::findOrFail($request['mohon_id'])->update([
-				'mohon_verif_kajian_permohonan_pjt' => 'ya',
-			]);
-		});
+            SisPermohonan::findOrFail($request['mohon_id'])->update([
+                'mohon_verif_kajian_permohonan_pjt' => 'ya',
+            ]);
+        });
 
-		return redirect($this->url)->with('message', "Verifikasi Kajian Permohonan #".$request->mohon_id." telah diterima.");
+        return redirect($this->url)->with('message', "Verifikasi Kajian Permohonan #" . $request->mohon_id . " telah diterima.");
     }
 }

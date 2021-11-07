@@ -70,7 +70,7 @@ class LoginController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $user = Socialite::driver('google')->user();
+            $user     = Socialite::driver('google')->user();
             $findUser = SysUser::where('user_email', $user->email)->first();
             if ($findUser) {
                 Auth::login($findUser);
@@ -78,7 +78,7 @@ class LoginController extends Controller
                 Auth::user()->user_last_login = date("Y-m-d H:i:s");
                 Auth::user()->save();
 
-                $group_selected = Auth::user()->user_group->where("ug_is_default", "yes")->first()->ug_group_id;
+                $group_selected      = Auth::user()->user_group->where("ug_is_default", "yes")->first()->ug_group_id;
                 $group_selected_name = Auth::user()->user_group->where("ug_is_default", "yes")->first()->group->group_name;
                 $this->setAccess($group_selected, $group_selected_name);
 
@@ -107,14 +107,14 @@ class LoginController extends Controller
     {
         if (auth()->check()) {
             // ================ Send Email ================
-            $structEmail = new EmailStruct();
+            $structEmail          = new EmailStruct();
             $structEmail->subject = "Verifikasi Akun";
-            $structEmail->body = view('auth::mails.resend_validation')
+            $structEmail->body    = view('auth::mails.resend_validation')
                 ->with([
                     'name' => auth()->user()->user_fullname,
                     'link' => route('auth.verify', encrypt(auth()->user()->user_token))
                 ])->render();
-            $structEmail->to = auth()->user()->user_email;
+            $structEmail->to      = auth()->user()->user_email;
             sendEmail($structEmail);
             // ================ END Send Email ================
 
@@ -127,12 +127,12 @@ class LoginController extends Controller
     public function verifyValidation($token)
     {
         try {
-            $token = decrypt($token);
+            $token    = decrypt($token);
             $dataUser = SysUser::where("user_token", $token)->first();
             if ($dataUser) {
                 $dataUser->user_is_active = "yes";
                 $dataUser->user_active_at = Carbon::now();
-                $dataUser->user_token = null;
+                $dataUser->user_token     = null;
                 $dataUser->save();
                 return redirect(route('auth.login'))->with("message", "Akun telah aktif");
             } else {
@@ -149,9 +149,9 @@ class LoginController extends Controller
         if (Auth::check()) {
             $request->validate(['modal_group_id' => 'required']);
             $group_id = $request['modal_group_id'];
-            $exist = SysUserGroup::where("ug_user_id", Auth::id())->where("ug_group_id", $group_id)->first();
+            $exist    = SysUserGroup::where("ug_user_id", Auth::id())->where("ug_group_id", $group_id)->first();
             if ($exist) {
-                $group_selected = $group_id;
+                $group_selected      = $group_id;
                 $group_selected_name = $exist->group->group_name;
                 $this->setAccess($group_selected, $group_selected_name);
                 return redirect(RouteServiceProvider::HOME)->with('message', "Berhasil ganti role");

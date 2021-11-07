@@ -49,7 +49,7 @@ class AuditController extends Controller
 
     public function detailLKS(Request $request, $jadwalID, $lksID)
     {
-        $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan','sis_audit_lks_files'])
+        $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan', 'sis_audit_lks_files'])
             ->join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
             ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
             ->where('sis_jadwal.jadw_id', $jadwalID)

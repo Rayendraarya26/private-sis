@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class KabupatenController extends Controller
 {
-	public $module = self::class;
+    public $module = self::class;
     private $url = 'master/kabupaten';
 
     public function index()
@@ -19,8 +19,8 @@ class KabupatenController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::kabupaten.index")->with($parser); // Lokasi di Modules\Master\Resources\views\kabupaten
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::kabupaten.create")->with($parser); // Lokasi di Modules\Master\Resources\views\kabupaten
@@ -29,19 +29,19 @@ class KabupatenController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-			'prov_id' => 'required|string',
-			'kab_nama' => 'required|string'
-			]); // auto redirect back jika tidak valid
+            'prov_id'  => 'required|string',
+            'kab_nama' => 'required|string'
+        ]); // auto redirect back jika tidak valid
 
         // Aktifkan dd jika ingin melihat data
         //dump($request->except('_token'));
         //dump($request->all());
-		
-		$dataInsert = [
-            'prov_id'      => $request->prov_id,
+
+        $dataInsert = [
+            'prov_id'  => $request->prov_id,
             'kab_nama' => $request->kab_nama
         ];
-		
+
         try {
             MasterKabupaten::create($dataInsert);
             return redirect()->back()->with('message', "Tambah data berhasil");
@@ -62,16 +62,16 @@ class KabupatenController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'kab_id' => 'required|integer',
+            'kab_id'   => 'required|integer',
             'kab_nama' => 'required|string',
-            'prov_id' => 'required|string'
+            'prov_id'  => 'required|string'
         ]); // auto redirect back jika tidak valid
-		
-		$dataUpdate = [
-            'prov_id'	=> $request->prov_id,
-            'kab_nama' 	=> $request->kab_nama,
+
+        $dataUpdate = [
+            'prov_id'  => $request->prov_id,
+            'kab_nama' => $request->kab_nama,
         ];
-		
+
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterKabupaten::findOrFail($request['kab_id'])
@@ -92,8 +92,8 @@ class KabupatenController extends Controller
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
-		try {
+
+        try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
                 $data = MasterKabupaten::where("kab_id", $id)->firstOrFail();
@@ -119,16 +119,16 @@ class KabupatenController extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
-            'datagrid' => $this->ajax_datagrid($request),
+            'datagrid'          => $this->ajax_datagrid($request),
             'combobox-provinsi' => $this->ajax_combobox_provinsi($request),
-            default => null,
+            default             => null,
         };
     }
 
     private function ajax_datagrid(Request $request)
     {
         $data = MasterKabupaten::select("*");
-		$data->join('master_provinsi', 'master_provinsi.prov_id', '=', 'master_kabupaten.prov_id');
+        $data->join('master_provinsi', 'master_provinsi.prov_id', '=', 'master_kabupaten.prov_id');
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -137,7 +137,7 @@ class KabupatenController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -151,9 +151,9 @@ class KabupatenController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['kab_id'] = $d->kab_id;
-            $x['kab_nama'] = $d->kab_nama;
-            $x['prov_nama'] = $d->prov_nama;
+            $x['kab_id']     = $d->kab_id;
+            $x['kab_nama']   = $d->kab_nama;
+            $x['prov_nama']  = $d->prov_nama;
             $x['created_at'] = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['updated_at'] = $d->updated_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
@@ -161,8 +161,8 @@ class KabupatenController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-	
-	private function ajax_combobox_provinsi(Request $request)
+
+    private function ajax_combobox_provinsi(Request $request)
     {
         $data = MasterProvinsi::select("*");
         // Filter
@@ -175,7 +175,7 @@ class KabupatenController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['prov_id'] = $d->prov_id;
+            $x['prov_id']   = $d->prov_id;
             $x['prov_nama'] = $d->prov_nama;
             array_push($result, $x);
         }

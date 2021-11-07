@@ -56,7 +56,7 @@ class HistoryEmailSchedulerController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -70,17 +70,17 @@ class HistoryEmailSchedulerController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['outbox_id'] = $d->outbox_id;
-            $x['outbox_uuid'] = $d->outbox_uuid;
-            $x['outbox_reply_to'] = $d->outbox_reply_to;
-            $x['outbox_from_name'] = $d->outbox_from_name;
+            $x['outbox_id']         = $d->outbox_id;
+            $x['outbox_uuid']       = $d->outbox_uuid;
+            $x['outbox_reply_to']   = $d->outbox_reply_to;
+            $x['outbox_from_name']  = $d->outbox_from_name;
             $x['outbox_from_email'] = $d->outbox_from_email;
-            $x['outbox_to_name'] = $d->outbox_to_name;
-            $x['outbox_to_email'] = $d->outbox_to_email;
-            $x['outbox_title'] = $d->outbox_title;
-            $x['outbox_message'] = $d->outbox_message;
-            $x['outbox_read'] = $d->outbox_read;
-            $x['outbox_read_at'] = $d->outbox_read_at?->format("Y-m-d H:i:s");
+            $x['outbox_to_name']    = $d->outbox_to_name;
+            $x['outbox_to_email']   = $d->outbox_to_email;
+            $x['outbox_title']      = $d->outbox_title;
+            $x['outbox_message']    = $d->outbox_message;
+            $x['outbox_read']       = $d->outbox_read;
+            $x['outbox_read_at']    = $d->outbox_read_at?->format("Y-m-d H:i:s");
             $x['outbox_created_at'] = $d->outbox_created_at?->format("Y-m-d H:i:s");
             $x['outbox_updated_at'] = $d->outbox_updated_at?->format("Y-m-d H:i:s");
             array_push($result, $x);

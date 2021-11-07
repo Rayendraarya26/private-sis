@@ -18,8 +18,8 @@ class SisKomoditiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::sis_komoditi.index")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_komoditi
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::sis_komoditi.create")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_komoditi
@@ -27,10 +27,10 @@ class SisKomoditiController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'komodt_nama' => 'required|string',
-            'komodt_sni' => 'required|string'
+            'komodt_sni'  => 'required|string'
         ]); // auto redirect back jika tidak valid
 
         // Aktifkan dd jika ingin melihat data
@@ -57,9 +57,9 @@ class SisKomoditiController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'komodt_id' => 'required|integer',
+            'komodt_id'   => 'required|integer',
             'komodt_nama' => 'required|string',
-            'komodt_sni' => 'required|string'
+            'komodt_sni'  => 'required|string'
         ]); // auto redirect back jika tidak valid
 
         try {
@@ -76,14 +76,14 @@ class SisKomoditiController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
-		try {
+
+        try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
                 $data = MasterKomoditi::where("komodt_id", $id)->firstOrFail();
@@ -110,7 +110,7 @@ class SisKomoditiController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -125,7 +125,7 @@ class SisKomoditiController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -139,10 +139,10 @@ class SisKomoditiController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['komodt_id'] = $d->komodt_id;
+            $x['komodt_id']   = $d->komodt_id;
             $x['komodt_nama'] = $d->komodt_nama;
-            $x['komodt_sni'] = $d->komodt_sni;
-			
+            $x['komodt_sni']  = $d->komodt_sni;
+
             array_push($result, $x);
         }
 

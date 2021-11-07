@@ -21,7 +21,7 @@ class NotificationController extends Controller
     {
         $dataNotif = SysUserNotif::where('notif_user_id', auth()->id())->findOrFail($id);
         if ($dataNotif) {
-            $dataNotif->notif_is_read = "yes";
+            $dataNotif->notif_is_read    = "yes";
             $dataNotif->notif_updated_at = Carbon::now();
             $dataNotif->save();
 
@@ -49,10 +49,10 @@ class NotificationController extends Controller
 
     public function tes()
     {
-        $notifStruct = new NotifStruct();
-        $notifStruct->title = "Halo ini judul push notifikasi";
-        $notifStruct->message = auth()->user()->user_fullname . " notifikasi berhasil ya, ini adalah isi pesannya";
-        $notifStruct->user_id = auth()->id();
+        $notifStruct            = new NotifStruct();
+        $notifStruct->title     = "Halo ini judul push notifikasi";
+        $notifStruct->message   = auth()->user()->user_fullname . " notifikasi berhasil ya, ini adalah isi pesannya";
+        $notifStruct->user_id   = auth()->id();
         $notifStruct->click_url = url('/dashboard');
         sendNotification($notifStruct);
     }

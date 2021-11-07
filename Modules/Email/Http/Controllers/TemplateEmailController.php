@@ -37,7 +37,7 @@ class TemplateEmailController extends Controller
             "template_code" => 'required|string|unique:App\Models\BbkkpSis\MasterEmailTemplate,template_code',
         ]);
 
-        $newData = $request->except('_token');
+        $newData                  = $request->except('_token');
         $newData['template_uuid'] = Str::uuid();
         $newData['template_code'] = strtoupper($newData['template_code']);
         MasterEmailTemplate::create($newData);
@@ -58,11 +58,11 @@ class TemplateEmailController extends Controller
         ])->validate();
 
 
-        $data = MasterEmailTemplate::find($request['template_id']);
-        $data->template_code = strtoupper($request['template_code']);
-        $data->template_desc = $request['template_desc'];
+        $data                        = MasterEmailTemplate::find($request['template_id']);
+        $data->template_code         = strtoupper($request['template_code']);
+        $data->template_desc         = $request['template_desc'];
         $data->template_mail_subject = $request['template_mail_subject'];
-        $data->template_mail_body = $request['template_mail_body'];
+        $data->template_mail_body    = $request['template_mail_body'];
         $data->save();
 
         return redirect()->back()->with("message", "Update template berhasil");
@@ -124,7 +124,7 @@ class TemplateEmailController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -138,13 +138,13 @@ class TemplateEmailController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['template_id'] = $d->template_id;
-            $x['template_uuid'] = $d->template_uuid;
-            $x['template_code'] = $d->template_code;
-            $x['template_desc'] = $d->template_desc;
+            $x['template_id']           = $d->template_id;
+            $x['template_uuid']         = $d->template_uuid;
+            $x['template_code']         = $d->template_code;
+            $x['template_desc']         = $d->template_desc;
             $x['template_mail_subject'] = $d->template_mail_subject;
-            $x['template_created_at'] = $d->template_created_at?->format("Y-m-d H:i:s");
-            $x['template_updated_at'] = $d->template_updated_at?->format("Y-m-d H:i:s");
+            $x['template_created_at']   = $d->template_created_at?->format("Y-m-d H:i:s");
+            $x['template_updated_at']   = $d->template_updated_at?->format("Y-m-d H:i:s");
             array_push($result, $x);
         }
 
@@ -158,7 +158,7 @@ class TemplateEmailController extends Controller
                 'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
             ]);
 
-            $img = $request->file('file');
+            $img     = $request->file('file');
             $imgName = $img->hashName();
             $img->move(public_path(config('email.email_template_image_url')), $imgName);
             $publicUrl = asset(config('email.email_template_image_url') . '/' . $imgName);

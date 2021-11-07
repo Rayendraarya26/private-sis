@@ -4,15 +4,10 @@ namespace Modules\OperatorLs\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\MasterPegawai;
-use App\Models\BbkkpSis\SisPelanggan;
-use App\Models\BbkkpSis\SisPelangganSertifikasi;
-use App\Models\BbkkpSis\SisPermohonan;
-use App\Models\BbkkpSis\SisPermohonanKomoditi;
-use App\Models\BbkkpSis\SisPermohonanStatus;
-
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
-use App\Models\BbkkpSis\SisAuditDetailTahap1;
+use App\Models\BbkkpSis\SisPelanggan;
+use App\Models\BbkkpSis\SisPermohonan;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -40,103 +35,24 @@ class PenjadwalanTahap1Controller extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'datagrid-jadwal'               => $this->ajax_datagrid_jadwal($request),
-            'datagrid-jadwal-tim'   => $this->ajax_datagrid_jadwal_tim($request),
-            'combogrid-pelanggan'           => $this->ajax_combogrid_pelanggan($request),
-            'combogrid-permohonan'          => $this->ajax_combogrid_permohonan($request),
-            'combogrid-pegawai'     => $this->ajax_combogrid_pegawai($request),
-            'combobox-posisi'       => $this->ajax_combobox_posisi($request),
-            default                         => null,
+            'datagrid-jadwal'      => $this->ajax_datagrid_jadwal($request),
+            'datagrid-jadwal-tim'  => $this->ajax_datagrid_jadwal_tim($request),
+            'combogrid-pelanggan'  => $this->ajax_combogrid_pelanggan($request),
+            'combogrid-permohonan' => $this->ajax_combogrid_permohonan($request),
+            'combogrid-pegawai'    => $this->ajax_combogrid_pegawai($request),
+            'combobox-posisi'      => $this->ajax_combobox_posisi($request),
+            default                => null,
         };
     }
-	
-	private function ajax_datagrid_jadwal_tim(Request $request)
-    {
-        $data = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
-        $data->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-        $data->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-        // Filter
-        $data->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
-        if (!empty($request->filterRules)) {
-            foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
-            }
-        }
-        // Sorter
-        if (!empty($request->sort) && !empty($request->order)) {
-            $sort  = explode(",", $request->sort);
-            $order = explode(",", $request->order);
-            for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
-            }
-        }
 
-        // Pagination
-        $data->select("*",  "sis_audit_tahap1.aud_thp1_id AS aud_thp1_id");
-        $data->groupBy('sis_audit_tahap1_tim.thp1_tim_id');
-
-        $result = [];
-        foreach ($data->get() as $d) {
-            $x['tipe']                     = 'data-tim';
-            $x['aud_thp1_id']              = $d->aud_thp1_id;
-            $x['thp1_tim_id']              = $d->thp1_tim_id;
-            $x['peg_id']                   = $d->peg_id;
-            $x['peg_nip']                  = $d->peg_nip;
-            $x['peg_nama']                 = $d->peg_nama;
-            $x['thp1_tim_kode']            = $d->thp1_tim_kode;
-            $x['thp1_tim_posisi']          = $d->thp1_tim_posisi;
-            $x['thp1_tim_kesanggupan']     = $d->thp1_tim_kesanggupan;
-            $x['thp1_tim_kesanggupan_tgl'] = $d->thp1_tim_kesanggupan_tgl?->format("Y-m-d");
-            array_push($result, $x);
-        }
-
-        return response()->json(["rows" => $result]);
-    }
-	
-	private function ajax_combogrid_pegawai(Request $request)
-    {
-        $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-        // Filter
-        if (!empty($request->q)) {
-            $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
-        }
-        // Total
-        $total = $data->select(DB::raw('count(distinct peg_id) as total'))->first()->total;
-        // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
-        // Result
-        $result = [];
-        foreach ($data->get() as $d) {
-            $x['peg_id']   = $d->peg_id;
-            $x['peg_nama'] = $d->peg_nama;
-            $x['peg_telp'] = $d->peg_telp;
-            $x['peg_nip']  = $d->peg_nip;
-            array_push($result, $x);
-        }
-
-        return response()->json(["total" => $total, "rows" => $result]);
-    }
-
-    private function ajax_combobox_posisi(Request $request)
-    {
-        $data = [
-            ['id' => '', 'name' => 'Silahkan Pilih'],
-            ['id' => 'ketua', 'name' => 'ketua'],
-            ['id' => 'observer', 'name' => 'observer'],
-        ];
-
-        return response()->json($data);
-    }
-	
     private function ajax_datagrid_jadwal(Request $request)
     {
         $data = SisAuditTahap1::join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
-		$data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
-		$data->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
-		$data->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
-		$data->leftJoin('sis_audit_tahap1_detail', "sis_audit_tahap1_detail.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id");
-		$data->where('aud_thp1_ditutup', '=', 'tidak');
+        $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
+        $data->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
+        $data->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
+        $data->leftJoin('sis_audit_tahap1_detail', "sis_audit_tahap1_detail.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id");
+        $data->where('aud_thp1_ditutup', '=', 'tidak');
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -158,23 +74,66 @@ class PenjadwalanTahap1Controller extends Controller
 
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
-		
+
         $data->groupBy('sis_audit_tahap1.aud_thp1_id');
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['status'] = ($d->total_detail > 0) ? 'closed' : 'open';
-            $x['aud_thp1_id'] = $d->aud_thp1_id;
-            $x['mohon_id'] = $d->mohon_id;
-            $x['cust_nama'] = $d->cust_nama;
-            $x['sert_nama'] = $d->sert_nama;
-            $x['bill_nomor_billing'] = $d->bill_nomor_billing;
-            $x['aud_thp1_tanggal_mulai'] = $d->aud_thp1_tanggal_mulai?->format("Y-m-d");
+            $x['status']                   = ($d->total_detail > 0) ? 'closed' : 'open';
+            $x['aud_thp1_id']              = $d->aud_thp1_id;
+            $x['mohon_id']                 = $d->mohon_id;
+            $x['cust_nama']                = $d->cust_nama;
+            $x['sert_nama']                = $d->sert_nama;
+            $x['bill_nomor_billing']       = $d->bill_nomor_billing;
+            $x['aud_thp1_tanggal_mulai']   = $d->aud_thp1_tanggal_mulai?->format("Y-m-d");
             $x['aud_thp1_tanggal_selesai'] = $d->aud_thp1_tanggal_selesai?->format("Y-m-d");
             array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_datagrid_jadwal_tim(Request $request)
+    {
+        $data = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
+        $data->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+        $data->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        // Filter
+        $data->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
+        if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+            }
+        }
+        // Sorter
+        if (!empty($request->sort) && !empty($request->order)) {
+            $sort  = explode(",", $request->sort);
+            $order = explode(",", $request->order);
+            for ($i = 0; $i < count($sort); $i++) {
+                $data->orderBy($sort[$i], $order[$i]);
+            }
+        }
+
+        // Pagination
+        $data->select("*", "sis_audit_tahap1.aud_thp1_id AS aud_thp1_id");
+        $data->groupBy('sis_audit_tahap1_tim.thp1_tim_id');
+
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['tipe']                     = 'data-tim';
+            $x['aud_thp1_id']              = $d->aud_thp1_id;
+            $x['thp1_tim_id']              = $d->thp1_tim_id;
+            $x['peg_id']                   = $d->peg_id;
+            $x['peg_nip']                  = $d->peg_nip;
+            $x['peg_nama']                 = $d->peg_nama;
+            $x['thp1_tim_kode']            = $d->thp1_tim_kode;
+            $x['thp1_tim_posisi']          = $d->thp1_tim_posisi;
+            $x['thp1_tim_kesanggupan']     = $d->thp1_tim_kesanggupan;
+            $x['thp1_tim_kesanggupan_tgl'] = $d->thp1_tim_kesanggupan_tgl?->format("Y-m-d");
+            array_push($result, $x);
+        }
+
+        return response()->json(["rows" => $result]);
     }
 
     private function ajax_combogrid_pelanggan(Request $request)
@@ -195,10 +154,10 @@ class PenjadwalanTahap1Controller extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['cust_id']            = $d->cust_id;
-			$x['cust_nama']          = $d->cust_nama;
-			$x['bill_id']          = $d->bill_id;
-			$x['bill_nomor_billing'] = $d->bill_nomor_billing;
-			array_push($result, $x);
+            $x['cust_nama']          = $d->cust_nama;
+            $x['bill_id']            = $d->bill_id;
+            $x['bill_nomor_billing'] = $d->bill_nomor_billing;
+            array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -233,16 +192,52 @@ class PenjadwalanTahap1Controller extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['mohon_id'] = $d->mohon_id;
-            $x['sert_nama'] = $d->sert_nama;
-            $x['mohon_jenis_status']       = ($d->mohon_jenis_status == 'lama') ? 're-sertifikasi' : 'sertifikasi baru';
+            $x['mohon_id']           = $d->mohon_id;
+            $x['sert_nama']          = $d->sert_nama;
+            $x['mohon_jenis_status'] = ($d->mohon_jenis_status == 'lama') ? 're-sertifikasi' : 'sertifikasi baru';
             array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-    
-	public function create()
+
+    private function ajax_combogrid_pegawai(Request $request)
+    {
+        $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        // Filter
+        if (!empty($request->q)) {
+            $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+        }
+        // Total
+        $total = $data->select(DB::raw('count(distinct peg_id) as total'))->first()->total;
+        // Pagination
+        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+
+        // Result
+        $result = [];
+        foreach ($data->get() as $d) {
+            $x['peg_id']   = $d->peg_id;
+            $x['peg_nama'] = $d->peg_nama;
+            $x['peg_telp'] = $d->peg_telp;
+            $x['peg_nip']  = $d->peg_nip;
+            array_push($result, $x);
+        }
+
+        return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_combobox_posisi(Request $request)
+    {
+        $data = [
+            ['id' => '', 'name' => 'Silahkan Pilih'],
+            ['id' => 'ketua', 'name' => 'ketua'],
+            ['id' => 'observer', 'name' => 'observer'],
+        ];
+
+        return response()->json($data);
+    }
+
+    public function create()
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
@@ -262,47 +257,47 @@ class PenjadwalanTahap1Controller extends Controller
     {
 
         $request->validate([
-            "cust_id"              => 'required',
-            "mohon_id"              => 'required',
-            "bill_id"              => 'required',
+            "cust_id"                  => 'required',
+            "mohon_id"                 => 'required',
+            "bill_id"                  => 'required',
             "aud_thp1_tanggal_mulai"   => 'required',
             "aud_thp1_tanggal_selesai" => 'required',
-            "aud_thp1_tujuan"         => 'required',
-            "jadwal_tims"         => 'required',
+            "aud_thp1_tujuan"          => 'required',
+            "jadwal_tims"              => 'required',
         ]);
 
         try {
             DB::beginTransaction();
-            $newSisAuditTahap1                       = new SisAuditTahap1();
-            $newSisAuditTahap1->mohon_id              = $request['mohon_id'];
-            $newSisAuditTahap1->bill_id              = $request['bill_id'];
+            $newSisAuditTahap1                           = new SisAuditTahap1();
+            $newSisAuditTahap1->mohon_id                 = $request['mohon_id'];
+            $newSisAuditTahap1->bill_id                  = $request['bill_id'];
             $newSisAuditTahap1->aud_thp1_tanggal_mulai   = $request['aud_thp1_tanggal_mulai'];
             $newSisAuditTahap1->aud_thp1_tanggal_selesai = $request['aud_thp1_tanggal_selesai'];
-            $newSisAuditTahap1->aud_thp1_tujuan = $request['aud_thp1_tujuan'];
-            $newSisAuditTahap1->created_at           = Carbon::now();
-            $newSisAuditTahap1->updated_at           = Carbon::now();
+            $newSisAuditTahap1->aud_thp1_tujuan          = $request['aud_thp1_tujuan'];
+            $newSisAuditTahap1->created_at               = Carbon::now();
+            $newSisAuditTahap1->updated_at               = Carbon::now();
             $newSisAuditTahap1->save();
-			/* if ($request['mohon_id'] != '') {
-				SisPermohonanStatus::create([
-					"status_mohon_id" => $request['mohon_id'],
-					"status_tipe"     => "informasi",
-					"status_judul"    => "Informasi Audit Tahap 1",
-					"status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada jadwal audit tahap 1.", $request['mohon_id']),
-					"created_at"      => Carbon::now(),
-					"updated_at"      => Carbon::now(),
-				]);
-			} */
-			
+            /* if ($request['mohon_id'] != '') {
+                SisPermohonanStatus::create([
+                    "status_mohon_id" => $request['mohon_id'],
+                    "status_tipe"     => "informasi",
+                    "status_judul"    => "Informasi Audit Tahap 1",
+                    "status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada jadwal audit tahap 1.", $request['mohon_id']),
+                    "created_at"      => Carbon::now(),
+                    "updated_at"      => Carbon::now(),
+                ]);
+            } */
+
             // add items
             $dataItems = json_decode($request['jadwal_tims']);
             foreach ($dataItems as $itm) {
-                $newSisAuditTahap1Tim = new SisAuditTahap1Tim();
-                $newSisAuditTahap1Tim->aud_thp1_id = $newSisAuditTahap1->aud_thp1_id;
-                $newSisAuditTahap1Tim->peg_id = $itm->peg_id;
-                $newSisAuditTahap1Tim->thp1_tim_kode = $itm->kode;
+                $newSisAuditTahap1Tim                  = new SisAuditTahap1Tim();
+                $newSisAuditTahap1Tim->aud_thp1_id     = $newSisAuditTahap1->aud_thp1_id;
+                $newSisAuditTahap1Tim->peg_id          = $itm->peg_id;
+                $newSisAuditTahap1Tim->thp1_tim_kode   = $itm->kode;
                 $newSisAuditTahap1Tim->thp1_tim_posisi = $itm->posisi;
-                $newSisAuditTahap1Tim->created_at = Carbon::now();
-                $newSisAuditTahap1Tim->updated_at = Carbon::now();
+                $newSisAuditTahap1Tim->created_at      = Carbon::now();
+                $newSisAuditTahap1Tim->updated_at      = Carbon::now();
                 $newSisAuditTahap1Tim->save();
             }
 
@@ -320,7 +315,7 @@ class PenjadwalanTahap1Controller extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'detail-jadwal' => $this->detail_jadwal($request),
-            default      => null,
+            default         => null,
         };
     }
 
@@ -333,15 +328,15 @@ class PenjadwalanTahap1Controller extends Controller
         ];
 
         $dataJadwal = SisAuditTahap1::where('aud_thp1_id', $request['aud_thp1_id']);
-		$dataJadwal->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
-		$dataJadwal->join('sis_permohonan_komoditi', "sis_permohonan.mohon_id", "=", "sis_permohonan_komoditi.mohon_id");
-		$dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id");
-		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
-		$dataJadwal->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
-		$dataJadwal->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
+        $dataJadwal->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
+        $dataJadwal->join('sis_permohonan_komoditi', "sis_permohonan.mohon_id", "=", "sis_permohonan_komoditi.mohon_id");
+        $dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id");
+        $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
+        $dataJadwal->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
+        $dataJadwal->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
         $dataJadwal->groupBy('sis_audit_tahap1.aud_thp1_id');
         $dataJadwal->select('*', DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'), DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_nace) as mohon_kmditi_nace'), DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ea) as mohon_kmditi_ea'), DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ruang_lingkup) as mohon_kmditi_ruang_lingkup'));
-		
+
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
         return view("operatorls::penjadwalan_tahap1.detail_jadwal")->with($parser);
     }
@@ -364,10 +359,10 @@ class PenjadwalanTahap1Controller extends Controller
         ];
 
         $dataJadwal = SisAuditTahap1::where('aud_thp1_id', $request['aud_thp1_id']);
-		$dataJadwal->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
-		$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
-		$dataJadwal->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
-		$dataJadwal->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
+        $dataJadwal->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
+        $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
+        $dataJadwal->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
+        $dataJadwal->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
         $dataJadwal->select('*');
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
@@ -386,9 +381,9 @@ class PenjadwalanTahap1Controller extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
-            'update-jadwal'        => $this->update_jadwal($request),
-            'update-tim' => $this->update_tim($request),
-            default              => null,
+            'update-jadwal' => $this->update_jadwal($request),
+            'update-tim'    => $this->update_tim($request),
+            default         => null,
         };
     }
 
@@ -398,7 +393,7 @@ class PenjadwalanTahap1Controller extends Controller
             "aud_thp1_id"              => 'required',
             "aud_thp1_tanggal_mulai"   => 'required',
             "aud_thp1_tanggal_selesai" => 'required',
-            "aud_thp1_tujuan" => 'required',
+            "aud_thp1_tujuan"          => 'required',
         ]);
 
         try {
@@ -406,7 +401,7 @@ class PenjadwalanTahap1Controller extends Controller
             $dt_update = [
                 'aud_thp1_tanggal_mulai'   => $request['aud_thp1_tanggal_mulai'],
                 'aud_thp1_tanggal_selesai' => $request['aud_thp1_tanggal_selesai'],
-                'aud_thp1_tujuan' => $request['aud_thp1_tujuan'],
+                'aud_thp1_tujuan'          => $request['aud_thp1_tujuan'],
             ];
             SisAuditTahap1::findOrFail($request['aud_thp1_id'])->update($dt_update);
             DB::commit();
@@ -423,16 +418,16 @@ class PenjadwalanTahap1Controller extends Controller
         $request->validate([
             "thp1_tim_id" => 'nullable',
             "aud_thp1_id" => 'required',
-            "peg_id" => 'required',
-            "kode" => 'required',
-            "posisi" => 'required',
+            "peg_id"      => 'required',
+            "kode"        => 'required',
+            "posisi"      => 'required',
         ]);
 
         try {
             $dt_update = [
-                'aud_thp1_id' => $request['aud_thp1_id'],
-                'peg_id' => $request['peg_id'],
-                'thp1_tim_kode' => $request['kode'],
+                'aud_thp1_id'     => $request['aud_thp1_id'],
+                'peg_id'          => $request['peg_id'],
+                'thp1_tim_kode'   => $request['kode'],
                 'thp1_tim_posisi' => $request['posisi'],
             ];
             if ($request['thp1_tim_id'] != '') {
@@ -451,9 +446,9 @@ class PenjadwalanTahap1Controller extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
-            'data-jadwal'       => $this->delete_data_jadwal($request),
-            'data-tim' => $this->delete_data_tim($request),
-            default             => null,
+            'data-jadwal' => $this->delete_data_jadwal($request),
+            'data-tim'    => $this->delete_data_tim($request),
+            default       => null,
         };
     }
 

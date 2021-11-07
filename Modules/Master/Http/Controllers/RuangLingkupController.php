@@ -2,9 +2,8 @@
 
 namespace Modules\Master\Http\Controllers;
 
-use App\Models\BbkkpSis\MasterRuangLingkup;
 use App\Http\Structs\BreadcrumbsStruct;
-use Illuminate\Contracts\Support\Renderable;
+use App\Models\BbkkpSis\MasterRuangLingkup;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -27,28 +26,28 @@ class RuangLingkupController extends Controller
 
     public function create()
     {
-		
+
         $breadcrumbs = [
             new BreadcrumbsStruct('Master'),
             new BreadcrumbsStruct('Ruang Lingkup'),
             new BreadcrumbsStruct('Tambah'),
         ];
-		
+
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::ruang_lingkup.create")->with($parser);
     }
 
     public function store(Request $request)
-    {		
-		$request->validate([
+    {
+        $request->validate([
             'ruang_ling_nama' => 'required|string',
         ]);
-		
-		
-		$dataInsert = [
+
+
+        $dataInsert = [
             'ruang_ling_nama' => $request->ruang_ling_nama,
         ];
-		
+
         try {
             MasterRuangLingkup::create($dataInsert);
             //DB::commit();
@@ -71,15 +70,15 @@ class RuangLingkupController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'ruang_ling_id' => 'required|integer',
+            'ruang_ling_id'   => 'required|integer',
             'ruang_ling_nama' => 'required|string',
         ]); // auto redirect back jika tidak valid
-		
-		
-		$dataUpdate = [
-            'ruang_ling_nama'      => $request->ruang_ling_nama,
+
+
+        $dataUpdate = [
+            'ruang_ling_nama' => $request->ruang_ling_nama,
         ];
-		
+
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterRuangLingkup::findOrFail($request['ruang_ling_id'])
@@ -94,7 +93,7 @@ class RuangLingkupController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
@@ -127,7 +126,7 @@ class RuangLingkupController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -142,7 +141,7 @@ class RuangLingkupController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -156,7 +155,7 @@ class RuangLingkupController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['ruang_ling_id'] = $d->ruang_ling_id;
+            $x['ruang_ling_id']   = $d->ruang_ling_id;
             $x['ruang_ling_nama'] = $d->ruang_ling_nama;
             array_push($result, $x);
         }

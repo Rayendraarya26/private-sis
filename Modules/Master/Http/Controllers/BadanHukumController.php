@@ -53,7 +53,7 @@ class BadanHukumController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'badan_hukum_id' => 'required|integer',
+            'badan_hukum_id'   => 'required|integer',
             'badan_hukum_nama' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
@@ -71,7 +71,7 @@ class BadanHukumController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
@@ -104,7 +104,7 @@ class BadanHukumController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -119,7 +119,7 @@ class BadanHukumController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -133,10 +133,10 @@ class BadanHukumController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['badan_hukum_id'] = $d->badan_hukum_id;
+            $x['badan_hukum_id']   = $d->badan_hukum_id;
             $x['badan_hukum_nama'] = $d->badan_hukum_nama;
-            $x['created_at'] = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $x['updated_at'] = $d->updated_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['created_at']       = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['updated_at']       = $d->updated_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
         }
 

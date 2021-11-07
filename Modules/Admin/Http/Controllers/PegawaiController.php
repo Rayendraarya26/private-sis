@@ -8,6 +8,7 @@ use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -124,7 +125,7 @@ class PegawaiController extends Controller
 
             DB::commit();
             return responseJSON(200, [], "Data sukses ditambahkan");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             foreach ($uploadedPath as $path) {
                 @unlink($path);
@@ -245,7 +246,7 @@ class PegawaiController extends Controller
                 @unlink($path);
             }
             return responseJSON(200, [], "Data sukses diperbarui");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             foreach ($uploadedPath as $path) {
                 @unlink($path);
@@ -265,7 +266,7 @@ class PegawaiController extends Controller
         File::deleteDirectory($deletedPath);
         if ($deletedProfileImage != '/images/profiles/default.png') {
             @unlink($deletedProfileImage);
-        };
+        }
 
         return responseJSON(200, [], "Sukses");
     }

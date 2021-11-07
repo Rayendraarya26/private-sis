@@ -62,7 +62,9 @@ class ManageMenuActionController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
      * @param Request $request
+     *
      * @return void
      */
     public function update(Request $request)

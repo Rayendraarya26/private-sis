@@ -110,44 +110,44 @@ class SertifikasiPermohonanController extends Controller
             if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($request['data_komoditas'])) throw new Exception("Data komoditas belum di inputkan", 400);
 
             // 3.1 add sis_permohonan
-            $newSisPermohonan                                    = new SisPermohonan();
-            $newSisPermohonan->cust_id                           = $dataSisPelanggan->cust_id;
-            $newSisPermohonan->user_id                           = $dataSisPelanggan->user_id;
-            $newSisPermohonan->sert_id                           = $request['jenis_sertifikasi'];
-            $newSisPermohonan->mohon_jenis_status                = $request['jenis_permohonan'];
-            $newSisPermohonan->cust_sert_id                      = $request['sertifikat_lama_id'];
-            $newSisPermohonan->mohon_cust_email                  = $dataSisPelanggan->cust_email;
-            $newSisPermohonan->mohon_cust_nomor_telp             = $dataSisPelanggan->cust_nomor_telp;
-            $newSisPermohonan->mohon_cust_nomor_fax              = $dataSisPelanggan->cust_nomor_fax;
-            $newSisPermohonan->mohon_cust_nomor_hp               = $dataSisPelanggan->cust_nomor_hp;
-            $newSisPermohonan->mohon_cust_nama                   = $dataSisPelanggan->cust_nama;
-            $newSisPermohonan->jenis_perusahaan_id               = $dataSisPelanggan->jenis_perusahaan_id;
-            $newSisPermohonan->badan_hukum_id                    = $dataSisPelanggan->badan_hukum_id;
-            $newSisPermohonan->cust_asing                        = $dataSisPelanggan->cust_asing;
-            $newSisPermohonan->negara_id                         = $dataSisPelanggan->negara_id;
-            $newSisPermohonan->kec_id                            = $dataSisPelanggan->kec_id;
-            $newSisPermohonan->kab_id                            = $dataSisPelanggan->kab_id;
-            $newSisPermohonan->prov_id                           = $dataSisPelanggan->prov_id;
-            $newSisPermohonan->mohon_cust_alamat                 = $dataSisPelanggan->cust_alamat;
-            $newSisPermohonan->mohon_cust_nomor_akta_pendirian   = $dataSisPelanggan->cust_nomor_akta_pendirian;
-            $newSisPermohonan->mohon_cust_nama_pemilik           = $dataSisPelanggan->cust_nama_pemilik;
-            $newSisPermohonan->mohon_cust_nama_pimpinan          = $dataSisPelanggan->cust_nama_pimpinan;
-            $newSisPermohonan->mohon_cust_nama_wakil_manajemen   = $dataSisPelanggan->cust_nama_wakil_manajemen;
-            $newSisPermohonan->mohon_cust_jumlah_bagian          = $dataSisPelanggan->cust_jumlah_bagian;
-            $newSisPermohonan->mohon_cust_jumlah_manajemen       = $dataSisPelanggan->cust_jumlah_manajemen;
-            $newSisPermohonan->mohon_cust_jumlah_administrasi    = $dataSisPelanggan->cust_jumlah_administrasi;
-            $newSisPermohonan->mohon_cust_jumlah_part_time       = $dataSisPelanggan->cust_jumlah_part_time;
-            $newSisPermohonan->mohon_cust_jumlah_operasional     = $dataSisPelanggan->cust_jumlah_operasional;
-            $newSisPermohonan->mohon_cust_jumlah_shift_1         = $dataSisPelanggan->cust_jumlah_shift_1;
-            $newSisPermohonan->mohon_cust_jumlah_shift_2         = $dataSisPelanggan->cust_jumlah_shift_2;
-            $newSisPermohonan->mohon_cust_jumlah_shift_3         = $dataSisPelanggan->cust_jumlah_shift_3;
-            $newSisPermohonan->mohon_cust_jumlah_non_permanen    = $dataSisPelanggan->cust_jumlah_non_permanen;
-            $newSisPermohonan->mohon_cust_shif_kerja             = $dataSisPelanggan->cust_shif_kerja;
-            $newSisPermohonan->mohon_cust_luas_tanah             = $dataSisPelanggan->cust_luas_tanah;
-            $newSisPermohonan->mohon_cust_luas_bangunan          = $dataSisPelanggan->cust_luas_bangunan;
-            $newSisPermohonan->mohon_pertanyaan_filepath         = null;
-            $newSisPermohonan->created_at                        = Carbon::now();
-            $newSisPermohonan->updated_at                        = Carbon::now();
+            $newSisPermohonan                                  = new SisPermohonan();
+            $newSisPermohonan->cust_id                         = $dataSisPelanggan->cust_id;
+            $newSisPermohonan->user_id                         = $dataSisPelanggan->user_id;
+            $newSisPermohonan->sert_id                         = $request['jenis_sertifikasi'];
+            $newSisPermohonan->mohon_jenis_status              = $request['jenis_permohonan'];
+            $newSisPermohonan->cust_sert_id                    = $request['sertifikat_lama_id'];
+            $newSisPermohonan->mohon_cust_email                = $dataSisPelanggan->cust_email;
+            $newSisPermohonan->mohon_cust_nomor_telp           = $dataSisPelanggan->cust_nomor_telp;
+            $newSisPermohonan->mohon_cust_nomor_fax            = $dataSisPelanggan->cust_nomor_fax;
+            $newSisPermohonan->mohon_cust_nomor_hp             = $dataSisPelanggan->cust_nomor_hp;
+            $newSisPermohonan->mohon_cust_nama                 = $dataSisPelanggan->cust_nama;
+            $newSisPermohonan->jenis_perusahaan_id             = $dataSisPelanggan->jenis_perusahaan_id;
+            $newSisPermohonan->badan_hukum_id                  = $dataSisPelanggan->badan_hukum_id;
+            $newSisPermohonan->cust_asing                      = $dataSisPelanggan->cust_asing;
+            $newSisPermohonan->negara_id                       = $dataSisPelanggan->negara_id;
+            $newSisPermohonan->kec_id                          = $dataSisPelanggan->kec_id;
+            $newSisPermohonan->kab_id                          = $dataSisPelanggan->kab_id;
+            $newSisPermohonan->prov_id                         = $dataSisPelanggan->prov_id;
+            $newSisPermohonan->mohon_cust_alamat               = $dataSisPelanggan->cust_alamat;
+            $newSisPermohonan->mohon_cust_nomor_akta_pendirian = $dataSisPelanggan->cust_nomor_akta_pendirian;
+            $newSisPermohonan->mohon_cust_nama_pemilik         = $dataSisPelanggan->cust_nama_pemilik;
+            $newSisPermohonan->mohon_cust_nama_pimpinan        = $dataSisPelanggan->cust_nama_pimpinan;
+            $newSisPermohonan->mohon_cust_nama_wakil_manajemen = $dataSisPelanggan->cust_nama_wakil_manajemen;
+            $newSisPermohonan->mohon_cust_jumlah_bagian        = $dataSisPelanggan->cust_jumlah_bagian;
+            $newSisPermohonan->mohon_cust_jumlah_manajemen     = $dataSisPelanggan->cust_jumlah_manajemen;
+            $newSisPermohonan->mohon_cust_jumlah_administrasi  = $dataSisPelanggan->cust_jumlah_administrasi;
+            $newSisPermohonan->mohon_cust_jumlah_part_time     = $dataSisPelanggan->cust_jumlah_part_time;
+            $newSisPermohonan->mohon_cust_jumlah_operasional   = $dataSisPelanggan->cust_jumlah_operasional;
+            $newSisPermohonan->mohon_cust_jumlah_shift_1       = $dataSisPelanggan->cust_jumlah_shift_1;
+            $newSisPermohonan->mohon_cust_jumlah_shift_2       = $dataSisPelanggan->cust_jumlah_shift_2;
+            $newSisPermohonan->mohon_cust_jumlah_shift_3       = $dataSisPelanggan->cust_jumlah_shift_3;
+            $newSisPermohonan->mohon_cust_jumlah_non_permanen  = $dataSisPelanggan->cust_jumlah_non_permanen;
+            $newSisPermohonan->mohon_cust_shif_kerja           = $dataSisPelanggan->cust_shif_kerja;
+            $newSisPermohonan->mohon_cust_luas_tanah           = $dataSisPelanggan->cust_luas_tanah;
+            $newSisPermohonan->mohon_cust_luas_bangunan        = $dataSisPelanggan->cust_luas_bangunan;
+            $newSisPermohonan->mohon_pertanyaan_filepath       = null;
+            $newSisPermohonan->created_at                      = Carbon::now();
+            $newSisPermohonan->updated_at                      = Carbon::now();
             $newSisPermohonan->save();
 
             // DEFINE BASE UPLOAD AND UPDATE mohon_pertanyaan_filepath
@@ -627,9 +627,9 @@ class SertifikasiPermohonanController extends Controller
             $x['cust_sert_tipe']                    = $d->cust_sert_tipe;
             $x['cust_sert_merk']                    = $d->cust_sert_merk;
             $x['cust_sert_ukuran']                  = $d->cust_sert_ukuran;
-            $x['cust_sert_produksi_tahunan'] = $d->cust_sert_produksi_tahunan;
+            $x['cust_sert_produksi_tahunan']        = $d->cust_sert_produksi_tahunan;
             $x['cust_sert_produksi_tahunan_satuan'] = $d->cust_sert_produksi_tahunan_satuan;
-            $x['komodt_id'] = $d->komodt_id;
+            $x['komodt_id']                         = $d->komodt_id;
             $x['komodt_nama']                       = $d->komodt_nama;
             array_push($result, $x);
         }
@@ -910,6 +910,23 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
+    private function ajax_update_data_pemohon(Request $request)
+    {
+        try {
+            $request->validate(["parameter" => "required", "value" => "required"]);
+            $parameter = $request['parameter'];
+            $value     = $request['value'] == '--' ? NULL : $request['value'];
+
+            $dataPemohon                          = auth()->user()?->sis_pelanggan;
+            $dataPemohon->$parameter              = $value;
+            $dataPemohon->cust_jumlah_operasional = $dataPemohon->cust_jumlah_shift_1 + $dataPemohon->cust_jumlah_shift_2 + $dataPemohon->cust_jumlah_shift_3;
+            $dataPemohon->save();
+            return responseJSON(200, $dataPemohon, "Data diperbarui");
+        } catch (Exception $e) {
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
     private function ajax_pabrik_data(Request $request)
     {
         try {
@@ -970,23 +987,6 @@ class SertifikasiPermohonanController extends Controller
             $dataPabrik = SisPelangganPabrik::findOrFail($request['pabrik_id']);
             $dataPabrik->delete();
             return responseJSON(200, null, "Data pabrik dihapus");
-        } catch (Exception $e) {
-            return responseJSON(500, null, $e->getMessage());
-        }
-    }
-
-    private function ajax_update_data_pemohon(Request $request)
-    {
-        try {
-            $request->validate(["parameter" => "required", "value" => "required"]);
-            $parameter = $request['parameter'];
-            $value     = $request['value'] == '--' ? NULL : $request['value'];
-
-            $dataPemohon                          = auth()->user()?->sis_pelanggan;
-            $dataPemohon->$parameter              = $value;
-            $dataPemohon->cust_jumlah_operasional = $dataPemohon->cust_jumlah_shift_1 + $dataPemohon->cust_jumlah_shift_2 + $dataPemohon->cust_jumlah_shift_3;
-            $dataPemohon->save();
-            return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
             return responseJSON(500, null, $e->getMessage());
         }

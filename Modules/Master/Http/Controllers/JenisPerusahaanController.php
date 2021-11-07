@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class JenisPerusahaanController extends Controller
 {
-	public $module = self::class;
+    public $module = self::class;
     private $url = 'master/jenis-perusahaan';
 
     public function index()
@@ -19,8 +19,8 @@ class JenisPerusahaanController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::jenis_perusahaan.index")->with($parser); // Lokasi di Modules\Master\Resources\views\jenis_perusahaan
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::jenis_perusahaan.create")->with($parser); // Lokasi di Modules\Master\Resources\views\jenis_perusahaan
@@ -54,7 +54,7 @@ class JenisPerusahaanController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'jenis_perusahaan_id' => 'required|integer',
+            'jenis_perusahaan_id'   => 'required|integer',
             'jenis_perusahaan_nama' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
@@ -72,7 +72,7 @@ class JenisPerusahaanController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
@@ -105,7 +105,7 @@ class JenisPerusahaanController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -120,7 +120,7 @@ class JenisPerusahaanController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -134,7 +134,7 @@ class JenisPerusahaanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['jenis_perusahaan_id'] = $d->jenis_perusahaan_id;
+            $x['jenis_perusahaan_id']   = $d->jenis_perusahaan_id;
             $x['jenis_perusahaan_nama'] = $d->jenis_perusahaan_nama;
             array_push($result, $x);
         }

@@ -18,8 +18,8 @@ class SisKodeEaController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::sis_kode_ea.index")->with($parser); // Lokasi di Modules\Master\Resources\views\provinsi
     }
-	
-	public function create()
+
+    public function create()
     {
         $parser = ['module' => $this->module, 'url' => $this->url];
         return view("master::sis_kode_ea.create")->with($parser); // Lokasi di Modules\Master\Resources\views\sis_kode_ea
@@ -49,7 +49,7 @@ class SisKodeEaController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'kode_ea_id' => 'required|integer',
+            'kode_ea_id'   => 'required|integer',
             'kode_ea_nama' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
@@ -67,14 +67,14 @@ class SisKodeEaController extends Controller
 
     }
 
-	public function destroy(Request $request)
+    public function destroy(Request $request)
     {
         /*
         responseJSON : adalah helper standar untuk output JSON pada aplikasi (kecuali ajax easyui)
         Lokasi helper ada di App\Helpers\GlobalHelper
         */
-		
-		try {
+
+        try {
             $status_return = TRUE;
             foreach ($request->ids as $id) {
                 $data = MasterKodeEa::where("kode_ea_id", $id)->firstOrFail();
@@ -101,7 +101,7 @@ class SisKodeEaController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'datagrid' => $this->ajax_datagrid($request),
-            default => null,
+            default    => null,
         };
     }
 
@@ -116,7 +116,7 @@ class SisKodeEaController extends Controller
         }
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort = explode(",", $request->sort);
+            $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
@@ -130,7 +130,7 @@ class SisKodeEaController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['kode_ea_id'] = $d->kode_ea_id;
+            $x['kode_ea_id']   = $d->kode_ea_id;
             $x['kode_ea_nama'] = $d->kode_ea_nama;
             array_push($result, $x);
         }

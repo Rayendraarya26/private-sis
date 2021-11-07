@@ -4,6 +4,7 @@ namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisBilling;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -89,7 +90,7 @@ class BillingController extends Controller
                 }
             }
             return redirect($this->url)->with('message', "Upload bukti pembayaran berhasil");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             if (count($newPath) > 0) {
                 foreach ($newPath as $path) {
