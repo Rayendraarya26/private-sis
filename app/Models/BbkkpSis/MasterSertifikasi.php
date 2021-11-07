@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $sert_deskripsi
  * @property int|null $sert_expired
  * @property string|null $sert_format_referensi
+ * @property string|null $sert_sni
  * @property string|null $sert_is_product
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -44,6 +45,7 @@ class MasterSertifikasi extends Model
 		'sert_deskripsi',
 		'sert_expired',
 		'sert_format_referensi',
+		'sert_sni',
 		'sert_is_product'
 	];
 

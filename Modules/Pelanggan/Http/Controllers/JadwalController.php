@@ -102,8 +102,8 @@ class JadwalController extends Controller
 
             $img     = $request->file('file');
             $imgName = $img->hashName();
-            $img->move(public_path(config('email.email_template_image_url')), $imgName);
-            $publicUrl = asset(config('email.email_template_image_url') . '/' . $imgName);
+            $img->move(public_path(config('app.path_file_tinymce')), $imgName);
+            $publicUrl = asset(config('app.path_file_tinymce') . '/' . $imgName);
 
             return response()->json(["location" => $publicUrl]);
         } catch (Exception $e) {

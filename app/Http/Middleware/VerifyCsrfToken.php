@@ -16,5 +16,6 @@ class VerifyCsrfToken extends Middleware
         'marketing/verifikasi-permohonan/ajax',
         'master/sis/sertifikasi/ajax',
         'timaudit/auditor/tahap1/ajax',
+        'pelanggan/audit/ajax'
     ];
 }

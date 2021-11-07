@@ -111,7 +111,8 @@ class BillingController extends Controller
 
     private function ajax_datagrid(Request $request)
     {
-        $data = SisBilling::with('sis_billing_items');
+        $data = SisBilling::with('sis_billing_items')
+            ->where("cust_id", auth()->user()->sis_pelanggan->cust_id);
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {

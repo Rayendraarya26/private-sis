@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property SisJadwal|null $sis_jadwal
  * @property SisPermohonan|null $sis_permohonan
+ * @property MasterKomoditi|null $master_komoditi
  * @property Collection|SisAuditLks[] $sis_audit_lks
  *
  * @package App\Models\BbkkpSis
@@ -89,6 +90,11 @@ class SisJadwalAudit extends Model
 	public function sis_permohonan()
 	{
 		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
+	}
+
+	public function master_komoditi()
+	{
+		return $this->belongsTo(MasterKomoditi::class, 'komodt_id');
 	}
 
 	public function sis_audit_lks()

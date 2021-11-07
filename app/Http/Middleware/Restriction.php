@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Routing\RedirectController;
 
 class Restriction
 {
@@ -11,7 +12,7 @@ class Restriction
     {
         $currentController = request()->route()->getAction()['controller'];
         $availController = session('permission');
-        if (in_array($currentController, $availController)) {
+        if (in_array($currentController, $availController) || $currentController == '\\' . RedirectController::class) {
             return $next($request);
         } else {
             abort(401);

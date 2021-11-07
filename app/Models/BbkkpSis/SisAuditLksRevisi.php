@@ -27,10 +27,8 @@ class SisAuditLksRevisi extends Model
 {
 	protected $table = 'sis_audit_lks_revisi';
 	protected $primaryKey = 'lks_revisi_id';
-	public $incrementing = false;
 
 	protected $casts = [
-		'lks_revisi_id' => 'int',
 		'lks_id' => 'int'
 	];
 

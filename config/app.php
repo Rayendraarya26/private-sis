@@ -17,13 +17,15 @@ return [
     'key'    => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 
-    'path_file_master'    => "files/master",
-    'path_file_pegawai'   => "files/pegawai/%d",
-    'path_file_customer'  => "files/customer/%d",
-    'path_file_pengajuan' => "files/pengajuan/%d",
-    'path_file_billing'   => "files/billing/%d",
-    'path_file_audit'     => "files/audit/%d",
-    'path_file_tahap1'     => "files/tahap1/%d",
+    'path_file_tinymce'       => "files/uploaded_tinymce",
+    'path_file_master'        => "files/master",
+    'path_file_pegawai'       => "files/pegawai/%d",
+    'path_file_customer'      => "files/customer/%d",
+    'path_file_pengajuan'     => "files/pengajuan/%d",
+    'path_file_perbaikan_lks' => "files/perbaikan_lks/%d",
+    'path_file_billing'       => "files/billing/%d",
+    'path_file_audit'         => "files/audit/%d",
+    'path_file_tahap1'        => "files/tahap1/%d",
 
     /*
     |--------------------------------------------------------------------------

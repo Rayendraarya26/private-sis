@@ -18,12 +18,18 @@
                         </div>
                     @endif
 
-                    <div class="dt-card__header">
-                        <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Proses Audit</h3>
-                        </div>
-                    </div>
+
                     <div class="dt-card__body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-info">
+                                    <b>Note</b>
+                                    <br>
+                                    LKS: LAPORAN KETIDAKSESUAIAN
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="ttData" style="width:100%; min-width: 310px"></div>
                     </div>
                 </div>
@@ -33,11 +39,9 @@
 @endsection
 
 @push("javascript")
-    <script src="{{asset('assets/plugins/easyui/datagrid-detailview.js')}}"></script>
     <script>
         $(function () {
             let dg = $('#ttData').datagrid({
-                view: detailview,
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid") }}`,
@@ -46,106 +50,91 @@
                 singleSelect: false,
                 remoteFilter: true,
                 multiSort: true,
-                // fitColumns: true,
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
-                detailFormatter: function (index, row) {
-
-                },
                 frozenColumns: [[
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 150,
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            return ``;
+                            return `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs"><i class="fas fa-warning"></i> Temuan LKS</a>`;
                         }
                     }
                 ]],
                 columns: [[
                     {
-                        field: 'jadw_audit_status', title: 'Status Audit', width: 200, sortable: true,
+                        field: 'jadw_jenis', title: 'Status Audit', width: 200, sortable: true,
                         formatter: function (val) {
                             switch (val) {
-                                case 'on-going':
-                                    return 'Proses Audit';
-                                case 'berhak-memperoleh':
-                                    return 'Berhak Memperoleh';
-                                case 'berhak-memperoleh-kembali':
-                                    return 'Berhak Memperoleh Kembali';
-                                case 'tetap-dapat-menggunakan':
-                                    return 'Tetap Dapat Menggunakan';
-                                case 'tidak-berhak-menggunakan':
-                                    return 'Tidak Berhak Menggunakan';
+                                case 'tunggal':
+                                    return 'Tunggal';
+                                case 'gabungan':
+                                    return 'Gabungan';
+                                case 'integrasi':
+                                    return 'Intergrasi';
                             }
                         }
                     },
+                    {field: 'tanggal', title: 'Tanggal Pelaksanaan', width: 200, sortable: true},
                     {
-                        field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 200, sortable: true,
+                        field: 'audits', title: 'Agenda', width: 200, sortable: true,
                         formatter: function (val) {
-                            switch (val) {
-                                case 'surveilans':
-                                    return 'Surverilans';
-                                case 'sertifikasi':
-                                    return 'Sertifikasi';
-                                case 're-sertifikasi':
-                                    return 'Re-Sertifikasi';
+                            let htmls = ""
+                            if (val.length > 0) {
+                                htmls += `<ol>`
+                                val.map(e => {
+                                    htmls += `
+                                    <li>
+                                        <b>${e.jadw_audit_jenis}</b> <br> No. Sert: ${e.jadw_audit_nomor_sertifikat} <br> No. Ref: ${e.jadw_audit_nomor_referensi}
+                                    </li>`
+                                })
+                                htmls += `</ol>`
                             }
-                        }
-                    },
-                    {
-                        field: 'lks_status', title: 'Status LKS', width: 200, sortable: true,
-                        formatter: function (val) {
-                            switch (val) {
-                                case 'memadai':
-                                    return 'Memadai';
-                                case 'tidak-memadai':
-                                    return 'Tidak Memadai';
-                                case 'revisi':
-                                    return 'Revisi';
-                            }
-                        }
-                    },
-                    {
-                        field: 'lks_kategori_ketidaksesuaian', title: 'Kategori LKS', width: 200, sortable: true,
-                        formatter: function (val) {
-                            switch (val) {
-                                case 'kritis':
-                                    return 'Kritis';
-                                case 'mayor':
-                                    return 'Mayor';
-                                case 'minor':
-                                    return 'Minor';
-                                case 'observasi':
-                                    return 'Observasi';
-                            }
-                        }
-                    },
-                    {field: 'lks_expired_date_perbaikan', title: 'Tgl Maks Revisi', width: 200, sortable: true},
 
+                            return htmls
+                        }
+                    },
+                    {
+                        field: 'tims', title: 'Tim Auditor', width: 200, sortable: true,
+                        formatter: function (val) {
+                            let htmls = ""
+                            if (val.length > 0) {
+                                htmls += `<ol>`
+                                val.map(e => {
+                                    htmls += `
+                                    <li>
+                                        <b>${e.tim_posisi}</b> <br> ${e.tim_nama} (${e.tim_kode})
+                                    </li>`
+                                })
+                                htmls += `</ol>`
+                            }
+
+                            return htmls
+                        }
+                    },
                 ]],
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'tanggal', type: 'label'},
                     {
-                        field: 'jadw_audit_status',
+                        field: 'jadw_jenis',
                         type: 'combobox',
                         options: {
                             panelHeight: 'auto',
                             data: [
                                 {value: '', text: 'Semua'},
-                                {value: 'on-going', text: 'Proses Audit'},
-                                {value: 'berhak-memperoleh', text: 'Berhak Memperoleh'},
-                                {value: 'berhak-memperoleh-kembali', text: 'Berhak Memperoleh Kembali'},
-                                {value: 'tetap-dapat-menggunakan', text: 'Tetap Dapat Menggunakan'},
-                                {value: 'tidak-berhak-menggunakan', text: 'Tidak Berhak Menggunakan'},
+                                {value: 'tunggal', text: 'Tunggal'},
+                                {value: 'gabungan', text: 'Gabungan'},
+                                {value: 'integrasi', text: 'Intergrasi'},
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
-                                    field: 'jadw_audit_status',
+                                    field: 'jadw_jenis',
                                     op: 'equal',
                                     value: value
                                 });
@@ -154,50 +143,52 @@
                             }
                         }
                     },
-                    {
-                        field: 'jadw_audit_jenis',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            data: [
-                                {value: '', text: 'Semua'},
-                                {value: 'surveilans', text: 'Surverilans'},
-                                {value: 'sertifikasi', text: 'Sertifikasi'},
-                                {value: 're-sertifikasi', text: 'Re-Sertifikasi'},
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'jadw_audit_jenis',
-                                    op: 'equal',
-                                    value: value
-                                });
 
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
-                    {
-                        field: 'lks_status',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            data: [
-                                {value: '', text: 'Semua'},
-                                {value: 'memadai', text: 'Memadai'},
-                                {value: 'tidak-memadai', text: 'Tidak Memadai'},
-                                {value: 'revisi', text: 'Revisi'},
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'lks_status',
-                                    op: 'equal',
-                                    value: value
-                                });
-
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
+                    // {
+                    //     field: 'lks_status',
+                    //     type: 'combobox',
+                    //     options: {
+                    //         panelHeight: 'auto',
+                    //         data: [
+                    //             {value: '', text: 'Semua'},
+                    //             {value: 'memadai', text: 'Memadai'},
+                    //             {value: 'tidak-memadai', text: 'Tidak Memadai'},
+                    //             {value: 'revisi', text: 'Revisi'},
+                    //         ],
+                    //         onChange: function (value) {
+                    //             dg.datagrid('addFilterRule', {
+                    //                 field: 'lks_status',
+                    //                 op: 'equal',
+                    //                 value: value
+                    //             });
+                    //
+                    //             dg.datagrid('doFilter');
+                    //         }
+                    //     }
+                    // },
+                    // {
+                    //     field: 'lks_kategori_ketidaksesuaian',
+                    //     type: 'combobox',
+                    //     options: {
+                    //         panelHeight: 'auto',
+                    //         data: [
+                    //             {value: '', text: 'Semua'},
+                    //             {value: 'observasi', text: 'Observasi'},
+                    //             {value: 'minor', text: 'Minor'},
+                    //             {value: 'mayor', text: 'Mayor'},
+                    //             {value: 'kritis', text: 'Kritis'},
+                    //         ],
+                    //         onChange: function (value) {
+                    //             dg.datagrid('addFilterRule', {
+                    //                 field: 'lks_status',
+                    //                 op: 'equal',
+                    //                 value: value
+                    //             });
+                    //
+                    //             dg.datagrid('doFilter');
+                    //         }
+                    //     }
+                    // },
                 ]);
         });
     </script>

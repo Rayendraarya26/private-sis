@@ -52,10 +52,10 @@ class VerifikasiPermohonanController extends Controller
                 'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
             ]);
 
-            $img = $request->file('file');
+            $img     = $request->file('file');
             $imgName = $img->hashName();
-            $img->move(public_path(config('app.path_file_master')), $imgName);
-            $publicUrl = asset(config('app.path_file_master') . '/' . $imgName);
+            $img->move(public_path(config('app.path_file_tinymce')), $imgName);
+            $publicUrl = asset(config('app.path_file_tinymce') . '/' . $imgName);
 
             return response()->json(["location" => $publicUrl]);
         } catch (Exception $e) {
@@ -239,18 +239,18 @@ class VerifikasiPermohonanController extends Controller
 
         DB::transaction(function () use ($request, $dataInsert) {
 				SisPermohonanStatus::create([
-					'status_mohon_id' => $dataInsert['status_mohon_id'],
-					'status_tipe' => $dataInsert['status_tipe'],
-					'status_pesan' => $dataInsert['status_pesan'],
-					'status_judul' => $dataInsert['status_judul']
-				]);
-				// Delete User Group
-				SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted']);
-			});
+                    'status_mohon_id' => $dataInsert['status_mohon_id'],
+                    'status_tipe'     => $dataInsert['status_tipe'],
+                    'status_pesan'    => $dataInsert['status_pesan'],
+                    'status_judul'    => $dataInsert['status_judul']
+                ]);
+            // Delete User Group
+            SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted']);
+        });
 
-        return redirect($this->url)->with('message', "Data permohonan #".$request->mohon_id." sudah diverifikasi dengan status '<strong>Diterima</strong>'.");
-		
-        /* 
+        return redirect($this->url)->with('message', "Data permohonan #" . $request->mohon_id . " sudah diverifikasi dengan status '<strong>Diterima</strong>'.");
+
+        /*
 		$breadcrumbs = [
             new BreadcrumbsStruct('Marketing'),
             new BreadcrumbsStruct('Verifikasi Sertifikasi', url($this->url)),
@@ -268,7 +268,7 @@ class VerifikasiPermohonanController extends Controller
             'dataPermohon' => $dataPermohon->get()[0],
             'breadcrumbs'  => $breadcrumbs
         ];
-        return view("marketing::verifikasi_permohonan.edit_accepted")->with($parser); 
+        return view("marketing::verifikasi_permohonan.edit_accepted")->with($parser);
 		*/
 	}
 

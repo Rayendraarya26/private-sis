@@ -9,6 +9,8 @@ use Modules\Pelanggan\Http\Controllers\SertifikasiDataController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
 
 Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
+    Route::redirect('/', '/dashboard');
+
     Route::get("profil-perusahaan", [ProfilPerusahaanController::class, 'index']);
 
     Route::prefix("sertifikasi/data")->group(function () {
@@ -30,7 +32,7 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
 
     Route::prefix("billing")->group(function () {
         Route::get("/", [BillingController::class, 'index']);
-        Route::get("/ajax", [BillingController::class, 'ajax']);
+        Route::any("/ajax", [BillingController::class, 'ajax']);
         Route::get('download-invoice', [BillingController::class, 'downloadInvoice']);
         Route::get('upload/{billing_id}', [BillingController::class, 'upload']);
         Route::post('upload/{billing_id}', [BillingController::class, 'processUpload']);
@@ -38,7 +40,7 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
 
     Route::prefix("jadwal")->group(function () {
         Route::get("/", [JadwalController::class, 'index']);
-        Route::get("/ajax", [JadwalController::class, 'ajax']);
+        Route::any("/ajax", [JadwalController::class, 'ajax']);
         Route::get('approve/tanggal/{jadwal_id}', [JadwalController::class, 'approveTanggal']);
         Route::post('approve/tanggal/{jadwal_id}', [JadwalController::class, 'processApproveTanggal']);
         Route::get('approve/tim/{jadwal_id}', [JadwalController::class, 'approveTim']);
@@ -47,7 +49,11 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
 
     Route::prefix("audit")->group(function () {
         Route::get("/", [AuditController::class, 'index']);
-        Route::get("/ajax", [AuditController::class, 'ajax']);
+        Route::any("/ajax", [AuditController::class, 'ajax']);
+        Route::get('/temuan-lks/{jadwal_id}', [AuditController::class, 'temuanLKS']);
+        Route::get('/temuan-lks/{jadwal_id}/detail/{lks_id}', [AuditController::class, 'detailLKS']);
+        Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [AuditController::class, 'perbaikanLKS']);
+        Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [AuditController::class, 'processPerbaikanLKS']);
     });
 
 });

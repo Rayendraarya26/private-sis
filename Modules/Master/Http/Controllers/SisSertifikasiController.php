@@ -240,8 +240,8 @@ class SisSertifikasiController extends Controller
 
             $img = $request->file('file');
             $imgName = $img->hashName();
-            $img->move(public_path(config('app.path_file_master')), $imgName);
-            $publicUrl = asset(config('app.path_file_master') . '/' . $imgName);
+            $img->move(public_path(config('app.path_file_tinymce')), $imgName);
+            $publicUrl = asset(config('app.path_file_tinymce') . '/' . $imgName);
 
             return response()->json(["location" => $publicUrl]);
         } catch (Exception $e) {

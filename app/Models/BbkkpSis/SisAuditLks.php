@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $lks_id
  * @property int $jadw_audit_id
  * @property int $user_id
- * @property string|null $jadw_team_kode
+ * @property string|null $jadw_tim_kode
  * @property string|null $lks_uraian_ketidaksesuaian
  * @property string|null $lks_kategori_ketidaksesuaian
  * @property string|null $lks_klausul_ketidaksesuaian
@@ -56,7 +56,7 @@ class SisAuditLks extends Model
 	protected $fillable = [
 		'jadw_audit_id',
 		'user_id',
-		'jadw_team_kode',
+		'jadw_tim_kode',
 		'lks_uraian_ketidaksesuaian',
 		'lks_kategori_ketidaksesuaian',
 		'lks_klausul_ketidaksesuaian',
