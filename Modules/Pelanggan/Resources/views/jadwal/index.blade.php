@@ -128,7 +128,7 @@
                     {
                         field: 'jadw_file_jadwal', title: 'File Jadwal', width: 400, sortable: false,
                         formatter: function (val) {
-                            if (val != "") {
+                            if (val != "" && val != null) {
                                 return `<a href="${val}" target="_blank"><i class="fad fa-download"></i> Jadwal</a>`
                             }
                         }

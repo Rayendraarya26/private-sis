@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_audit_merk
  * @property string|null $jadw_audit_tipe
  * @property string|null $jadw_audit_ukuran
+ * @property string|null $jadw_audit_kapasitas_produksi_tahunan
+ * @property string|null $jadw_audit_kapasitas_produksi_tahunan_satuan
  * @property string|null $jadw_audit_sertifikat_filepath
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
@@ -79,6 +81,8 @@ class SisJadwalAudit extends Model
 		'jadw_audit_merk',
 		'jadw_audit_tipe',
 		'jadw_audit_ukuran',
+		'jadw_audit_kapasitas_produksi_tahunan',
+		'jadw_audit_kapasitas_produksi_tahunan_satuan',
 		'jadw_audit_sertifikat_filepath'
 	];
 

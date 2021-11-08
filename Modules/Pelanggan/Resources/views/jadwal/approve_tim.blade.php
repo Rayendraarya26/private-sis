@@ -147,9 +147,7 @@
                                                        id="jadwal_status1" class="custom-control-input"
                                                        v-model="m_jadwal_status">
                                                 <label class="custom-control-label"
-                                                       for="jadwal_status1">Setuju
-                                                    ({{$data->jadw_tanggal_mulai->isoFormat('LL')}}
-                                                    s/d {{$data->jadw_tanggal_selesai->isoFormat('LL')}})</label>
+                                                       for="jadwal_status1">Setuju</label>
                                             </div>
                                             <br><br>
                                             <div class="custom-control custom-radio custom-control-inline">

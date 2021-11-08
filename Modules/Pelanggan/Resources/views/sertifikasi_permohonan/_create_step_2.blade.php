@@ -437,7 +437,7 @@
                     },
                     setComboDataKomoditas(search) {
                         let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid_komoditas") }}`
+                        let url  = `{{ url("$url/ajax?action=combogrid_komoditas") }}&is_product=${this.jenis_sertifikasi_is_product}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -460,7 +460,7 @@
                             columns: [[
                                 {field: 'komodt_id', hidden: true},
                                 {field: 'komodt_nama', title: 'Nama Komoditas', width: 250, sortable: true,},
-                                // {field: 'sert_is_product', title: 'Produk?', width: 100, sortable: true,},
+                                {field: 'komodt_sni', title: 'No SNI', width: 100, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
                                 self.jenis_komoditas_id   = row.komodt_id;

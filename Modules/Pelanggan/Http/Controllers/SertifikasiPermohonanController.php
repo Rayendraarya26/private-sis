@@ -683,6 +683,10 @@ class SertifikasiPermohonanController extends Controller
         // Filter
         if (!empty($request->q)) {
             $data->where('komodt_nama', 'LIKE', '%' . $request->q . '%');
+            $data->orWhere('komodt_sni', 'LIKE', '%' . $request->q . '%');
+        }
+        if ($request->is_product == "ya") {
+            $data->where(DB::raw('LENGTH(komodt_sni)'), '>', 1);
         }
 
         // Sorter
