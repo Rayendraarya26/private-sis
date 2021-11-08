@@ -48,17 +48,56 @@ class PenjadwalanController extends Controller
             'combogrid-sertifikat'          => $this->ajax_combogrid_sertifikat($request),
             'combobox-ea'                   => $this->ajax_combobox_kode_ea($request),
             'combobox-nace'                 => $this->ajax_combobox_kode_nace($request),
+            'data-list-komoiditi'                 => $this->ajax_data_list_komoiditi($request),
             default                         => null,
         };
     }
 
-    private function ajax_datagrid_jadwal(Request $request)
+    private function ajax_data_list_komoiditi(Request $request)
+	{
+		$data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
+		$data->join('sis_permohonan_komoditi', "sis_permohonan.mohon_id", "=", "sis_permohonan_komoditi.mohon_id");
+		$data->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id");
+		$data->select('sis_permohonan_komoditi.*');
+		$data->select(DB::raw("
+							group_concat(distinct master_komoditi.komodt_id SEPARATOR ';') AS komodt_id,
+							group_concat(distinct master_komoditi.komodt_nama SEPARATOR ';') AS komoditi_nama,
+							group_concat(distinct mohon_kmditi_merk SEPARATOR ';') AS merk,
+							group_concat(distinct mohon_kmditi_tipe SEPARATOR ';') AS tipe,
+							group_concat(distinct mohon_kmditi_ukuran SEPARATOR ';') AS ukuran,
+							group_concat(distinct mohon_kmditi_nace SEPARATOR ';') AS nace,
+							group_concat(distinct mohon_kmditi_ea SEPARATOR ';') AS ea,
+							group_concat(distinct mohon_kmditi_ruang_lingkup SEPARATOR ';') AS ruang_lingkup,
+							group_concat(distinct mohon_kmditi_kapasitas_produksi_tahunan SEPARATOR ';') AS kapasitas_produksi,
+							group_concat(distinct mohon_kmditi_kapasitas_produksi_tahunan_satuan SEPARATOR ';') AS satuan
+							"));
+		$data->where('sis_permohonan_komoditi.mohon_id', '=', $request['mohon_id']);
+		$data->groupBy('sis_permohonan.mohon_id');
+		$result = [];
+		foreach ($data->get() as $d) {
+            $x['komodt_id'] = $d->komodt_id;
+            $x['komoditi_nama'] = $d->komoditi_nama;
+            $x['merk'] = $d->merk;
+            $x['tipe'] = $d->tipe;
+            $x['ukuran'] = $d->ukuran;
+            $x['nace'] = $d->nace;
+            $x['ea'] = $d->ea;
+            $x['ruang_lingkup'] = $d->ruang_lingkup;
+            $x['kapasitas_produksi'] = $d->kapasitas_produksi;
+            $x['satuan'] = $d->satuan;
+            array_push($result, $x);
+        }
+
+		return response()->json($x);
+	}
+    
+	private function ajax_datagrid_jadwal(Request $request)
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
-        // $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+        $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
 
         // Filter
-        $data->where('jadw_tanggal_status', '!=', 'accepted');
+        $data->whereIn('jadw_tanggal_status', '!=', 'accepted');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -87,6 +126,7 @@ class PenjadwalanController extends Controller
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['cust_nama']            = $d->cust_nama;
+            $x['bill_nomor_billing']            = $d->bill_nomor_billing;
             $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
@@ -170,21 +210,11 @@ class PenjadwalanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            if ($d->bill_harus_lunas == 'ya') {
-                if ($d->bill_payment_status == 'lunas') {
-                    $x['cust_id']            = $d->cust_id;
-                    $x['cust_nama']          = $d->cust_nama;
-                    $x['bill_nomor_billing'] = $d->bill_nomor_billing;
-                    array_push($result, $x);
-                }
-            } else {
-                $x['cust_id']            = $d->cust_id;
-                $x['cust_nama']          = $d->cust_nama;
-                $x['bill_nomor_billing'] = $d->bill_nomor_billing;
-                array_push($result, $x);
-            }
-
-
+            $x['cust_id']            = $d->cust_id;
+			$x['cust_nama']          = $d->cust_nama;
+			$x['bill_nomor_billing'] = $d->bill_nomor_billing;
+			$x['bill_id'] = $d->bill_id;
+			array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -201,10 +231,20 @@ class PenjadwalanController extends Controller
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
         $cust_id = $request->cust_id;
         $data->whereNotIn('sis_permohonan.mohon_id', function ($query) use ($cust_id) {
-            $query->select(DB::raw('IFNULL(mohon_id, 0)'))
+            $query->select(DB::raw('IFNULL(sis_jadwal_audit.mohon_id, 0)'))
                 ->from('sis_jadwal_audit')
-                ->join('sis_jadwal', "sis_jadwal.jadw_id", "=", "sis_jadwal.jadw_id")
+                ->join('sis_jadwal', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")
+                ->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted')
+                ->where('sis_jadwal.jadw_team_status', '=', 'accepted')
                 ->where('sis_jadwal.cust_id', '=', $cust_id);
+        });
+		
+		 $data->whereNotIn('sis_permohonan.mohon_id', function ($query) use ($cust_id) {
+            $query->select(DB::raw('IFNULL(sis_permohonan.mohon_id, 0)'))
+                ->from('sis_permohonan')
+                ->join('sis_audit_tahap1', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id")
+                ->where('sis_permohonan.cust_id', '=', $cust_id)
+                ->where('sis_audit_tahap1.aud_thp1_ditutup', '=', 'tidak');
         });
 
         if ($request->jenis_status == 're-sertifikasi') {
@@ -230,7 +270,8 @@ class PenjadwalanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-
+            $x['nomor_sni']                = $d->sert_sni;
+			
             if ($request->jenis_status == 're-sertifikasi') {
                 $x['komodt_id']        = $d->komodt_id;
                 $x['komodt_nama']      = $d->komodt_nama;
@@ -243,6 +284,8 @@ class PenjadwalanController extends Controller
                 $x['nomor_sni']        = $d->cust_sert_nomor_sni;
                 $x['lingkup']          = $d->cust_sert_lingkup;
                 $x['cust_sert_id']     = $d->cust_sert_id;
+				$x['produksi_tahunan']           = $d->cust_sert_produksi_tahunan;
+				$x['satuan']           = $d->cust_sert_produksi_tahunan_satuan;
             }
 
             $x['deskripsi']                = "Permohonan nomor #" . $d->mohon_id . " " . $d->sert_nama;
@@ -257,6 +300,7 @@ class PenjadwalanController extends Controller
             $x['mohon_harga_permohonan']   = $d->mohon_harga_permohonan;
             $x['mohon_harus_lunas_status'] = $d->mohon_harus_lunas_status;
             $x['mohon_cust_nama']          = $d->mohon_cust_nama;
+            $x['sert_is_product']          = $d->sert_is_product;
             $x['mohon_jenis_status']       = ($d->mohon_jenis_status == 'lama') ? 're-sertifikasi' : 'sertifikasi baru';
             $x['created_at']               = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']                = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
@@ -269,6 +313,8 @@ class PenjadwalanController extends Controller
     private function ajax_combogrid_permohonan_komoditi(Request $request)
     {
         $data = SisPermohonanKomoditi::join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id");
+		$data->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_permohonan_komoditi.mohon_id");
+		$data->join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('sis_permohonan_komoditi.mohon_id', '=', $request->mohon_id);
 
@@ -283,12 +329,19 @@ class PenjadwalanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['sert_is_product']           = $d->sert_is_product;
+            $x['mohon_kmditi_id']           = $d->mohon_kmditi_id;
             $x['komodt_id']           = $d->komodt_id;
             $x['komodt_nama']         = $d->komodt_nama;
             $x['mohon_kmditi_sni']    = $d->mohon_kmditi_sni;
             $x['mohon_kmditi_merk']   = $d->mohon_kmditi_merk;
             $x['mohon_kmditi_tipe']   = $d->mohon_kmditi_tipe;
             $x['mohon_kmditi_ukuran'] = $d->mohon_kmditi_ukuran;
+            $x['mohon_kmditi_ea'] = $d->mohon_kmditi_ea;
+            $x['mohon_kmditi_nace'] = $d->mohon_kmditi_nace;
+            $x['mohon_kmditi_ruang_lingkup'] = $d->mohon_kmditi_ruang_lingkup;
+            $x['mohon_kmditi_kapasitas_produksi_tahunan_satuan'] = $d->mohon_kmditi_kapasitas_produksi_tahunan_satuan;
+            $x['mohon_kmditi_kapasitas_produksi_tahunan'] = $d->mohon_kmditi_kapasitas_produksi_tahunan;
             array_push($result, $x);
         }
 
@@ -329,7 +382,9 @@ class PenjadwalanController extends Controller
             $x['nomor_referensi']  = $d->cust_sert_nomor_referensi;
             $x['nomor_sni']        = $d->cust_sert_nomor_sni;
             $x['lingkup']          = $d->cust_sert_lingkup;
-
+            $x['produksi_tahunan']           = $d->cust_sert_produksi_tahunan;
+            $x['satuan']           = $d->cust_sert_produksi_tahunan_satuan;
+			
             $x['cust_sert_id']                       = $d->cust_sert_id;
             $x['sert_id']                            = $d->sert_id;
             $x['cust_sert_nomor_referensi']          = $d->cust_sert_nomor_referensi;
@@ -402,6 +457,7 @@ class PenjadwalanController extends Controller
             DB::beginTransaction();
             $newSisJadwal                       = new SisJadwal();
             $newSisJadwal->cust_id              = $request['cust_id'];
+            $newSisJadwal->bill_id              = $request['bill_id'];
             $newSisJadwal->jadw_tanggal_status  = $request['jadw_tanggal_status'];
             $newSisJadwal->jadw_tanggal_mulai   = $request['jadw_tanggal_mulai'];
             $newSisJadwal->jadw_tanggal_selesai = $request['jadw_tanggal_selesai'];
@@ -412,44 +468,61 @@ class PenjadwalanController extends Controller
 
             // add items
             $dataItems = json_decode($request['jadwal_items']);
+			$mohon_id = [];
             foreach ($dataItems as $itm) {
-                if ($itm->mohon_id != '') {
-                    SisPermohonanStatus::create([
-                        "status_mohon_id" => $itm->mohon_id,
-                        "status_tipe"     => "informasi",
-                        "status_judul"    => "Informasi Pengajuan",
-                        "status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada jadwal, silahkan lihat pada menu jadwal anda.", $itm->mohon_id),
-                        "created_at"      => Carbon::now(),
-                        "updated_at"      => Carbon::now(),
-                    ]);
-                }
+				if (strpos($itm->komodt_id, ';') !== false) {
+					$komoditi_id= DB::table('master_komoditi')->insertGetId([
+						'komodt_nama' => $itm->komodt_nama
+					]);
+				}
+				else{
+					$komoditi_id= $itm->komodt_id;
+				}
+				
+				DB::table('sis_jadwal_audit')->insert([
+					'jadw_id' => $newSisJadwal->jadw_id,
+					'jadw_audit_status' => 'on-going',
+					'jadw_audit_jenis' => $itm->jenis,
+					'mohon_id' => ($itm->mohon_id != '') ? $itm->mohon_id : null,
+					'sert_id' => $itm->sert_id,
+					'komodt_id' => $komoditi_id,
+					'cust_sert_id' => ($itm->cust_sert_id != '') ? $itm->cust_sert_id : null,
+					'jadw_audit_nomor_sertifikat' => $itm->nomor_sertifikat,
+					'jadw_audit_nomor_referensi' => $itm->nomor_referensi,
+					'jadw_audit_kode_nace' => $itm->kode_nace,
+					'jadw_audit_kode_ea' => $itm->kode_ea,
+					'jadw_audit_standart_acuan' => $itm->standart_acuan,
+					'jadw_audit_ruang_lingkup' => $itm->ruang_lingkup,
+					'jadw_audit_kegiatan' => $itm->kegiatan,
+					'jadw_audit_tujuan_audit' => $itm->tujuan_audit,
+					'jadw_audit_sni' => $itm->sni,
+					'jadw_audit_merk' => $itm->merk,
+					'jadw_audit_tipe' => $itm->tipe,
+					'jadw_audit_ukuran' => $itm->ukuran,
+					'jadw_audit_kapasitas_produksi_tahunan' => $itm->kapasitas_produksi,
+					'created_at' => Carbon::now(),
+					'updated_at' => Carbon::now()
+				]);
 
-                $newSisJadwalAudit                              = new SisJadwalAudit();
-                $newSisJadwalAudit->jadw_id                     = $newSisJadwal->jadw_id;
-                $newSisJadwalAudit->jadw_audit_status           = 'on-going';
-                $newSisJadwalAudit->jadw_audit_jenis            = $itm->jenis;
-                $newSisJadwalAudit->mohon_id                    = ($itm->mohon_id != '') ? $itm->mohon_id : null;
-                $newSisJadwalAudit->sert_id                     = $itm->sert_id;
-                $newSisJadwalAudit->komodt_id                   = $itm->komodt_id;
-                $newSisJadwalAudit->cust_sert_id                = ($itm->cust_sert_id != '') ? $itm->cust_sert_id : null;
-                $newSisJadwalAudit->jadw_audit_nomor_sertifikat = $itm->nomor_sertifikat;
-                $newSisJadwalAudit->jadw_audit_nomor_referensi  = $itm->nomor_referensi;
-                $newSisJadwalAudit->jadw_audit_kode_nace        = $itm->kode_nace;
-                $newSisJadwalAudit->jadw_audit_kode_ea          = $itm->kode_ea;
-                $newSisJadwalAudit->jadw_audit_standart_acuan   = $itm->standart_acuan;
-                $newSisJadwalAudit->jadw_audit_ruang_lingkup    = $itm->ruang_lingkup;
-                $newSisJadwalAudit->jadw_audit_kegiatan         = $itm->kegiatan;
-                $newSisJadwalAudit->jadw_audit_tujuan_audit     = $itm->tujuan_audit;
-                $newSisJadwalAudit->jadw_audit_sni              = $itm->sni;
-                $newSisJadwalAudit->jadw_audit_merk             = $itm->merk;
-                $newSisJadwalAudit->jadw_audit_tipe             = $itm->tipe;
-                $newSisJadwalAudit->jadw_audit_ukuran           = $itm->ukuran;
-
-
-                $newSisJadwalAudit->created_at = Carbon::now();
-                $newSisJadwalAudit->updated_at = Carbon::now();
-                $newSisJadwalAudit->save();
+				if ($itm->mohon_id != '') {
+					if(!in_array($itm->mohon_id, $mohon_id, true)){
+						array_push($mohon_id, $itm->mohon_id);
+					}
+				}
             }
+			
+			if (!empty($mohon_id)) {
+				foreach ($mohon_id as $val) {
+					SisPermohonanStatus::create([
+						"status_mohon_id" => $val,
+						"status_tipe"     => "informasi",
+						"status_judul"    => "Informasi Pengajuan",
+						"status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada jadwal, silahkan lihat pada menu jadwal anda.", $itm->mohon_id),
+						"created_at"      => Carbon::now(),
+						"updated_at"      => Carbon::now(),
+					]);
+				}
+			}
 
             DB::commit();
 
@@ -507,6 +580,7 @@ class PenjadwalanController extends Controller
 
         $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+        $dataJadwal->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_jadwal.bill_id');
         $dataJadwal->select('*');
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
@@ -535,7 +609,6 @@ class PenjadwalanController extends Controller
     {
         $request->validate([
             "jadw_id"              => 'required',
-            "cust_id"              => 'required',
             "jadw_tanggal_status"  => 'required',
             "jadw_tanggal_mulai"   => 'required',
             "jadw_tanggal_selesai" => 'required',
@@ -545,7 +618,6 @@ class PenjadwalanController extends Controller
         try {
             DB::beginTransaction();
             $dt_update = [
-                // 'cust_id' => $request['jadw_id'],
                 'jadw_tanggal_status'  => 'on-going',
                 'jadw_tanggal_mulai'   => $request['jadw_tanggal_mulai'],
                 'jadw_tanggal_selesai' => $request['jadw_tanggal_selesai'],
@@ -594,33 +666,43 @@ class PenjadwalanController extends Controller
             "jadw_audit_merk"             => 'nullable',
             "jadw_audit_tipe"             => 'nullable',
             "jadw_audit_ukuran"           => 'nullable',
+            "jadw_audit_kapasitas_produksi_tahunan"           => 'nullable',
+            "jadw_audit_kapasitas_produksi_tahunan_satuan"           => 'nullable',
         ]);
 
         try {
-            $dt_update = [
-                'jadw_audit_jenis'            => $request['jadw_audit_jenis'],
-                'jadw_id'                     => $request['jadw_id'],
-                'sert_id'                     => $request['sert_id'],
-                'komodt_id'                   => $request['komodt_id'],
-                'mohon_id'                    => $request['mohon_id'],
-                'cust_sert_id'                => $request['cust_sert_id'],
-                'jadw_audit_nomor_sertifikat' => $request['jadw_audit_nomor_sertifikat'],
-                'jadw_audit_nomor_referensi'  => $request['jadw_audit_nomor_referensi'],
-                'jadw_audit_kode_nace'        => $request['jadw_audit_kode_nace'],
-                'jadw_audit_kode_ea'          => $request['jadw_audit_kode_ea'],
-                'jadw_audit_standart_acuan'   => $request['jadw_audit_standart_acuan'],
-                'jadw_audit_ruang_lingkup'    => $request['jadw_audit_ruang_lingkup'],
-                'jadw_audit_kegiatan'         => $request['jadw_audit_kegiatan'],
-                'jadw_audit_tujuan_audit'     => $request['jadw_audit_tujuan_audit'],
-                'jadw_audit_sni'              => $request['jadw_audit_sni'],
-                'jadw_audit_merk'             => $request['jadw_audit_merk'],
-                'jadw_audit_tipe'             => $request['jadw_audit_tipe'],
-                'jadw_audit_ukuran'           => $request['jadw_audit_ukuran'],
-            ];
+            
             if ($request['jadw_audit_id'] != '') {
+				$dt_update = [
+					'jadw_audit_standart_acuan'   => $request['jadw_audit_standart_acuan'],
+					'jadw_audit_kegiatan'         => $request['jadw_audit_kegiatan'],
+					'jadw_audit_tujuan_audit'     => $request['jadw_audit_tujuan_audit'],
+				];
                 SisJadwalAudit::findOrFail($request['jadw_audit_id'])->update($dt_update);
             } else {
-                SisJadwalAudit::create($dt_update);
+				$dt_insert = [
+					'jadw_audit_jenis'            => $request['jadw_audit_jenis'],
+					'jadw_id'                     => $request['jadw_id'],
+					'sert_id'                     => $request['sert_id'],
+					'komodt_id'                   => $request['komodt_id'],
+					'mohon_id'                    => $request['mohon_id'],
+					'cust_sert_id'                => $request['cust_sert_id'],
+					'jadw_audit_nomor_sertifikat' => $request['jadw_audit_nomor_sertifikat'],
+					'jadw_audit_nomor_referensi'  => $request['jadw_audit_nomor_referensi'],
+					'jadw_audit_kode_nace'        => $request['jadw_audit_kode_nace'],
+					'jadw_audit_kode_ea'          => $request['jadw_audit_kode_ea'],
+					'jadw_audit_standart_acuan'   => $request['jadw_audit_standart_acuan'],
+					'jadw_audit_ruang_lingkup'    => $request['jadw_audit_ruang_lingkup'],
+					'jadw_audit_kegiatan'         => $request['jadw_audit_kegiatan'],
+					'jadw_audit_tujuan_audit'     => $request['jadw_audit_tujuan_audit'],
+					'jadw_audit_sni'              => $request['jadw_audit_sni'],
+					'jadw_audit_merk'             => $request['jadw_audit_merk'],
+					'jadw_audit_tipe'             => $request['jadw_audit_tipe'],
+					'jadw_audit_ukuran'           => $request['jadw_audit_ukuran'],
+					'jadw_audit_kapasitas_produksi_tahunan'           => $request['jadw_audit_kapasitas_produksi_tahunan'],
+					'jadw_audit_kapasitas_produksi_tahunan_satuan'           => $request['jadw_audit_kapasitas_produksi_tahunan_satuan'],
+				];
+                SisJadwalAudit::create($dt_insert);
             }
             return responseJSON(200, null, "Data jadwal berhasil disimpan.");
         } catch (Exception $e) {

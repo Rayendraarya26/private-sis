@@ -17,25 +17,16 @@
 					<label class="custom-control-label" for="jadw_jenis_tipe1">Tunggal</label>
 				  </div>
 				  <!-- /radio button -->
-
-				  <!-- Radio Button -->
-				  <div class="custom-control custom-radio custom-control-inline">
-					<input value="kombinasi" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe2" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('kombinasi')">
-					<label class="custom-control-label" for="jadw_jenis_tipe2">Kombinasi</label>
-				  </div>
-				  <!-- /radio button -->
-
-				  <!-- Radio Button -->
-				  <div class="custom-control custom-radio custom-control-inline">
-					<input value="gabungan" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe3" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('gabungan')">
-					<label class="custom-control-label" for="jadw_jenis_tipe3">Gabungan</label>
-				  </div>
-				  <!-- /radio button -->
-
 				  <!-- Radio Button -->
 				  <div class="custom-control custom-radio custom-control-inline">
 					<input value="integrasi" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe4" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('integrasi')">
 					<label class="custom-control-label" for="jadw_jenis_tipe4">Integrasi</label>
+				  </div>
+				  <!-- /radio button -->
+				  <!-- Radio Button -->
+				  <div class="custom-control custom-radio custom-control-inline">
+					<input value="gabungan" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe3" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('gabungan')">
+					<label class="custom-control-label" for="jadw_jenis_tipe3">Gabungan</label>
 				  </div>
 				  <!-- /radio button -->
 				<small id="jadw_jenis_tipeHelp" class="form-text">Note: Silahkan pilih jenis jadwal.</small>
@@ -84,6 +75,7 @@
             window.vueStepOne = new Vue({
                 el: "#vueStepOne",
                 data: {
+                    bill_id: null,
                     cust_id: null,
                     jenis: null,
                     jadw_tanggal_mulai: null,
@@ -93,6 +85,10 @@
                     this.loadIdb();
                 },
                 methods: {
+					async setBillId(id) {
+						this.bill_id = id
+						await this.updateDatabase()
+					},
 					async setCustId(id) {
 						this.cust_id = id
 						await this.updateDatabase()
@@ -111,12 +107,13 @@
 					},
                     validate() {
                         if (this.cust_id == null) throw "Pilih Pelanggan"
+                        if (this.bill_id == null) throw "Pilih Pelanggan"
                         if (this.jenis == null) throw "Pilih jenis jadwal"
                         if (this.jadw_tanggal_mulai == null) throw "Isi Tanggal Mulai"
                         if (this.jadw_tanggal_selesai == null) throw "Isi Tanggal Selesai"
                     },
 					async updateDatabase() {
-						let dbData = {name: "penjadwalan", tanggal_mulai: this.jadw_tanggal_mulai, tanggal_selesai: this.jadw_tanggal_selesai, jenis: this.jenis, cust_id: this.cust_id};
+						let dbData = {name: "penjadwalan", tanggal_mulai: this.jadw_tanggal_mulai, tanggal_selesai: this.jadw_tanggal_selesai, jenis: this.jenis, cust_id: this.cust_id, bill_id : this.bill_id};
 						const currentData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
 						if (currentData == null) {
 							await idb.jadwal_data.put(dbData);
@@ -132,12 +129,13 @@
                     async setForm(currentData) {
                         // jadwal_data_itms
 						if (currentData == null) {
-							let dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, jenis: null, cust_id: null};
+							let dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, jenis: null, cust_id: null, bill_id: null};
 							currentData = dbData;
                             await idb.jadwal_data.put(dbData);
                         }
 						else{
 							this.cust_id= currentData.cust_id;
+							this.bill_id= currentData.bill_id;
 							this.jenis= currentData.jenis;
 							this.jadw_tanggal_mulai= currentData.tanggal_mulai;
 							this.jadw_tanggal_selesai= currentData.tanggal_selesai;
@@ -172,6 +170,7 @@
                             ]],
                             onSelect: async function (index, row) {
 								await self.setCustId(row.cust_id);
+								await self.setBillId(row.bill_id);
                             },
                         });
 						

@@ -170,6 +170,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data->where('mohon_approved_status', '=', 'accepted');
         $data->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya');
         $data->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya');
+        $data->where('mohon_perlu_tahap1', '=', 'ya');
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
         $cust_id = $request->cust_id;

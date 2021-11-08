@@ -87,6 +87,20 @@
         });
 		
         $(document).ready(function () {
+			@if ($dataJadwal->bill_payment_status != 'lunas')
+				swalWithBootstrapButtons({
+					title: `Informasi Audit Tahap 2`,
+					text: `Data pengajuan belum lunas, anda tidak diperkenankan untuk melakukan proses audit tahap 1(upload data jadwal) dalam pelaksanaan audit ini, silahkan konfirmasi ke keuangan apabila ada kekurangan dalam pembayaran?`,
+					type: 'info',
+					showCancelButton: false,
+					allowOutsideClick: false,
+					confirmButtonText: 'OK',
+					reverseButtons: true
+				}).then(async (result) => {
+					setTimeout(() => location.href = "{{url("$url")}}", 1000)
+				});
+			@endif
+			
             window.vueUpload = new Vue({
                 el: "#vueUpload",
                 data: {

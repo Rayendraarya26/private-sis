@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Tambah Penjadwalan')
+@section('title', 'Edit Penjadwalan')
 
 @push("css")
     <!-- HTML -->

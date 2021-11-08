@@ -44,6 +44,7 @@ class AuUploadJadwalController extends Controller
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $data->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
         $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
@@ -90,7 +91,8 @@ class AuUploadJadwalController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
-
+            $x['bill_payment_status']     = $d->bill_payment_status;
+		
             $x['jadw_file_jadwal'] = ($d->jadw_file_jadwal != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->jadw_file_jadwal) . '"><i class="fas fa-cloud-download"></i> Download</div>' : '';
             array_push($result, $x);
         }
@@ -122,6 +124,7 @@ class AuUploadJadwalController extends Controller
         $dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
         $dataJadwal->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        $dataJadwal->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
 
         $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
 

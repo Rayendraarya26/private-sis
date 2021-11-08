@@ -2,42 +2,38 @@
 	<div class="col-xl-12">
 		<form action="#">
 		<div class="form-group">
-			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Pilih Data Pelanggan</label>
+			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">No Jadwal</label>
 			<div class="col-xl-7">
-			  <input class="form-control" name="cust_id" id="cust_id" aria-describedby="cust_idHelp" style="min-width:300px;" disabled>
-				<small id="cust_idHelp" class="form-text">Note: Silahkan pilih pelanggan.</small>
+				<a href="#">{{$dataJadwal->jadw_id}}</a>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Data Pelanggan</label>
+			<div class="col-xl-7">
+				<a href="#">{{$dataJadwal->cust_nama}}</a>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">No. Billing</label>
+			<div class="col-xl-7">
+				<a href="#">{{$dataJadwal->bill_nomor_billing}}</a>
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Pilih Jenis Jadwal</label>
 			<div class="col-xl-9">
-				<!-- Radio Button -->
 				  <div class="custom-control custom-radio custom-control-inline">
 					<input value="tunggal" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe1" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('tunggal')">
 					<label class="custom-control-label" for="jadw_jenis_tipe1">Tunggal</label>
 				  </div>
-				  <!-- /radio button -->
-
-				  <!-- Radio Button -->
-				  <div class="custom-control custom-radio custom-control-inline">
-					<input value="kombinasi" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe2" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('kombinasi')">
-					<label class="custom-control-label" for="jadw_jenis_tipe2">Kombinasi</label>
-				  </div>
-				  <!-- /radio button -->
-
-				  <!-- Radio Button -->
-				  <div class="custom-control custom-radio custom-control-inline">
-					<input value="gabungan" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe3" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('gabungan')">
-					<label class="custom-control-label" for="jadw_jenis_tipe3">Gabungan</label>
-				  </div>
-				  <!-- /radio button -->
-
-				  <!-- Radio Button -->
 				  <div class="custom-control custom-radio custom-control-inline">
 					<input value="integrasi" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe4" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('integrasi')">
 					<label class="custom-control-label" for="jadw_jenis_tipe4">Integrasi</label>
 				  </div>
-				  <!-- /radio button -->
+				  <div class="custom-control custom-radio custom-control-inline">
+					<input value="gabungan" aria-describedby="jadw_jenis_tipeHelp" type="radio" id="jadw_jenis_tipe3" name="jadw_jenis_tipe" class="custom-control-input" @click="setJenisJadwal('gabungan')">
+					<label class="custom-control-label" for="jadw_jenis_tipe3">Gabungan</label>
+				  </div>
 				<small id="jadw_jenis_tipeHelp" class="form-text">Note: Silahkan pilih jenis jadwal.</small>
 			</div>
 		</div>
@@ -86,6 +82,7 @@
                 data: {
                     jadw_id: `{{$dataJadwal->jadw_id}}`,
                     cust_id: `{{$dataJadwal->cust_id}}`,
+                    bill_id: `{{$dataJadwal->bill_id}}`,
                     jenis: `{{$dataJadwal->jadw_jenis}}`,
                     jadw_tanggal_mulai: `{{$dataJadwal->jadw_tanggal_mulai}}`,
                     jadw_tanggal_selesai: `{{$dataJadwal->jadw_tanggal_selesai}}`,
@@ -94,9 +91,6 @@
                     this.setForm();
                 },
                 methods: {
-					async setCustId(id) {
-						this.cust_id = id;
-					},
 					async setTanggalMulai(date) {
 						this.jadw_tanggal_mulai = date;
 					},
@@ -107,7 +101,6 @@
 						this.jenis = dt;
 					},
                     validate() {
-                        if (this.cust_id == null) throw "Pilih Pelanggan"
                         if (this.jenis == null) throw "Pilih jenis jadwal"
                         if ($("#jadw_tanggal_mulai").val() == '') throw "Isi Tanggal Mulai"
                         if ($("#jadw_tanggal_selesai").val() == '') throw "Isi Tanggal Selesai"
@@ -119,32 +112,6 @@
 							$radios.filter('[value='+ this.jenis +']').prop('checked', true);
 						}
 						let self = this;
-                        let url = `{{ url("$url/ajax?action=combogrid-pelanggan") }}`
-                        $('#cust_id').combogrid({
-                            pageSize: '50',
-                            panelWidth: 600,
-                            pagination: true,
-                            nowrap: false,
-                            idField: 'cust_id',
-                            textField: 'cust_nama',
-                            editable: true,
-                            url: url,
-                            method: 'get',
-                            mode: 'remote',
-                            value: self.cust_id,
-                            multiSort: true,
-                            fitColumns: false,
-                            required: true,
-                            columns: [[
-                                {field: 'cust_id', hidden: true},
-                                {field: 'cust_nama', title: 'Nama Pelanggan', width: 390, sortable: true,},
-                                {field: 'bill_nomor_billing', title: 'Nomor Billing', width: 200, sortable: true,},
-                            ]],
-                            onSelect: async function (index, row) {
-								await self.setCustId(row.cust_id);
-                            },
-                        });
-						
 						$('#jadw_tanggal_mulai').datebox({
 							required:true,
 							editable:false,

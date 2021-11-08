@@ -52,7 +52,7 @@
                         align: 'center',
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.jadw_id}`;
-                            let btnEdit = ``;			
+                            let btnEdit = ``;		
 							btnEdit += `<div data-options="iconCls:'fas fa-cloud-upload'" onclick="location.href = '{{ url("$url/edit") }}?tipe=upload-jadwal&jadw_id=${row.jadw_id}'">Upload Jadwal</div>`;
 							
                             return `

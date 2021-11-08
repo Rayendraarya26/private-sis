@@ -146,7 +146,6 @@ class PersetujuanTimAuditController extends Controller
         $dataTahap1->selectRaw("GROUP_CONCAT(distinct thp1_tim_kesanggupan) AS thp1_tim_kesanggupan");
         $dataTahap1->groupBy('sis_audit_tahap1_tim.aud_thp1_id');
 
-        $result = [];
         foreach ($dataTahap1->get() as $d) {
             $x['jadw_status']              = 'tahap-1';
             $x['jadw_id']                  = $d->jadw_id;

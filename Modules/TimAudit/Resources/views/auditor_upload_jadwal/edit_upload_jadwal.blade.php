@@ -7,7 +7,7 @@
 		<div class="col-xl-12">
 			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
 			<div class="row">
-				<div class="col-xl-6">
+				<div class="col-xl-12">
 					<div class="card">
 					  <div class="card-body p-0">									
 						<table class="table">
@@ -20,23 +20,13 @@
 								<tr><td>Kode NACE</td><td>: {{$dataJadwal->jadw_audit_kode_nace}}</td></tr>
 								<tr><td>EA Code</td><td>: {{$dataJadwal->jadw_audit_kode_ea}}</td></tr>
 								<tr><td>Komoditas</td><td>: {{$dataJadwal->komodt_nama}}</td></tr>
+								<tr><td>Ruang Lingkup</td><td>: {{$dataJadwal->jadw_audit_ruang_lingkup}}</td></tr>
+								<tr><td>Standar Acuan</td><td>: {{$dataJadwal->jadw_audit_standart_acuan}}</td></tr>
+								<tr><td>Kegiatan</td><td>: {{$dataJadwal->jadw_audit_kegiatan}}</td></tr>
+								<tr><td>Tujuan Audit</td><td>: {{$dataJadwal->jadw_audit_tujuan_audit}}</td></tr>
 							</tbody>
 						</table>
 					  </div>
-					</div>
-				</div>
-				<div class="col-xl-6">
-					<div class="card">
-					  <div class="card-body p-0">
-							<table class="table">
-								<tbody>
-									<tr><td>Ruang Lingkup</td><td>: {{$dataJadwal->jadw_audit_ruang_lingkup}}</td></tr>
-									<tr><td>Standar Acuan</td><td>: {{$dataJadwal->jadw_audit_standart_acuan}}</td></tr>
-									<tr><td>Kegiatan</td><td>: {{$dataJadwal->jadw_audit_kegiatan}}</td></tr>
-									<tr><td>Tujuan Audit</td><td>: {{$dataJadwal->jadw_audit_tujuan_audit}}</td></tr>
-								</tbody>
-							</table>
-						</div>
 					</div>
 				</div>
 				<div class="col-xl-12">	
@@ -100,6 +90,19 @@
         });
 		
         $(document).ready(function () {
+			@if ($dataJadwal->bill_payment_status != 'lunas')
+				swalWithBootstrapButtons({
+					title: `Informasi Audit Tahap 2`,
+					text: `Data pengajuan belum lunas, anda tidak diperkenankan untuk melakukan proses audit(upload data jadwal) dalam pelaksanaan audit ini, silahkan konfirmasi ke keuangan apabila ada kekurangan dalam pembayaran?`,
+					type: 'info',
+					showCancelButton: false,
+					allowOutsideClick: false,
+					confirmButtonText: 'OK',
+					reverseButtons: true
+				}).then(async (result) => {
+					setTimeout(() => location.href = "{{url("$url")}}", 1000)
+				});
+			@endif
             window.vueUpload = new Vue({
                 el: "#vueUpload",
                 data: {

@@ -27,10 +27,6 @@
 									<label class="custom-control-label" for="jadw_audit_jenis_tipe4">Surveilans</label>
 								  </div>
 								  <div class="custom-control custom-radio custom-control-inline">
-									<input value="tahap-1" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe1" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('tahap-1')">
-									<label class="custom-control-label" for="jadw_audit_jenis_tipe1">Tahap I</label>
-								  </div>
-								  <div class="custom-control custom-radio custom-control-inline">
 									<input value="sertifikasi" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe2" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('sertifikasi')">
 									<label class="custom-control-label" for="jadw_audit_jenis_tipe2">Sertifikasi</label>
 								  </div>
@@ -45,7 +41,7 @@
 							<label class="col-xl-3 col-form-label text-sm-left" for="cb_data_id" >Data Permohonan/Sertifikat</label>
 							<div class="col-xl-8">
 								<input type="text" class="form-control" id="cb_data_id">
-								<small class="form-text">Note: Data tahap-I, re-sertifikasi dan sertifikasi untuk data permohonan; Data surveilans untuk data sertifikat.</small>
+								<small class="form-text">Note: Data re-sertifikasi dan sertifikasi untuk data permohonan; Data surveilans untuk data sertifikat.</small>
 								
 								<input type="hidden"  id="mohon_id" value="">
 								<input type="hidden" id="sert_id" value="">
@@ -53,12 +49,6 @@
 								<input type="hidden" id="cust_sert_id" value="">
 								<input type="hidden" id="nomor_sertifikat" value="">
 								<input type="hidden" id="nomor_referensi" value="">
-								<input type="hidden" id="komodt_id" value="">
-								<input type="hidden" id="komodt_nama" value="">
-								<input type="hidden" id="tipe" value="">
-								<input type="hidden" id="merk" value="">
-								<input type="hidden" id="sni" value="">
-								<input type="hidden" id="ukuran" value="">
 						
 							</div>
 						</div>
@@ -67,22 +57,30 @@
 							<label class="col-xl-3 col-form-label text-sm-left" >Komoditi</label>
 							<div class="col-xl-8">
 								<input class="form-control" id="cb_komoditi" value="">
+								<input type="hidden" id="mohon_komoditi_id" value="">
+								<input type="hidden" id="komodt_id" value="">
+								<input type="hidden" id="komodt_nama" value="">
+								<input type="hidden" id="tipe" value="">
+								<input type="hidden" id="merk" value="">
+								<input type="hidden" id="sni" value="">
+								<input type="hidden" id="ukuran" value="">
+								<input type="hidden" id="satuan" value="">
+								<input type="hidden" id="kapasitas_produksi" value="">
+								
 							</div>
 						</div>
 						
 						<div class="form-group form-row" id="sertifikasi_komoditi1">
 							<label class="col-xl-3 col-form-label text-sm-left" >Kode NACE</label>
 							<div class="col-xl-8">
-								<select id="kode_nace" name="kode_nace" style="max-width:300px;">
-								</select>
+								<input id="kode_nace" value="">
 							</div>
 						</div>
 						
 						<div class="form-group form-row" id="sertifikasi_komoditi2">
 							<label class="col-xl-3 col-form-label text-sm-left" >Kode EA</label>
 							<div class="col-xl-8">
-								<select id="kode_ea" name="kode_ea" style="max-width:300px;">
-								</select>
+								<input id="kode_ea" value="">
 							</div>
 						</div>
 						
@@ -93,7 +91,7 @@
 							</div>
 						</div>
 						
-						<div class="form-group form-row">
+						<div class="form-group form-row" style="display:none;">
 							<label class="col-xl-3 col-form-label text-sm-left" >Ruang Lingkup</label>
 							<div class="col-xl-8">
 								<textarea class="form-control" id="ruang_lingkup"></textarea>
@@ -262,6 +260,7 @@
 									formData.append("jadw_tanggal_mulai", currentaData.tanggal_mulai)
 									formData.append("jadw_tanggal_selesai", currentaData.tanggal_selesai)
 									formData.append("jadw_jenis", currentaData.jenis)
+									formData.append("bill_id", currentaData.bill_id)
 									formData.append("cust_id", currentaData.cust_id)
 								}
 								// Step 2
@@ -350,6 +349,7 @@
 						$("#sert_nama").val("");
 						$("#nomor_sertifikat").val("");
 						$("#nomor_referensi").val("");
+						$("#mohon_komoditi_id").val("");
 						$("#komodt_id").val("");
 						$("#komodt_nama").val("");
 						$("#tipe").val("");
@@ -360,37 +360,27 @@
 						$("#ruang_lingkup").val("");
 						$("#kegiatan").val("");
 						$("#tujuan_audit").val("");
-						$('#kode_ea').combobox({
-							url:'{{ url("$url/ajax?action=combobox-ea") }}',
-							width: 300,
-							method: 'get',
-							value:'',
-							valueField:'nama',
-							textField:'nama'
-						});
-						$('#kode_nace').combobox({
-							url:'{{ url("$url/ajax?action=combobox-nace") }}', 
-							width: 300,
-							method: 'get',
-							value:'',
-							valueField:'nama',
-							textField:'nama'
-						});
-						
-						if(dt_jenis === 'sertifikasi' || dt_jenis === 'tahap-1'){
-							$("#sertifikasi_komoditi").show();
-							$("#sertifikasi_komoditi1").show();
-							$("#sertifikasi_komoditi2").show();
+						$("#kode_ea").val("");
+						$("#kode_nace").val("");
+						if(dt_jenis === 'sertifikasi'){
+							$("#sertifikasi_komoditi").hide();
+							// $("#sertifikasi_komoditi1").show();
+							// $("#sertifikasi_komoditi2").show();
 						}
 						else{
 							$("#sertifikasi_komoditi").hide();
-							$("#sertifikasi_komoditi1").hide();
-							$("#sertifikasi_komoditi2").hide();
+							// $("#sertifikasi_komoditi1").hide();
+							// $("#sertifikasi_komoditi2").hide();
 						}
+						
+						let urlCombo = ``;	
+						$('#cb_data_id').combogrid({
+							url: urlCombo,
+							value: ``,
+						});
 						
 						const currentaData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
 						if(currentaData != null){
-							let urlCombo = ``;										
 							if(dt_jenis !== 'surveilans'){
 								urlCombo = `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${currentaData.cust_id}&jenis_status=${dt_jenis}`;
 								$('#cb_data_id').combogrid({
@@ -412,6 +402,7 @@
 										if(dt_jenis === 're-sertifikasi'){
 											$("#nomor_sertifikat").val(row.nomor_sertifikat);
 											$("#nomor_referensi").val(row.nomor_referensi);
+											$("#mohon_komoditi_id").val("");
 											$("#komodt_id").val(row.komodt_id);
 											$("#komodt_nama").val(row.komodt_nama);
 											$("#tipe").val(row.tipe);
@@ -419,34 +410,77 @@
 											$("#sni").val(row.nomor_sni);
 											$("#ukuran").val("");
 											$("#standart_acuan").val("");
-											$("#ruang_lingkup").val(row.lingkup);
 											$("#kegiatan").val("");
 											$("#tujuan_audit").val("");
-				
-											$('#kode_ea').combobox('setValue', `${row.kode_ea}`);
-											$('#kode_nace').combobox('setValue',  `${row.kode_nace}`);
+											$("#ruang_lingkup").val(row.lingkup);
+											$('#kode_ea').val(`${row.kode_ea}`);
+											$('#kode_nace').val(`${row.kode_nace}`);
+											$('#kapasitas_produksi').val(`${row.produksi_tahunan}`);
+											$('#satuan').val(`${row.satuan}`);
 										}
 										else{
-											let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${row.mohon_id}`;
-											$('#cb_komoditi').combogrid({
-												pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
-												columns: [[
-													{field: 'komodt_id', hidden: true},
-													{field: 'komodt_nama', title: 'Komoditi', width: 250, sortable: true,},
-													{field: 'mohon_kmditi_sni', title: 'SNI', width: 100, sortable: true,},
-													{field: 'mohon_kmditi_merk', title: 'Merk', width: 100, sortable: true,},
-													{field: 'mohon_kmditi_tipe', title: 'Tipe', width: 100, sortable: true,},
-													{field: 'mohon_kmditi_ukuran', title: 'Ukuran', width: 100, sortable: true,},
-												]],
-												onSelect: function (index, row) {
-													$("#komodt_id").val(row.komodt_id);
-													$("#komodt_nama").val(row.komodt_nama);
-													$("#tipe").val(row.mohon_kmditi_tipe);
-													$("#merk").val(row.mohon_kmditi_merk);
-													$("#sni").val(row.mohon_kmditi_sni);
-													$("#ukuran").val(row.mohon_kmditi_ukuran);
-												},
-											});
+											if(row.sert_is_product === 'ya'){
+												$("#sertifikasi_komoditi").show();
+												let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${row.mohon_id}`;
+												$('#cb_komoditi').combogrid({
+													pageSize: '50', panelWidth: 650, pagination: true, idField: 'mohon_kmditi_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,
+													columns: [[
+														{field: 'mohon_kmditi_id', hidden: true},
+														{field: 'komodt_id', hidden: true},
+														{field: 'komodt_nama', title: 'Komoditi', width: 250, sortable: true,},
+														{field: 'mohon_kmditi_sni', title: 'SNI', width: 100, sortable: true,},
+														{field: 'mohon_kmditi_merk', title: 'Merk', width: 100, sortable: true,},
+														{field: 'mohon_kmditi_tipe', title: 'Tipe', width: 100, sortable: true,},
+														{field: 'mohon_kmditi_ukuran', title: 'Ukuran', width: 100, sortable: true,},
+													]],
+													onSelect: function (index, rowK) {
+														$("#mohon_komoditi_id").val(rowK.mohon_kmditi_id);
+														$("#komodt_id").val(rowK.komodt_id);
+														$("#komodt_nama").val(rowK.komodt_nama);
+														$("#tipe").val(rowK.mohon_kmditi_tipe);
+														$("#merk").val(rowK.mohon_kmditi_merk);
+														$("#sni").val(rowK.mohon_kmditi_sni);
+														$("#ukuran").val(rowK.mohon_kmditi_ukuran);
+														
+														$("#ruang_lingkup").val(rowK.mohon_kmditi_ruang_lingkup);
+														$('#kode_ea').val(`${rowK.mohon_kmditi_ea}`);
+														$('#kode_nace').val(`${rowK.mohon_kmditi_nace}`);
+														$('#satuan').val(`${rowK.mohon_kmditi_kapasitas_produksi_tahunan_satuan}`);
+														$('#kapasitas_produksi').val(`${rowK.mohon_kmditi_kapasitas_produksi_tahunan}`);
+													},
+												});
+											}
+											else{
+												$.ajax({
+													url: `{{ url("$url/ajax?action=data-list-komoiditi") }}&mohon_id=${row.mohon_id}`,
+													type: 'get',
+													processData: false,
+													contentType: false,
+													success: async function (res) {
+														setTimeout(() => {
+															$("#mohon_komoditi_id").val('');
+															$("#komodt_id").val(res.komodt_id);
+															$("#komodt_nama").val(res.komoditi_nama);
+															$("#tipe").val(res.tipe);
+															$("#merk").val(res.merk);
+															$("#ukuran").val(res.ukuran);
+															
+															$("#ruang_lingkup").val(res.ruang_lingkup);
+															$('#kode_ea').val(`${res.ea}`);
+															$('#kode_nace').val(`${res.nace}`);
+															$('#satuan').val(`${res.satuan}`);
+															$('#kapasitas_produksi').val(`${res.kapasitas_produksi}`);
+														}, 400)
+													},
+													error: function (xhr) {
+														self.loading_submit = false;
+														if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+														else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+													}
+												});
+												$("#sni").val(row.nomor_sni);
+												$("#sertifikasi_komoditi").hide();
+											}
 										}
 									},
 								});
@@ -469,6 +503,7 @@
 										$("#mohon_id").val("");
 										$("#nomor_sertifikat").val(row.nomor_sertifikat);
 										$("#nomor_referensi").val(row.nomor_referensi);
+										$("#mohon_komoditi_id").val(row.komodt_id);
 										$("#komodt_id").val(row.komodt_id);
 										$("#komodt_nama").val(row.komodt_nama);
 										$("#tipe").val(row.tipe);
@@ -476,42 +511,24 @@
 										$("#sni").val(row.nomor_sni);
 										$("#ukuran").val("");
 										$("#standart_acuan").val("");
+										$('#kode_ea').val(`${row.kode_ea}`);
+										$('#kode_nace').val(`${row.kode_nace}`);
 										$("#ruang_lingkup").val(row.lingkup);
+										$("#kapasitas_produksi").val(row.produksi_tahunan);
+										$("#satuan").val(row.satuan);
 										$("#kegiatan").val("");
 										$("#tujuan_audit").val("");
-										
-										$('#kode_ea').combobox('setValue', `${row.kode_ea}`);
-										$('#kode_nace').combobox('setValue',  `${row.kode_nace}`);
 									},
 								});
 							}
 							
 							if(this.form_edited_id != null){
-								
 								let selectedItem = await window.idb.jadwal_data_itms.get(this.form_edited_id);
 								if(dt_jenis !== 'surveilans'){
-									$('#cb_data_id').combogrid({
-										value:`${selectedItem.mohon_id}`
-									});
-									if(dt_jenis !== 're-sertifikasi'){
-										let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${selectedItem.mohon_id}`;
-										$('#cb_komoditi').combogrid({
-											pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: `${selectedItem.komodt_id}`, multiSort: true, fitColumns: false, required: false,
-											columns: [[
-												{field: 'komodt_id', hidden: true},
-												{field: 'komodt_nama', title: 'Komoditi', width: 250, sortable: true,},
-												{field: 'mohon_kmditi_sni', title: 'SNI', width: 100, sortable: true,},
-												{field: 'mohon_kmditi_merk', title: 'Merk', width: 100, sortable: true,},
-												{field: 'mohon_kmditi_tipe', title: 'Tipe', width: 100, sortable: true,},
-												{field: 'mohon_kmditi_ukuran', title: 'Ukuran', width: 100, sortable: true,},
-											]],
-										});
-									}
+									$('#cb_data_id').combogrid('setValue', `${selectedItem.mohon_id}`);
 								}
 								else{
-									$('#cb_data_id').combogrid({
-										value:`${selectedItem.cust_sert_id}`
-									});
+									$('#cb_data_id').combogrid('setValue', `${selectedItem.cust_sert_id}`);
 								}
 								
 								$("#mohon_id").val(selectedItem.mohon_id);
@@ -530,12 +547,42 @@
 								$("#ruang_lingkup").val(selectedItem.ruang_lingkup);
 								$("#kegiatan").val(selectedItem.kegiatan);
 								$("#tujuan_audit").val(selectedItem.tujuan_audit);
-								$('#kode_ea').combobox({
-									value:`${selectedItem.kode_ea}`
-								});
-								$('#kode_nace').combobox({
-									value:`${selectedItem.kode_nace}`
-								});
+								$("#kode_ea").val(selectedItem.kode_ea);
+								$("#kode_nace").val(selectedItem.kode_nace);
+								$("#satuan").val(selectedItem.satuan);
+								$("#kapasitas_produksi").val(selectedItem.kapasitas_produksi);
+								$("#mohon_komoditi_id").val(selectedItem.mohon_komoditi_id);
+								if(selectedItem.mohon_komoditi_id != ''){
+									$("#sertifikasi_komoditi").show();
+									let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${selectedItem.mohon_id}`;
+									$('#cb_komoditi').combogrid({
+										pageSize: '50', panelWidth: 650, pagination: true, idField: 'mohon_kmditi_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: `${selectedItem.mohon_komoditi_id}`, multiSort: true, fitColumns: false, required: false,
+										columns: [[
+											{field: 'komodt_id', hidden: true},
+											{field: 'komodt_nama', title: 'Komoditi', width: 250, sortable: true,},
+											{field: 'mohon_kmditi_sni', title: 'SNI', width: 100, sortable: true,},
+											{field: 'mohon_kmditi_merk', title: 'Merk', width: 100, sortable: true,},
+											{field: 'mohon_kmditi_tipe', title: 'Tipe', width: 100, sortable: true,},
+											{field: 'mohon_kmditi_ukuran', title: 'Ukuran', width: 100, sortable: true,},
+										]],
+										onSelect: function (index, rowK) {
+											$("#mohon_komoditi_id").val(rowK.mohon_komoditi_id);
+											$("#komodt_id").val(rowK.komodt_id);
+											$("#komodt_nama").val(rowK.komodt_nama);
+											$("#tipe").val(rowK.mohon_kmditi_tipe);
+											$("#merk").val(rowK.mohon_kmditi_merk);
+											$("#sni").val(rowK.mohon_kmditi_sni);
+											$("#ukuran").val(rowK.mohon_kmditi_ukuran);
+											
+											$("#ruang_lingkup").val(rowK.mohon_kmditi_ruang_lingkup);
+											$('#kode_ea').val(`${rowK.mohon_kmditi_ea}`);
+											$('#kode_nace').val(`${rowK.mohon_kmditi_nace}`);
+											$('#satuan').val(`${rowK.mohon_kmditi_kapasitas_produksi_tahunan_satuan}`);
+											$('#kapasitas_produksi').val(`${rowK.mohon_kmditi_kapasitas_produksi_tahunan}`);
+										},
+									});
+								}
+								
 							}
 						}
 					},
@@ -581,7 +628,7 @@
 							let selectedItem = await window.idb.jadwal_data_itms.get(id);
 							var $radios = $('input:radio[name=jadw_audit_jenis_tipe]');
 							$radios.filter(`[value=${selectedItem.jenis}]`).prop('checked', true);
-							
+							console.log(selectedItem);
 							await this.setJenisAudit(selectedItem.jenis);
 						}, 500);
 					},
@@ -608,8 +655,11 @@
 									"ruang_lingkup": $("#ruang_lingkup").val(),
 									"kegiatan": $("#kegiatan").val(),
 									"tujuan_audit": $("#tujuan_audit").val(),
-									"kode_ea": $('#kode_ea').combobox('getValue'),
-									"kode_nace": $('#kode_nace').combobox('getValue'),
+									"kode_ea": $('#kode_ea').val(),
+									"kode_nace": $('#kode_nace').val(),
+									"satuan": $('#satuan').val(),
+									"kapasitas_produksi": $('#kapasitas_produksi').val(),
+									"mohon_komoditi_id": $("#mohon_komoditi_id").val(),
 								});
 								this.jadwal_items = await window.idb.jadwal_data_itms.toArray();
 								await this.cancelAction();
@@ -648,8 +698,11 @@
 								"ruang_lingkup": $("#ruang_lingkup").val(),
 								"kegiatan": $("#kegiatan").val(),
 								"tujuan_audit": $("#tujuan_audit").val(),
-								"kode_ea": $('#kode_ea').combobox('getValue'),
-								"kode_nace": $('#kode_nace').combobox('getValue'),
+								"kode_ea": $('#kode_ea').val(),
+								"kode_nace": $('#kode_nace').val(),
+								"satuan": $('#satuan').val(),
+								"kapasitas_produksi": $('#kapasitas_produksi').val(),
+								"mohon_komoditi_id": $("#mohon_komoditi_id").val(),
                             };
 							
                             await idb.jadwal_data_itms.put(newItem);
