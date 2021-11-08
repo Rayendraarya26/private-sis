@@ -87,6 +87,9 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
 
 	Route::prefix("sertifikat-uji")->group(function () {
         Route::get('/', [SertifikatUjiController::class, 'index']);
+        Route::get('/detail', [SertifikatUjiController::class, 'detail']);
         Route::get('/ajax', [SertifikatUjiController::class, 'ajax']);
+        Route::get('/edit', [SertifikatUjiController::class, 'edit']);
+        Route::post('/update', [SertifikatUjiController::class, 'update']);
     });
 });

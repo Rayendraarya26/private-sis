@@ -41,8 +41,7 @@
                 singleSelect: false,
                 remoteFilter: true,
                 multiSort: true,
-                pagination: true,
-                pageSize: 50,
+                pagination: false,
                 clientPaging: false,
                 frozenColumns: [[
                     {

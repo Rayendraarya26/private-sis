@@ -59,6 +59,7 @@ class PpcLaporanController extends Controller
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ppc');
+        $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
         // tambah jika not null file jadwal
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
         if (!empty($request->filterRules)) {
@@ -74,22 +75,12 @@ class PpcLaporanController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-        // Total
-        $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_id) as total'))->first()->total;
-
-
-        // Pagination
-        $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
+        
+        $data->select("jadw_tanggal_mulai AS jadw_tanggal_mulai","jadw_tanggal_selesai AS jadw_tanggal_selesai", "cust_nama AS cust_nama", "jadw_jenis AS jadw_jenis", "sert_nama AS sert_nama", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
-        $data->selectRaw("count(distinct sis_audit_ppc.audit_ppc_id) as total_file");
-        $data->skip(($request->page - 1) * $request->rows);
-        $data->take($request->rows);
-        $data->havingRaw('total_submit_komite > ?', [0]);
-        $data->havingRaw('total_proses > ?', [0]);
+        $data->selectRaw("COUNT(DISTINCT sis_audit_ppc.audit_ppc_id) as total_file");
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];
@@ -105,7 +96,7 @@ class PpcLaporanController extends Controller
             array_push($result, $x);
         }
 
-        return response()->json(["total" => $total, "rows" => $result]);
+        return response()->json(["rows" => $result]);
     }
 
     private function ajax_datagrid_ppc_laporan(Request $request)

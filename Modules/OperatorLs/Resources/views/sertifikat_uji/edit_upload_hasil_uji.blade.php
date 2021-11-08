@@ -1,7 +1,17 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Upload Logbook PPC')
+@section('title', 'Upload Hasil Uji Sertifikasi')
 
+@push("css")
+    <style>
+        legend { 
+		  display: block;
+		  padding-left: 2px;
+		  padding-right: 2px;
+		  border: none;
+		}
+    </style>
+@endpush
 @section('content')
     <div class="dt-content">
 		<div class="col-xl-12">
@@ -88,36 +98,29 @@
 								  </div>
 								</div>
 							</div>
-						  </div>
 						</div>
+					  </div>
 					  </div>
 					</div>
 				</div>
 				
-				<div class="col-xl-12">	
+				<div class="col-xl-12">
 					<div class="dt-card">
-						<div class="dt-card__header">
-							<div class="dt-card__heading">
-								<h3 class="dt-card__title">Upload Logbook PPC</h3>
-							</div>
-						</div>
-						<div class="dt-card__body">
-							<div id="vueUpload">
-								@if ($dataJadwal->logbook_filepath != '')
-									<div class="form-group form-row" id="data_permohonan">
-									<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >File Logbook Eksisting</label>
-									<div class="col-xl-8">
-										<a href="{{url($dataJadwal->logbook_filepath)}}" class="btn btn-xs btn-info" target="_blank">Download File</a>
-									</div>
-								</div>
-								@endif
+					  <div class="dt-card__header">
+						<div class="dt-card__heading"><h3 class="dt-card__title">Upload Hasil Uji</h3></div>
+					  </div>
+					  <div class="dt-card__body">
+						<div id="vueUpload">
+							<div id="frmLap" style="display:none;">
+								<fieldset style="border: 1px #eee solid;padding:20px;">
+								<legend>Form Upload:</legend>
 								<div class="form-group form-row" id="data_permohonan">
-									<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >File Logbook Baru</label>
+									<label class="col-xl-3 col-form-label text-sm-left" for="id" >File Sertifikasi Hasil Uji <span id="labelForm"></span></label>
 									<div class="col-xl-8">
-										<input type="file" class="form-control" aria-label="File Logbook"
-									   @change="validateUploadJadwal" accept="application/pdf"
-									   name="logbook_filepath" id="logbook_filepath">
-								<small><span>Upload file harus berjenis PDF</span></small>
+										<input type="file" class="form-control" aria-label="File Sertifikasi Hasil Uji" @change="validateUpload" accept="application/pdf" name="jadw_audit_sertifikat_filepath" id="jadw_audit_sertifikat_filepath">
+										<input type="hidden" id="jadw_audit_id">
+										<input type="hidden" id="jadw_audit_sertifikat_filepath_lama">
+										<small><span>Upload file harus berjenis PDF</span></small>
 									</div>
 								</div>
 								<div style="padding-top: 20px">
@@ -135,9 +138,23 @@
 										</button>
 									</template>
 								</div>
-								
+								</fieldset>
+							</div>
+							
+							<div id="ttData" style="width:100%; min-width: 310px; min-height: 300px"></div>
+							<div id="toolbar" style="padding: 10px 0 10px 20px">
+								<div class="row">
+									@if(authorized("{$module}@edit"))
+										<div>
+											<a href="#" class="btn btn-outline-danger btn-xs" @click="deleteItem()">
+												<i class="fas fa-trash"></i> Hapus File
+											</a>
+										</div>
+									@endif
+								</div>
 							</div>
 						</div>
+					  </div>
 					</div>
 				</div>
 			</div>
@@ -154,16 +171,139 @@
             buttonsStyling: false,
         });
 		
+		function uploadData(id) {
+			setTimeout(async () => {
+				$.ajax({
+					url: `{{ url("$url/ajax?action=data-list-uji") }}&jadw_audit_id=${id}`,
+					type: 'get',
+					processData: false,
+					contentType: false,
+					success: async function (res) {
+						setTimeout(() => {
+							$("#jadw_audit_sertifikat_filepath_lama").val(res.jadw_audit_sertifikat_filepath);
+							$("#labelForm").html(res.sert_nama);
+						}, 400)
+					},
+					error: function (xhr) {
+						self.loading_submit = false;
+						if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+						else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+					}
+				});
+				$("#jadw_audit_id").val(id);
+				$("#frmLap").show();
+				$(".tab-content").height("100%");
+			}, 500);						
+		}
+		
         $(document).ready(function () {
             window.vueUpload = new Vue({
                 el: "#vueUpload",
                 data: {
-                    logbook_filepath: null,
+                    jadw_audit_sertifikat_filepath: null,
                     agreement: false,
                     loading_submit: false,
                 },
+				mounted: function () {
+					this.$nextTick(function () {
+						let dg = $('#ttData').datagrid({
+							method: 'get',
+							width: $(".tab-content").width()-20,
+							url: `{{ url("$url/ajax?action=datagrid-hasil-uji") }}&jadw_id={{$dataJadwal->jadw_id}}`,
+							rownumbers: false,
+							nowrap: false,
+							singleSelect: false,
+							remoteFilter: true,
+							multiSort: true,
+							toolbar: '#toolbar',
+							pagination: false,
+							clientPaging: false,
+							frozenColumns: [[
+								{field: 'ck', checkbox: true, sortable: false},
+								{
+									field: 'action',
+									title: "<br/><br/><br/>",
+									width: 80,
+									align: 'center',
+									formatter: function (val, row) {
+										let dom = `dropdownMenu_${row.jadw_audit_id}`;
+										let btnEdit = ``;			
+										btnEdit += `<a href="#" class="btn btn-outline-info btn-xs btn-block" onclick="uploadData(${row.jadw_audit_id})"><i class="fas fa-cloud-upload"></i>Upload</a>`;
+										
+										return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
+									}
+								},
+								{field: 'jadw_audit_sertifikat_filepath', title: 'File<br>Sertifikat', width: 100, sortable: false},
+							]],
+							columns: [[
+								{field: 'jadw_audit_jenis', title: 'Jenis<br/>Pengajuan<br/>', width: 100, sortable: true},
+								{field: 'sert_nama', title: 'Sertifikasi<br/>', width: 400, sortable: true},
+								{field: 'komodt_nama', title: 'Komoditi<br/>Nama', width: 150, sortable: true},
+								{field: 'jadw_audit_sni', title: 'SNI', width: 150, sortable: true},
+								{field: 'jadw_audit_ruang_lingkup', title: 'Ruang<br>Linkup', width: 400, sortable: true},
+							]],
+						});	
+						
+						dg.datagrid(
+							'enableFilter', [
+								{field: 'action', type: 'label'},
+								{field: 'jadw_audit_sertifikat_filepath', type: 'label'},
+								{field: 'jadw_audit_jenis', type: 'label'},
+							]);
+					})
+				},
                 methods: {
-					validateUploadJadwal(event) {
+					async deleteItem() {
+                        swalWithBootstrapButtons({
+                            title: `Hapus Item ?`,
+                            text: `Anda yakin menghapus data sertifikat hasil uji yang telah anda pilih ?`,
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Hapus',
+                            cancelButtonText: 'Batal',
+                            reverseButtons: true
+                        }).then(async (result) => {
+                            if (result.value) {
+								var idData = []; 
+								var fileData = []; 
+								var data = $('#ttData').datagrid('getData');
+								var opts = $('#ttData').datagrid('options');
+								for (var i = 0; i < data.rows.length; i++) {
+									var tr = opts.finder.getTr($('#ttData')[0],i);
+									var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
+									if(atLeastOneIsChecked == true){
+										idData.push(data.rows[i].jadw_audit_id);
+										fileData.push(data.rows[i].file);
+									}
+								}
+								
+								console.log(idData);
+								$.ajax({
+									url: `{{url("$url/update")}}`,
+									data: { 'ids[]': idData, 'filepath[]': fileData,  'tipe': 'delete-hasil-uji' },
+									type: 'POST',
+									success: function (response) {
+										toastCenter({
+											type: 'success',
+											title: response.message
+										})
+
+										let dg = $('#ttData');
+										dg.datagrid('reload');
+									},
+									error: function (err) {
+										if (err.responseJSON.message) {
+											toastCenter({
+												type: 'error',
+												title: err.responseJSON.message
+											})
+										}
+									}
+								});
+                            }
+                        });
+                    },
+					validateUpload(event) {
                         let uploaded = event.target.files[0];
                         if (uploaded.type !== "application/pdf") {
                             swalWithBootstrapButtons({
@@ -172,7 +312,7 @@
                                 type: 'warning',
                             })
 
-                            $("#logbook_filepath").val("")
+                            $("#jadw_audit_sertifikat_filepath").val("")
                         }
 						else{
 							this.agreement = true
@@ -180,7 +320,7 @@
                     },
                     submitPermohonan() {
                         swalWithBootstrapButtons({
-                            title: `Upload Logbook ?`,
+                            title: `Upload Laporan ?`,
                             text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
                             type: 'info',
                             showCancelButton: true,
@@ -189,21 +329,21 @@
                             reverseButtons: true
                         }).then(async (result) => {
                             if (result.value) {
-								if ($.trim($("#logbook_filepath").val()) === "") {
+								if ($.trim($("#jadw_audit_sertifikat_filepath").val()) === "") {
 									toastCenter({
-												type: 'success',
-												title: "Silahkan Unggah File Logbook"
+												type: 'warning',
+												title: "Silahkan Unggah File Laporan"
 											})
 								}
 								else{
 									// Submit Permohonan
 									let formData = new FormData();
 									formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
-									formData.append("jadw_tim_id", `{{$dataJadwal->jadw_tim_id}}`);
-									formData.append("logbook_filepath_lama", `{{$dataJadwal->logbook_filepath}}`);
-									formData.append("tipe", `upload-logbook`);
-									const file = document.querySelector("#logbook_filepath").files[0];
-									formData.append("logbook_filepath", file)
+									formData.append("jadw_audit_id", $("#jadw_audit_id").val());
+									formData.append("jadw_audit_sertifikat_filepath_lama", $("jadw_audit_sertifikat_filepath_lama").val());
+									formData.append("tipe", `upload-hasil-uji`);
+									const file = document.querySelector("#jadw_audit_sertifikat_filepath").files[0];
+									formData.append("jadw_audit_sertifikat_filepath", file)
 									
 									this.loading_submit = true;
 									let self = this;
@@ -218,7 +358,7 @@
 												type: 'success',
 												title: res.message
 											})
-											setTimeout(() => location.href = "{{url("$url")}}", 1000)
+											setTimeout(() => location.href = "{{url("$url")}}/edit?tipe=upload-hasil-uji&jadw_id={{$dataJadwal->jadw_id}}", 1000)
 										},
 										error: function (xhr) {
 											self.loading_submit = false;

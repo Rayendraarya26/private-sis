@@ -20,7 +20,7 @@
 				<div class="col-xl-12">
 					<div class="dt-card">
 					  <div class="dt-card__header">
-						<div class="dt-card__heading"><h3 class="dt-card__title">Informasi Data Jadwal</h3></div>
+						<div class="dt-card__heading"><h3 class="dt-card__title">Informasi Data Jadwal No. #{{$dataJadwal->jadw_id}}</h3></div>
 					  </div>
 					  <div class="dt-card__body">
 						<div class="accordion" id="accordion-example">
@@ -100,8 +100,8 @@
 							</div>
 						</div>
 					  </div>
+					  </div>
 					</div>
-				</div>
 				</div>
 				
 				<div class="col-xl-12">
