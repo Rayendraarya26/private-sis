@@ -97,7 +97,7 @@ class PenjadwalanController extends Controller
         $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
 
         // Filter
-        $data->whereIn('jadw_tanggal_status', '!=', 'accepted');
+        $data->where('jadw_tanggal_status', '!=', 'accepted');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');

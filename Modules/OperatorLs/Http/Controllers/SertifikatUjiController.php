@@ -131,8 +131,8 @@ class SertifikatUjiController extends Controller
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
         $data->selectRaw("COUNT(DISTINCT sis_jadwal_audit.jadw_audit_id) as total_audit");
         $data->groupBy('sis_jadwal.jadw_id');
-        $data->havingRaw('total_submit_komite >= total_audit');
-        $data->havingRaw('total_audit >= total_proses');
+        $data->havingRaw('total_submit_komite = total_audit');
+        $data->havingRaw('total_audit <= total_proses');
 
         $result = [];
         foreach ($data->get() as $d) {

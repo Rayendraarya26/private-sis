@@ -46,11 +46,14 @@ class TimController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+		
         $data->leftJoin('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
+		
 
         // Filter
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '!=', 'fixed');
+        $data->where('sis_jadwal_audit.jadw_audit_status_komite', '!=', 'submited');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');

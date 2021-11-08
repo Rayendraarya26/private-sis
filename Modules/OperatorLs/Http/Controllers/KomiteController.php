@@ -50,6 +50,8 @@ class KomiteController extends Controller
         // Filter
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
+        $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
+		
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -72,12 +74,8 @@ class KomiteController extends Controller
         $data->selectRaw("count(distinct komite_id) AS total_tim");
         $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
-        $data->havingRaw('total_submit_komite = ?', [0]);
-        $data->havingRaw('total_proses > ?', [0]);
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];
