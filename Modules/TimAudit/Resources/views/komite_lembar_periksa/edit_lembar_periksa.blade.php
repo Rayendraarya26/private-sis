@@ -1,10 +1,16 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Rekomendasi untuk Persetujuan')
+@section('title', 'LEMBAR PERIKSA KOMITE SERTIFIKASI')
 
 @push("css")
     <!-- HTML -->
     <link rel="stylesheet" href="{{asset("assets/plugins/smartwizard/css/smart_wizard_all.min.css")}}">
+	<style>
+		#label-form{
+			font-weight:normal;
+			color:#5BB6EA;
+		}
+	</style>
 @endpush
 
 @section('content')
@@ -15,72 +21,181 @@
 				<div class="col-xl-12">
 					<div class="dt-card">
 					  <div class="dt-card__header">
-						<div class="dt-card__heading"><h3 class="dt-card__title">Informasi Data Jadwal No. #{{$dataJadwal->jadw_id}}</h3></div>
+						<div class="dt-card__heading"><h3 class="dt-card__title">Jadwal No. #{{$dataJadwal->jadw_id}}</h3></div>
 					  </div>
 					  <div class="dt-card__body">
-						<div class="accordion" id="accordion-example">
-						  <div class="card">
-								<div class="card-header" id="headingOne"><h5 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">Diajukan untuk</button></h5></div>
-								<div id="collapse-one" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion-example">
-								  <div class="card-body">
-									<div class="table-responsive col-xl-12 col-md-12 col-12">
-										<table class="table mb-0">
-											<tbody>
-												<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
-												<tr><td>Komoditas</td><td>: {{$dataJadwal->komodt_nama}}</td></tr>
-												<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
-												<tr><td>SM/SNI yang diacu</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
-												<tr><td>Alamat</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
-											</tbody>
-										</table>
-								  </div>
-								</div>
-							</div>
-							<div class="card">
-								<div class="card-header" id="headingTwo">
-								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">Kronologis kegiatan *)</button></h5>
-								</div>
-								<div id="collapse-two" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion-example">
-								  <div class="card-body">
-									<table class="table">
-										<tbody>
-											<tr><td>-</td><td>Audit dilaksanakan pada {{$dataJadwal->jadw_tanggal_mulai?->format("d M Y")}} s/d {{$dataJadwal->jadw_tanggal_selesai?->format("d M Y")}}</td></tr>
-										</tbody>
-									</table>
-								  </div>
-								</div>
+						<div class="card-body">
+							<div class="table-responsive col-xl-12 col-md-12 col-12">
+								<table class="table mb-0">
+									<tbody>
+										<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
+										<tr><td>Alamat</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
+										<tr><td>No Referensi</td><td>: {{$dataJadwal->jadw_audit_nomor_referensi}}</td></tr>
+										<tr><td>Acuan standar</td><td>: {{$dataJadwal->jadw_audit_standart_acuan}}</td></tr>
+										<tr><td>Jenis Produk</td><td>: {{$dataJadwal->komodt_nama}}</td></tr>
+										<tr><td>Tipe produk</td><td>: {{$dataJadwal->jadw_audit_tipe}}</td></tr>
+										<tr><td>Merek</td><td>: {{$dataJadwal->jadw_audit_merk}}</td></tr>
+										<tr><td>Rekomendasi Komite</td><td>: <a href="{{ url("$url/edit") }}?tipe=lihat-rekomendasi&jadw_id{{$dataJadwal->jadw_id}}" target="blank">Lihat Data</a></td></tr>
+									</tbody>
+								</table>
 							</div>
 						  </div>
-						</div>
 					  </div>
 					</div>
 				</div>
 				
+				<div id="vueLembarPeriksa">
 				<div class="col-xl-12">
 					<div class="dt-card">
-					  <div class="dt-card__header">
-						<div class="dt-card__heading"><h3 class="dt-card__title">Upload Hasil Uji</h3></div>
-					  </div>
-					  <div class="dt-card__body">
-						<div id="vueRekomendasi">
-							<div class="form-group form-row" id="data_permohonan">
-								<label class="col-xl-3 col-form-label text-sm-left" for="id" >Isi Rekomendasi</label>
+						<div class="dt-card__header"><div class="dt-card__heading"><h3 class="dt-card__title">1. Penilaian</h3></div></div>
+						<div class="dt-card__body">
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.1. Persyaratan Administrasi dan prosedur sertifikasi</label>
 								<div class="col-xl-8">
-									<textarea class="form-control" v-on:keyup="validateSertifikat" name="rekmd_komte_isi" id="rekmd_komte_isi">@if(isset($dataJadwal->rekmd_komte_isi)) {{$dataJadwal->rekmd_komte_isi}} @endif</textarea>
+									<textarea class="form-control" name="komte_priksa_penilaian_1" id="komte_priksa_penilaian_1">@if(isset($dataJadwal->komte_priksa_penilaian_1)) {{$dataJadwal->komte_priksa_penilaian_1}} @endif</textarea>
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="label-form">Tutup Rekomendasi?</label>
-								<div class="col-md-12">
-								  <div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status1" value="ditutup" @click="setTutup('ditutup')">
-									<label class="form-check-label" for="aud_thp1_status1">Tutup</label>
-								  </div>
-								  <div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status2" value="on-going" @click="setTutup('on-going')" >
-									<label class="form-check-label" for="aud_thp1_status2">Tidak</label>
-								  </div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.2. Konfirmasi Hasil Pengkajian Permohonan</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_2" id="komte_priksa_penilaian_2">@if(isset($dataJadwal->komte_priksa_penilaian_2)) {{$dataJadwal->komte_priksa_penilaian_2}} @endif</textarea>
 								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.3. Evaluasi waktu audit yang direncanakan dengan realisasi pelaksanaan</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_3" id="komte_priksa_penilaian_3">@if(isset($dataJadwal->komte_priksa_penilaian_3)) {{$dataJadwal->komte_priksa_penilaian_3}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.4. Evaluasi kedalamam Laporan Audit yang dibuat oleh Auditor</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_4" id="komte_priksa_penilaian_4">@if(isset($dataJadwal->komte_priksa_penilaian_4)) {{$dataJadwal->komte_priksa_penilaian_4}} @endif</textarea>
+								</div>
+							</div>
+
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.5. Komentar terhadap ketidaksesuaian, tindakan koreksi dan tindakan korektif</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_5" id="komte_priksa_penilaian_5">@if(isset($dataJadwal->komte_priksa_penilaian_5)) {{$dataJadwal->komte_priksa_penilaian_5}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.6. Hasil Inspeksi/ Asesmen Sistem Mutu/ Lingkungan*)</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_6" id="komte_priksa_penilaian_6">@if(isset($dataJadwal->komte_priksa_penilaian_6)) {{$dataJadwal->komte_priksa_penilaian_6}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.7. Konfirmasi terhadap ketercapaian tujuan audit</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_7" id="komte_priksa_penilaian_7">@if(isset($dataJadwal->komte_priksa_penilaian_7)) {{$dataJadwal->komte_priksa_penilaian_7}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.8. Rekaman Tahapan Sertifikasi</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_8" id="komte_priksa_penilaian_8">@if(isset($dataJadwal->komte_priksa_penilaian_8)) {{$dataJadwal->komte_priksa_penilaian_8}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.9. Hal-hal negative yang mempengaruhi penerbitan sertifikat</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_9" id="komte_priksa_penilaian_9">@if(isset($dataJadwal->komte_priksa_penilaian_9)) {{$dataJadwal->komte_priksa_penilaian_9}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.10. Hal-hal yang diperbaiki/ditambahkan</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_10" id="komte_priksa_penilaian_10">@if(isset($dataJadwal->komte_priksa_penilaian_10)) {{$dataJadwal->komte_priksa_penilaian_10}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.11. Hasil Perbaikan</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_11" id="komte_priksa_penilaian_11">@if(isset($dataJadwal->komte_priksa_penilaian_11)) {{$dataJadwal->komte_priksa_penilaian_11}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.12. Pelaksanaan Pengambilan contoh (khusus LS Produk)</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_12" id="komte_priksa_penilaian_12">@if(isset($dataJadwal->komte_priksa_penilaian_12)) {{$dataJadwal->komte_priksa_penilaian_12}} @endif</textarea>
+								</div>
+							</div>
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.13. Hasil Uji Laboratorium (khusus LS Produk)</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" name="komte_priksa_penilaian_13" id="komte_priksa_penilaian_13">@if(isset($dataJadwal->komte_priksa_penilaian_13)) {{$dataJadwal->komte_priksa_penilaian_13}} @endif</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-xl-12">
+					<div class="card">
+						<div class="card-header bg-transparent">
+							<h3 class="card-title">2. Keputusan/Rekomendasi</h3>
+						</div>
+						<div class="card-body pt-0">
+							<div class="table-responsive col-xl-12 col-md-12 col-12">
+								<table class="table table-bordered mb-0">
+									<thead>
+										<tr>
+										  <th scope="col">#</th>
+										  <th class="text-uppercase" scope="col">Jenis Audit</th>
+										  <th class="text-uppercase" scope="col">Sertifikasi</th>
+										  <th class="text-uppercase" scope="col">SNI</th>
+										  <th class="text-uppercase" scope="col">Komoditas</th>
+										  <th class="text-uppercase" scope="col">Merk</th>
+										  <th class="text-uppercase" scope="col">Tipe</th>
+										</tr>
+									</thead>
+									<tbody>
+									@foreach($dataAudit as $dau)
+										<tr>
+										  <td scope="col">
+											  <div class="form-check mb-2">
+												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd1{{$dau->jadw_audit_id}}" value="ya">
+												<label class="form-check-label" for="rd1{{$dau->jadw_audit_id}}">
+												@if($dau->jadw_audit_jenis == 'sertifikasi')
+													berhak memperoleh
+												@elseif($dau->jadw_audit_jenis == 're-sertifikasi')
+													berhak memperoleh kembali
+												@else
+													tetap dapat menggunakan
+												@endif
+												</label>
+											  </div>
+											  <!-- /radio button -->
+
+											  <!-- Radio Button -->
+											  <div class="form-check mb-2">
+												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="option2">
+												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
+											  </div>
+										  </td>
+										  <td>{{$dau->jadw_audit_jenis}}</td>
+										  <td>{{$dau->sert_nama}}</td>
+										  <td>{{$dau->jadw_audit_sni}}</td>
+										  <td>{{$dau->komodt_nama}}</td>
+										  <td>{{$dau->jadw_audit_merk}}</td>
+										  <td>{{$dau->jadw_audit_tipe}}</td>
+										</tr>
+									@endforeach
+									</tbody>
+								</table>
 							</div>
 							
 							<div style="padding-top: 20px">
@@ -91,13 +206,13 @@
 								</template>
 								<template v-else>
 									<button :disabled="!status_submit" :class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}" @click="submitRekomendasi">
-										<i class="fas fa-save"></i> Simpan Rekomendasi
+										<i class="fas fa-save"></i> Simpan Lembar Periksa
 									</button>
 								</template>
 							</div>
 						</div>
-					  </div>
 					</div>
+				</div>
 				</div>
 			</div>
 		</div>
@@ -116,51 +231,234 @@
         });
 			
         $(document).ready(function () {
-            window.vueRekomendasi = new Vue({
-                el: "#vueRekomendasi",
+            window.vueLembarPeriksa = new Vue({
+                el: "#vueLembarPeriksa",
                 data: {
-                    rekmd_komte_status: null,
-                    rekmd_komte_isi: null,
-                    jadw_audit_sertifikat_filepath: null,
-                    status_submit: false,
+                    status_submit: true,
                     loading_submit: false,
                 },
 				mounted: function () {
 					this.$nextTick(function () {
-						$('textarea#rekmd_komte_isi').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
+						$('textarea#komte_priksa_penilaian_1').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_2').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_3').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_4').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_5').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_6').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_7').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_8').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+							
+						$('textarea#komte_priksa_penilaian_9').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_10').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_11').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_12').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
+						
+						$('textarea#komte_priksa_penilaian_13').tinymce({
+							height: 200,
+							plugins: 'autosave link image code lists',
+							relative_urls: false,
+							placeholder: '',
+							images_reuse_filename: true,
+							automatic_uploads: true,
+							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+							images_upload_credentials: true,
+							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							],
+						});
 					})
 				},
                 methods: {
-					validateSertifikat() {
-						tinyMCE.triggerSave();
-                        this.rekmd_komte_isi = tinyMCE.get('rekmd_komte_isi').getContent();
-                    },
-					setTutup(val){
-						this.rekmd_komte_status = `${val}`;
-						this.status_submit = true;
-                    },
                     submitRekomendasi() {
 						tinyMCE.triggerSave();
-						if(tinyMCE.get('rekmd_komte_isi').getContent() === ''){
-							toastCenter({
-										type: 'warning',
-										title: "Silahkan Isi Rekomendasi"
-									});
+						if(tinyMCE.get('komte_priksa_penilaian_1').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.1"});
 						}
+						else if(tinyMCE.get('komte_priksa_penilaian_2').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.2"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_3').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.3"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_4').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.4"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_5').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.5"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_6').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.6"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_7').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.7"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_8').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.8"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_9').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.9"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_10').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.10"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_11').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.11"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_12').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.12"});
+						}
+						else if(tinyMCE.get('komte_priksa_penilaian_13').getContent() === ''){
+							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.12"});
+						}
+						@foreach($dataAudit as $dau)
+						else if (!$("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val()) {
+						   toastCenter({type: 'warning',title: "Silahkan isikan keputusan untuk '{{$dau->sert_nama}}'"});
+						}
+						@endforeach
 						else{
 							swalWithBootstrapButtons({
-								title: `Submit Rekomendasi ?`,
+								title: `Submit Lembar Periksa ?`,
 								text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
 								type: 'info',
 								showCancelButton: true,
@@ -172,10 +470,23 @@
 									// Submit Permohonan
 									let formData = new FormData();
 									formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
-									formData.append("tipe", `rekomendasi`)
-									formData.append("rekmd_komte_isi", tinyMCE.get('rekmd_komte_isi').getContent())
-									formData.append("rekmd_komte_status", this.rekmd_komte_status)
-									
+									formData.append("tipe", `lembar-periksa`)
+									formData.append("komte_priksa_penilaian_1", tinyMCE.get('komte_priksa_penilaian_1').getContent())
+									formData.append("komte_priksa_penilaian_2", tinyMCE.get('komte_priksa_penilaian_2').getContent())
+									formData.append("komte_priksa_penilaian_3", tinyMCE.get('komte_priksa_penilaian_3').getContent())
+									formData.append("komte_priksa_penilaian_4", tinyMCE.get('komte_priksa_penilaian_4').getContent())
+									formData.append("komte_priksa_penilaian_5", tinyMCE.get('komte_priksa_penilaian_5').getContent())
+									formData.append("komte_priksa_penilaian_6", tinyMCE.get('komte_priksa_penilaian_6').getContent())
+									formData.append("komte_priksa_penilaian_7", tinyMCE.get('komte_priksa_penilaian_7').getContent())
+									formData.append("komte_priksa_penilaian_8", tinyMCE.get('komte_priksa_penilaian_8').getContent())
+									formData.append("komte_priksa_penilaian_9", tinyMCE.get('komte_priksa_penilaian_9').getContent())
+									formData.append("komte_priksa_penilaian_10", tinyMCE.get('komte_priksa_penilaian_10').getContent())
+									formData.append("komte_priksa_penilaian_11", tinyMCE.get('komte_priksa_penilaian_11').getContent())
+									formData.append("komte_priksa_penilaian_12", tinyMCE.get('komte_priksa_penilaian_12').getContent())
+									formData.append("komte_priksa_penilaian_13", tinyMCE.get('komte_priksa_penilaian_13').getContent())
+									@foreach($dataAudit as $dau)
+									formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());
+									@endforeach
 									this.loading_submit = true;
 									let self = this;
 									$.ajax({

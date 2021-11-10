@@ -117,12 +117,18 @@ class KomiteLembarPeriksaController extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
-            'rekomendasi' => $this->edit_rekomendasi($request),
+            'lembar-periksa' => $this->edit_lembar_periksa($request),
+            'lihat-rekomendasi' => $this->edit_lihat_rekomendasi($request),
             default                 => null,
         };
     }
 
-    private function edit_rekomendasi(Request $request)
+    private function edit_lihat_rekomendasi(Request $request)
+	{
+		
+	}
+	
+    private function edit_lembar_periksa(Request $request)
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Tim Audit'),
@@ -136,11 +142,14 @@ class KomiteLembarPeriksaController extends Controller
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-        $dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
+        $dataJadwal->join('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
+        $dataJadwal->leftJoin('sis_audit_komite_periksa', "sis_audit_komite_periksa.jadw_id", "=", "sis_jadwal.jadw_id");
+		
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_sni) AS jadw_audit_sni");
+        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_merk) AS jadw_audit_merk");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_ea) AS jadw_audit_kode_ea");
@@ -151,49 +160,123 @@ class KomiteLembarPeriksaController extends Controller
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
         $dataJadwal->groupBy('sis_jadwal.jadw_id');
+		
+		$dataAudit = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
+		$dataAudit->where('sis_jadwal_audit.jadw_audit_status_komite', 'submited');
+		$dataAudit->where('sis_jadwal_audit.jadw_audit_status', 'on-going');
+		$dataAudit->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+        $dataAudit->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
-        return view("$this->view.edit_rekomendasi")->with($parser);
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'dataAudit' => $dataAudit->get()];
+        return view("$this->view.edit_lembar_periksa")->with($parser);
     }
 
     public function update(Request $request)
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
-            'rekomendasi' => $this->update_rekomendasi($request),
+            'lembar-periksa' => $this->update_lembar_periksa($request),
             default                 => null,
         };
     }
 
-    private function update_rekomendasi(Request $request)
+    private function update_lembar_periksa(Request $request)
     {
         $request->validate([
             "jadw_id" => 'required',
-            "rekmd_komte_isi" => 'required',
-            "rekmd_komte_status" => 'required',
+            "komte_priksa_penilaian_1" => 'required',
+            "komte_priksa_penilaian_2" => 'required',
+            "komte_priksa_penilaian_3" => 'required',
+            "komte_priksa_penilaian_4" => 'required',
+            "komte_priksa_penilaian_5" => 'required',
+            "komte_priksa_penilaian_6" => 'required',
+            "komte_priksa_penilaian_7" => 'required',
+            "komte_priksa_penilaian_8" => 'required',
+            "komte_priksa_penilaian_9" => 'required',
+            "komte_priksa_penilaian_10" => 'required',
+            "komte_priksa_penilaian_11" => 'required',
+            "komte_priksa_penilaian_12" => 'required',
+            "komte_priksa_penilaian_13" => 'required',
+            "status" => 'required',
         ]);
-
-        $uploadedPath = [];
         try {
             DB::beginTransaction();
-            $restData = DB::table('sis_audit_komite_rekomendasi')->where('jadw_id', $request['jadw_id'])->first();
-            if ($restData !== null) {
-                DB::table('sis_audit_komite_rekomendasi')
+            $restDataPeriksa = DB::table('sis_audit_komite_periksa')->where('jadw_id', $request['jadw_id'])->first();
+            if ($restDataPeriksa !== null) {
+                DB::table('sis_audit_komite_periksa')
                     ->where('jadw_id', $request['jadw_id'])
-                    ->update(['rekmd_komte_isi' => $request['rekmd_komte_isi'], 'rekmd_komte_status' => $request['rekmd_komte_status'], ]);
+                    ->update([
+						'komte_priksa_penilaian_1' => $request['komte_priksa_penilaian_1'],
+						'komte_priksa_penilaian_2' => $request['komte_priksa_penilaian_2'],
+						'komte_priksa_penilaian_3' => $request['komte_priksa_penilaian_3'],
+						'komte_priksa_penilaian_4' => $request['komte_priksa_penilaian_4'],
+						'komte_priksa_penilaian_5' => $request['komte_priksa_penilaian_5'],
+						'komte_priksa_penilaian_6' => $request['komte_priksa_penilaian_6'],
+						'komte_priksa_penilaian_7' => $request['komte_priksa_penilaian_7'],
+						'komte_priksa_penilaian_8' => $request['komte_priksa_penilaian_8'],
+						'komte_priksa_penilaian_9' => $request['komte_priksa_penilaian_9'],
+						'komte_priksa_penilaian_10' => $request['komte_priksa_penilaian_10'],
+						'komte_priksa_penilaian_11' => $request['komte_priksa_penilaian_11'],
+						'komte_priksa_penilaian_12' => $request['komte_priksa_penilaian_12'],
+						'komte_priksa_penilaian_13' => $request['komte_priksa_penilaian_13'],
+					]);
             } else {
-                DB::table('sis_audit_komite_rekomendasi')->insert([
+                DB::table('sis_audit_komite_periksa')->insert([
                     'jadw_id' => $request['jadw_id'],
-                    'rekmd_komte_isi' => $request['rekmd_komte_isi'],
-                    'rekmd_komte_status' => $request['rekmd_komte_status'],
+                    'komte_priksa_penilaian_1' => $request['komte_priksa_penilaian_1'],
+                    'komte_priksa_penilaian_2' => $request['komte_priksa_penilaian_2'],
+                    'komte_priksa_penilaian_3' => $request['komte_priksa_penilaian_3'],
+                    'komte_priksa_penilaian_4' => $request['komte_priksa_penilaian_4'],
+                    'komte_priksa_penilaian_5' => $request['komte_priksa_penilaian_5'],
+                    'komte_priksa_penilaian_6' => $request['komte_priksa_penilaian_6'],
+                    'komte_priksa_penilaian_7' => $request['komte_priksa_penilaian_7'],
+                    'komte_priksa_penilaian_8' => $request['komte_priksa_penilaian_8'],
+                    'komte_priksa_penilaian_9' => $request['komte_priksa_penilaian_9'],
+                    'komte_priksa_penilaian_10' => $request['komte_priksa_penilaian_10'],
+                    'komte_priksa_penilaian_11' => $request['komte_priksa_penilaian_11'],
+                    'komte_priksa_penilaian_12' => $request['komte_priksa_penilaian_12'],
+                    'komte_priksa_penilaian_13' => $request['komte_priksa_penilaian_13'],
                 ]);
             }
+			
+			if(!empty($request['status'])){
+				foreach($request['status'] as $key => $val){
+					$restDataAudit = DB::table('sis_jadwal_audit')->where('jadw_audit_id', $key)->first();
+					 if ($restDataAudit !== null) {
+							$status = 'on-going';
+							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
+								if($val == 'ya')
+									$status = 'berhak-memperoleh';
+								else
+									$status = 'tidak-berhak-menggunakan';
+							}
+							elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
+								if($val == 'ya')
+									$status = 'berhak-memperoleh-kembali';
+								else
+									$status = 'tidak-berhak-menggunakan';
+							}
+							else{
+								if($val == 'ya')
+									$status = 'tetap-dapat-menggunakan';
+								else
+									$status = 'tidak-berhak-menggunakan';
+							}
+							
+						DB::table('sis_jadwal_audit')
+							->where('jadw_audit_id', $key)
+							->update([
+								'jadw_audit_status' => $status,
+							]);
+					}
+				}
+			}
 			
             // Notifikasi
             /*
              */
             DB::commit();
-            return responseJSON(200, [], 'Berhasil menyimpan data');
+            return responseJSON(200, ['asd'], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
