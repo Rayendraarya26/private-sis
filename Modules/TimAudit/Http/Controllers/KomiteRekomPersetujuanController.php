@@ -65,6 +65,7 @@ class KomiteRekomPersetujuanController extends Controller
 
         $data->join('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
         $data->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
+        $data->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
@@ -95,6 +96,7 @@ class KomiteRekomPersetujuanController extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
+            $x['rekmd_komte_status'] = $d->rekmd_komte_status;
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
@@ -133,6 +135,7 @@ class KomiteRekomPersetujuanController extends Controller
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+        $dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
@@ -156,53 +159,35 @@ class KomiteRekomPersetujuanController extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
-            'upload-daftar-periksa' => $this->update_upload_daftar_periksa($request),
+            'rekomendasi' => $this->update_rekomendasi($request),
             default                 => null,
         };
     }
 
-    private function update_upload_daftar_periksa(Request $request)
+    private function update_rekomendasi(Request $request)
     {
         $request->validate([
-            "jadw_id"           => 'required',
-            "jadw_tim_id"       => 'required',
-            "dftr_periksa_file" => 'required',
+            "jadw_id" => 'required',
+            "rekmd_komte_isi" => 'required',
+            "rekmd_komte_status" => 'required',
         ]);
 
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('dftr_periksa_file')) throw new Exception("Mohon unggah file logbook", 400);
-
-            $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
-            $dataJadwal->select('*');
-
-            $restJadwal = $dataJadwal->get()[0];
-            // DEFINE BASE UPLOAD AND UPDATE dftr_periksa_file
-            $baseFileUpload        = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
-            $fileDaftarPeriksa     = $request->file('dftr_periksa_file');
-            $fileDaftarPeriksaName = Str::slug('file-daftar-periksa-auditor-' . $request['jadw_tim_id'] . '-' . $fileDaftarPeriksa->getClientOriginalName()) . '-' . time() . '.' . $fileDaftarPeriksa->getClientOriginalExtension();
-            $fileDaftarPeriksaPath = sprintf("%s/%s", $baseFileUpload, $fileDaftarPeriksaName);
-            $fileDaftarPeriksa->move($baseFileUpload, $fileDaftarPeriksaName);
-            array_push($uploadedPath, $fileDaftarPeriksaPath);
             DB::beginTransaction();
-            $restData = DB::table('sis_audit_daftar_periksa')->where('jadw_tim_id', $request['jadw_tim_id'])->first();
+            $restData = DB::table('sis_audit_komite_rekomendasi')->where('jadw_id', $request['jadw_id'])->first();
             if ($restData !== null) {
-                @unlink($restData->dftr_periksa_file);
-
-                DB::table('sis_audit_daftar_periksa')
-                    ->where('jadw_tim_id', $request['jadw_tim_id'])
-                    ->update(['dftr_periksa_file' => $fileDaftarPeriksaPath]);
+                DB::table('sis_audit_komite_rekomendasi')
+                    ->where('jadw_id', $request['jadw_id'])
+                    ->update(['rekmd_komte_isi' => $request['rekmd_komte_isi'], 'rekmd_komte_status' => $request['rekmd_komte_status'], ]);
             } else {
-                DB::table('sis_audit_daftar_periksa')->insert([
-                    'jadw_tim_id'       => $request['jadw_tim_id'],
-                    'dftr_periksa_file' => $fileDaftarPeriksaPath,
+                DB::table('sis_audit_komite_rekomendasi')->insert([
+                    'jadw_id' => $request['jadw_id'],
+                    'rekmd_komte_isi' => $request['rekmd_komte_isi'],
+                    'rekmd_komte_status' => $request['rekmd_komte_status'],
                 ]);
             }
-
-            if ($request['dftr_periksa_file_lama'] != '') {
-                @unlink($request['dftr_periksa_file_lama']);
-            }
-
+			
             // Notifikasi
             /*
              */
