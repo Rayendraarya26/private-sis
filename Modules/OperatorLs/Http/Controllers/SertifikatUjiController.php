@@ -92,6 +92,7 @@ class SertifikatUjiController extends Controller
             $x['komodt_nama']              = $d->komodt_nama;
             $x['jadw_audit_sni']              = $d->jadw_audit_sni;
             $x['jadw_audit_ruang_lingkup']              = $d->jadw_audit_ruang_lingkup;
+            $x['jadw_audit_sertifikat_nomor']              = $d->jadw_audit_sertifikat_nomor;
 
             $x['jadw_audit_sertifikat_filepath'] = ($d->jadw_audit_sertifikat_filepath != '') ? '<a class=" " target="_blank" href = "' . url($d->jadw_audit_sertifikat_filepath) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
             $x['file'] = ($d->jadw_audit_sertifikat_filepath != '') ? $d->jadw_audit_sertifikat_filepath : '';
@@ -226,6 +227,7 @@ class SertifikatUjiController extends Controller
         $request->validate([
             "jadw_audit_id"               => 'required',
             "jadw_id"           => 'required',
+            "jadw_audit_sertifikat_nomor"      => 'required',
             "jadw_audit_sertifikat_filepath"      => 'required',
             "jadw_audit_sertifikat_filepath_lama" => 'nullable',
         ]);
@@ -247,7 +249,7 @@ class SertifikatUjiController extends Controller
             DB::beginTransaction();
              DB::table('sis_jadwal_audit')
                     ->where('jadw_audit_id', $request['jadw_audit_id'])
-                    ->update(['jadw_audit_sertifikat_filepath' => $filePath]);
+                    ->update(['jadw_audit_sertifikat_filepath' => $filePath, 'jadw_audit_sertifikat_nomor' => $request['jadw_audit_sertifikat_nomor']]);
             if ($request['jadw_audit_sertifikat_filepath_lama'] != '') {
                 @unlink($request['jadw_audit_sertifikat_filepath_lama']);
             }

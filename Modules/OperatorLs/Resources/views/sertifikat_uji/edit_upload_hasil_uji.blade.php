@@ -115,6 +115,13 @@
 								<fieldset style="border: 1px #eee solid;padding:20px;">
 								<legend>Form Upload:</legend>
 								<div class="form-group form-row" id="data_permohonan">
+									<label class="col-xl-3 col-form-label text-sm-left" for="id" >Sertifikat No.</label>
+									<div class="col-xl-8">
+										<input type="text" class="form-control" v-on:keyup="validateSertifikat" name="jadw_audit_sertifikat_nomor" id="jadw_audit_sertifikat_nomor">
+									</div>
+								</div>
+								
+								<div class="form-group form-row" id="data_permohonan">
 									<label class="col-xl-3 col-form-label text-sm-left" for="id" >File Sertifikasi Hasil Uji <span id="labelForm"></span></label>
 									<div class="col-xl-8">
 										<input type="file" class="form-control" aria-label="File Sertifikasi Hasil Uji" @change="validateUpload" accept="application/pdf" name="jadw_audit_sertifikat_filepath" id="jadw_audit_sertifikat_filepath">
@@ -200,6 +207,7 @@
             window.vueUpload = new Vue({
                 el: "#vueUpload",
                 data: {
+                    jadw_audit_sertifikat_nomor: null,
                     jadw_audit_sertifikat_filepath: null,
                     agreement: false,
                     loading_submit: false,
@@ -220,6 +228,7 @@
 							clientPaging: false,
 							frozenColumns: [[
 								{field: 'ck', checkbox: true, sortable: false},
+								
 								{
 									field: 'action',
 									title: "<br/><br/><br/>",
@@ -233,6 +242,7 @@
 										return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
 									}
 								},
+								{field: 'jadw_audit_sertifikat_nomor', title: 'Sertifikasi<br/>No.<br/>', width: 150, sortable: true},
 								{field: 'jadw_audit_sertifikat_filepath', title: 'File<br>Sertifikat', width: 100, sortable: false},
 							]],
 							columns: [[
@@ -318,24 +328,34 @@
 							this.agreement = true
 						}
                     },
+					validateSertifikat() {
+                        this.jadw_audit_sertifikat_nomor = $("#jadw_audit_sertifikat_nomor").val();
+						console.log(this.jadw_audit_sertifikat_nomor);
+                    },
                     submitPermohonan() {
-                        swalWithBootstrapButtons({
-                            title: `Upload Laporan ?`,
-                            text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
-                            type: 'info',
-                            showCancelButton: true,
-                            confirmButtonText: 'Kirim',
-                            cancelButtonText: 'Batal',
-                            reverseButtons: true
-                        }).then(async (result) => {
-                            if (result.value) {
-								if ($.trim($("#jadw_audit_sertifikat_filepath").val()) === "") {
-									toastCenter({
-												type: 'warning',
-												title: "Silahkan Unggah File Laporan"
-											})
-								}
-								else{
+						if ($.trim($("#jadw_audit_sertifikat_filepath").val()) === "") {
+							toastCenter({
+										type: 'warning',
+										title: "Silahkan Unggah File Sertifikat"
+									});
+						}
+						else if(this.jadw_audit_sertifikat_nomor === ''){
+							toastCenter({
+										type: 'warning',
+										title: "Silahkan Isi Sertifikat Nomor"
+									});
+						}
+						else{
+							swalWithBootstrapButtons({
+								title: `Upload Laporan ?`,
+								text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
+								type: 'info',
+								showCancelButton: true,
+								confirmButtonText: 'Kirim',
+								cancelButtonText: 'Batal',
+								reverseButtons: true
+							}).then(async (result) => {
+								if (result.value) {
 									// Submit Permohonan
 									let formData = new FormData();
 									formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
@@ -344,6 +364,7 @@
 									formData.append("tipe", `upload-hasil-uji`);
 									const file = document.querySelector("#jadw_audit_sertifikat_filepath").files[0];
 									formData.append("jadw_audit_sertifikat_filepath", file)
+									formData.append("jadw_audit_sertifikat_nomor", this.jadw_audit_sertifikat_nomor)
 									
 									this.loading_submit = true;
 									let self = this;
@@ -367,9 +388,8 @@
 										}
 									});
 								}
-								
-                            }
-                        });
+							});
+						}
                     },
                 }
             })
