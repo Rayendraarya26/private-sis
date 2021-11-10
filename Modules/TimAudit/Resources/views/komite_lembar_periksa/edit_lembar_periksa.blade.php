@@ -35,7 +35,7 @@
 										<tr><td>Jenis Produk</td><td>: {{$dataJadwal->komodt_nama}}</td></tr>
 										<tr><td>Tipe produk</td><td>: {{$dataJadwal->jadw_audit_tipe}}</td></tr>
 										<tr><td>Merek</td><td>: {{$dataJadwal->jadw_audit_merk}}</td></tr>
-										<tr><td>Rekomendasi Komite</td><td>: <a href="{{ url("$url/edit") }}?tipe=lihat-rekomendasi&jadw_id{{$dataJadwal->jadw_id}}" target="blank">Lihat Data</a></td></tr>
+										<tr><td>Rekomendasi Komite</td><td>: <a href="{{ url("$url/edit") }}?tipe=lihat-rekomendasi&jadw_id={{$dataJadwal->jadw_id}}" target="blank">Lihat Data</a></td></tr>
 									</tbody>
 								</table>
 							</div>

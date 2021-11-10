@@ -53,7 +53,7 @@
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;	
 if(row.rekmd_komte_status == 'ditutup'){
-	btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=show-rekomendasi&jadw_id=${row.jadw_id}'">Lihat Rekomendasi</div>`;
+	btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=lihat-rekomendasi&jadw_id=${row.jadw_id}'">Lihat Rekomendasi</div>`;
 } 
 else{
 	btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=rekomendasi&jadw_id=${row.jadw_id}'">Input Rekomendasi</div>`;
