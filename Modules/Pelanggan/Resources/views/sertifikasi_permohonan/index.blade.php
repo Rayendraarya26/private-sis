@@ -77,7 +77,7 @@
 
                             if (row.mohon_approved_status !== "on-progress") {
                                 btnDelete = "";
-                                if (row.mohon_approved_status !== "revisi" && row.mohon_approved_status !== "fix") {
+                                if (row.mohon_approved_status !== "revisi") {
                                     btnEdit = "";
                                 }
                             }
@@ -117,6 +117,20 @@
                                     return "Revisi";
                                 case 'fix':
                                     return "Perbaikan Revisi";
+                            }
+                        },
+                        styler: function (val) {
+                            switch (val) {
+                                case 'on-progress':
+                                    return 'color:black;background-color:#f57f17;';
+                                case 'rejected':
+                                    return 'color:white;background-color:#b71c1c;';
+                                case 'accepted':
+                                    return 'color:white;background-color:#2e7d32;';
+                                case 'revisi':
+                                    return 'color:white;background-color:#e65100;';
+                                case 'fix':
+                                    return 'color:black;background-color:#4caf50;';
                             }
                         }
                     },

@@ -68,7 +68,7 @@
                                           class="custom-cooltipz"
                                           data-cooltipz-size="large"
                                           data-cooltipz-dir="right"><i class="fal fa-database"></i></small></h3>
-                <div class="row">
+                <div class="row" v-if="window.vueStepOne.jenis_pengajuan == 'baru'">
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-12">
@@ -158,7 +158,7 @@
                             <th>Ukuran</th>
                             <th>Produksi Tahunan</th>
                             <th>Satuan Produksi</th>
-                            <th>Aksi</th>
+                            <th v-if="window.vueStepOne.jenis_pengajuan == 'baru'">Aksi</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -171,7 +171,7 @@
                                 <td>@{{ kom.ukuran }}</td>
                                 <td>@{{ kom.produksi_tahunan }}</td>
                                 <td>@{{ kom.satuan_produksi }}</td>
-                                <td>
+                                <td v-if="window.vueStepOne.jenis_pengajuan == 'baru'">
                                     <button class="btn btn-xs btn-danger" @click="deleteKomoditi(idx)">
                                         <i class="fad fa-trash"></i> Hapus
                                     </button>

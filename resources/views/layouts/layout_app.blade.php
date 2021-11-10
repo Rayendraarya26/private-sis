@@ -319,7 +319,7 @@
                                class="dt-side-nav__link {{count($menu->children) ? 'dt-side-nav__arrow' :''}}"
                                title="{{$menu->menu_name}}">
                                 <i class="icon {{$menu->menu_icon}}"></i>
-                                <span class="dt-side-nav__text">{{$menu->menu_name}}</span>
+                                <span class="dt-side-nav__text" style="white-space: break-spaces;">{{$menu->menu_name}}</span>
                             </a>
 
                             @if(count($menu->children) > 0)

@@ -379,6 +379,17 @@ class SertifikasiPermohonanController extends Controller
                 // Send Notification to Marketing
                 $dataPemohon->mohon_approved_status = "fix";
                 $dataPemohon->save();
+
+                // Set Status Revisi telah dilakukan
+                SisPermohonanStatus::create([
+                    "status_mohon_id" => $dataPemohon->mohon_id,
+                    "status_tipe"     => "informasi",
+                    "status_judul"    => "Perbaikan Revisi",
+                    "status_pesan"    => sprintf("%s telah melakukan perbaikan revisi", auth()->user()->user_fullname),
+                    "created_at"      => Carbon::now(),
+                    "updated_at"      => Carbon::now(),
+                ]);
+
                 $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
                 if ($groupMarketing) {
                     foreach ($groupMarketing as $marketing) {

@@ -55,7 +55,7 @@
                         formatter: function (val, row) {
 							let btnDetail = '';
 							if(row.status_step == 're-upload'){
-								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
+								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
 							}
 							else{
 								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
@@ -112,7 +112,7 @@
                     },
                 ]);
         });
-		
+
 		function confirmDelete() {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
@@ -130,7 +130,7 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-					var idData = []; 
+					var idData = [];
 					var data = $('#ttData').datagrid('getData');
 					var opts = $('#ttData').datagrid('options');
 					for (var i = 0; i < data.rows.length; i++) {
