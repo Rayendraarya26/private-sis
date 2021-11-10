@@ -111,14 +111,14 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
     Route::prefix("komite")->group(function () {
         Route::prefix("rekomendasi-persetujuan")->group(function () {			
             Route::get('/', [KomiteRekomPersetujuanController::class, 'index']);
-            Route::get('/ajax', [KomiteRekomPersetujuanController::class, 'ajax']);
+            Route::any('/ajax', [KomiteRekomPersetujuanController::class, 'ajax']);
             Route::get('/edit', [KomiteRekomPersetujuanController::class, 'edit']);
             Route::post('/update', [KomiteRekomPersetujuanController::class, 'update']);
         });
 
         Route::prefix("lembar-periksa")->group(function () {
             Route::get('/', [KomiteLembarPeriksaController::class, 'index']);
-            Route::get('/ajax', [KomiteLembarPeriksaController::class, 'ajax']);
+            Route::any('/ajax', [KomiteLembarPeriksaController::class, 'ajax']);
             Route::get('/edit', [KomiteLembarPeriksaController::class, 'edit']);
             Route::post('/update', [KomiteLembarPeriksaController::class, 'update']);
         });
