@@ -264,7 +264,7 @@ class PenjadwalanController extends Controller
         // Total
         $total = $data->select(DB::raw('count(distinct sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
-        $data->select("*", "master_sertifikasi.sert_id AS sert_id")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("*", "sis_permohonan.mohon_id AS id", "master_sertifikasi.sert_id AS sert_id")->skip(($request->page - 1) * $request->rows)->take($request->rows);
         $data->groupBy('sis_permohonan.mohon_id');
 
         // Result
@@ -289,10 +289,10 @@ class PenjadwalanController extends Controller
             }
 
             $x['deskripsi']                = "Permohonan nomor #" . $d->mohon_id . " " . $d->sert_nama;
-            $x['id']                       = $d->mohon_id;
+            $x['id']                       = $d->id;
             $x['nama']                     = $d->sert_nama;
             $x['cust_sert_id']             = $d->cust_sert_id;
-            $x['mohon_id']                 = $d->mohon_id;
+            $x['mohon_id']                 = $d->id;
             $x['cust_id']                  = $d->cust_id;
             $x['user_id']                  = $d->user_id;
             $x['sert_id']                  = $d->sert_id;

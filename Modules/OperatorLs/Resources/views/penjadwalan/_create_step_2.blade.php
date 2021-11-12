@@ -43,7 +43,7 @@
 								<input type="text" class="form-control" id="cb_data_id">
 								<small class="form-text">Note: Data re-sertifikasi dan sertifikasi untuk data permohonan; Data surveilans untuk data sertifikat.</small>
 								
-								<input type="hidden"  id="mohon_id" value="">
+								<input type="hidden" id="mohon_id" value="">
 								<input type="hidden" id="sert_id" value="">
 								<input type="hidden" id="sert_nama" value="">
 								<input type="hidden" id="cust_sert_id" value="">

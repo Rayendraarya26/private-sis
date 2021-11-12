@@ -155,7 +155,7 @@
 									<template v-else>
 										<button :disabled="!agreement"
 												:class="{'btn': true, 'btn-primary':agreement, 'btn-outline-primary':!agreement,'btn-block':true}"
-												@click="submitPermohonan"
+												@click="submitLaporan"
 										>
 											<i class="fas fa-cloud-upload"></i> Upload
 										</button>
@@ -288,6 +288,9 @@
 					async addData() {
 						setTimeout(async () => {
 							this.laporan_jenis = null;
+							this.agreement = false;
+							this.loading_submit = false;
+							$("#laporan_filepath").val(null);
 							$("#frmLap").show();
 							$(".tab-content").height("100%");
 						}, 500);						
@@ -303,7 +306,42 @@
                             reverseButtons: true
                         }).then(async (result) => {
                             if (result.value) {
-								
+								var idData = []; 
+								var data = $('#ttData').datagrid('getData');
+								var opts = $('#ttData').datagrid('options');
+								for (var i = 0; i < data.rows.length; i++) {
+									var tr = opts.finder.getTr($('#ttData')[0],i);
+									var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
+									if(atLeastOneIsChecked == true){
+										idData.push(data.rows[i].audit_ppc_id);
+									}
+								}
+								$.ajax({
+									url: `{{url("$url/update")}}`,
+									data: { 'ids[]': idData, 'tipe': 'delete-laporan' },
+									type: 'POST',
+									success: function (response) {
+										toastCenter({
+											type: 'success',
+											title: response.message
+										})
+										setTimeout(async () => {
+											$('#ttData').datagrid('reload');
+											this.laporan_jenis = null;
+											$("#frmLap").hide();
+											$(".tab-content").height("100%");
+										}, 500);	
+										
+									},
+									error: function (err) {
+										if (err.responseJSON.message) {
+											toastCenter({
+												type: 'error',
+												title: err.responseJSON.message
+											})
+										}
+									}
+								});
                             }
                         });
                     },
@@ -322,7 +360,7 @@
 							this.agreement = true
 						}
                     },
-                    submitPermohonan() {
+                    submitLaporan() {
                         swalWithBootstrapButtons({
                             title: `Upload Laporan ?`,
                             text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
@@ -366,8 +404,14 @@
 											toastCenter({
 												type: 'success',
 												title: res.message
-											})
-											setTimeout(() => location.href = "{{url("$url")}}/edit?tipe=upload-laporan&jadw_id={{$dataJadwal->jadw_id}}", 1000)
+											});
+											
+											setTimeout(async () => {
+												$('#ttData').datagrid('reload');
+												this.laporan_jenis = null;
+												$("#frmLap").hide();
+												$(".tab-content").height("100%");
+											}, 500);
 										},
 										error: function (xhr) {
 											self.loading_submit = false;

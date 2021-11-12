@@ -275,7 +275,7 @@ class SertifikatUjiController extends Controller
 				}
                 DB::table('sis_jadwal_audit')
                     ->where('jadw_audit_id', $val)
-                    ->update(['jadw_audit_sertifikat_filepath' => NULL]);
+                    ->update(['jadw_audit_sertifikat_filepath' => NULL, 'jadw_audit_sertifikat_nomor' => NULL]);
             }
 			
 			DB::commit();

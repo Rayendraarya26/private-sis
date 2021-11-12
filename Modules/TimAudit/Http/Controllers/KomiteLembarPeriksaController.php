@@ -197,7 +197,8 @@ class KomiteLembarPeriksaController extends Controller
 		$dataPPC->join('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
 		
 		$dataPPC->selectRaw("GROUP_CONCAT(distinct peg_nama SEPARATOR ', ') AS peg_nama");
-		$dataPPC->selectRaw("GROUP_CONCAT(distinct jadw_audit_sertifikat_nomor SEPARATOR ', ') AS jadw_audit_sertifikat_nomor");
+		$dataPPC->selectRaw("GROUP_CONCAT(DISTINCT jadw_audit_sertifikat_nomor ORDER BY sis_jadwal_audit.jadw_audit_id ASC SEPARATOR ', ') AS jadw_audit_sertifikat_nomor");
+		$dataPPC->selectRaw("GROUP_CONCAT(DISTINCT jadw_audit_sertifikat_filepath ORDER BY sis_jadwal_audit.jadw_audit_id ASC SEPARATOR '; ') AS jadw_audit_sertifikat_filepath");
 		$dataPPC->groupBy('sis_jadwal.jadw_id');
 		
         $parser = [

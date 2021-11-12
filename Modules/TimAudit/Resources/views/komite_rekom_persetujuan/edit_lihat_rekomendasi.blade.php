@@ -33,7 +33,7 @@
 								</thead>
 								<tbody>
 									<tr>
-										<td colspan="3">
+										<td>
 										- Audit dilaksanakan pada {{$dataJadwal->jadw_tanggal_mulai?->format("d M Y")}} s/d {{$dataJadwal->jadw_tanggal_selesai?->format("d M Y")}}
 										<br/>
 										- 
@@ -140,7 +140,16 @@
 											Petugas Pengambil Contoh : {{$ppc->peg_nama}}
 											<hr/>
 											Sertifikat No :
-											{{$ppc->jadw_audit_sertifikat_nomor}}
+											<?php
+												$sertifikat_nomor = explode(", ", $ppc->jadw_audit_sertifikat_nomor);
+												$sertifikat_filepath = explode("; ", $ppc->jadw_audit_sertifikat_filepath);
+												if(!empty($sertifikat_nomor)){
+													foreach($sertifikat_nomor as $key => $val){
+														$path = (isset($sertifikat_filepath[$key])) ? url($sertifikat_filepath[$key]) : '#';
+														echo '<a href="'.$path.'" target="_blank">'. $val .'</a>, ';
+													}
+												}
+											?>
 										@endforeach
 										</td>
 									</tr>

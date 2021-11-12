@@ -198,6 +198,7 @@ class PpcLaporanController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'upload-laporan' => $this->update_upload_laporan($request),
+			'delete-laporan' => $this->delete_laporan($request),
             default          => null,
         };
     }
@@ -248,6 +249,28 @@ class PpcLaporanController extends Controller
              */
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
+
+    private function delete_laporan(Request $request)
+    {
+        try {
+            $status_return = TRUE;
+            foreach ($request->ids as $audit_ppc_id) {
+				$restLaporan = DB::table('sis_audit_ppc')->where('audit_ppc_id', $audit_ppc_id)->first();
+				if ($restLaporan !== null) {
+					@unlink($restLaporan->audit_ppc_filepath);
+					DB::table('sis_audit_ppc')->where('audit_ppc_id', $audit_ppc_id)->delete();
+				}
+            }
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+            }
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }

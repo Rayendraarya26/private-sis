@@ -19,7 +19,7 @@
 					  </div>
 					  <div class="dt-card__body">
 						<div class="accordion" id="accordion-example">
-						  <div class="card">
+							<div class="card">
 								<div class="card-header" id="headingOne"><h5 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">Diajukan untuk</button></h5></div>
 								<div id="collapse-one" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion-example">
 								  <div class="card-body">
@@ -33,24 +33,139 @@
 												<tr><td>Alamat</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
 											</tbody>
 										</table>
+									</div>
 								  </div>
-								</div>
-							</div>
-							<div class="card">
+							    </div>
+								
 								<div class="card-header" id="headingTwo">
 								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">Kronologis kegiatan *)</button></h5>
 								</div>
 								<div id="collapse-two" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion-example">
 								  <div class="card-body">
-									<table class="table">
+									<table class="table mb-0">
 										<tbody>
-											<tr><td>-</td><td>Audit dilaksanakan pada {{$dataJadwal->jadw_tanggal_mulai?->format("d M Y")}} s/d {{$dataJadwal->jadw_tanggal_selesai?->format("d M Y")}}</td></tr>
+											<tr>
+												<td>
+												- Audit dilaksanakan pada {{$dataJadwal->jadw_tanggal_mulai?->format("d M Y")}} s/d {{$dataJadwal->jadw_tanggal_selesai?->format("d M Y")}}
+												<br/>
+												- 
+												</td>
+											</tr>
+											<tr>
+												<td>
+												Permohonan sertifikasi dari pemohon
+												<ul>
+													@foreach($dataMohon as $dp)
+													<li>Surat pemohon No {{$dp->mohon_id}} tanggal {{ $dp->created_at?->format("d M Y") }}</li>
+													@endforeach
+												</ul>
+												
+												</td>
+											</tr>
+											
+											@foreach($dataThp1 as $thp1)
+											<tr>
+												<td>
+													<div class="col-xl-12">
+														<div class="row">
+															<div class="col-md-8">
+															Pelaksanaan Audit Tahap I
+															<br/>
+															Susunan Tim :<br/>{!! $thp1->tim_list !!}
+															<br/>
+															Jumlah Temuan : {{$thp1->total_temuan * $thp1->total_det/ $thp1->total_data}}
+															</div>
+															<div class="col-md-4">
+																Tanggal {{ date('d M Y', strtotime($thp1->aud_thp1_tanggal_mulai)) }}
+															</div>
+														</div>
+													</div>
+												</td>
+											</tr>
+											@endforeach
+											
+											@foreach($dataAudit as $aud)
+											<tr>
+												<td>
+													<div class="col-xl-12">
+														<div class="row">
+															<div class="col-md-8">
+															Pelaksanaan Audit {{$aud->jenis_jadwal}}
+															<br/>
+															Susunan Tim :<br/>{!! $aud->tim_list !!}
+															</div>
+															<div class="col-md-4">
+																Tanggal {{ date('d M Y', strtotime($aud->jadw_tanggal_mulai)) }} s/d {{ date('d M Y', strtotime($aud->jadw_tanggal_selesai)) }}
+															</div>
+															<div class="col-md-12">
+															<div class="table-responsive">
+																  <table class="table table-bordered mb-0 p-0 no-margin">
+																	<thead>
+																	<tr>
+																	  <th scope="col">Status LKS :</th>
+																	  <th class="text-uppercase" scope="col">Kritis</th>
+																	  <th class="text-uppercase" scope="col">Mayor</th>
+																	  <th class="text-uppercase" scope="col">Minor</th>
+																	  <th class="text-uppercase" scope="col">Observasi</th>
+																	  <th class="text-uppercase" scope="col">Total</th>
+																	</tr>
+																	</thead>
+																	<tbody>
+																	<tr>
+																	  <td>LKS yang ditutup</td>
+																	  <td>{{$thp1->total_kritis * $thp1->lks_total/ $thp1->total_data}}</td>
+																	  <td>{{$thp1->total_mayor * $thp1->lks_total/ $thp1->total_data}}</td>
+																	  <td>{{$thp1->total_minor * $thp1->lks_total/ $thp1->total_data}}</td>
+																	  <td>{{$thp1->total_observasi * $thp1->lks_total/ $thp1->total_data}}</td>
+																	  <td>{{ ($thp1->total_kritis * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_mayor * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_minor * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_observasi * $thp1->lks_total/ $thp1->total_data) }}</td>
+																	</tr>
+																	<tr>
+																	  <td>LKS yang tetap ada/baru</td>
+																	  <td>....</td>
+																	  <td>....</td>
+																	  <td>....</td>
+																	  <td>....</td>
+																	  <td>....</td>
+																	</tr>
+																	</tbody>
+																  </table>
+																</div>
+															</div>
+														</div>
+													</div>
+												</td>
+											</tr>
+											@endforeach
 										</tbody>
 									</table>
 								  </div>
 								</div>
+								
+								<div class="card-header" id="heading3">
+								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">3. LKS ditutup tanggal @if($aud->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($aud->lks_expired_date_perbaikan)) }} @endif</button></h5>
+								</div>
+								<div id="collapse-two" class="collapse" aria-labelledby="heading3" data-parent="#accordion-example">
+								  <div class="card-body">
+									@foreach($dataPPC as $ppc)
+										Pengambilan Contoh*) untuk SPPT SNI
+										<hr/>
+										Petugas Pengambil Contoh : {{$ppc->peg_nama}}
+										<hr/>
+										Sertifikat No :
+										<?php
+											$sertifikat_nomor = explode(", ", $ppc->jadw_audit_sertifikat_nomor);
+											$sertifikat_filepath = explode("; ", $ppc->jadw_audit_sertifikat_filepath);
+											if(!empty($sertifikat_nomor)){
+												foreach($sertifikat_nomor as $key => $val){
+													$path = (isset($sertifikat_filepath[$key])) ? url($sertifikat_filepath[$key]) : '#';
+													echo '<a href="'.$path.'" target="_blank">'. $val .'</a>, ';
+												}
+											}
+										?>
+									@endforeach
+								  </div>
+								</div>
 							</div>
-						  </div>
 						</div>
 					  </div>
 					</div>
@@ -63,15 +178,15 @@
 					  </div>
 					  <div class="dt-card__body">
 						<div id="vueRekomendasi">
-							<div class="form-group form-row" id="data_permohonan">
-								<label class="col-xl-3 col-form-label text-sm-left" for="id" >Isi Rekomendasi</label>
-								<div class="col-xl-8">
+							<div class="form-group form-row">
+								<label class="col-md-2 col-sm-3 text-sm-right mb-4 mb-sm-0">Isi Rekomendasi</label>
+								<div class="col-md-10 col-sm-9">
 									<textarea class="form-control" v-on:keyup="validateSertifikat" name="rekmd_komte_isi" id="rekmd_komte_isi">@if(isset($dataJadwal->rekmd_komte_isi)) {{$dataJadwal->rekmd_komte_isi}} @endif</textarea>
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="label-form">Tutup Rekomendasi?</label>
-								<div class="col-md-12">
+							<div class="form-group form-row">
+								<label class="col-md-2 col-sm-3 text-sm-right mb-4 mb-sm-0">Tutup Rekomendasi?</label>
+								<div class="col-md-10 col-sm-9">
 								  <div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status1" value="ditutup" @click="setTutup('ditutup')">
 									<label class="form-check-label" for="aud_thp1_status1">Tutup</label>
@@ -80,6 +195,7 @@
 									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status2" value="on-going" @click="setTutup('on-going')" >
 									<label class="form-check-label" for="aud_thp1_status2">Tidak</label>
 								  </div>
+									<small class="form-text">Note: Jika ditutup maka akan muncul pada menu penilaian komite, jika tidak maka sebaliknya, dan masih bisa diedit.</small>
 								</div>
 							</div>
 							

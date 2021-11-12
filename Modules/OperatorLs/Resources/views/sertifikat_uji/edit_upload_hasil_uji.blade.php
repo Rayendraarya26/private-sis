@@ -236,8 +236,11 @@
 									align: 'center',
 									formatter: function (val, row) {
 										let dom = `dropdownMenu_${row.jadw_audit_id}`;
-										let btnEdit = ``;			
-										btnEdit += `<a href="#" class="btn btn-outline-info btn-xs btn-block" onclick="uploadData(${row.jadw_audit_id})"><i class="fas fa-cloud-upload"></i>Upload</a>`;
+										let btnEdit = ``;	
+										if(row.jadw_audit_sertifikat_filepath !== '')
+											btnEdit += `<a href="#" class="btn btn-outline-warning btn-xs btn-block" onclick="uploadData(${row.jadw_audit_id})"><i class="fas fa-cloud-upload"></i>Upload Ulang</a>`;
+										else
+											btnEdit += `<a href="#" class="btn btn-outline-info btn-xs btn-block" onclick="uploadData(${row.jadw_audit_id})"><i class="fas fa-cloud-upload"></i>Upload</a>`;
 										
 										return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
 									}
@@ -287,7 +290,6 @@
 									}
 								}
 								
-								console.log(idData);
 								$.ajax({
 									url: `{{url("$url/update")}}`,
 									data: { 'ids[]': idData, 'filepath[]': fileData,  'tipe': 'delete-hasil-uji' },
@@ -297,9 +299,13 @@
 											type: 'success',
 											title: response.message
 										})
-
-										let dg = $('#ttData');
-										dg.datagrid('reload');
+										setTimeout(async () => {
+											$('#ttData').datagrid('reload');
+											$("#frmLap").hide();
+											$(".tab-content").height("100%");
+											this.agreement = false;
+											loading_submit = false;
+										}, 500);
 									},
 									error: function (err) {
 										if (err.responseJSON.message) {
@@ -330,7 +336,6 @@
                     },
 					validateSertifikat() {
                         this.jadw_audit_sertifikat_nomor = $("#jadw_audit_sertifikat_nomor").val();
-						console.log(this.jadw_audit_sertifikat_nomor);
                     },
                     submitPermohonan() {
 						if ($.trim($("#jadw_audit_sertifikat_filepath").val()) === "") {
@@ -339,7 +344,7 @@
 										title: "Silahkan Unggah File Sertifikat"
 									});
 						}
-						else if(this.jadw_audit_sertifikat_nomor === ''){
+						else if($("#jadw_audit_sertifikat_nomor").val() === ''){
 							toastCenter({
 										type: 'warning',
 										title: "Silahkan Isi Sertifikat Nomor"
@@ -351,7 +356,7 @@
 								text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
 								type: 'info',
 								showCancelButton: true,
-								confirmButtonText: 'Kirim',
+								confirmButtonText: 'Upload',
 								cancelButtonText: 'Batal',
 								reverseButtons: true
 							}).then(async (result) => {
@@ -379,7 +384,13 @@
 												type: 'success',
 												title: res.message
 											})
-											setTimeout(() => location.href = "{{url("$url")}}/edit?tipe=upload-hasil-uji&jadw_id={{$dataJadwal->jadw_id}}", 1000)
+											setTimeout(async () => {
+												$('#ttData').datagrid('reload');
+												$("#frmLap").hide();
+												$(".tab-content").height("100%");
+												this.agreement = false;
+												loading_submit = false;
+											}, 500);
 										},
 										error: function (xhr) {
 											self.loading_submit = false;
