@@ -584,6 +584,7 @@
 
 <script src="{{ asset('assets/fontawesome/js/all.min.js') }}"></script>
 
+<script src="{{ asset('assets/plugins/ckeditor/ckeditor.js') }}"></script>
 <script src="{{ asset('assets/plugins/easyui/jquery.easyui.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/easyui/datagrid-filter.js') }}"></script>
 <script src="{{ asset('assets/plugins/easyui/datagrid-export.js') }}"></script>
