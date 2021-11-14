@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisJadwalAudit
  * 
  * @property int $jadw_audit_id
- * @property int|null $jadw_id
+ * @property int $jadw_id
  * @property string|null $jadw_audit_status
  * @property string|null $jadw_audit_status_komite
  * @property string|null $jadw_audit_jenis
@@ -37,12 +37,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_audit_kapasitas_produksi_tahunan
  * @property string|null $jadw_audit_kapasitas_produksi_tahunan_satuan
  * @property string|null $jadw_audit_sertifikat_filepath
+ * @property string|null $jadw_audit_sertifikat_nomor
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
- * @property SisJadwal|null $sis_jadwal
+ * @property SisJadwal $sis_jadwal
  * @property SisPermohonan|null $sis_permohonan
  * @property MasterKomoditi|null $master_komoditi
+ * @property MasterSertifikasi|null $master_sertifikasi
+ * @property SisPelangganSertifikasi|null $sis_pelanggan_sertifikasi
  * @property Collection|SisAuditLks[] $sis_audit_lks
  *
  * @package App\Models\BbkkpSis
@@ -83,7 +86,8 @@ class SisJadwalAudit extends Model
 		'jadw_audit_ukuran',
 		'jadw_audit_kapasitas_produksi_tahunan',
 		'jadw_audit_kapasitas_produksi_tahunan_satuan',
-		'jadw_audit_sertifikat_filepath'
+		'jadw_audit_sertifikat_filepath',
+		'jadw_audit_sertifikat_nomor'
 	];
 
 	public function sis_jadwal()
@@ -99,6 +103,16 @@ class SisJadwalAudit extends Model
 	public function master_komoditi()
 	{
 		return $this->belongsTo(MasterKomoditi::class, 'komodt_id');
+	}
+
+	public function master_sertifikasi()
+	{
+		return $this->belongsTo(MasterSertifikasi::class, 'sert_id');
+	}
+
+	public function sis_pelanggan_sertifikasi()
+	{
+		return $this->belongsTo(SisPelangganSertifikasi::class, 'cust_sert_id');
 	}
 
 	public function sis_audit_lks()

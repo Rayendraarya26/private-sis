@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
  * @property string $jadw_team_status
+ * @property string|null $jadw_file_kehadiran
+ * @property string|null $jadw_file_notulen_rapat
  * @property string|null $jadw_jenis
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisBilling $sis_billing
  * @property SisPelanggan $sis_pelanggan
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
+ * @property SisAuditKomiteRekomendasi $sis_audit_komite_rekomendasi
  * @property Collection|SisAuditLapLengkap[] $sis_audit_lap_lengkaps
  * @property Collection|SisAuditLapRingkas[] $sis_audit_lap_ringkas
  * @property Collection|SisAuditObservasi[] $sis_audit_observasis
@@ -61,6 +64,8 @@ class SisJadwal extends Model
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
 		'jadw_team_status',
+		'jadw_file_kehadiran',
+		'jadw_file_notulen_rapat',
 		'jadw_jenis',
 		'cust_id',
 		'jadw_file_jadwal'
@@ -79,6 +84,11 @@ class SisJadwal extends Model
 	public function sis_audit_komite_periksa()
 	{
 		return $this->hasOne(SisAuditKomitePeriksa::class, 'jadw_id');
+	}
+
+	public function sis_audit_komite_rekomendasi()
+	{
+		return $this->hasOne(SisAuditKomiteRekomendasi::class, 'jadw_id');
 	}
 
 	public function sis_audit_lap_lengkaps()

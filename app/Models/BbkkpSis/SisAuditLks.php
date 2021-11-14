@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $lks_bukti_tindakan_perbaikan
  * @property Carbon|null $lks_expired_date_perbaikan
  * @property Carbon|null $lks_input_date_perbaikan
+ * @property string|null $lks_sudah_ditutup
  * @property string|null $lks_status
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
@@ -67,6 +68,7 @@ class SisAuditLks extends Model
 		'lks_bukti_tindakan_perbaikan',
 		'lks_expired_date_perbaikan',
 		'lks_input_date_perbaikan',
+		'lks_sudah_ditutup',
 		'lks_status'
 	];
 

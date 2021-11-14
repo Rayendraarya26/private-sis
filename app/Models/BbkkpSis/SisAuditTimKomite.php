@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $jadw_id
  * @property int $peg_id
  * @property string $komite_posisi
- * @property string|null $komite_penetapan
  * @property Carbon|null $komite_tgl_surat
  * @property Carbon|null $komite_tgl_kesanggupan
  * @property Carbon $created_at
@@ -46,7 +45,6 @@ class SisAuditTimKomite extends Model
 		'jadw_id',
 		'peg_id',
 		'komite_posisi',
-		'komite_penetapan',
 		'komite_tgl_surat',
 		'komite_tgl_kesanggupan'
 	];
