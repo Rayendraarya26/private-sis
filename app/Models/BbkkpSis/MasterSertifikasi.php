@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|MasterKlausulTahap1[] $master_klausul_tahap1s
  * @property Collection|MasterSertifikasiDokumen[] $master_sertifikasi_dokumens
  * @property Collection|MasterSertifikasiKlausul[] $master_sertifikasi_klausuls
+ * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
  * @property Collection|SisPermohonan[] $sis_permohonans
  *
@@ -62,6 +63,11 @@ class MasterSertifikasi extends Model
 	public function master_sertifikasi_klausuls()
 	{
 		return $this->hasMany(MasterSertifikasiKlausul::class, 'sert_id');
+	}
+
+	public function sis_jadwal_audits()
+	{
+		return $this->hasMany(SisJadwalAudit::class, 'sert_id');
 	}
 
 	public function sis_pelanggan_sertifikasis()

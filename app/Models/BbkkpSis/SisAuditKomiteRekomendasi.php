@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $rekmd_komte_kronologin
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * 
+ * @property SisJadwal $sis_jadwal
  *
  * @package App\Models\BbkkpSis
  */
@@ -37,4 +39,9 @@ class SisAuditKomiteRekomendasi extends Model
 		'rekmd_komte_isi',
 		'rekmd_komte_kronologin'
 	];
+
+	public function sis_jadwal()
+	{
+		return $this->belongsTo(SisJadwal::class, 'jadw_id');
+	}
 }

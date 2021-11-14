@@ -43,6 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisPelanggan $sis_pelanggan
  * @property SisPermohonan|null $sis_permohonan
  * @property Collection|SisBillingItems[] $sis_billing_items
+ * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPermohonan[] $sis_permohonans
  *
  * @package App\Models\BbkkpSis
@@ -113,6 +114,11 @@ class SisPelangganSertifikasi extends Model
 	public function sis_billing_items()
 	{
 		return $this->hasMany(SisBillingItems::class, 'cust_sert_id');
+	}
+
+	public function sis_jadwal_audits()
+	{
+		return $this->hasMany(SisJadwalAudit::class, 'cust_sert_id');
 	}
 
 	public function sis_permohonans()
