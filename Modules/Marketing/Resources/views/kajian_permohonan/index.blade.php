@@ -112,7 +112,7 @@
                     },
                 ]);
         });
-		
+
 		function confirmDelete() {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
@@ -130,7 +130,7 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-					var idData = []; 
+					var idData = [];
 					var data = $('#ttData').datagrid('getData');
 					var opts = $('#ttData').datagrid('options');
 					for (var i = 0; i < data.rows.length; i++) {
