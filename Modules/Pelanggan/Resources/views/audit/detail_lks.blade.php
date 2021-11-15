@@ -29,7 +29,7 @@
 
                     <div class="dt-card__header" style="text-align: center">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Laporan Ketidaksesuaian dan Laporan Verifikasi</h3>
+                            <h3 class="dt-card__title">LAPORAN KETIDAKSESUAIAN dan LAPORAN VERIFIKASI</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -84,51 +84,62 @@
                                         <td>Standar Acuan</td>
                                         <td>: {{$data->sis_jadwal_audit->jadw_audit_standart_acuan}}</td>
                                     </tr>
-
-                                    <tr>
-                                        <td>6</td>
-                                        <td>Rekomendasi</td>
-                                        <td>:</td>
-                                    </tr>
                                 </table>
 
-                                <ol class="ol-rekomendasi">
-                                    <li>
-                                        <b>Inisial Auditor</b>: <br>
-                                        {{ $data->sis_jadwal_audit->jadw_tim_kode }}
-                                    </li>
-                                    <li>
-                                        <b>Uraian Ketidaksesuaian</b>: <br>
-                                        {!! $data->lks_uraian_ketidaksesuaian !!}
-                                    </li>
-                                    <li>
-                                        <b>*Tindakan Perbaikan</b>
-                                        <div style="padding: 10px 0 0 10px">
-                                            <h4>Analisis Penyebab</h4>
-                                            {!! $data->lks_perbaikan_analisa !!}
-                                        </div>
-                                        <div style="padding: 10px 0 0 10px">
-                                            <h4>Koreksi</h4>
-                                            {!! $data->lks_perbaikan_koreksi !!}
-                                        </div>
-                                        <div style="padding: 10px 0 0 10px">
-                                            <h4>Tindakan Korektif</h4>
-                                            {!! $data->lks_perbaikan_tindakan !!}
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <b>Bukti Tindakan Perbaikan</b>
-                                        <ol>
-                                            @foreach($data->sis_audit_lks_files as $file)
-                                                <li>
-                                                    <a target="_blank" href="{{asset($file->lks_filepath)}}">
-                                                        Download Berkas</a>
-                                                </li>
-                                            @endforeach
-                                        </ol>
-                                    </li>
-                                </ol>
+
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dt-card">
+                    <div class="dt-card__header">
+                        <div class="dt-card__heading">
+                            <h3 class="dt-card__title" style="text-align: center">
+                                Rekomendasi LKS
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="dt-card__body">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Auditor</th>
+                                    <th>Uraian Ketidaksesuaian</th>
+                                    <th>Tindakan Perbaikan <br>
+                                        <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
+                                    </th>
+                                    <th>Bukti Tindakan Perbaikan</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{$data->sis_jadwal_tim->jadw_tim_kode}}</td>
+                                    <td>
+                                        {!! $data->lks_uraian_ketidaksesuaian !!}
+                                        <br>
+                                        Kategori ketidaksesuaian: {{ucwords($data->lks_kategori_ketidaksesuaian)}} <br>
+                                        Klausul ketidak sesuaian: {!! $data->lks_klausul_ketidaksesuaian !!}
+                                    </td>
+                                    <td>
+                                        {!! $data->lks_perbaikan_analisa !!}
+                                        {!! $data->lks_perbaikan_koreksi !!}
+                                        {!! $data->lks_perbaikan_tindakan !!}
+                                    </td>
+                                    <td>
+                                        {!! $data->lks_bukti_tindakan_perbaikan !!}
+
+                                        @foreach($data->sis_audit_lks_files as $file)
+                                            <br>
+                                            <a href="{{asset($file->lks_filepath)}}">
+                                                <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
+                                            </a>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

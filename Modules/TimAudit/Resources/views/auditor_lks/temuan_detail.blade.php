@@ -1,10 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Edit Temuan LKS')
-
-@push('css')
-    <link rel="stylesheet" href="{{asset('assets/plugins/datetimepicker/tempusdominus-bootstrap-4.min.css')}}">
-@endpush
+@section('title', 'Detail Temuan LKS')
 
 @section('content')
     <div class="dt-content" id="temuanPage">
@@ -138,7 +134,16 @@
                                         {!! $lks->lks_perbaikan_koreksi !!}
                                         {!! $lks->lks_perbaikan_tindakan !!}
                                     </td>
-                                    <td>{!! $lks->lks_bukti_tindakan_perbaikan !!}</td>
+                                    <td>
+                                        {!! $lks->lks_bukti_tindakan_perbaikan !!}
+
+                                        @foreach($lks->sis_audit_lks_files as $file)
+                                            <br>
+                                            <a href="{{asset($file->lks_filepath)}}">
+                                                <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
+                                            </a>
+                                        @endforeach
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

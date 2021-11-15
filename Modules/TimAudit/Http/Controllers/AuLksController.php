@@ -143,7 +143,7 @@ class AuLksController extends Controller
         try {
             // 1.
             $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])->findOrFail($jadwalID);
-            $dataLKS    = SisAuditLks::with('sis_jadwal_tim')->findOrFail($lksID);
+            $dataLKS    = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])->findOrFail($lksID);
 
             $breadcrumbs = [
                 new BreadcrumbsStruct('Tim Audit'),

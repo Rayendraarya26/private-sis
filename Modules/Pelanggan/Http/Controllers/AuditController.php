@@ -69,7 +69,7 @@ class AuditController extends Controller
 
     public function perbaikanLKS(Request $request, $jadwalID, $lksID)
     {
-        $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan'])
+        $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan', 'sis_jadwal_tim'])
             ->join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
             ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
             ->where('sis_jadwal.jadw_id', $jadwalID)
@@ -90,9 +90,10 @@ class AuditController extends Controller
     public function processPerbaikanLKS(Request $request, $jadwalID, $lksID)
     {
         $request->validate([
-            'perbaikan_text_analisis' => 'required',
-            'perbaikan_text_koreksi'  => 'required',
-            'perbaikan_text_tindakan' => 'required',
+            'perbaikan_text_analisis'           => 'required',
+            'perbaikan_text_koreksi'            => 'required',
+            'perbaikan_text_tindakan'           => 'required',
+            'perbaikan_text_tindakan_perbaikan' => 'required',
         ]);
 
         $successDeletedPath = [];
@@ -109,10 +110,11 @@ class AuditController extends Controller
 
             DB::beginTransaction();
 
-            $data->lks_perbaikan_analisa  = $request['perbaikan_text_analisis'];
-            $data->lks_perbaikan_koreksi  = $request['perbaikan_text_koreksi'];
-            $data->lks_perbaikan_tindakan = $request['perbaikan_text_tindakan'];
-            $data->lks_status             = 'revisi';
+            $data->lks_perbaikan_analisa        = $request['perbaikan_text_analisis'];
+            $data->lks_perbaikan_koreksi        = $request['perbaikan_text_koreksi'];
+            $data->lks_perbaikan_tindakan       = $request['perbaikan_text_tindakan'];
+            $data->lks_bukti_tindakan_perbaikan = $request['perbaikan_text_tindakan_perbaikan'];
+            $data->lks_status                   = 'fixed';
             $data->save();
 
             if (count($data->sis_audit_lks_files) > 0) {
@@ -277,6 +279,7 @@ class AuditController extends Controller
             $x['jadw_audit_kode_nace']       = $d->jadw_audit_kode_nace;
 
             $x['lks_id']                       = $d->lks_id;
+            $x['lks_sudah_ditutup']            = $d->lks_sudah_ditutup;
             $x['lks_status']                   = $d->lks_status;
             $x['lks_kategori_ketidaksesuaian'] = $d->lks_kategori_ketidaksesuaian;
             $x['lks_input_date_perbaikan']     = $d->lks_input_date_perbaikan;

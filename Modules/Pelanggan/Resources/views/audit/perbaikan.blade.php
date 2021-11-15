@@ -105,11 +105,15 @@
                                 <ol class="ol-rekomendasi">
                                     <li>
                                         <b>Inisial Auditor</b>: <br>
-                                        {{ $data->sis_jadwal_audit->jadw_tim_kode }}
+                                        {{ $data->sis_jadwal_tim->jadw_tim_kode }}
                                     </li>
                                     <li>
                                         <b>Uraian Ketidaksesuaian</b>: <br>
                                         {!! $data->lks_uraian_ketidaksesuaian !!}
+                                        <br>
+                                        Kategori: {!! $data->lks_kategori_ketidaksesuaian !!}
+                                        <br>
+                                        Klausul: {!! $data->lks_klausul_ketidaksesuaian !!}
                                     </li>
                                     <li>
                                         <b>*Tindakan Perbaikan</b>
@@ -138,15 +142,26 @@
                                     </li>
                                     <li>
                                         <b>Bukti Tindakan Perbaikan</b>
-                                        <small>(jika ada, unggah file bukti perbaikan)</small>
-                                        <form class="dropzone" id="upload_perbaikan" action="#">
-                                            <div class="dz-message" data-dz-message>
-                                                <span>Unggah Berkas Bukti Tindakan Perbaikan (PDF/DOCX/ZIP)</span>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <textarea class="form-control" placeholder="Masukkaan deskripsi..."
+                                                          name="editor_tindakan_perbaikan"
+                                                          aria-label="editor revisi korektif"
+                                                          id="editor_tindakan_perbaikan">{{old('editor_tindakan_perbaikan')}}</textarea>
                                             </div>
-                                        </form>
-                                        <button class="btn btn-xs btn-danger" @click="resetDropzone">
-                                            <i class="fas fa-undo"></i> Bersihkan semua berkas
-                                        </button>
+                                            <div class="col-md-6">
+                                                <small>(jika ada, unggah file bukti perbaikan)</small>
+                                                <form class="dropzone" id="upload_perbaikan" action="#">
+                                                    <div class="dz-message" data-dz-message>
+                                                        <span>Unggah Berkas Bukti Tindakan Perbaikan (PDF/DOCX/ZIP)</span>
+                                                    </div>
+                                                </form>
+                                                <button class="btn btn-xs btn-danger" @click="resetDropzone">
+                                                    <i class="fas fa-undo"></i> Bersihkan semua berkas
+                                                </button>
+                                            </div>
+                                        </div>
                                     </li>
                                 </ol>
 
@@ -202,6 +217,7 @@
                         this.buildTinyMCEPenyebab()
                         this.buildTinyMCEKoreksi()
                         this.buildTinyMCETindakan()
+                        this.buildTinyMCETindakanPerbaikan();
                     }, 500)
                 },
                 methods: {
@@ -321,8 +337,38 @@
                             ],
                         });
                     },
-                    destroyTinyMCE() {
-                        tinymce.remove("#editor_perbaikan");
+                    buildTinyMCETindakanPerbaikan() {
+                        $("#editor_tindakan_perbaikan").html(`
+                            <p>Tindakan Perbaikan:</p>
+                            <ul>
+                            <li>....</li>
+                            <li>....</li>
+                            </ul>
+                            <p>&nbsp;</p>
+                            <p>&nbsp;</p>`);
+
+                        tinyMCE.init({
+                            invalid_elements: "script",
+                            selector: '#editor_tindakan_perbaikan',
+                            plugins: 'autosave link image lists',
+                            relative_urls: false,
+                            height: 500,
+                            placeholder: 'Tuliskan tindakan perbaikan...',
+                            images_reuse_filename: true,
+                            automatic_uploads: true,
+                            images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+                            images_upload_credentials: true,
+                            toolbar: [
+                                {name: 'history', items: ['undo', 'redo']},
+                                {name: 'styles', items: ['styleselect']},
+                                {name: 'formatting', items: ['bold', 'italic']},
+                                {name: 'alignment', items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']},
+                                {name: 'list', items: ['bullist', 'numlist']},
+                                {name: 'indentation', items: ['outdent', 'indent']},
+                                {name: 'link', items: ['link', 'image']},
+                                {name: 'restore', items: ['restoredraft']},
+                            ],
+                        });
                     },
                     submit() {
                         swalWithBootstrapButtons({
@@ -339,6 +385,7 @@
                                 formData.append("perbaikan_text_analisis", tinymce.get("editor_perbaikan_analisis").getContent())
                                 formData.append("perbaikan_text_koreksi", tinymce.get("editor_perbaikan_tindakan").getContent())
                                 formData.append("perbaikan_text_tindakan", tinymce.get("editor_perbaikan_korektif").getContent())
+                                formData.append("perbaikan_text_tindakan_perbaikan", tinymce.get("editor_tindakan_perbaikan").getContent())
                                 if (this.perbaikan_berkas.length > 0) {
                                     this.perbaikan_berkas.map(e => {
                                         formData.append("berkas[]", e)
