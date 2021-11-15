@@ -41,21 +41,21 @@
                                             <input class="form-control" type="text" name="sert_nama" id="sert_nama" value="{{old('sert_nama')}}">
                                         </div>
                                     </div>
-									
+
 									<div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="sert_expired">Waktu Max Kadaluarsa(Tahun)*</label>
                                         <div class="col-sm-4">
                                             <input class="form-control" type="text" name="sert_expired" id="sert_expired" value="{{old('sert_expired')}}">
                                         </div>
                                     </div>
-									
+
 									<div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="sert_format_referensi">Format No. Referensi *</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" type="text" name="sert_format_referensi" id="sert_format_referensi" value="{{old('sert_format_referensi')}}">
                                         </div>
                                     </div>
-									
+
 									<div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="sert_is_product">Merupakan Sertifikasi Produk? *</label>
                                         <div class="col-sm-8">
@@ -65,14 +65,13 @@
 											</div>
 											<div class="form-check form-check-inline">
 												<input class="form-check-input" type="radio" name="sert_is_product" id="sert_is_product" value="tidak" {{old('sert_is_product') == "tidak" ? "checked" :""}}>
-												<label class="form-check-label" for="sert_is_product">Tidak</label>
-											</div>
+                                                <label class="form-check-label" for="sert_is_product">Tidak</label>
+                                            </div>
                                         </div>
                                     </div>
-									
-									
-									
-									<div class="form-group row">
+
+
+                                    <div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="sert_deskripsi">
                                             Deskripsi
                                         </label>
@@ -82,8 +81,7 @@
                                                       id="sert_deskripsi">{{old('sert_deskripsi')}}</textarea>
                                         </div>
                                     </div>
-									
-									
+
 
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
@@ -107,7 +105,8 @@
             referrerpolicy="origin"></script>
 
     <script>
-        tinymce.init({
+        tinyMCE.init({
+            invalid_elements: "script",
             selector: '#sert_deskripsi',
             plugins: 'autosave link image code lists',
             relative_urls: false,

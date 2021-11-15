@@ -229,7 +229,7 @@
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        url: `{{url("$url/delete")}}`,
+                        url: `{{url("$url/temuan/{jadw_id}/delete/{lks_id}")}}`,
                         type: 'DELETE',
                         dataType: 'json',
                         data: {mohon_id: id},

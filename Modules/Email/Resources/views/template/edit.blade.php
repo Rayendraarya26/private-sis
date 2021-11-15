@@ -101,7 +101,8 @@
             referrerpolicy="origin"></script>
 
     <script>
-        tinymce.init({
+        tinyMCE.init({
+            invalid_elements: "script",
             selector: '#template_mail_body',
             plugins: 'autosave link image code lists',
             relative_urls: false,

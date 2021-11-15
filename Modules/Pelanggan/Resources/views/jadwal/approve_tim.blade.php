@@ -207,7 +207,8 @@
                 },
                 methods: {
                     buildTinyMCE() {
-                        tinymce.init({
+                        tinyMCE.init({
+                            invalid_elements: "script",
                             selector: '#editor_revisi',
                             plugins: 'autosave link image lists',
                             relative_urls: false,

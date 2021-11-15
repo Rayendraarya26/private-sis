@@ -132,7 +132,7 @@ class JadwalController extends Controller
 
     public function processApproveTanggal(Request $request, $jadwalID)
     {
-        $request->validate(['jadw_tanggal_status' => 'required', Rule::in(['revisi', 'accepted'])]);
+        $request->validate(['jadw_tanggal_status' => ['required', Rule::in(['revisi', 'accepted'])]]);
 
         try {
             DB::beginTransaction();
@@ -197,7 +197,7 @@ class JadwalController extends Controller
 
     public function processApproveTim(Request $request, $jadwalID)
     {
-        $request->validate(['jadw_team_status' => 'required', Rule::in(['revisi', 'accepted'])]);
+        $request->validate(['jadw_team_status' => ['required', Rule::in(['revisi', 'accepted'])]]);
 
         try {
             DB::beginTransaction();

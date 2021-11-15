@@ -14,21 +14,23 @@ trait AuditorTraits
     public function involvedAuditor(int $jadwalID)
     {
         $pegawaiID = auth()->user()->master_pegawai->peg_id;
-        $data      = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan'])
-            ->with([
-                'sis_jadwal_tims' => function ($query) use ($pegawaiID) {
-                    $query->where('peg_id', $pegawaiID);
-                }
-            ])->where('jadw_id', $jadwalID)->first();
+        $data      = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])
+            ->where('jadw_id', $jadwalID)->first();
 
         if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+
+        $involved = false;
+        foreach ($data->sis_jadwal_tims as $tim) {
+            if ($tim->peg_id == $pegawaiID && in_array($tim->jadw_tim_posisi, ['ketua', 'auditor'])) $involved = true;
+        }
+        if (!$involved) throw new Exception("Anda tidak bergabung dalam Tim Auditor sebagai ketua/auditor");
 
         $open = false;
         foreach ($data->sis_jadwal_audits as $ja) {
             if ($ja->jadw_audit_status_komite == 'on-going') $open = true;
         }
 
-        if (!$open) throw new Exception("Audit sudah diajukan ke komite");
+        if (!$open) throw new Exception("Proses audit sudah diajukan ke Komite");
 
         return $data;
     }

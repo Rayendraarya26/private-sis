@@ -14,6 +14,11 @@
                         </button>
                     </div>
                 @endif
+                @error('message')
+                <div class="alert alert-danger">
+                    {{$message}}
+                </div>
+                @enderror
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
@@ -71,8 +76,8 @@
                                         <ol>
                                             @foreach($data->sis_jadwal_tims as $tim)
                                                 <li>
-                                                    {{$tim->master_pegawai->peg_nama}}
-                                                    ({{ucwords($tim->jadw_tim_posisi)}})
+                                                    {{$tim->master_pegawai->peg_nama}} | {{$tim->jadw_tim_kode}}
+                                                    <b>({{ucwords($tim->jadw_tim_posisi)}})</b>
                                                 </li>
                                             @endforeach
                                         </ol>
@@ -116,6 +121,44 @@
 @push("javascript")
     <script src="{{asset('assets/plugins/easyui/datagrid-detailview.js')}}"></script>
     <script>
+        function confirmDelete(lksID) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Hapus LKS ?`,
+                text: `Menghapus data LKS bersifat permanen dan tidak dapat di kembalikan`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: `{{url("$url/temuan/$data->jadw_id/delete")}}/${lksID}`,
+                        type: 'DELETE',
+                        dataType: 'json',
+                        success: function (response) {
+                            toastCenter({
+                                type: 'success',
+                                title: response.message
+                            })
+
+                            $('#ttData').datagrid('reload');
+                        },
+                        error: function (xhr) {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+
         $(function () {
             let dg = $('#ttData').datagrid({
                 title: "Data LKS",
@@ -150,9 +193,9 @@
                         width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnDetail = `<button class="btn btn-xs btn-outline-primary" title="Detail"><i class="fas fa-eye"></i></button>`
-                            let btnEdit   = `<button class="btn btn-xs btn-outline-warning" title="Edit"><i class="fas fa-pencil"></i></button>`
-                            let btnDelete = `<button class="btn btn-xs btn-outline-danger"  title="Delete"><i class="fas fa-trash-alt"></i></button>`
+                            let btnDetail = `<a href="{{url("$url/temuan/$data->jadw_id/detail")}}/${row.lks_id}" class="btn btn-xs btn-outline-primary" title="Detail"><i class="fas fa-eye"></i></a>`
+                            let btnEdit   = `<a href="{{url("$url/temuan/$data->jadw_id/edit")}}/${row.lks_id}" class="btn btn-xs btn-outline-warning" title="Edit"><i class="fas fa-pencil"></i></a>`
+                            let btnDelete = `<button onclick="confirmDelete(${row.lks_id})" class="btn btn-xs btn-outline-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>`
 
                             if (row.lks_sudah_ditutup == "tidak") {
                                 if (!row.allow_modify) {

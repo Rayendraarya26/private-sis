@@ -32,7 +32,7 @@
                                 <form method="post" action="{{action("$module@update")}}">
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
-									
+
 									<input type="hidden" name="tipe" value="update-revisi">
 									<input type="hidden" name="mohon_id" value="{{$dataPermohon->mohon_id}}">
 									<input type="hidden" name="status_tipe" value="revisi">
@@ -42,8 +42,8 @@
                                             <input type="text" id="status_judul" name="status_judul" class="form-control" value="{{old('status_judul')}}"/>
                                         </div>
                                     </div>
-									
-									
+
+
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="status_pesan">Pernyataan *</label>
                                         <div class="col-sm-8">
@@ -52,7 +52,7 @@
                                                       id="status_pesan">{{old('status_pesan')}}</textarea>
                                         </div>
                                     </div>
-									
+
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
                                             <i class="fas fa-save"></i> Simpan
@@ -73,7 +73,8 @@
             referrerpolicy="origin"></script>
 
     <script>
-        tinymce.init({
+        tinyMCE.init({
+            invalid_elements: "script",
             selector: '#status_pesan',
             plugins: 'autosave link image code lists',
             relative_urls: false,

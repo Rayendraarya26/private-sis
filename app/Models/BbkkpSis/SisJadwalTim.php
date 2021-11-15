@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterPegawai $master_pegawai
  * @property SisJadwal|null $sis_jadwal
  * @property Collection|SisAuditDaftarPeriksa[] $sis_audit_daftar_periksas
+ * @property Collection|SisAuditLks[] $sis_audit_lks
  * @property Collection|SisAuditLogbook[] $sis_audit_logbooks
  *
  * @package App\Models\BbkkpSis
@@ -66,6 +67,11 @@ class SisJadwalTim extends Model
 	public function sis_audit_daftar_periksas()
 	{
 		return $this->hasMany(SisAuditDaftarPeriksa::class, 'jadw_tim_id');
+	}
+
+	public function sis_audit_lks()
+	{
+		return $this->hasMany(SisAuditLks::class, 'jadw_tim_id');
 	}
 
 	public function sis_audit_logbooks()

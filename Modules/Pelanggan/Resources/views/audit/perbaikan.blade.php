@@ -234,6 +234,7 @@
                         `);
 
                         tinyMCE.init({
+                            invalid_elements: "script",
                             selector: '#editor_perbaikan_analisis',
                             plugins: 'autosave link image lists',
                             relative_urls: false,
@@ -265,6 +266,7 @@
                         `);
 
                         tinyMCE.init({
+                            invalid_elements: "script",
                             selector: '#editor_perbaikan_tindakan',
                             plugins: 'autosave link image lists',
                             relative_urls: false,
@@ -297,6 +299,7 @@
                             <p>&nbsp;</p>`);
 
                         tinyMCE.init({
+                            invalid_elements: "script",
                             selector: '#editor_perbaikan_korektif',
                             plugins: 'autosave link image lists',
                             relative_urls: false,
