@@ -25,6 +25,7 @@ use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
 use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
+use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
 use Modules\TimAudit\Http\Controllers\PpcLaporanController;
 use Modules\TimAudit\Http\Controllers\PpcLogBookController;
@@ -128,6 +129,13 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::any('/ajax', [KomiteRekomPersetujuanController::class, 'ajax']);
             Route::get('/edit', [KomiteRekomPersetujuanController::class, 'edit']);
             Route::post('/update', [KomiteRekomPersetujuanController::class, 'update']);
+        });
+		
+		Route::prefix("daftar-hadir")->group(function () {
+            Route::get('/', [KomiteDaftarHadirController::class, 'index']);
+            Route::any('/ajax', [KomiteDaftarHadirController::class, 'ajax']);
+            Route::get('/edit', [KomiteDaftarHadirController::class, 'edit']);
+            Route::post('/update', [KomiteDaftarHadirController::class, 'update']);
         });
 
         Route::prefix("lembar-periksa")->group(function () {
