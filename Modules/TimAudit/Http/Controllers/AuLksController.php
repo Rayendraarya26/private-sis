@@ -274,8 +274,7 @@ class AuLksController extends Controller
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
             $x['cust_nama']            = $d->cust_nama;
             $x['sert_nama']            = $d->sert_nama;
-            $x['jadw_jenis']           = $d->jadw_jenis;
-            $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
+            $x['jadw_jenis']           = ucwords($d->jadw_jenis);
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
             $x['total_temuan']         = $totalTemuanLKS;
             array_push($result, $x);

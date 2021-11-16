@@ -103,6 +103,8 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
         Route::prefix("daftar-hadir")->group(function () {
             Route::get('/', [AuDaftarHadirController::class, 'index']);
             Route::get('/ajax', [AuDaftarHadirController::class, 'ajax']);
+            Route::get('/unggah/{jadw_id}', [AuDaftarHadirController::class, 'unggah']);
+            Route::post('/unggah/{jadw_id}', [AuDaftarHadirController::class, 'storeUnggah']);
         });
 
         Route::prefix("log-book")->group(function () {

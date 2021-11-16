@@ -66,7 +66,7 @@
                 ]],
                 columns: [[
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
+                    {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
                     {
                         field: 'total_jadwal', title: 'Jadwal', width: 80, sortable: true,
                         formatter: function (val) {

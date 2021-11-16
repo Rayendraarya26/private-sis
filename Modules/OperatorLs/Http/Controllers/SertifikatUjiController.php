@@ -5,7 +5,6 @@ namespace Modules\OperatorLs\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisPelangganPabrik;
-
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -27,36 +26,36 @@ class SertifikatUjiController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view("$this->view.index")->with($parser);
     }
-	
-	public function ajax(Request $request)
+
+    public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit' => $this->ajax_datagrid_jadwal_audit($request),
-            'datagrid-hasil-uji' => $this->ajax_datagrid_hasil_uji($request),
-            'data-list-uji' => $this->ajax_data_list_uji($request),
+            'datagrid-hasil-uji'    => $this->ajax_datagrid_hasil_uji($request),
+            'data-list-uji'         => $this->ajax_data_list_uji($request),
             default                 => null,
         };
     }
-	
-	private function ajax_data_list_uji(Request $request)
-	{
-		$data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
+
+    private function ajax_data_list_uji(Request $request)
+    {
+        $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		$data->select('sis_jadwal_audit.*', "sert_nama AS sert_nama");
-		$data->where('sis_jadwal_audit.jadw_audit_id', '=', $request['jadw_audit_id']);
-		$result = [];
-		foreach ($data->get() as $d) {
+        $data->select('sis_jadwal_audit.*', "sert_nama AS sert_nama");
+        $data->where('sis_jadwal_audit.jadw_audit_id', '=', $request['jadw_audit_id']);
+        $result = [];
+        foreach ($data->get() as $d) {
             $x['jadw_audit_sertifikat_filepath'] = ($d->jadw_audit_sertifikat_filepath != '') ? $d->jadw_audit_sertifikat_filepath : '';
-            $x['sert_nama'] = ($d->sert_nama != '') ? $d->sert_nama : '';
+            $x['sert_nama']                      = ($d->sert_nama != '') ? $d->sert_nama : '';
             array_push($result, $x);
         }
 
-		return response()->json($x);
-	}
-	
-	private function ajax_datagrid_hasil_uji(Request $request)
+        return response()->json($x);
+    }
+
+    private function ajax_datagrid_hasil_uji(Request $request)
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
@@ -65,10 +64,10 @@ class SertifikatUjiController extends Controller
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
-        
+
         $data->where('sis_jadwal_audit.jadw_id', '=', $request['jadw_id']);
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
-		#$data->where('master_sertifikasi.sert_is_product', '=', 'ya');
+        #$data->where('master_sertifikasi.sert_is_product', '=', 'ya');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -85,23 +84,23 @@ class SertifikatUjiController extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
-            $x['jadw_audit_id']              = $d->jadw_audit_id;
-            $x['jadw_audit_jenis']              = $d->jadw_audit_jenis;
-            $x['mohon_id']              = $d->mohon_id;
-            $x['sert_nama']              = $d->sert_nama;
-            $x['komodt_nama']              = $d->komodt_nama;
+            $x['jadw_audit_id']               = $d->jadw_audit_id;
+            $x['jadw_audit_jenis']            = $d->jadw_audit_jenis;
+            $x['mohon_id']                    = $d->mohon_id;
+            $x['sert_nama']                   = $d->sert_nama;
+            $x['komodt_nama']                 = $d->komodt_nama;
             $x['jadw_audit_sni']              = $d->jadw_audit_sni;
-            $x['jadw_audit_ruang_lingkup']              = $d->jadw_audit_ruang_lingkup;
-            $x['jadw_audit_sertifikat_nomor']              = $d->jadw_audit_sertifikat_nomor;
+            $x['jadw_audit_ruang_lingkup']    = $d->jadw_audit_ruang_lingkup;
+            $x['jadw_audit_sertifikat_nomor'] = $d->jadw_audit_sertifikat_nomor;
 
             $x['jadw_audit_sertifikat_filepath'] = ($d->jadw_audit_sertifikat_filepath != '') ? '<a class=" " target="_blank" href = "' . url($d->jadw_audit_sertifikat_filepath) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
-            $x['file'] = ($d->jadw_audit_sertifikat_filepath != '') ? $d->jadw_audit_sertifikat_filepath : '';
+            $x['file']                           = ($d->jadw_audit_sertifikat_filepath != '') ? $d->jadw_audit_sertifikat_filepath : '';
             array_push($result, $x);
         }
 
         return response()->json(["rows" => $result]);
     }
-	
+
     private function ajax_datagrid_jadwal_audit(Request $request)
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
@@ -124,7 +123,7 @@ class SertifikatUjiController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-		
+
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
@@ -155,7 +154,7 @@ class SertifikatUjiController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'upload-hasil-uji' => $this->edit_upload_hasil_uji($request),
-            default          => null,
+            default            => null,
         };
     }
 
@@ -164,7 +163,7 @@ class SertifikatUjiController extends Controller
         $breadcrumbs = [
             new BreadcrumbsStruct('Operator Lembaga Sertifikasi'),
             new BreadcrumbsStruct('Upload Sertifikat Hasil Uji', url($this->url)),
-            new BreadcrumbsStruct('Upload Hasil Uji Jadwal #'. $request['jadw_id']),
+            new BreadcrumbsStruct('Upload Hasil Uji Jadwal #' . $request['jadw_id']),
         ];
 
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
@@ -201,8 +200,8 @@ class SertifikatUjiController extends Controller
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.jadw_tim_id) AS jadw_tim_id");
         $dataJadwal->groupBy('sis_jadwal.jadw_id');
         $restJadwal = $dataJadwal->get()[0];
-		
-		$dataPabrik = SisPelangganPabrik::where('cust_id', $restJadwal->cust_id);
+
+        $dataPabrik = SisPelangganPabrik::where('cust_id', $restJadwal->cust_id);
         $dataPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_pelanggan_pabrik.kab_id');
         $dataPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_pelanggan_pabrik.kec_id');
         $dataPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_pelanggan_pabrik.prov_id');
@@ -218,16 +217,16 @@ class SertifikatUjiController extends Controller
         return match ($request['tipe']) {
             'upload-hasil-uji' => $this->update_upload_hasil_uji($request),
             'delete-hasil-uji' => $this->delete_hasil_uji($request),
-            default          => null,
+            default            => null,
         };
     }
 
     private function update_upload_hasil_uji(Request $request)
     {
         $request->validate([
-            "jadw_audit_id"               => 'required',
-            "jadw_id"           => 'required',
-            "jadw_audit_sertifikat_nomor"      => 'required',
+            "jadw_audit_id"                       => 'required',
+            "jadw_id"                             => 'required',
+            "jadw_audit_sertifikat_nomor"         => 'required',
             "jadw_audit_sertifikat_filepath"      => 'required',
             "jadw_audit_sertifikat_filepath_lama" => 'nullable',
         ]);
@@ -240,16 +239,16 @@ class SertifikatUjiController extends Controller
 
             $restJadwal = $dataJadwal->get()[0];
             // DEFINE BASE UPLOAD AND UPDATE jadw_audit_sertifikat_filepath
-            $baseFileUpload  = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
-            $fileData     = $request->file('jadw_audit_sertifikat_filepath');
-            $fileName = Str::slug('file-sertifikasi-uji-'. $request['jadw_audit_id'] .'-'. $fileData->getClientOriginalName()) . '-' . time() . '.' . $fileData->getClientOriginalExtension();
-            $filePath = sprintf("%s/%s", $baseFileUpload, $fileName);
+            $baseFileUpload = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
+            $fileData       = $request->file('jadw_audit_sertifikat_filepath');
+            $fileName       = Str::slug('file-sertifikasi-uji-' . $request['jadw_audit_id'] . '-' . $fileData->getClientOriginalName()) . '-' . time() . '.' . $fileData->getClientOriginalExtension();
+            $filePath       = sprintf("%s/%s", $baseFileUpload, $fileName);
             $fileData->move($baseFileUpload, $fileName);
 
             DB::beginTransaction();
-             DB::table('sis_jadwal_audit')
-                    ->where('jadw_audit_id', $request['jadw_audit_id'])
-                    ->update(['jadw_audit_sertifikat_filepath' => $filePath, 'jadw_audit_sertifikat_nomor' => $request['jadw_audit_sertifikat_nomor']]);
+            DB::table('sis_jadwal_audit')
+                ->where('jadw_audit_id', $request['jadw_audit_id'])
+                ->update(['jadw_audit_sertifikat_filepath' => $filePath, 'jadw_audit_sertifikat_nomor' => $request['jadw_audit_sertifikat_nomor']]);
             if ($request['jadw_audit_sertifikat_filepath_lama'] != '') {
                 @unlink($request['jadw_audit_sertifikat_filepath_lama']);
             }
@@ -263,22 +262,22 @@ class SertifikatUjiController extends Controller
             return responseJSON(500, [], $e->getMessage());
         }
     }
-	
-	private function delete_hasil_uji(Request $request)
+
+    private function delete_hasil_uji(Request $request)
     {
         try {
             $status_return = TRUE;
-			DB::beginTransaction();
+            DB::beginTransaction();
             foreach ($request->ids as $key => $val) {
-				if($request['filepath'][$key] != ''){
-					 @unlink($request['filepath'][$key]);
-				}
+                if ($request['filepath'][$key] != '') {
+                    @unlink($request['filepath'][$key]);
+                }
                 DB::table('sis_jadwal_audit')
                     ->where('jadw_audit_id', $val)
                     ->update(['jadw_audit_sertifikat_filepath' => NULL, 'jadw_audit_sertifikat_nomor' => NULL]);
             }
-			
-			DB::commit();
+
+            DB::commit();
             if ($status_return == TRUE) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
