@@ -14,6 +14,11 @@
                         </button>
                     </div>
                 @endif
+                @error('message')
+                <div class="alert alert-danger">
+                    {{$message}}
+                </div>
+                @enderror
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
@@ -52,9 +57,9 @@
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.sudah_mengisi) {
-                                return `<a href="{{url("$url/laporan")}}" class="btn btn-xs btn-warning"><i class="fas fa-refresh"></i> Perbarui</a>`
+                                return `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block"><i class="fas fa-refresh"></i> Perbarui</a>`
                             } else {
-                                return `<a href="#" class="btn btn-xs btn-primary"><i class="fas fa-plus"></i> Buat</a>`
+                                return `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-plus"></i> Buat</a>`
                             }
                         },
                     },

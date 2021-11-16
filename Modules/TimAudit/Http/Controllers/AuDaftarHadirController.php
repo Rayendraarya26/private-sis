@@ -34,12 +34,12 @@ class AuDaftarHadirController extends Controller
     public function unggah(Request $request, $jadwalID)
     {
         try {
+            $dataJadwal  = $this->isKepalaAudit($jadwalID);
             $breadcrumbs = [
                 new BreadcrumbsStruct('Tim Audit'),
                 new BreadcrumbsStruct('Auditor', url($this->url)),
                 new BreadcrumbsStruct('Daftar Hadir'),
             ];
-            $dataJadwal  = $this->isKepalaAudit($jadwalID);
 
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
 

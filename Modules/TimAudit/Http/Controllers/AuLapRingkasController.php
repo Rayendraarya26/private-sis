@@ -3,13 +3,19 @@
 namespace Modules\TimAudit\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Models\BbkkpSis\SisAuditLapRingkas;
 use App\Models\BbkkpSis\SisJadwal;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Modules\TimAudit\Http\Traits\AuditorTraits;
 
 class AuLapRingkasController extends Controller
 {
+    use AuditorTraits;
+
     public $module = self::class;
     private $url = 'timaudit/auditor/laporan-ringkas';
     private $view = "timaudit::auditor_laporan_ringkas";
@@ -24,6 +30,140 @@ class AuLapRingkasController extends Controller
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view("$this->view.index")->with($parser);
+    }
+
+    public function laporan(Request $request, $jadwalID)
+    {
+        try {
+            $dataJadwal  = $this->isKepalaAudit($jadwalID);
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Tim Audit'),
+                new BreadcrumbsStruct('Auditor', url($this->url)),
+                new BreadcrumbsStruct('Laporan Ringkas', url($this->url)),
+                new BreadcrumbsStruct('Laporan'),
+            ];
+
+            $dataLKS = [
+                'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+                'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+                'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+                'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
+            ];
+
+            foreach ($dataJadwal->sis_jadwal_audits as $ja) {
+                foreach ($ja->sis_audit_lks as $lks) {
+                    switch ($lks->lks_kategori_ketidaksesuaian) {
+                        case 'kritis':
+                            // jumlah
+                            $dataLKS['jumlah']['kritis'] += 1;
+                            // klausul
+                            $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                            // no lks
+                            $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
+                            // tgl penyelesaian
+                            if (!empty($lks->lks_expired_date_perbaikan)) {
+                                if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
+                                    $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                } else {
+                                    if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
+                                        $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                    }
+                                }
+                            }
+                            break;
+                        case 'mayor':
+                            // jumlah
+                            $dataLKS['jumlah']['mayor'] += 1;
+                            // klausul
+                            $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                            // no lks
+                            $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
+                            // tgl penyelesaian
+                            if (!empty($lks->lks_expired_date_perbaikan)) {
+                                if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
+                                    $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                } else {
+                                    if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
+                                        $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                    }
+                                }
+                            }
+                            break;
+                        case 'minor':
+                        case 'observasi':
+                            // jumlah
+                            $dataLKS['jumlah']['minor'] += 1;
+                            // klausul
+                            $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                            // no lks
+                            $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
+                            // tgl penyelesaian
+                            if (!empty($lks->lks_expired_date_perbaikan)) {
+                                if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
+                                    $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                } else {
+                                    if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
+                                        $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
+
+            return view("$this->view.add_or_update_lap_ringkas")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function processLaporan(Request $request, $jadwalID)
+    {
+        $request->validate([
+            'lap_ringkas_filepath'    => 'nullable|max:5000|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
+            'lap_ringkas_kesimpulan'  => 'required',
+            'lap_ringkas_rekomendasi' => 'required',
+        ]);
+
+        $newFilePath = [];
+        $oldFilePath = [];
+        try {
+            $dataJadwal = $this->isKepalaAudit($jadwalID);
+            if (!empty($dataJadwal->sis_audit_lap_ringkas?->lap_ringkas_filepath)) array_push($oldFilePath, $dataJadwal->sis_audit_lap_ringkas?->lap_ringkas_filepath);
+
+
+            $where          = ['jadw_id' => $dataJadwal->jadw_id];
+            $updateOrCreate = [];
+
+            $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
+            if ($request->hasFile('lap_ringkas_filepath')) {
+                $fileKehadiran     = $request->file('lap_ringkas_filepath');
+                $fileKehadiranName = Str::slug('file-laporan-ringkas' . $request['jadw_tim_id'] . '-' . $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
+                $fileKehadiranPath = sprintf("%s/%s", $baseFileUpload, $fileKehadiranName);
+                $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
+
+                $updateOrCreate['lap_ringkas_filepath'] = $fileKehadiranPath;
+                array_push($newFilePath, public_path($fileKehadiranPath));
+            }
+
+            $updateOrCreate['lap_ringkas_kesimpulan']  = $request['lap_ringkas_kesimpulan'];
+            $updateOrCreate['lap_ringkas_rekomendasi'] = $request['lap_ringkas_rekomendasi'];
+
+            SisAuditLapRingkas::updateOrCreate($where, $updateOrCreate);
+
+            foreach ($oldFilePath as $path) { // remove old file
+                @unlink($path);
+            }
+            return redirect(url($this->url))->with('message', "Laporan ringkas berhasil ditambahkan");
+        } catch (Exception $e) {
+            foreach ($newFilePath as $path) { // remove new file uploaded
+                @unlink($path);
+            }
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function ajax(Request $request)
@@ -99,14 +239,5 @@ class AuLapRingkasController extends Controller
 
 
         return response()->json(["total" => $total, "rows" => $result]);
-    }
-
-    public function laporan(Request $request)
-    {
-
-    }
-    public function processLaporan(Request $request)
-    {
-
     }
 }

@@ -23,15 +23,14 @@ use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
 use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
+use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
-use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
 use Modules\TimAudit\Http\Controllers\PpcLaporanController;
 use Modules\TimAudit\Http\Controllers\PpcLogBookController;
 
-// Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
-Route::prefix('timaudit')->middleware(['auth'])->group(function () {
+Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
     // ============================== Persetujuan TIM ==============================
     Route::prefix("persetujuan-tim")->group(function () {
         Route::prefix("auditor")->group(function () {
@@ -90,8 +89,8 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
         Route::prefix("laporan-ringkas")->group(function () {
             Route::get('/', [AuLapRingkasController::class, 'index']);
             Route::get('/ajax', [AuLapRingkasController::class, 'ajax']);
-            Route::get('/laporan', [AuLapRingkasController::class, 'laporan']);
-            Route::post('/laporan', [AuLapRingkasController::class, 'processLaporan']);
+            Route::get('/laporan/{jadw_id}', [AuLapRingkasController::class, 'laporan']);
+            Route::post('/laporan/{jadw_id}', [AuLapRingkasController::class, 'processLaporan']);
         });
 
         Route::prefix("laporan-lengkap")->group(function () {
@@ -130,8 +129,8 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/edit', [KomiteRekomPersetujuanController::class, 'edit']);
             Route::post('/update', [KomiteRekomPersetujuanController::class, 'update']);
         });
-		
-		Route::prefix("daftar-hadir")->group(function () {
+
+        Route::prefix("daftar-hadir")->group(function () {
             Route::get('/', [KomiteDaftarHadirController::class, 'index']);
             Route::any('/ajax', [KomiteDaftarHadirController::class, 'ajax']);
             Route::get('/edit', [KomiteDaftarHadirController::class, 'edit']);

@@ -42,7 +42,7 @@ trait AuditorTraits
     public function isKepalaAudit(int $jadwalID)
     {
         $pegawaiID = auth()->user()->master_pegawai->peg_id;
-        $data      = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])
+        $data = SisJadwal::with(['sis_jadwal_audits.sis_audit_lks', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_lengkap', 'sis_audit_lap_ringkas'])
             ->where('jadw_id', $jadwalID)->first();
 
         if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
