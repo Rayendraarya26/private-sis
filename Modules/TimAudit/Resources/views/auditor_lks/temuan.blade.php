@@ -184,26 +184,53 @@
                             <li>Koreksi: <br>${row.lks_perbaikan_koreksi}</li>
                             <li>Tindakan: <br>${row.lks_perbaikan_tindakan}</li>
                         </ul>
+                        <br>
+                        <a href="{{url("$url/temuan/$data->jadw_id/detail")}}/${row.lks_id}"><i class="fad fa-eye"></i> Lihat lebih detail...</a>
                     </div>`;
                 },
                 frozenColumns: [[
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 120,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnDetail = `<a href="{{url("$url/temuan/$data->jadw_id/detail")}}/${row.lks_id}" class="btn btn-xs btn-outline-primary" title="Detail"><i class="fas fa-eye"></i></a>`
-                            let btnEdit   = `<a href="{{url("$url/temuan/$data->jadw_id/edit")}}/${row.lks_id}" class="btn btn-xs btn-outline-warning" title="Edit"><i class="fas fa-pencil"></i></a>`
-                            let btnDelete = `<button onclick="confirmDelete(${row.lks_id})" class="btn btn-xs btn-outline-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>`
+                            // let btnEdit   = `<a href="" class="btn btn-xs btn-outline-warning" title="Edit"><i class="fas fa-pencil"></i></a>`
+                            // let btnDelete = `<button onclick="confirmDelete(${row.lks_id})" class="btn btn-xs btn-outline-danger" title="Delete"><i class="fas fa-trash-alt"></i></button>`
+                            {{--let btnDetail = `<a href="{{url("$url/temuan/$data->jadw_id/detail")}}/${row.lks_id}" class="btn btn-xs btn-outline-primary" title="Detail"><i class="fas fa-eye"></i></a>`--}}
+
+                            let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/temuan/$data->jadw_id/edit")}}/${row.lks_id}'">Edit</div>`;
+                            let btnDetail = `<div data-options="iconCls:'fad fa-check'" onclick="location.href = '{{url("$url/temuan/$data->jadw_id/detail")}}/${row.lks_id}'">Detail & Verif</div>`;
+                            if (row.lks_status == "memadai" || row.lks_status == "tidak-memadai") {
+                                btnDetail = `<div data-options="iconCls:'fad fa-eye'" onclick="location.href = '{{url("$url/temuan/$data->jadw_id/detail")}}/${row.lks_id}'">Detail</div>`;
+                            }
+                            let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.lks_id}')">Delete</div>`;
 
                             if (row.lks_sudah_ditutup == "tidak") {
                                 if (!row.allow_modify) {
-                                    return btnDetail;
-                                } else {
-                                    return btnDetail + '&nbsp;' + btnEdit + '&nbsp;' + btnDelete
+                                    btnEdit = btnDelete = '';
                                 }
+                            } else {
+                                btnEdit = btnDelete = '';
                             }
+
+                            let dom = `dropdownMenu_${row.lks_id}`;
+
+                            let renderDelete = `<div class="menu-sep"></div>${btnDelete}`
+                            if (btnDelete == '') renderDelete = ''
+                            return `
+                                <div>
+                                    <button class="btn-action btn-info" data-index="${row.lks_id}" title="Aksi"
+                                    id="btn_action_${row.lks_id}">
+                                        <i class="fa fa-setting"></i> Aksi
+                                    </button>
+                                    <div id="${dom}" style="width:150px; display: none;">
+                                        ${btnDetail}
+                                        ${btnEdit}
+
+                                        ${renderDelete}
+                                    </div>
+                                </div>`;
                         },
                     },
                 ]],
@@ -236,14 +263,23 @@
                     {field: 'lks_kategori_ketidaksesuaian', title: 'Kategori', width: 200, sortable: true},
                     {field: 'lks_klausul_ketidaksesuaian', title: 'Klausul', width: 150, sortable: true},
                     {field: 'lks_expired_date_perbaikan', title: 'Max Tgl <br>Perbaikan', width: 100, sortable: true},
-
-                    // {field: 'lks_input_date_perbaikan', title: 'Tgl Input Perbaikan', width: 100, sortable: true},
-                    // {field: 'lks_perbaikan_analisa', title: 'Perbaikan', width: 250, sortable: true},
-                    // {field: 'lks_perbaikan_koreksi', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
-                    // {field: 'lks_perbaikan_tindakan', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
-                    // {field: 'lks_bagian_pendamping', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
-                    // {field: 'lks_bukti_tindakan_perbaikan', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
+                onBeforeLoad: function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
+                    });
+                },
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].lks_id
+                        });
+                    });
+                },
             });
             dg.datagrid(
                 'enableFilter', [

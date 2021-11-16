@@ -150,7 +150,25 @@
                         </div>
                     </div>
                 </div>
+
+                    @if(!in_array($lks->lks_status, ['memadai', 'tidak-memadai']))
+                        <div style="padding-bottom: 50px">
+                            <div style="float: left">
+                                <a href="{{url("$url/temuan/$data->jadw_id/edit/$lks->lks_id")}}"
+                                   class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Revisi
+                                </a>
+                            </div>
+                            <div style="float: right">
+                                <button data-toggle="modal" data-target="#verifikasi-modal" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Verifikasi
+                                </button>
+                            </div>
+                        </div>
+                    @endif
             </div>
         </div>
     </div>
+
+    @include("timaudit::auditor_lks._part.verifikasi_modal", ['module' => $module, 'jadwalID' => $data->jadw_id, 'lksID' => $lks->lks_id])
 @endsection

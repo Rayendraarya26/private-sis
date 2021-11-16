@@ -163,6 +163,8 @@ class AuLksController extends Controller
     public function deleteTemuan(Request $request, $jadwalID, $lksID)
     {
         try {
+            if (!$request->ajax()) throw new Exception("Endopoint ini utuk ajax");
+
             // 1.
             $pegawaiID = auth()->user()->master_pegawai->peg_id;
 
@@ -175,6 +177,29 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Delete berhasil");
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
+        }
+    }
+
+    public function verifTemuan(Request $request, $jadwalID, $lksID)
+    {
+        try {
+            $request->validate(['lks_status' => ['required', Rule::in(['memadai', 'tidak-memadai'])]]);
+
+            // 1.
+            $pegawaiID = auth()->user()->master_pegawai->peg_id;
+
+            $this->involvedAuditor($jadwalID);
+            $dataLKS = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
+                ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
+            if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
+
+            $dataLKS->lks_status        = $request['lks_status'];
+            $dataLKS->lks_sudah_ditutup = 'ya';
+            $dataLKS->save();
+
+            return redirect()->back()->with('message', "Verifikasi berhasil");
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
 

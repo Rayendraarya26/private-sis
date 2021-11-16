@@ -151,6 +151,15 @@
                     {field: 'sert_nama', title: 'Nama Sertifikasi', width: 220, sortable: true},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 220, sortable: true},
                 ]],
+                onBeforeLoad: function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
+                    });
+                },
                 onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         $(this).menubutton({

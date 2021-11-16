@@ -83,6 +83,7 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/temuan/{jadw_id}/edit/{lks_id}', [AuLksController::class, 'editTemuan']);
             Route::get('/temuan/{jadw_id}/detail/{lks_id}', [AuLksController::class, 'detailTemuan']);
             Route::delete('/temuan/{jadw_id}/delete/{lks_id}', [AuLksController::class, 'deleteTemuan']);
+            Route::post('/temuan/{jadw_id}/verif/{lks_id}', [AuLksController::class, 'verifTemuan']);
         });
 
         Route::prefix("laporan-ringkas")->group(function () {
