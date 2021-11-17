@@ -56,6 +56,7 @@ class AuLapRingkasController extends Controller
                         case 'kritis':
                             // jumlah
                             $dataLKS['jumlah']['kritis'] += 1;
+                            $dataLKS['jumlah']['total'] += 1;
                             // klausul
                             $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                             // no lks
@@ -74,6 +75,7 @@ class AuLapRingkasController extends Controller
                         case 'mayor':
                             // jumlah
                             $dataLKS['jumlah']['mayor'] += 1;
+                            $dataLKS['jumlah']['total'] += 1;
                             // klausul
                             $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                             // no lks
@@ -93,6 +95,7 @@ class AuLapRingkasController extends Controller
                         case 'observasi':
                             // jumlah
                             $dataLKS['jumlah']['minor'] += 1;
+                            $dataLKS['jumlah']['total'] += 1;
                             // klausul
                             $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                             // no lks
@@ -233,7 +236,7 @@ class AuLapRingkasController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
-            $x['sudah_mengisi']        = $d->sis_audit_lap_ringkas->count() > 0;
+            $x['sudah_mengisi']        = $d->sis_audit_lap_ringkas?->count() > 0;
             array_push($result, $x);
         }
 

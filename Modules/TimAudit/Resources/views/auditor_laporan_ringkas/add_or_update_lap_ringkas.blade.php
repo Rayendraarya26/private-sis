@@ -112,53 +112,53 @@
                                 <tr>
                                     <td>Kritis</td>
                                     <td>{{$dataLKS['jumlah']['kritis']}}</td>
-                                    <td>{{$dataLKS['no_lks']['kritis']}}</td>
-                                    <td>{{$dataLKS['klausul']['kritis']}}</td>
-                                    <td>{{$dataLKS['tgl_pelyelesaian']['kritis']}}</td>
+                                    <td>{{$dataLKS['no_lks']['kritis'] ?: '-' }}</td>
+                                    <td>{{$dataLKS['klausul']['kritis'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['tgl_pelyelesaian']['kritis'] ?: '-'}}</td>
                                 </tr>
                                 <tr>
                                     <td>Mayor</td>
                                     <td>{{$dataLKS['jumlah']['mayor']}}</td>
-                                    <td>{{$dataLKS['no_lks']['mayor']}}</td>
-                                    <td>{{$dataLKS['klausul']['mayor']}}</td>
-                                    <td>{{$dataLKS['tgl_pelyelesaian']['mayor']}}</td>
+                                    <td>{{$dataLKS['no_lks']['mayor'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['klausul']['mayor'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['tgl_pelyelesaian']['mayor'] ?: '-'}}</td>
                                 </tr>
                                 <tr>
                                     <td>Minor</td>
                                     <td>{{$dataLKS['jumlah']['minor']}}</td>
-                                    <td>{{$dataLKS['no_lks']['minor']}}</td>
-                                    <td>{{$dataLKS['klausul']['minor']}}</td>
-                                    <td>{{$dataLKS['tgl_pelyelesaian']['minor']}}</td>
+                                    <td>{{$dataLKS['no_lks']['minor'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['klausul']['minor'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['tgl_pelyelesaian']['minor'] ?: '-'}}</td>
                                 </tr>
                                 <tr>
                                     <td>Total</td>
                                     <td>{{$dataLKS['jumlah']['total']}}</td>
-                                    <td>{{$dataLKS['no_lks']['total']}}</td>
-                                    <td>{{$dataLKS['klausul']['total']}}</td>
-                                    <td>{{$dataLKS['tgl_pelyelesaian']['total']}}</td>
+                                    <td>{{$dataLKS['no_lks']['total'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['klausul']['total'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['tgl_pelyelesaian']['total'] ?: '-'}}</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div class="dt-card">
-                    <div class="dt-card__header">
-                        <div class="dt-card__heading">
-                            <h3 class="dt-card__title" style="text-align: center">
-                                TULIS LAPORAN RINGKAS
-                            </h3>
+                    <div class="dt-card">
+                        <div class="dt-card__header">
+                            <div class="dt-card__heading">
+                                <h3 class="dt-card__title" style="text-align: center">
+                                    TULIS LAPORAN RINGKAS
+                                </h3>
+                            </div>
                         </div>
-                    </div>
-                    <div class="dt-card__body">
-                        <div class="col-md-12">
-                            <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
+                        <div class="dt-card__body">
+                            <div class="col-md-12">
+                                <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
                                   enctype="multipart/form-data">
                                 @csrf
 
                                 <div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="lap_ringkas_filepath">
-                                        Berkas*
+                                        Berkas
                                         <br>
                                         <small>(pdf/excel)</small>
                                         <br>

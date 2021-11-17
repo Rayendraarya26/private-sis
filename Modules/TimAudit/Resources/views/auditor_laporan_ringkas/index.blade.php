@@ -53,7 +53,7 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 80,
+                        width: 100,
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.sudah_mengisi) {
@@ -62,15 +62,6 @@
                                 return `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-plus"></i> Buat</a>`
                             }
                         },
-                    },
-                    {
-                        field: 'sudah_mengisi', title: 'Status', width: 150, sortable: true,
-                        formatter: function (val) {
-                            return val ? "Terbuat" : "Belum Dibuat"
-                        },
-                        styler: function (val) {
-                            return val ? 'color:white;background-color:#2e7d32;' : 'color:white;background-color:#e65100;';
-                        }
                     },
                 ]],
                 columns: [[

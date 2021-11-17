@@ -96,8 +96,8 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("laporan-lengkap")->group(function () {
             Route::get('/', [AuLapLengkapController::class, 'index']);
             Route::get('/ajax', [AuLapLengkapController::class, 'ajax']);
-            Route::get('/laporan', [AuLapLengkapController::class, 'laporan']);
-            Route::post('/laporan', [AuLapLengkapController::class, 'processLaporan']);
+            Route::get('/laporan/{jadw_id}', [AuLapLengkapController::class, 'laporan']);
+            Route::post('/laporan/{jadw_id}', [AuLapLengkapController::class, 'processLaporan']);
         });
 
         Route::prefix("daftar-hadir")->group(function () {
