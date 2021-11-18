@@ -36,7 +36,9 @@
 										<td>Tanggal Pelaksanaan</td>
 										<td>
 											: {{ $data->jadw_tanggal_mulai->isoFormat("LL") }}
-											s/d {{ $data->jadw_tanggal_selesai->isoFormat("LL") }}</td>
+											s/d {{ $data->jadw_tanggal_selesai->isoFormat("LL") }}
+											@if($data->jadw_file_jadwal != '')<br/><a href="{{ url($data->jadw_file_jadwal) }}" target="_blank">Download Jadwal</a>@endif
+											</td>
 									</tr>
 									<tr>
 										<td>Ruang Lingkup <i>(Nace Code)</i></td>
@@ -82,7 +84,7 @@
                                 <label class="col-form-label col-sm-3">
                                     Susunan TIM Audit
                                 </label>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <ol>
                                         @foreach($data->sis_jadwal_tims as $tim)
                                             <li>
@@ -90,6 +92,17 @@
                                                 {{$tim->master_pegawai->peg_nama}}
                                             </li>
                                         @endforeach
+										@if($data->jadw_file_kehadiran != '')
+											<br/><a href="{{ url($data->jadw_file_kehadiran) }}" target="_blank">Download Daftar Hadir</a>
+										@else
+											<br/><span class="badge badge-danger mb-3">*Daftar Hadir Belum Diupload</span>
+										@endif
+										
+										@if($data->jadw_file_notulen_rapat != '')
+											<br/><a href="{{ url($data->jadw_file_notulen_rapat) }}" target="_blank">Download Notulen</a>
+										@else
+											<span class="badge badge-danger mb-3">*Notulen Belum Diupload</span>
+										@endif
                                     </ol>
                                 </div>
                             </div>
@@ -98,7 +111,7 @@
                                 <label class="col-form-label col-sm-3">
                                     Jumlah Temuan LKS
                                 </label>
-                                <div class="col-sm-8">
+                                <div class="col-sm-9">
                                     <ul>
                                         <li>Kritis: {{$dataLKS['jumlah']['kritis']}}</li>
                                         <li>Mayor: {{$dataLKS['jumlah']['mayor']}}</li>
@@ -120,7 +133,79 @@
 						</div>
 					</div>
 					<div class="dt-card__body">
-					
+						<div class="form-group row">
+							<label class="col-form-label col-sm-2">
+								Daftar Periksa File Upload Tim
+							</label>
+							<div class="col-sm-10">
+								<table class="table table-bordered mb-0">
+									<tr>
+										<th>Nama</th>
+										<th>Posisi</th>
+										<th>File Daftar Periksa</th>
+									</tr>
+									@foreach($dataAuditTim as $tim)
+									<tr>
+										<td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
+										<td>{{ucwords($tim->jadw_tim_posisi)}}</td>
+										<td>@if($tim->dftr_periksa_file != '')<a href="{{ url($tim->dftr_periksa_file) }}" target="_blank">Download</a>@endif</td>
+									</tr>
+									@endforeach
+								</table>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-form-label col-sm-2">
+								Logbook Tim
+							</label>
+							<div class="col-sm-10">
+								<table class="table table-bordered mb-0">
+									<tr>
+										<th>Nama</th>
+										<th>Posisi</th>
+										<th>File Logbook</th>
+									</tr>
+									@foreach($dataTimLogbook as $tim)
+									<tr>
+										<td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
+										<td>{{ucwords($tim->jadw_tim_posisi)}}</td>
+										<td>@if($tim->logbook_filepath != '')<a href="{{ url($tim->logbook_filepath) }}" target="_blank">Download</a>@endif</td>
+									</tr>
+									@endforeach
+								</table>
+							</div>
+						</div>
+						@if(!empty($data->sis_audit_ppcs))
+						<div class="form-group row">
+							<label class="col-form-label col-sm-2">
+								Laporan PPC
+							</label>
+							<div class="col-sm-10">
+								<table class="table table-bordered mb-0">
+									<tr>
+										<th>Jenis File Laporan</th>
+										<th>Download File</th>
+									</tr>
+									@foreach($data->sis_audit_ppcs as $ppc)
+									<tr>
+										<td>
+										@if($ppc->audit_ppc_jenis_file == '19')
+											19. RENCANA PENGAMBILAN CONTOH
+										@elseif($ppc->audit_ppc_jenis_file == '20')
+											20. BERITA ACARA PENGAMBILAN CONTOH
+										@elseif($ppc->audit_ppc_jenis_file == '21')
+											21. LABEL CONTOH UJI
+										@elseif($ppc->audit_ppc_jenis_file == '22')
+											22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
+										@endif
+										</td>
+										<td>@if($ppc->audit_ppc_filepath != '')<a href="{{ url($ppc->audit_ppc_filepath) }}" target="_blank">Download</a>@endif</td>
+									</tr>
+									@endforeach
+								</table>
+							</div>
+						</div>
+						@endif
 					</div>
 				</div>
 			</div>

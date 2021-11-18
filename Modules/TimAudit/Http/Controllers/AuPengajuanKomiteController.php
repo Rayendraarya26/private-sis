@@ -77,8 +77,29 @@ class AuPengajuanKomiteController extends Controller
                     }
                 }
             }
-
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
+			
+			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
+							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
+			
+			
+			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
+							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
+			
+			
+			
+            $parser = [
+				'module' => $this->module, 
+				'url' => $this->url, 
+				'breadcrumbs' => $breadcrumbs, 
+				'data' => $dataJadwal, 
+				'dataLKS' => $dataLKS,
+				'dataAuditTim' => $dataAuditTim->get(),
+				'dataTimLogbook' => $dataTimLogbook->get(),
+			];
 
             return view("$this->view.detail_audit")->with($parser);
         } catch (Exception $e) {
@@ -122,8 +143,31 @@ class AuPengajuanKomiteController extends Controller
                     }
                 }
             }
+			
 
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
+            $dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
+							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
+			
+			
+			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
+							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
+			
+			
+			
+            $parser = [
+				'module' => $this->module, 
+				'url' => $this->url, 
+				'breadcrumbs' => $breadcrumbs, 
+				'data' => $dataJadwal, 
+				'dataLKS' => $dataLKS,
+				'dataAuditTim' => $dataAuditTim->get(),
+				'dataTimLogbook' => $dataTimLogbook->get(),
+			];
+
 
             return view("$this->view.edit")->with($parser);
         } catch (Exception $e) {
@@ -154,7 +198,7 @@ class AuPengajuanKomiteController extends Controller
 			ke LS dan Pelanggan
 			*/
             DB::commit();
-            return responseJSON(200, [], 'Berhasil menyimpan data');
+            return responseJSON(200, [], 'Berhasil diajukan ke Komite.');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
@@ -177,6 +221,8 @@ class AuPengajuanKomiteController extends Controller
         $data->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
         $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
         $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
+        $data->join('sis_audit_lap_lengkap', "sis_jadwal.jadw_id", "=", "sis_audit_lap_lengkap.jadw_id");
+        $data->join('sis_audit_lap_ringkas', "sis_jadwal.jadw_id", "=", "sis_audit_lap_ringkas.jadw_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());

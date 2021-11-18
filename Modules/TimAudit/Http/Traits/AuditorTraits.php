@@ -50,6 +50,7 @@ trait AuditorTraits
             'sis_jadwal_tims',
             'sis_audit_lap_lengkap',
             'sis_audit_lap_ringkas',
+            'sis_audit_ppcs',
             'sis_billing'
         ])
             ->where('jadw_id', $jadwalID)->first();
@@ -72,7 +73,7 @@ trait AuditorTraits
         return $data;
     }
 	
-	/** isKepalaAudit
+	/** isKepalaAuditDetail
      * Validasi agar harus kepala audit yang boleh mengkases
      * @throws Exception
      */
@@ -87,6 +88,7 @@ trait AuditorTraits
             'sis_jadwal_tims',
             'sis_audit_lap_lengkap',
             'sis_audit_lap_ringkas',
+            'sis_audit_ppcs',
             'sis_billing'
         ])
             ->where('jadw_id', $jadwalID)->first();
