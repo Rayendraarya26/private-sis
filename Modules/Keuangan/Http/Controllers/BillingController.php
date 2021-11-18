@@ -158,11 +158,14 @@ class BillingController extends Controller
     {
         $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
-        $data->where('mohon_approved_status', '=', 'accepted');
-        $data->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya');
-        $data->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya');
-        $data->whereNotNull('mohon_pernyataan_persetujuan_file');
-        $data->where('cust_id', '=', $request->cust_id);
+        $data->where('mohon_approved_status', '=', 'accepted')
+		->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')
+        ->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya')
+        ->whereNotNull('mohon_pernyataan_persetujuan_file')
+		->whereNotIn('mohon_id', function ($query) use ($request) {
+			$query->select('mohon_id')->from('sis_jadwal_audit')->where('cust_id', '=', $request->cust_id)->groupBy('mohon_id');
+		})
+        ->where('cust_id', '=', $request->cust_id);
 
         if ($request->jenis_status == 're-sertifikasi') {
             $data->where('mohon_jenis_status', '=', 'lama');

@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $cust_sert_tgl_sertifikat_perubahan
  * @property string|null $cust_sert_status
  * @property Carbon $cust_sert_expired_date
+ * @property Carbon $cust_sert_survailen_date
  * @property string|null $cust_sert_status_survailen
  * @property string|null $cust_sert_filepath
  * @property Carbon $created_at
@@ -64,7 +65,8 @@ class SisPelangganSertifikasi extends Model
 	protected $dates = [
 		'cust_sert_tgl_sertifikat_awal',
 		'cust_sert_tgl_sertifikat_perubahan',
-		'cust_sert_expired_date'
+		'cust_sert_expired_date',
+		'cust_sert_survailen_date'
 	];
 
 	protected $fillable = [
@@ -87,6 +89,7 @@ class SisPelangganSertifikasi extends Model
 		'cust_sert_tgl_sertifikat_perubahan',
 		'cust_sert_status',
 		'cust_sert_expired_date',
+		'cust_sert_survailen_date',
 		'cust_sert_status_survailen',
 		'cust_sert_filepath'
 	];

@@ -328,7 +328,12 @@ class KomiteLembarPeriksaController extends Controller
 			$mohon_id = [];
 			if(!empty($request['status'])){
 				foreach($request['status'] as $key => $val){
-					$restDataAudit = DB::table('sis_jadwal_audit')->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')->where('jadw_audit_id', $key)->first();
+					$restDataAudit = DB::table('sis_jadwal_audit')
+						->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+						->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
+						->where('jadw_audit_id', $key)
+						->first();
+						
 					 if ($restDataAudit !== null) {
 							$status = 'on-going';
 							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
@@ -353,7 +358,8 @@ class KomiteLembarPeriksaController extends Controller
 											'cust_sert_tgl_sertifikat_awal'  => date('Y-m-d'),
 											'cust_sert_tgl_sertifikat_perubahan'  => NULL,
 											'cust_sert_status'  => 'on_going',
-											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+											'cust_sert_expired_date'  => ($restDataAudit->sert_expired != '') ?  date('Y-m-d', strtotime('+'.$restDataAudit->sert_expired.' year')) : date('Y-m-d', strtotime('+1 year')),
+											'cust_sert_survailen_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
 											'cust_sert_status_survailen'  => 'passed',
 										]);
 									$status = 'berhak-memperoleh';
@@ -368,7 +374,9 @@ class KomiteLembarPeriksaController extends Controller
 										->where('cust_sert_id', $restDataAudit->cust_sert_id)
 										->update([
 											'cust_sert_status'  => 'on_going',
-											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+											'cust_sert_expired_date'  => ($restDataAudit->sert_expired != '') ?  date('Y-m-d', strtotime('+'.$restDataAudit->sert_expired.' year')) : date('Y-m-d', strtotime('+1 year')),
+											'cust_sert_status_survailen'  => 'passed',
+											'cust_sert_survailen_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
 										]);
 									$status = 'berhak-memperoleh-kembali';
 								}
@@ -377,7 +385,6 @@ class KomiteLembarPeriksaController extends Controller
 										->where('cust_sert_id', $restDataAudit->cust_sert_id)
 										->update([
 											'cust_sert_status'  => 'dibekukan',
-											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
 										]);
 									$status = 'tidak-berhak-menggunakan';
 								}
@@ -389,7 +396,7 @@ class KomiteLembarPeriksaController extends Controller
 										->update([
 											'cust_sert_status_survailen'  => 'passed',
 											'cust_sert_status'  => 'on_going',
-											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+											'cust_sert_survailen_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
 										]);
 									$status = 'tetap-dapat-menggunakan';
 								}
@@ -399,7 +406,6 @@ class KomiteLembarPeriksaController extends Controller
 										->update([
 											'cust_sert_status_survailen'  => 'rejected',
 											'cust_sert_status'  => 'dibekukan',
-											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
 										]);
 									$status = 'tidak-berhak-menggunakan';
 								}

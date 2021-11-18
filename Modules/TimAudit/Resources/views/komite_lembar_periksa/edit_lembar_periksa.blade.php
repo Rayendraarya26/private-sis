@@ -164,7 +164,7 @@
 									<thead>
 										<tr>
 										  <th scope="col">Status</th>
-										  <th scope="col">Tanggal Expired/<br/> Surveilans Berikutnya</th>
+										  <th scope="col">Tanggal <br/> Surveilans Berikutnya</th>
 										  <th class="text-uppercase" scope="col">Jenis Audit</th>
 										  <th class="text-uppercase" scope="col">Sertifikasi</th>
 										  <th class="text-uppercase" scope="col">SNI</th>
@@ -445,13 +445,7 @@
 							formatter:myformatter,
 							parser:myparser,
 							value:`<?php 
-							if($dau->jadw_audit_jenis == 'surveilans'){
-								echo date('Y-m-d', strtotime('+1 year'));
-							}
-							else {
-								$tahun = ($dau->sert_expired != '') ? $dau->sert_expired : 0;
-								echo date('Y-m-d', strtotime('+'.$tahun.' year'));
-							}
+							echo date('Y-m-d', strtotime('+1 year'));
 							?>`,
 						});
 						@endforeach
