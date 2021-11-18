@@ -44,7 +44,7 @@ class AuPengajuanKomiteController extends Controller
 	public function detail_audit(Request $request)
     {
 		try {
-            $dataJadwal  = $this->isKepalaAudit($request['jadw_id']);
+            $dataJadwal  = $this->isKepalaAuditDetail($request['jadw_id']);
             $breadcrumbs = [
 				new BreadcrumbsStruct('Tim Audit'),
 				new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
