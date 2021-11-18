@@ -83,9 +83,11 @@ else{
                 ]],
 				onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
-                        });
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
                     });
                 },
             });
