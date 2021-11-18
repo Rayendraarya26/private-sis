@@ -31,6 +31,15 @@
 
 @push("javascript")
     <script>
+		function statusStyle(value,row,index){
+            if (value == 're-upload'){
+                return 'background-color:blue;color:white;';
+            }
+			else{
+				return 'background-color:#ffee00;color:red;';
+			}
+        }
+		
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -55,7 +64,7 @@
                         formatter: function (val, row) {
 							let btnDetail = '';
 							if(row.status_step == 're-upload'){
-								btnDetail = `<a href="{{url("$url/detail")}}?action=detail-permohonan&mohon_id=${row.mohon_id}" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
+								btnDetail = `<a href="{{url("$url/detail")}}?action=detail-permohonan&mohon_id=${row.mohon_id}" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
 							}
 							else{
 								btnDetail = `<a href="{{url("$url/detail")}}?action=detail-permohonan&mohon_id=${row.mohon_id}" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
@@ -66,6 +75,16 @@
                 ]],
                 columns: [[
                     {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
+                    {field: 'status_step', title: 'Status<br/>SPK', width: 120, sortable: true, styler:statusStyle,
+						formatter: function (val, row) {
+							if(row.status_step == 're-upload'){
+								return `Sudah Diupload`;
+							}
+							else{
+								return `Belum Diupload`;
+							}
+                        }
+					},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
                     {
                         field: 'mohon_jenis_status',
@@ -89,6 +108,28 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
+					{
+                        field: 'status_step',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+							value: '',
+                            data: [
+                                {value: 'belum', text: 'Belum Diupload'},
+                                {value: 'sudah', text: 'Sudah Diupload'},
+                                {value: '', text: 'Semua'},
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'status_step',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
                     {
                         field: 'mohon_jenis_status',
                         type: 'combobox',

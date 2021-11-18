@@ -50,7 +50,15 @@ class SPKController extends Controller
 		$data->whereNotNull('mohon_pernyataan_persetujuan_file');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				if($f->field == 'status_step'){
+					if($f->value == 'belum')
+						$data->whereNull('mohon_spk_file');
+					else if($f->value == 'sudah')
+						$data->whereNotNull('mohon_spk_file');						
+				}
+				else{
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				}
             }
         }
         // Sorter
@@ -58,22 +66,21 @@ class SPKController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
+				if($sort[$i] == 'status_step')
+					$data->orderBy('mohon_spk_file', $order[$i]);
+				else
+					$data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("*", DB::raw("IF(mohon_spk_file!='', 're-upload', 'upload') as status_step"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-			$x['status_step']       = 'upload';
-			if(!is_null($d->mohon_spk_file)){
-				$x['status_step']       = 're-upload';
-			}
-
+            $x['status_step']          = $d->status_step;
             $x['cust_sert_id']          = $d->cust_sert_id;
             $x['mohon_id']              = $d->mohon_id;
             $x['cust_id']               = $d->cust_id;
