@@ -227,8 +227,6 @@ class KomiteRekomPersetujuanController extends Controller
             new BreadcrumbsStruct('Isi Rekomendasi'),
         ];
 
-        
-
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");

@@ -57,9 +57,9 @@
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.is_uploaded) {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Unggah Ulang</a>`
+                                return `<a href="{{url("$url/edit")}}?id_jadwal=${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Unggah Ulang</a>`
                             } else {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Unggah Berkas</a>`
+                                return `<a href="{{url("$url/edit")}}?id_jadwal=${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Unggah Berkas</a>`
                             }
                         },
                     },

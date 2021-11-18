@@ -112,12 +112,12 @@
 																	</thead>
 																	<tbody>
 																	<tr>
-																	  <td>LKS yang ditutup</td>
-																	  <td>{{$thp1->total_kritis * $thp1->lks_total/ $thp1->total_data}}</td>
-																	  <td>{{$thp1->total_mayor * $thp1->lks_total/ $thp1->total_data}}</td>
-																	  <td>{{$thp1->total_minor * $thp1->lks_total/ $thp1->total_data}}</td>
-																	  <td>{{$thp1->total_observasi * $thp1->lks_total/ $thp1->total_data}}</td>
-																	  <td>{{ ($thp1->total_kritis * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_mayor * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_minor * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_observasi * $thp1->lks_total/ $thp1->total_data) }}</td>
+																		<td>LKS yang ditutup</td>
+																		<td>{{$aud->total_kritis * $aud->lks_total/ $aud->total_data}}</td>
+																		<td>{{$aud->total_mayor * $aud->lks_total/ $aud->total_data}}</td>
+																		<td>{{$aud->total_minor * $aud->lks_total/ $aud->total_data}}</td>
+																		<td>{{$aud->total_observasi * $aud->lks_total/ $aud->total_data}}</td>
+																		<td>{{ ($aud->total_kritis * $aud->lks_total/ $aud->total_data) + ($aud->total_mayor * $aud->lks_total/ $aud->total_data) + ($aud->total_minor * $aud->lks_total/ $aud->total_data) + ($aud->total_observasi * $aud->lks_total/ $aud->total_data) }}</td>
 																	</tr>
 																	<tr>
 																	  <td>LKS yang tetap ada/baru</td>
@@ -142,7 +142,7 @@
 								</div>
 								
 								<div class="card-header" id="heading3">
-								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">3. LKS ditutup tanggal @if($aud->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($aud->lks_expired_date_perbaikan)) }} @endif</button></h5>
+								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">3. LKS ditutup tanggal @if($dataJadwal->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($dataJadwal->lks_expired_date_perbaikan)) }} @endif</button></h5>
 								</div>
 								<div id="collapse-two" class="collapse" aria-labelledby="heading3" data-parent="#accordion-example">
 								  <div class="card-body">

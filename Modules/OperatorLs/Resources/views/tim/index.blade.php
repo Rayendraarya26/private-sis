@@ -89,13 +89,20 @@
                     {field: 'jadw_team_status', title: 'Status<br/>Tim', width: 100, sortable: true},
                     {field: 'total_tim', title: 'Jumlah<br/>Tim', width: 100, sortable: true},
                 ]],
-				onLoadSuccess: function (data) {
+				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         try {
                             $(this).menubutton('destroy');
                         } catch (e) {
                             console.log('failed destroy');
                         }
+                    });
+                },
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
+                        });
                     });
                 },
             });

@@ -328,26 +328,81 @@ class KomiteLembarPeriksaController extends Controller
 			$mohon_id = [];
 			if(!empty($request['status'])){
 				foreach($request['status'] as $key => $val){
-					$restDataAudit = DB::table('sis_jadwal_audit')->where('jadw_audit_id', $key)->first();
+					$restDataAudit = DB::table('sis_jadwal_audit')->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')->where('jadw_audit_id', $key)->first();
 					 if ($restDataAudit !== null) {
 							$status = 'on-going';
 							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
-								if($val == 'ya')
+								if($val == 'ya'){
+									DB::table('sis_pelanggan_sertifikasi')
+										->insert([
+											'sert_id'  => $restDataAudit->sert_id,
+											'cust_id'  => $restDataAudit->cust_id,
+											'mohon_id'  => $restDataAudit->mohon_id,
+											'cust_sert_nomor_sertifikat'  => NULL,
+											'cust_sert_nomor_referensi'  => NULL,
+											'cust_sert_nomor_sni'  => $restDataAudit->jadw_audit_sni,
+											'cust_sert_lingkup'  => $restDataAudit->jadw_audit_ruang_lingkup,
+											'kode_ea_nama'  => $restDataAudit->jadw_audit_kode_ea,
+											'kode_nace_nama'  => $restDataAudit->jadw_audit_kode_nace,
+											'komodt_id'  => $restDataAudit->komodt_id,
+											'cust_sert_tipe'  => $restDataAudit->jadw_audit_tipe, 
+											'cust_sert_merk' => $restDataAudit->jadw_audit_merk,
+											'cust_sert_ukuran' => $restDataAudit->jadw_audit_ukuran,
+											'cust_sert_produksi_tahunan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan,
+											'cust_sert_produksi_tahunan_satuan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan_satuan,
+											'cust_sert_tgl_sertifikat_awal'  => date('Y-m-d'),
+											'cust_sert_tgl_sertifikat_perubahan'  => NULL,
+											'cust_sert_status'  => 'on_going',
+											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+											'cust_sert_status_survailen'  => 'passed',
+										]);
 									$status = 'berhak-memperoleh';
-								else
+								}
+								else{
 									$status = 'tidak-berhak-menggunakan';
+								}
 							}
 							elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
-								if($val == 'ya')
+								if($val == 'ya'){
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status'  => 'on_going',
+											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+										]);
 									$status = 'berhak-memperoleh-kembali';
-								else
+								}
+								else{
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status'  => 'dibekukan',
+											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+										]);
 									$status = 'tidak-berhak-menggunakan';
+								}
 							}
 							else{
-								if($val == 'ya')
+								if($val == 'ya'){
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status_survailen'  => 'passed',
+											'cust_sert_status'  => 'on_going',
+											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+										]);
 									$status = 'tetap-dapat-menggunakan';
-								else
+								}
+								else{
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status_survailen'  => 'rejected',
+											'cust_sert_status'  => 'dibekukan',
+											'cust_sert_expired_date'  => isset($request['tanggal'][$key]) ? $request['tanggal'][$key] : NULL,
+										]);
 									$status = 'tidak-berhak-menggunakan';
+								}
 							}
 							
 						DB::table('sis_jadwal_audit')

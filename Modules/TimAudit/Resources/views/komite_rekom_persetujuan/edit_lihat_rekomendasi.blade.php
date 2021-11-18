@@ -101,11 +101,11 @@
 															<tbody>
 															<tr>
 															  <td>LKS yang ditutup</td>
-															  <td>{{$thp1->total_kritis * $thp1->lks_total/ $thp1->total_data}}</td>
-															  <td>{{$thp1->total_mayor * $thp1->lks_total/ $thp1->total_data}}</td>
-															  <td>{{$thp1->total_minor * $thp1->lks_total/ $thp1->total_data}}</td>
-															  <td>{{$thp1->total_observasi * $thp1->lks_total/ $thp1->total_data}}</td>
-															  <td>{{ ($thp1->total_kritis * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_mayor * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_minor * $thp1->lks_total/ $thp1->total_data) + ($thp1->total_observasi * $thp1->lks_total/ $thp1->total_data) }}</td>
+															  <td>{{$aud->total_kritis * $aud->lks_total/ $aud->total_data}}</td>
+															  <td>{{$aud->total_mayor * $aud->lks_total/ $aud->total_data}}</td>
+															  <td>{{$aud->total_minor * $aud->lks_total/ $aud->total_data}}</td>
+															  <td>{{$aud->total_observasi * $aud->lks_total/ $aud->total_data}}</td>
+															  <td>{{ ($aud->total_kritis * $aud->lks_total/ $aud->total_data) + ($aud->total_mayor * $aud->lks_total/ $aud->total_data) + ($aud->total_minor * $aud->lks_total/ $aud->total_data) + ($aud->total_observasi * $aud->lks_total/ $aud->total_data) }}</td>
 															</tr>
 															<tr>
 															  <td>LKS yang tetap ada/baru</td>
@@ -129,7 +129,7 @@
 							
 							<table class="table mb-0">
 								<thead>
-									<tr><th colspan="2">3. LKS ditutup tanggal @if($aud->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($aud->lks_expired_date_perbaikan)) }} @endif</th></tr>
+									<tr><th colspan="2">3. LKS ditutup tanggal @if($dataJadwal->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($dataJadwal->lks_expired_date_perbaikan)) }} @endif</th></tr>
 								</thead>
 								<tbody>
 									<tr>

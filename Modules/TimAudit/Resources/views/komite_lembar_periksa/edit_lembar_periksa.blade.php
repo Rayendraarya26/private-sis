@@ -8,7 +8,7 @@
 	<style>
 		#label-form{
 			font-weight:normal;
-			color:#5BB6EA;
+			/* color:#5BB6EA; */
 		}
 	</style>
 @endpush
@@ -149,11 +149,22 @@
 							<h3 class="card-title">2. Keputusan/Rekomendasi</h3>
 						</div>
 						<div class="card-body pt-0">
+							<div class="form-group row">
+								<label class="col-form-label col-sm-3" for="jadw_file_kehadiran_komite">
+									Kehadiran Komite*
+									<br>
+									<small>(pdf/excel)</small>
+								</label>
+								<div class="col-sm-8">
+										<input type="file" class="form-control" aria-label="File Kehadiran Komite" name="jadw_file_kehadiran_komite" id="jadw_file_kehadiran_komite" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+								</div>
+							</div>
 							<div class="table-responsive col-xl-12 col-md-12 col-12">
 								<table class="table table-bordered mb-0">
 									<thead>
 										<tr>
-										  <th scope="col">#</th>
+										  <th scope="col">Status</th>
+										  <th scope="col">Tanggal Expired/<br/> Surveilans Berikutnya</th>
 										  <th class="text-uppercase" scope="col">Jenis Audit</th>
 										  <th class="text-uppercase" scope="col">Sertifikasi</th>
 										  <th class="text-uppercase" scope="col">SNI</th>
@@ -184,8 +195,9 @@
 											  <div class="form-check mb-2">
 												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="option2">
 												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
-											  </div>
+											  </div>											  
 										  </td>
+										  <td><input type="text" class="form-control" name="tanggal[{{$dau->jadw_audit_id}}]" id="tanggal_{{$dau->jadw_audit_id}}" style="max-width:120px;"></td>
 										  <td>{{$dau->jadw_audit_jenis}}</td>
 										  <td>{{$dau->sert_nama}}</td>
 										  <td>{{$dau->jadw_audit_sni}}</td>
@@ -224,11 +236,29 @@
 	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js" referrerpolicy="origin"></script>
     <script>
-	const swalWithBootstrapButtons = swal.mixin({
+		const swalWithBootstrapButtons = swal.mixin({
             confirmButtonClass: 'btn btn-primary mb-2',
             cancelButtonClass: 'btn btn-warning mr-2 mb-2',
             buttonsStyling: false,
         });
+		function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+        }
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+        }
 			
         $(document).ready(function () {
             window.vueLembarPeriksa = new Vue({
@@ -407,6 +437,24 @@
 							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
 							],
 						});
+						
+						@foreach($dataAudit as $dau)
+						$('#tanggal_{{$dau->jadw_audit_id}}').datebox({
+							required:true,
+							editable: false,
+							formatter:myformatter,
+							parser:myparser,
+							value:`<?php 
+							if($dau->jadw_audit_jenis == 'surveilans'){
+								echo date('Y-m-d', strtotime('+1 year'));
+							}
+							else {
+								$tahun = ($dau->sert_expired != '') ? $dau->sert_expired : 0;
+								echo date('Y-m-d', strtotime('+'.$tahun.' year'));
+							}
+							?>`,
+						});
+						@endforeach
 					})
 				},
                 methods: {
@@ -456,6 +504,9 @@
 						   toastCenter({type: 'warning',title: "Silahkan isikan keputusan untuk '{{$dau->sert_nama}}'"});
 						}
 						@endforeach
+						else if($('#jadw_file_kehadiran_komite').val() === ''){
+							toastCenter({type: 'warning',title: "Silahkan upload file daftar kehadiran"});
+						}
 						else{
 							swalWithBootstrapButtons({
 								title: `Submit Lembar Periksa ?`,
@@ -484,10 +535,15 @@
 									formData.append("komte_priksa_penilaian_11", tinyMCE.get('komte_priksa_penilaian_11').getContent())
 									formData.append("komte_priksa_penilaian_12", tinyMCE.get('komte_priksa_penilaian_12').getContent())
 									formData.append("komte_priksa_penilaian_13", tinyMCE.get('komte_priksa_penilaian_13').getContent())
+									const file = document.querySelector("#jadw_file_kehadiran_komite").files[0];
+									formData.append("jadw_file_kehadiran_komite", file)
+									
 									@foreach($dataAudit as $dau)
 									formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());
+									formData.append('tanggal[{{$dau->jadw_audit_id}}]', $("input[name='tanggal[{{$dau->jadw_audit_id}}]']").val());
+									
 									@endforeach
-									this.loading_submit = true;
+									// this.loading_submit = true;
 									let self = this;
 									$.ajax({
 										url: `{{action("$module@update")}}`,
@@ -500,7 +556,7 @@
 												type: 'success',
 												title: res.message
 											})
-											setTimeout(() => location.href = "{{url("$url")}}", 1000)
+											// setTimeout(() => location.href = "{{url("$url")}}", 1000)
 										},
 										error: function (xhr) {
 											self.loading_submit = false;

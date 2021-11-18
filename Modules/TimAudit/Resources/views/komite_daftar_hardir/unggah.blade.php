@@ -98,6 +98,21 @@
                                                 @endforeach
                                             </td>
                                         </tr>
+										
+										<tr>
+                                            <td>4</td>
+                                            <td>Tim Komite</td>
+                                            <td>:
+                                                <ol>
+                                                    @foreach($data->sis_audit_tim_komites as $tim)
+                                                        <li>
+                                                            {{$tim->master_pegawai->peg_nama}}
+                                                            <b>({{ucwords($tim->komite_posisi)}})</b>
+                                                        </li>
+                                                    @endforeach
+                                                </ol>
+                                            </td>
+                                        </tr>
                                     </table>
                                 </div>
                             </div>
@@ -115,59 +130,32 @@
                             <div class="dt-card__body">
                                 <div class="col-lg-12">
                                     <form method="post"
-                                          action="{{action("$module@storeUnggah", $data->jadw_id)}}"
+                                          action="{{action("$module@update", $data->jadw_id)}}"
                                           enctype="multipart/form-data">
                                         @csrf
                                         <div class="form-group row">
-                                            <label class="col-form-label col-sm-3" for="jadw_file_kehadiran">
+                                            <label class="col-form-label col-sm-3" for="jadw_file_kehadiran_komite">
                                                 Kehadiran*
                                                 <br>
                                                 <small>(pdf/excel)</small>
                                             </label>
                                             <div class="col-sm-8">
                                                 <div class="custom-file">
-                                                    <input type="file" name="jadw_file_kehadiran"
+                                                    <input type="file" name="jadw_file_kehadiran_komite"
                                                            class="custom-file-input"
-                                                           id="jadw_file_kehadiran"
+                                                           id="jadw_file_kehadiran_komite"
                                                            accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                                    <label class="custom-file-label" for="jadw_file_kehadiran">
-                                                        Unggah file...</label>
+                                                    <label class="custom-file-label" for="jadw_file_kehadiran_komite">Unggah file...</label>
+													<input type="hidden" name="jadw_id" value="{{$jadwal_id}}">
                                                 </div>
-                                                @if(!empty($data->jadw_file_kehadiran))
-                                                    <small>
-                                                        <a href="{{asset($data->jadw_file_kehadiran)}}" target="_blank">
-                                                            <i class="fad fa-download"></i> Download Kehadiran
+                                                @if(!empty($data->jadw_file_kehadiran_komite))
+                                                    <hr/>
+                                                        <a href="{{asset($data->jadw_file_kehadiran_komite)}}" target="_blank">
+                                                            <i class="fad fa-download"></i> Download Kehadiran Existing
                                                         </a>
-                                                    </small>
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="form-group row">
-                                            <label class="col-form-label col-sm-3" for="jadw_file_notulen_rapat">
-                                                Notulen Rapat*
-                                                <br>
-                                                <small>(pdf/excel)</small>
-                                            </label>
-                                            <div class="col-sm-8">
-                                                <div class="custom-file">
-                                                    <input type="file" name="jadw_file_notulen_rapat"
-                                                           class="custom-file-input"
-                                                           id="jadw_file_notulen_rapat"
-                                                           accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                                    <label class="custom-file-label" for="jadw_file_notulen_rapat">
-                                                        Unggah file...</label>
-                                                </div>
-                                                @if(!empty($data->jadw_file_notulen_rapat))
-                                                    <small>
-                                                        <a href="{{asset($data->jadw_file_notulen_rapat)}}"
-                                                           target="_blank">
-                                                            <i class="fad fa-download"></i> Download Notulen
-                                                        </a>
-                                                    </small>
-                                                @endif
-                                            </div>
-                                        </div>
-
 
                                         <button type="submit" class="btn btn-outline-primary btn-block">
                                             <i class="fas fa-paper-plane"></i> Submit

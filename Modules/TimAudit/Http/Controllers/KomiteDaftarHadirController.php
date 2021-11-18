@@ -16,14 +16,14 @@ class KomiteDaftarHadirController extends Controller
     use AuditorTraits;
 
     public $module = self::class;
-    private $url = 'komite/auditor/daftar-hadir';
+    private $url = 'timaudit/komite/daftar-hadir';
     private $view = "timaudit::komite_daftar_hardir";
 
     public function index()
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Auditor', url($this->url)),
+            new BreadcrumbsStruct('Komite', url($this->url)),
             new BreadcrumbsStruct('Daftar Hadir'),
         ];
 
@@ -31,17 +31,17 @@ class KomiteDaftarHadirController extends Controller
         return view("$this->view.index")->with($parser);
     }
 
-    public function unggah(Request $request, $jadwalID)
+    public function edit(Request $request)
     {
         try {
             $breadcrumbs = [
                 new BreadcrumbsStruct('Tim Audit'),
-                new BreadcrumbsStruct('Auditor', url($this->url)),
+                new BreadcrumbsStruct('Komite', url($this->url)),
                 new BreadcrumbsStruct('Daftar Hadir'),
             ];
-            $dataJadwal  = $this->isKepalaAudit($jadwalID);
+            $dataJadwal  = $this->isKepalaKomite($request['id_jadwal']);
 
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'jadwal_id' => $request['id_jadwal']];
 
             return view("$this->view.unggah")->with($parser);
         } catch (Exception $e) {
@@ -49,33 +49,23 @@ class KomiteDaftarHadirController extends Controller
         }
     }
 
-    public function storeUnggah(Request $request, $jadwalID)
+    public function update(Request $request)
     {
         $newFilePath = [];
         $oldFilePath = [];
         try {
-            $dataJadwal = $this->isKepalaAudit($jadwalID);
-            if (!empty($dataJadwal->jadw_file_kehadiran)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran);
-            if (!empty($dataJadwal->jadw_file_notulen_rapat)) array_push($oldFilePath, $dataJadwal->jadw_file_notulen_rapat);
+            $dataJadwal = $this->isKepalaKomite($request['jadw_id']);
+            if (!empty($dataJadwal->jadw_file_kehadiran_komite)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran_komite);
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
-            if ($request->hasFile('jadw_file_kehadiran')) {
-                $fileKehadiran     = $request->file('jadw_file_kehadiran');
-                $fileKehadiranName = Str::slug('file-kehadiran-' . $request['jadw_tim_id'] . '-' . $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
+            if ($request->hasFile('jadw_file_kehadiran_komite')) {
+                $fileKehadiran     = $request->file('jadw_file_kehadiran_komite');
+                $fileKehadiranName = Str::slug('file-kehadiran-komite-'. $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
                 $fileKehadiranPath = sprintf("%s/%s", $baseFileUpload, $fileKehadiranName);
                 $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
 
-                $dataJadwal->jadw_file_kehadiran = $fileKehadiranPath;
+                $dataJadwal->jadw_file_kehadiran_komite = $fileKehadiranPath;
                 array_push($newFilePath, public_path($fileKehadiranPath));
-            }
-            if ($request->hasFile('jadw_file_notulen_rapat')) {
-                $fileNotulen     = $request->file('jadw_file_notulen_rapat');
-                $fileNotulenName = Str::slug('file-notulen-rapat-' . $request['jadw_tim_id'] . '-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
-                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
-                $fileNotulen->move($baseFileUpload, $fileNotulenName);
-
-                $dataJadwal->jadw_file_notulen_rapat = $fileNotulenPath;
-                array_push($newFilePath, public_path($fileNotulenPath));
             }
 
             $dataJadwal->save();
@@ -107,19 +97,16 @@ class KomiteDaftarHadirController extends Controller
         $data->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $data->join('sis_jadwal_tim', function ($join) {
-            $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-        });
-        $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        $data->join("sis_audit_tim_komite", "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+        $data->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
-        $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-        // tambah jika not null file jadwal
+        $data->whereIn('sis_audit_tim_komite.komite_posisi', ['ketua']);
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
+        $data->where('sis_jadwal_audit.jadw_audit_status_komite', "=", "submited");
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -141,18 +128,13 @@ class KomiteDaftarHadirController extends Controller
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
-        $data->havingRaw('total_submit_komite > ?', [0]);
-        $data->havingRaw('total_proses > ?', [0]);
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];
         foreach ($data->get() as $d) {
-            $isUploaded = !empty($d->jadw_file_kehadiran) && !empty($d->jadw_file_notulen_rapat);
+            $isUploaded = !empty($d->jadw_file_kehadiran_komite);
 
             $x['is_uploaded']          = $isUploaded;
             $x['jadw_id']              = $d->jadw_id;

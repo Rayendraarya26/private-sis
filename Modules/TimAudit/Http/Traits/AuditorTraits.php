@@ -71,4 +71,37 @@ trait AuditorTraits
 
         return $data;
     }
+	
+	public function isKepalaKomite(int $jadwalID)
+    {
+        $pegawaiID = auth()->user()->master_pegawai->peg_id;
+        $data      = SisJadwal::with([
+            'sis_jadwal_audits.sis_audit_lks',
+            'sis_jadwal_audits.sis_permohonan',
+            'sis_jadwal_audits.master_komoditi',
+            'sis_pelanggan',
+            'sis_audit_tim_komites',
+            'sis_audit_lap_lengkap',
+            'sis_audit_lap_ringkas',
+            'sis_billing'
+        ])
+            ->where('jadw_id', $jadwalID)->first();
+
+        if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+
+        $involved = false;
+        foreach ($data->sis_audit_tim_komites as $tim) {
+            if ($tim->peg_id == $pegawaiID && in_array($tim->komite_posisi, ['ketua'])) $involved = true;
+        }
+        if (!$involved) throw new Exception("Anda bukan Kepala Auditor");
+
+        $open = false;
+        foreach ($data->sis_jadwal_audits as $ja) {
+            if ($ja->jadw_audit_status_komite == 'submited') $open = true;
+        }
+
+        if (!$open) throw new Exception("Proses audit belum diajukan ke Komite");
+
+        return $data;
+    }
 }

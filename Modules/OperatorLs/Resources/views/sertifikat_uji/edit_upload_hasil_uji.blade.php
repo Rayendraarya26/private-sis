@@ -13,6 +13,7 @@
     </style>
 @endpush
 @section('content')
+<div id="vueUpload">
     <div class="dt-content">
 		<div class="col-xl-12">
 			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
@@ -110,8 +111,7 @@
 						<div class="dt-card__heading"><h3 class="dt-card__title">Upload Hasil Uji</h3></div>
 					  </div>
 					  <div class="dt-card__body">
-						<div id="vueUpload">
-							<div id="frmLap" style="display:none;">
+							<div id="frmSertifikat" style="display:none;">
 								<fieldset style="border: 1px #eee solid;padding:20px;">
 								<legend>Form Upload:</legend>
 								<div class="form-group form-row" id="data_permohonan">
@@ -129,6 +129,7 @@
 										<input type="hidden" id="jadw_audit_sertifikat_filepath_lama">
 										<small><span>Upload file harus berjenis PDF</span></small>
 									</div>
+									
 								</div>
 								<div style="padding-top: 20px">
 									<template v-if="loading_submit">
@@ -139,7 +140,7 @@
 									<template v-else>
 										<button :disabled="!agreement"
 												:class="{'btn': true, 'btn-primary':agreement, 'btn-outline-primary':!agreement,'btn-block':true}"
-												@click="submitPermohonan"
+												@click="submitSertifikat"
 										>
 											<i class="fas fa-cloud-upload"></i> Upload
 										</button>
@@ -160,13 +161,13 @@
 									@endif
 								</div>
 							</div>
-						</div>
 					  </div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 @endsection
 
 
@@ -188,17 +189,18 @@
 					success: async function (res) {
 						setTimeout(() => {
 							$("#jadw_audit_sertifikat_filepath_lama").val(res.jadw_audit_sertifikat_filepath);
-							$("#labelForm").html(res.sert_nama);
+							$("#labelForm").html(res.sert_nama +"("+ res.komodt_nama +")" );
 						}, 400)
 					},
 					error: function (xhr) {
-						self.loading_submit = false;
 						if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
 						else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
 					}
 				});
 				$("#jadw_audit_id").val(id);
-				$("#frmLap").show();
+				$("#jadw_audit_sertifikat_nomor").val("");
+				$("#jadw_audit_sertifikat_filepath").val("");
+				$("#frmSertifikat").show();
 				$(".tab-content").height("100%");
 			}, 500);						
 		}
@@ -298,13 +300,14 @@
 										toastCenter({
 											type: 'success',
 											title: response.message
-										})
+										});
+										
 										setTimeout(async () => {
-											$('#ttData').datagrid('reload');
-											$("#frmLap").hide();
-											$(".tab-content").height("100%");
 											this.agreement = false;
-											loading_submit = false;
+											this.loading_submit = false;
+											$('#ttData').datagrid('reload');
+											$("#frmSertifikat").hide();
+											$(".tab-content").height("100%");
 										}, 500);
 									},
 									error: function (err) {
@@ -337,7 +340,7 @@
 					validateSertifikat() {
                         this.jadw_audit_sertifikat_nomor = $("#jadw_audit_sertifikat_nomor").val();
                     },
-                    submitPermohonan() {
+                    submitSertifikat() {
 						if ($.trim($("#jadw_audit_sertifikat_filepath").val()) === "") {
 							toastCenter({
 										type: 'warning',
@@ -385,11 +388,11 @@
 												title: res.message
 											})
 											setTimeout(async () => {
+												self.agreement = false;
+												self.loading_submit = false;
 												$('#ttData').datagrid('reload');
-												$("#frmLap").hide();
+												$("#frmSertifikat").hide();
 												$(".tab-content").height("100%");
-												this.agreement = false;
-												loading_submit = false;
 											}, 500);
 										},
 										error: function (xhr) {

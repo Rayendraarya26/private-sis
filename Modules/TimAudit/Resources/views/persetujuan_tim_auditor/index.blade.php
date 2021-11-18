@@ -76,13 +76,20 @@
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
-				onLoadSuccess: function (data) {
+				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         try {
                             $(this).menubutton('destroy');
                         } catch (e) {
                             console.log('failed destroy');
                         }
+                    });
+                },
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
+                        });
                     });
                 },
             });

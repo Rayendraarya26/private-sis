@@ -42,13 +42,15 @@ class SertifikatUjiController extends Controller
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+        $data->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $data->select('sis_jadwal_audit.*', "sert_nama AS sert_nama");
+        $data->select('sis_jadwal_audit.*', "sert_nama AS sert_nama", "komodt_nama AS komodt_nama" );
         $data->where('sis_jadwal_audit.jadw_audit_id', '=', $request['jadw_audit_id']);
         $result = [];
         foreach ($data->get() as $d) {
             $x['jadw_audit_sertifikat_filepath'] = ($d->jadw_audit_sertifikat_filepath != '') ? $d->jadw_audit_sertifikat_filepath : '';
             $x['sert_nama']                      = ($d->sert_nama != '') ? $d->sert_nama : '';
+            $x['komodt_nama']                      = ($d->komodt_nama != '') ? $d->komodt_nama : '';
             array_push($result, $x);
         }
 
