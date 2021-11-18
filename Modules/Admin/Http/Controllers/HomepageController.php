@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\System\Http\Controllers;
+namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -14,16 +14,16 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 
-class ManageHomepageController extends Controller
+class HomepageController extends Controller
 {
     public $module = self::class;
-    private $url = 'system/homepage';
+    private $url = 'admin/homepage';
 
     public function index()
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('System'),
-            new BreadcrumbsStruct('Manage Homepage'),
+            new BreadcrumbsStruct('Administrator'),
+            new BreadcrumbsStruct('Homepage'),
         ];
 
         $parse = [
@@ -36,7 +36,7 @@ class ManageHomepageController extends Controller
         	'socmed_rows' 	=> PublicSocialMedia::all(),
         ];
         
-        return view('system::homepage.index')->with($parse);
+        return view('admin::homepage.index')->with($parse);
     }
 
     public function update(Request $request)

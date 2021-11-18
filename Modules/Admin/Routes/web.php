@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Admin\Http\Controllers\PegawaiController;
 use Modules\Admin\Http\Controllers\PelangganController;
+use Modules\Admin\Http\Controllers\HomepageController;
 
 Route::prefix('admin')->group(function () {
     Route::prefix("data/pelanggan")->group(function () {
@@ -27,4 +28,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/banned', [PegawaiController::class, 'banned']);
         Route::get("ajax", [PegawaiController::class, 'ajax']);
     });
+
+    Route::resource("homepage", HomepageController::class);
+    Route::post('homepage/update', [HomepageController::class, 'update']);
 });

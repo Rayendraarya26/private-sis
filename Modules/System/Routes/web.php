@@ -5,7 +5,6 @@ use Modules\System\Http\Controllers\ManageGroupController;
 use Modules\System\Http\Controllers\ManageMenuActionController;
 use Modules\System\Http\Controllers\ManageMenuController;
 use Modules\System\Http\Controllers\ManageUserController;
-use Modules\System\Http\Controllers\ManageHomepageController;
 
 Route::prefix('system')->middleware(['auth', 'restrict'])->name("system")->group(function () {
     Route::redirect("/", "/system/menu");
@@ -27,7 +26,4 @@ Route::prefix('system')->middleware(['auth', 'restrict'])->name("system")->group
     Route::resource("menu/{id}/menu-action", ManageMenuActionController::class);
     Route::post('menu/{id}/menu-action/update', [ManageMenuActionController::class, 'update']);
     Route::get('menu/{id}/menu-action/ajax/datagrid', [ManageMenuActionController::class, 'ajaxDatagrid']);
-
-    Route::resource("homepage", ManageHomepageController::class);
-    Route::post('homepage/update', [ManageHomepageController::class, 'update']);
 });
