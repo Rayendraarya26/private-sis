@@ -36,8 +36,54 @@ class AuPengajuanKomiteController extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
+            'detail-audit' => $this->detail_audit($request),
             default         => null,
         };
+    }
+	
+	public function detail_audit(Request $request)
+    {
+		try {
+            $dataJadwal  = $this->isKepalaAudit($request['jadw_id']);
+            $breadcrumbs = [
+				new BreadcrumbsStruct('Tim Audit'),
+				new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
+				new BreadcrumbsStruct('Pengajuan Komite', url($this->url)),
+				new BreadcrumbsStruct('Detail Audit'),
+			];
+
+            $dataLKS = [
+                'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+            ];
+            foreach ($dataJadwal->sis_jadwal_audits as $ja) {
+                foreach ($ja->sis_audit_lks as $lks) {
+                    switch ($lks->lks_kategori_ketidaksesuaian) {
+                        case 'kritis':
+                            // jumlah
+                            $dataLKS['jumlah']['kritis'] += 1;
+                            $dataLKS['jumlah']['total']  += 1;
+                            break;
+                        case 'mayor':
+                            // jumlah
+                            $dataLKS['jumlah']['mayor'] += 1;
+                            $dataLKS['jumlah']['total'] += 1;
+                            break;
+                        case 'minor':
+                        case 'observasi':
+                            // jumlah
+                            $dataLKS['jumlah']['minor'] += 1;
+                            $dataLKS['jumlah']['total'] += 1;
+                            break;
+                    }
+                }
+            }
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
+
+            return view("$this->view.detail_audit")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 	
 	public function edit(Request $request)

@@ -68,7 +68,7 @@
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;
 							if (row.status_komite != 'on-going'){
-								btnEdit += `<div data-options="iconCls:'fas fa-ballot-check'" onclick="window.open('{{ url("$url/detail") }}?tipe=detail-audit&jadw_id=${row.jadw_id}', '_blank').focus()">Lihat Detail</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-ballot-check'" onclick="location.href = '{{ url("$url/detail") }}?tipe=detail-audit&jadw_id=${row.jadw_id}'">Lihat Detail</div>`;
 							}
 							else{
 								btnEdit += `<div data-options="iconCls:'fas fa-paper-plane'" onclick="location.href = '{{ url("$url/edit") }}?jadw_id=${row.jadw_id}'">Ajukan Ke Komite</div>`;
