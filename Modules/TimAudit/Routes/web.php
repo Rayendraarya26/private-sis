@@ -118,6 +118,9 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
         Route::prefix("pengajuan-komite")->group(function () {
             Route::get('/', [AuPengajuanKomiteController::class, 'index']);
             Route::get('/ajax', [AuPengajuanKomiteController::class, 'ajax']);
+            Route::get('/edit', [AuPengajuanKomiteController::class, 'edit']);
+            Route::post('/update', [AuPengajuanKomiteController::class, 'update']);
+            Route::get('/detail', [AuPengajuanKomiteController::class, 'detail']);
         });
     });
 

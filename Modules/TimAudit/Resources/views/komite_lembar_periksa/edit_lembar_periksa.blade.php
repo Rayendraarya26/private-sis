@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'LEMBAR PERIKSA KOMITE SERTIFIKASI')
+@section('title', 'Lembar Periksa Komite Sertifikasi')
 
 @push("css")
     <!-- HTML -->
@@ -543,7 +543,7 @@
 									formData.append('tanggal[{{$dau->jadw_audit_id}}]', $("input[name='tanggal[{{$dau->jadw_audit_id}}]']").val());
 									
 									@endforeach
-									// this.loading_submit = true;
+									this.loading_submit = true;
 									let self = this;
 									$.ajax({
 										url: `{{action("$module@update")}}`,
@@ -556,7 +556,7 @@
 												type: 'success',
 												title: res.message
 											})
-											// setTimeout(() => location.href = "{{url("$url")}}", 1000)
+											setTimeout(() => location.href = "{{url("$url")}}", 1000)
 										},
 										error: function (xhr) {
 											self.loading_submit = false;

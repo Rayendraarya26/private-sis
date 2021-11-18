@@ -68,6 +68,7 @@
                     },
                 ]],
                 columns: [[
+					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
