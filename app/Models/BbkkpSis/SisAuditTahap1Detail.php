@@ -15,13 +15,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $aud_thp1_det_id
  * @property int $aud_thp1_id
  * @property int|null $klausul_thp1_id
+ * @property string|null $aud_thp1_det_is_tinjauan
  * @property string|null $aud_thp1_det_thp1_nomor
  * @property string|null $aud_thp1_det_peryataan
- * @property string|null $aud_thp1_det_is_tinjauan
  * @property string|null $aud_thp1_det_kode_dok
  * @property string|null $aud_thp1_det_judul_dok
- * @property string|null $aud_thp1_det_hasil_tinjauan
  * @property string|null $aud_thp1_det_keterangan
+ * @property string|null $aud_thp1_det_persyaratan
+ * @property string|null $aud_thp1_det_nilai
+ * @property string|null $aud_thp1_det_satuan
+ * @property string|null $aud_thp1_det_hasil_tinjauan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -42,13 +45,16 @@ class SisAuditTahap1Detail extends Model
 	protected $fillable = [
 		'aud_thp1_id',
 		'klausul_thp1_id',
+		'aud_thp1_det_is_tinjauan',
 		'aud_thp1_det_thp1_nomor',
 		'aud_thp1_det_peryataan',
-		'aud_thp1_det_is_tinjauan',
 		'aud_thp1_det_kode_dok',
 		'aud_thp1_det_judul_dok',
-		'aud_thp1_det_hasil_tinjauan',
-		'aud_thp1_det_keterangan'
+		'aud_thp1_det_keterangan',
+		'aud_thp1_det_persyaratan',
+		'aud_thp1_det_nilai',
+		'aud_thp1_det_satuan',
+		'aud_thp1_det_hasil_tinjauan'
 	];
 
 	public function sis_audit_tahap1()

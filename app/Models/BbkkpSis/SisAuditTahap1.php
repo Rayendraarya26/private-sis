@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $aud_thp1_id
  * @property int|null $bill_id
  * @property int $mohon_id
+ * @property string|null $sert_tahap1_jenis
  * @property string|null $aud_thp1_status
  * @property string|null $aud_thp1_ditutup
  * @property Carbon|null $aud_thp1_tanggal_mulai
@@ -31,6 +32,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $aud_thp1_kolom_x
  * @property string|null $aud_thp1_kolom_xi
  * @property string|null $aud_thp1_kolom_xii
+ * @property string|null $aud_thp1_nomor
+ * @property string|null $aud_thp1_kesimpulan
+ * @property string|null $aud_thp1_pernyataan_auditor
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -60,6 +64,7 @@ class SisAuditTahap1 extends Model
 	protected $fillable = [
 		'bill_id',
 		'mohon_id',
+		'sert_tahap1_jenis',
 		'aud_thp1_status',
 		'aud_thp1_ditutup',
 		'aud_thp1_tanggal_mulai',
@@ -74,7 +79,10 @@ class SisAuditTahap1 extends Model
 		'aud_thp1_kolom_ix',
 		'aud_thp1_kolom_x',
 		'aud_thp1_kolom_xi',
-		'aud_thp1_kolom_xii'
+		'aud_thp1_kolom_xii',
+		'aud_thp1_nomor',
+		'aud_thp1_kesimpulan',
+		'aud_thp1_pernyataan_auditor'
 	];
 
 	public function sis_billing()
