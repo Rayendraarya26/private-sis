@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $cust_sert_tgl_sertifikat_perubahan
  * @property string|null $cust_sert_status
  * @property Carbon $cust_sert_expired_date
- * @property Carbon $cust_sert_survailen_date
+ * @property Carbon|null $cust_sert_survailen_date
  * @property string|null $cust_sert_status_survailen
  * @property string|null $cust_sert_filepath
  * @property Carbon $created_at
@@ -45,7 +45,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisPermohonan|null $sis_permohonan
  * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
- * @property Collection|SisPermohonan[] $sis_permohonans
+ * @property Collection|SisPermohonanDetail[] $sis_permohonan_details
  *
  * @package App\Models\BbkkpSis
  */
@@ -124,8 +124,8 @@ class SisPelangganSertifikasi extends Model
 		return $this->hasMany(SisJadwalAudit::class, 'cust_sert_id');
 	}
 
-	public function sis_permohonans()
+	public function sis_permohonan_details()
 	{
-		return $this->hasMany(SisPermohonan::class, 'cust_sert_id');
+		return $this->hasMany(SisPermohonanDetail::class, 'cust_sert_id');
 	}
 }

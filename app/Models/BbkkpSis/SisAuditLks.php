@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisAuditLks
  * 
  * @property int $lks_id
- * @property int $jadw_audit_id
+ * @property int $jadw_id
  * @property int|null $jadw_tim_id
  * @property string|null $lks_uraian_ketidaksesuaian
  * @property string|null $lks_kategori_ketidaksesuaian
@@ -31,8 +31,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
- * @property SisJadwalAudit $sis_jadwal_audit
  * @property SisJadwalTim|null $sis_jadwal_tim
+ * @property SisJadwal $sis_jadwal
  * @property Collection|SisAuditLksFile[] $sis_audit_lks_files
  * @property Collection|SisAuditLksRevisi[] $sis_audit_lks_revisis
  *
@@ -44,7 +44,7 @@ class SisAuditLks extends Model
 	protected $primaryKey = 'lks_id';
 
 	protected $casts = [
-		'jadw_audit_id' => 'int',
+		'jadw_id' => 'int',
 		'jadw_tim_id' => 'int'
 	];
 
@@ -54,7 +54,7 @@ class SisAuditLks extends Model
 	];
 
 	protected $fillable = [
-		'jadw_audit_id',
+		'jadw_id',
 		'jadw_tim_id',
 		'lks_uraian_ketidaksesuaian',
 		'lks_kategori_ketidaksesuaian',
@@ -70,14 +70,14 @@ class SisAuditLks extends Model
 		'lks_status'
 	];
 
-	public function sis_jadwal_audit()
-	{
-		return $this->belongsTo(SisJadwalAudit::class, 'jadw_audit_id');
-	}
-
 	public function sis_jadwal_tim()
 	{
 		return $this->belongsTo(SisJadwalTim::class, 'jadw_tim_id');
+	}
+
+	public function sis_jadwal()
+	{
+		return $this->belongsTo(SisJadwal::class, 'jadw_id');
 	}
 
 	public function sis_audit_lks_files()

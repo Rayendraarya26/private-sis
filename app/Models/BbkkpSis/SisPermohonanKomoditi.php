@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisPermohonanKomoditi
  * 
  * @property int $mohon_kmditi_id
- * @property int $mohon_id
+ * @property int $mohon_det_id
  * @property int $komodt_id
  * @property string|null $mohon_kmditi_sni
  * @property string|null $mohon_kmditi_merk
@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property MasterKomoditi $master_komoditi
- * @property SisPermohonan $sis_permohonan
+ * @property SisPermohonanDetail $sis_permohonan_detail
  *
  * @package App\Models\BbkkpSis
  */
@@ -38,12 +38,12 @@ class SisPermohonanKomoditi extends Model
 	protected $primaryKey = 'mohon_kmditi_id';
 
 	protected $casts = [
-		'mohon_id' => 'int',
+		'mohon_det_id' => 'int',
 		'komodt_id' => 'int'
 	];
 
 	protected $fillable = [
-		'mohon_id',
+		'mohon_det_id',
 		'komodt_id',
 		'mohon_kmditi_sni',
 		'mohon_kmditi_merk',
@@ -61,8 +61,8 @@ class SisPermohonanKomoditi extends Model
 		return $this->belongsTo(MasterKomoditi::class, 'komodt_id');
 	}
 
-	public function sis_permohonan()
+	public function sis_permohonan_detail()
 	{
-		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
+		return $this->belongsTo(SisPermohonanDetail::class, 'mohon_det_id');
 	}
 }

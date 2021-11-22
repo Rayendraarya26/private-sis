@@ -7,7 +7,6 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -46,7 +45,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterKomoditi|null $master_komoditi
  * @property MasterSertifikasi|null $master_sertifikasi
  * @property SisPelangganSertifikasi|null $sis_pelanggan_sertifikasi
- * @property Collection|SisAuditLks[] $sis_audit_lks
  *
  * @package App\Models\BbkkpSis
  */
@@ -113,10 +111,5 @@ class SisJadwalAudit extends Model
 	public function sis_pelanggan_sertifikasi()
 	{
 		return $this->belongsTo(SisPelangganSertifikasi::class, 'cust_sert_id');
-	}
-
-	public function sis_audit_lks()
-	{
-		return $this->hasMany(SisAuditLks::class, 'jadw_audit_id');
 	}
 }

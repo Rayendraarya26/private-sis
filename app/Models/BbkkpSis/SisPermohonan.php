@@ -16,17 +16,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $mohon_id
  * @property int $cust_id
  * @property int $user_id
- * @property int $sert_id
  * @property string $mohon_approved_status
- * @property string $mohon_jenis_status
- * @property string|null $mohon_perlu_tahap1
- * @property int|null $cust_sert_id
  * @property string|null $mohon_verif_kajian_permohonan_pjt
  * @property string|null $mohon_kajian_permohonan_pjt_file
  * @property string|null $mohon_verif_kajian_permohonan_paskal
  * @property string|null $mohon_kajian_permohonan_paskal_file
  * @property string|null $mohon_pernyataan_persetujuan_file
  * @property string|null $mohon_spk_file
+ * @property string|null $mohon_tagihan_biaya_file
+ * @property string|null $mohon_tagihan_biaya_status
  * @property string|null $mohon_harus_lunas_status
  * @property float|null $mohon_harga_permohonan
  * @property string|null $mohon_cust_email
@@ -64,10 +62,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
- * @property MasterSertifikasi $master_sertifikasi
  * @property SisPelanggan $sis_pelanggan
  * @property SysUser $sys_user
- * @property SisPelangganSertifikasi|null $sis_pelanggan_sertifikasi
  * @property MasterJenisPerusahaan|null $master_jenis_perusahaan
  * @property MasterBadanHukum|null $master_badan_hukum
  * @property MasterNegara|null $master_negara
@@ -78,8 +74,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
+ * @property Collection|SisPermohonanDetail[] $sis_permohonan_details
  * @property Collection|SisPermohonanDokumen[] $sis_permohonan_dokumens
- * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
  * @property Collection|SisPermohonanPabrik[] $sis_permohonan_pabriks
  * @property Collection|SisPermohonanStatus[] $sis_permohonan_statuses
  *
@@ -93,8 +89,6 @@ class SisPermohonan extends Model
 	protected $casts = [
 		'cust_id' => 'int',
 		'user_id' => 'int',
-		'sert_id' => 'int',
-		'cust_sert_id' => 'int',
 		'mohon_harga_permohonan' => 'float',
 		'jenis_perusahaan_id' => 'int',
 		'badan_hukum_id' => 'int',
@@ -117,17 +111,15 @@ class SisPermohonan extends Model
 	protected $fillable = [
 		'cust_id',
 		'user_id',
-		'sert_id',
 		'mohon_approved_status',
-		'mohon_jenis_status',
-		'mohon_perlu_tahap1',
-		'cust_sert_id',
 		'mohon_verif_kajian_permohonan_pjt',
 		'mohon_kajian_permohonan_pjt_file',
 		'mohon_verif_kajian_permohonan_paskal',
 		'mohon_kajian_permohonan_paskal_file',
 		'mohon_pernyataan_persetujuan_file',
 		'mohon_spk_file',
+		'mohon_tagihan_biaya_file',
+		'mohon_tagihan_biaya_status',
 		'mohon_harus_lunas_status',
 		'mohon_harga_permohonan',
 		'mohon_cust_email',
@@ -164,11 +156,6 @@ class SisPermohonan extends Model
 		'mohon_pertanyaan_filepath'
 	];
 
-	public function master_sertifikasi()
-	{
-		return $this->belongsTo(MasterSertifikasi::class, 'sert_id');
-	}
-
 	public function sis_pelanggan()
 	{
 		return $this->belongsTo(SisPelanggan::class, 'cust_id');
@@ -177,11 +164,6 @@ class SisPermohonan extends Model
 	public function sys_user()
 	{
 		return $this->belongsTo(SysUser::class, 'user_id');
-	}
-
-	public function sis_pelanggan_sertifikasi()
-	{
-		return $this->belongsTo(SisPelangganSertifikasi::class, 'cust_sert_id');
 	}
 
 	public function master_jenis_perusahaan()
@@ -234,14 +216,14 @@ class SisPermohonan extends Model
 		return $this->hasMany(SisPelangganSertifikasi::class, 'mohon_id');
 	}
 
+	public function sis_permohonan_details()
+	{
+		return $this->hasMany(SisPermohonanDetail::class, 'mohon_id');
+	}
+
 	public function sis_permohonan_dokumens()
 	{
 		return $this->hasMany(SisPermohonanDokumen::class, 'mohon_id');
-	}
-
-	public function sis_permohonan_komoditis()
-	{
-		return $this->hasMany(SisPermohonanKomoditi::class, 'mohon_id');
 	}
 
 	public function sis_permohonan_pabriks()

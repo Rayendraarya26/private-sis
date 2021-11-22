@@ -21,10 +21,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $jadw_team_status
  * @property string|null $jadw_file_kehadiran
  * @property string|null $jadw_file_notulen_rapat
+ * @property string|null $jadw_file_kehadiran_komite
  * @property string|null $jadw_jenis
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
- * @property string|null $jadw_file_kehadiran_komite
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisAuditKomiteRekomendasi $sis_audit_komite_rekomendasi
  * @property SisAuditLapLengkap $sis_audit_lap_lengkap
  * @property SisAuditLapRingkas $sis_audit_lap_ringkas
+ * @property Collection|SisAuditLks[] $sis_audit_lks
  * @property Collection|SisAuditObservasi[] $sis_audit_observasis
  * @property Collection|SisAuditPpc[] $sis_audit_ppcs
  * @property Collection|SisAuditSertifikatProduk[] $sis_audit_sertifikat_produks
@@ -67,10 +68,10 @@ class SisJadwal extends Model
 		'jadw_team_status',
 		'jadw_file_kehadiran',
 		'jadw_file_notulen_rapat',
+		'jadw_file_kehadiran_komite',
 		'jadw_jenis',
 		'cust_id',
-		'jadw_file_jadwal',
-		'jadw_file_kehadiran_komite'
+		'jadw_file_jadwal'
 	];
 
 	public function sis_billing()
@@ -101,6 +102,11 @@ class SisJadwal extends Model
 	public function sis_audit_lap_ringkas()
 	{
 		return $this->hasOne(SisAuditLapRingkas::class, 'jadw_id');
+	}
+
+	public function sis_audit_lks()
+	{
+		return $this->hasMany(SisAuditLks::class, 'jadw_id');
 	}
 
 	public function sis_audit_observasis()

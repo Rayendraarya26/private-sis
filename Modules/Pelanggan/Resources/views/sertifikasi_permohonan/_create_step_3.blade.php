@@ -723,7 +723,7 @@
                        @change="validateUploadPertanyaanTambahan"
                        accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/octet-stream"
                        name="step3_pertanyaan_tambahan" id="step3_pertanyaan_tambahan">
-                <small><span>Upload file harus berjenis PDF</span></small>
+                <small><span>Upload file (PDF/DOCX)</span></small>
             </ol>
         </div>
     </div>

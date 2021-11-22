@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $sert_format_referensi
  * @property string|null $sert_sni
  * @property string|null $sert_is_product
+ * @property string|null $sert_tahap1_jenis
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -28,7 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|MasterSertifikasiKlausul[] $master_sertifikasi_klausuls
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
- * @property Collection|SisPermohonan[] $sis_permohonans
+ * @property Collection|SisPermohonanDetail[] $sis_permohonan_details
  *
  * @package App\Models\BbkkpSis
  */
@@ -47,7 +48,8 @@ class MasterSertifikasi extends Model
 		'sert_expired',
 		'sert_format_referensi',
 		'sert_sni',
-		'sert_is_product'
+		'sert_is_product',
+		'sert_tahap1_jenis'
 	];
 
 	public function master_klausul_tahap1s()
@@ -75,8 +77,8 @@ class MasterSertifikasi extends Model
 		return $this->hasMany(SisPelangganSertifikasi::class, 'sert_id');
 	}
 
-	public function sis_permohonans()
+	public function sis_permohonan_details()
 	{
-		return $this->hasMany(SisPermohonan::class, 'sert_id');
+		return $this->hasMany(SisPermohonanDetail::class, 'sert_id');
 	}
 }
