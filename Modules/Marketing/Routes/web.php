@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Marketing\Http\Controllers\MarketingController;
 use Modules\Marketing\Http\Controllers\UploadKajianPermohonanController;
 use Modules\Marketing\Http\Controllers\VerifikasiPermohonanController;
+use Modules\Marketing\Http\Controllers\UploadTagihanBiayaController;
 
 Route::prefix('marketing')->middleware(['auth', 'restrict'])->group(function() {
     Route::get('/', [MarketingController::class, 'index']);
@@ -15,6 +16,14 @@ Route::prefix('marketing')->middleware(['auth', 'restrict'])->group(function() {
         Route::get('/detail/{mohon_id}', [VerifikasiPermohonanController::class, 'detail']);
         Route::get('/edit', [VerifikasiPermohonanController::class, 'edit']);
         Route::post('/update', [VerifikasiPermohonanController::class, 'update']);
+    });
+	
+	Route::prefix("tagihan-biaya")->group(function () {
+        Route::get('/', [UploadTagihanBiayaController::class, 'index']);
+        Route::any('/ajax', [UploadTagihanBiayaController::class, 'ajax']);
+        Route::get('/detail/{mohon_id}', [UploadTagihanBiayaController::class, 'detail']);
+        Route::get('/edit', [UploadTagihanBiayaController::class, 'edit']);
+        Route::post('/update', [UploadTagihanBiayaController::class, 'update']);
     });
 
     Route::prefix("kajian-permohonan")->group(function () {
