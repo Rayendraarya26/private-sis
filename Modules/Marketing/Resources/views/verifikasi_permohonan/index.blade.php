@@ -61,20 +61,6 @@
                 columns: [[
                     {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
-                    {
-                        field: 'mohon_jenis_status',
-                        title: 'Jenis Permohonan <br> Sertifikat',
-                        width: 150,
-                        sortable: true,
-                        formatter: function (val) {
-                            switch (val) {
-                                case 'lama':
-                                    return "Lama";
-                                case 'baru':
-                                    return "Baru";
-                            }
-                        }
-                    },
                     {field: 'sert_nama', title: 'Nama Sertifikasi', width: 320, sortable: true},
                     {field: 'mohon_cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                 ]],
@@ -83,27 +69,6 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
-                    {
-                        field: 'mohon_jenis_status',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            data: [
-                                {value: '', text: 'Semua'},
-                                {value: 'lama', text: 'Lama'},
-                                {value: 'baru', text: 'Baru'}
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'mohon_jenis_status',
-                                    op: 'equal',
-                                    value: value
-                                });
-
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
                 ]);
         });
 		

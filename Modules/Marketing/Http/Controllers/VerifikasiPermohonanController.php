@@ -2,18 +2,24 @@
 
 namespace Modules\Marketing\Http\Controllers;
 
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+
 
 class VerifikasiPermohonanController extends Controller
 {
@@ -47,7 +53,8 @@ class VerifikasiPermohonanController extends Controller
 
     private function ajax_datagrid_permohonan(Request $request)
     {
-        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
+        $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->whereIn('mohon_approved_status', ['on-progress', 'fix']);
         if (!empty($request->filterRules)) {
@@ -64,15 +71,15 @@ class VerifikasiPermohonanController extends Controller
             }
         }
         // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
+        $data->select("*", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
+		$data->groupBy('sis_permohonan.mohon_id');
         // Result
         $result = [];
         foreach ($data->get() as $d) {
             $x['status_step'] = '';
-            if (is_null($d->mohon_pernyataan_persetujuan_file) && is_null($d->mohon_spk_file)) {
+            if (is_null($d->mohon_pernyataan_persetujuan_file)) {
                 $x['status_step'] = 'verifikasi';
             }
 
@@ -80,10 +87,9 @@ class VerifikasiPermohonanController extends Controller
             $x['mohon_id']           = $d->mohon_id;
             $x['cust_id']            = $d->cust_id;
             $x['user_id']            = $d->user_id;
-            $x['sert_id']            = $d->sert_id;
             $x['sert_nama']          = $d->sert_nama;
             $x['mohon_cust_nama']    = $d->mohon_cust_nama;
-            $x['mohon_jenis_status'] = $d->mohon_jenis_status;
+            $x['mohon_det_jenis_status'] = $d->mohon_det_jenis_status;
             $x['created_at']         = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']          = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
@@ -123,37 +129,40 @@ class VerifikasiPermohonanController extends Controller
 
     private function detail_verifikasi(Request $request, $mohonID)
     {
-        $dataPermohon = SisPermohonan::where('mohon_id', $mohonID);
-        $dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
-
-        $dataPermohon->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
-        $dataPermohon->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
-        $dataPermohon->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
-        $dataPermohon->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
-        $dataPermohon->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
-        $dataPermohon->select('*');
-        $breadcrumbs          = [
+		$breadcrumbs          = [
             new BreadcrumbsStruct('Marketing'),
             new BreadcrumbsStruct('Verifikasi Sertifikasi', url($this->url)),
             new BreadcrumbsStruct('Detail Permohonan "#' . $mohonID . '"'),
         ];
-        $dataPermohonKomoditi = SisPermohonanKomoditi::where('mohon_id', $mohonID);
-        $dataPermohonKomoditi->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
-        $dataPermohonKomoditi->select('*');
+		
+        $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->select('*')
+						->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id')
+						->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id')
+						->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id')
+						->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id')
+						->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
+						
+        
+		$dataPermohonSertifikasi = SisPermohonan::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
+								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
+								
+        $dataPermohonKomoditi = SisPermohonanKomoditi::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
+								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+								->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
 
 
-        $dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $mohonID);
-        $dataPermohonPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
-        $dataPermohonPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
-        $dataPermohonPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
-        $dataPermohonPabrik->select('*');
+        $dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $mohonID)->select('*')
+			->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id')
+			->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id')
+			->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
 
-        $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID);
-        $dataPermohonanDokumen->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
-        $dataPermohonanDokumen->select('*');
+        $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID)->select('*')
+							->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
+							
 
-        $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $mohonID)->where('status_tipe', 'revisi');
-        $dataPermohonanStatus->select('*');
+        $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $mohonID)->where('status_tipe', 'revisi')->select('*');
 
         $parser = [
             'module'                => $this->module,
@@ -162,6 +171,7 @@ class VerifikasiPermohonanController extends Controller
             'dataPermohonKomoditi'  => $dataPermohonKomoditi->get(),
             'dataPermohonPabrik'    => $dataPermohonPabrik->get(),
             'dataPermohonanDokumen' => $dataPermohonanDokumen->get(),
+            'dataPermohonSertifikasi'  => $dataPermohonSertifikasi->get(),
             'dataPermohonanStatus'  => $dataPermohonanStatus->get(),
             'breadcrumbs'           => $breadcrumbs
         ];
@@ -188,10 +198,11 @@ class VerifikasiPermohonanController extends Controller
             new BreadcrumbsStruct('Revisi Permohonan "#' . $request['mohon_id'] . '"'),
         ];
 
-        $dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id']);
-        $dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
-        $dataPermohon->select('*');
-
+        $dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))
+			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+			->groupBy('sis_permohonan.mohon_id');
+			
         $parser = [
             'module'       => $this->module,
             'url'          => $this->url,
@@ -203,7 +214,11 @@ class VerifikasiPermohonanController extends Controller
 
     private function edit_accepted(Request $request)
     {
-        $data       = SisPermohonan::findOrFail($request['mohon_id']);
+        $data = $dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))
+			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+			->groupBy('sis_permohonan.mohon_id')->get()[0];
+			
         $dataInsert = [
             'mohon_id'        => $request['mohon_id'],
             'status_mohon_id' => $request['mohon_id'],
@@ -222,34 +237,37 @@ class VerifikasiPermohonanController extends Controller
             // Delete User Group
             SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted']);
         });
+		
+		// Send Push
+		$notifStruct            = new NotifStruct();
+		$notifStruct->title     = 'Permohonan anda untuk nomor #' . $request['mohon_id'] . ' telah diterima.';
+		$notifStruct->message   = sprintf("%s mengajukan permohonan dengan nomor #%s telah melalui proses verifikasi dan diputuskan untuk diterima.", $data['mohon_cust_nama'], $data['mohon_id']);
+		$notifStruct->user_id   = $data['user_id'];
+		$notifStruct->click_url = url('/pelanggan/sertifikasi/permohonan');
+		sendNotification($notifStruct);
 
-        return redirect($this->url)->with('message', "Data permohonan #" . $request->mohon_id . " sudah diverifikasi dengan status '<strong>Diterima</strong>'.");
+		// Send Email
+		$structEmail          = new EmailStruct();
+		$structEmail->subject = "Pengajuan permohonan sertifikasi";
+		$structEmail->body    = view('marketing::verifikasi_permohonan.mails.accepted')
+			->with([
+				'pemohonNama'       => $data['mohon_cust_nama'],
+				'pemohonSertifNama' => $data['sert_nama'],
+				'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
+			])->render();
+		$structEmail->to      = $data['mohon_cust_email'];
+		sendEmail($structEmail);
 
-        /*
-		$breadcrumbs = [
-            new BreadcrumbsStruct('Marketing'),
-            new BreadcrumbsStruct('Verifikasi Sertifikasi', url($this->url)),
-            new BreadcrumbsStruct('Detail Permohonan "#' . $request['mohon_id'] . '"', url($this->url . '/' . 'detail/' . $request['mohon_id'] . '?action=verifikasi')),
-            new BreadcrumbsStruct('Terima Permohonan "#' . $request['mohon_id'] . '"'),
-        ];
-
-        $dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id']);
-		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
-		$dataPermohon->select('*');
-
-        $parser = [
-            'module'       => $this->module,
-            'url'          => $this->url,
-            'dataPermohon' => $dataPermohon->get()[0],
-            'breadcrumbs'  => $breadcrumbs
-        ];
-        return view("marketing::verifikasi_permohonan.edit_accepted")->with($parser);
-		*/
+        return redirect($this->url)->with('message', "Data permohonan #" . $request['mohon_id'] . " sudah diverifikasi dengan status '<strong>Diterima</strong>'.");
     }
 
     private function edit_rejected(Request $request)
     {
-        $data       = SisPermohonan::findOrFail($request['mohon_id']);
+        $data = SisPermohonan::select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR '; ') as sert_nama"))
+				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+				->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+				->groupBy('sis_permohonan.mohon_id')->findOrFail($request['mohon_id']);
+				
         $dataInsert = [
             'mohon_id'        => $request['mohon_id'],
             'status_mohon_id' => $request['mohon_id'],
@@ -265,9 +283,28 @@ class VerifikasiPermohonanController extends Controller
                 'status_pesan'    => $dataInsert['status_pesan'],
                 'status_judul'    => $dataInsert['status_judul']
             ]);
-            // Delete User Group
             SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'rejected', 'mohon_kajian_permohonan_file' => null]);
         });
+		
+		// Send Push
+		$notifStruct            = new NotifStruct();
+		$notifStruct->title     = 'Permohonan anda untuk nomor #' . $request->mohon_id . ' telah ditolak.';
+		$notifStruct->message   = sprintf("%s mengajukan permohonan dengan nomor #%s telah melalui proses verifikasi dan diputuskan untuk ditolak", $data->mohon_cust_nama, $data->mohon_id);
+		$notifStruct->user_id   = $data?->user_id;
+		$notifStruct->click_url = url('/pelanggan/sertifikasi/permohonan');
+		sendNotification($notifStruct);
+
+		// Send Email
+		$structEmail          = new EmailStruct();
+		$structEmail->subject = "Pengajuan permohonan sertifikasi";
+		$structEmail->body    = view('marketing::verifikasi_permohonan.mails.reject')
+			->with([
+				'pemohonNama'       => $data->mohon_cust_nama,
+				'pemohonSertifNama' => $data->sert_nama,
+				'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
+			])->render();
+		$structEmail->to      = $data?->mohon_cust_email;
+		sendEmail($structEmail);
 
         return redirect($this->url)->with('message', "Data permohonan #" . $request->mohon_id . " sudah diverifikasi dengan status '<strong>Ditolak</strong>'.");
     }
@@ -277,7 +314,6 @@ class VerifikasiPermohonanController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
             'update-revisi'   => $this->update_revisi($request),
-            'update-accepted' => $this->update_accepted($request),
             default           => null,
         };
     }
@@ -286,15 +322,16 @@ class VerifikasiPermohonanController extends Controller
     {
         $request->validate([
             'mohon_id'     => 'required|integer',
+            'mohon_cust_email'     => 'required|string',
+            'user_id'     => 'required|string',
             'status_tipe'  => 'required|string',
-            'status_judul' => 'required|string',
             'status_pesan' => 'required|string'
-        ]); // auto redirect back jika tidak valid
+        ]);
         $dataInsert = [
             'status_mohon_id' => $request->mohon_id,
             'status_tipe'     => $request->status_tipe,
             'status_pesan'    => $request->status_pesan,
-            'status_judul'    => $request->status_judul
+            'status_judul'    => 'Revisi pengajuan #' . $request->mohon_id
         ];
 
         try {
@@ -302,53 +339,30 @@ class VerifikasiPermohonanController extends Controller
             SisPermohonanStatus::create($dataInsert);
             SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'revisi']);
             DB::commit();
-            return redirect()->back()->with('message', "Tambah informasi revisi berhasil");
+			
+			// Send Push
+			$notifStruct            = new NotifStruct();
+			$notifStruct->title     = 'Revisi pengajuan #' . $request->mohon_id;
+			$notifStruct->message   = $dataInsert['status_judul'];
+			$notifStruct->user_id   = $request->user_id;
+			$notifStruct->click_url = url('/pelanggan/sertifikasi/permohonan');
+			sendNotification($notifStruct);
+
+			// Send Email
+			$structEmail          = new EmailStruct();
+			$structEmail->subject = $dataInsert['status_judul'];
+			$structEmail->body    = view('marketing::verifikasi_permohonan.mails.revisi')
+				->with([
+					'message'       => $dataInsert['status_pesan'],
+					'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
+				])->render();
+			$structEmail->to      = $request?->mohon_cust_email;
+			sendEmail($structEmail);
+			
+			
+            return redirect($this->url)->with('message', "Tambah informasi revisi berhasil");
         } catch (Exception $e) {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
-        }
-    }
-
-    private function update_accepted(Request $request)
-    {
-        $request->validate([
-            'mohon_id'                     => 'required|integer',
-            'status_tipe'                  => 'required|string',
-            'mohon_harus_lunas_status'     => 'required|string',
-            'mohon_harga_permohonan'       => 'numeric|string',
-            'mohon_kajian_permohonan_file' => 'required|mimes:pdf'
-        ]);
-
-        $dataInsert = [
-            'mohon_id'                 => $request->mohon_id,
-            'status_mohon_id'          => $request->mohon_id,
-            'mohon_harga_permohonan'   => $request->mohon_harga_permohonan,
-            'mohon_harus_lunas_status' => $request->mohon_harus_lunas_status,
-            'status_tipe'              => $request->status_tipe,
-            'status_pesan'             => 'Permohonan anda untuk nomor #' . $request->mohon_id . ' telah diterima.',
-            'status_judul'             => 'Informasi Pengajuan Permohonan'
-        ];
-
-        if ($request->hasFile("mohon_kajian_permohonan_file")) {
-            $file     = $request->file('mohon_kajian_permohonan_file');
-            $namaFile = Str::slug($request->mohon_id) . '_kajian_permohonan_file_' . time() . '.' . $file->getClientOriginalExtension();
-            $path     = sprintf(config("app.path_file_pengajuan"), $request->mohon_id);
-            $file->move(public_path($path), $namaFile);
-            $dataInsert['mohon_kajian_permohonan_file'] = $path . '/' . $namaFile;
-
-            DB::transaction(function () use ($request, $dataInsert) {
-                SisPermohonanStatus::create([
-                    'status_mohon_id' => $dataInsert['status_mohon_id'],
-                    'status_tipe'     => $dataInsert['status_tipe'],
-                    'status_pesan'    => $dataInsert['status_pesan'],
-                    'status_judul'    => $dataInsert['status_judul']
-                ]);
-                // Delete User Group
-                SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted', 'mohon_kajian_permohonan_file' => $dataInsert['mohon_kajian_permohonan_file'], 'mohon_harus_lunas_status' => $dataInsert['mohon_harus_lunas_status'], 'mohon_harga_permohonan' => $dataInsert['mohon_harga_permohonan']]);
-            });
-
-            return redirect($this->url)->with('message', "Data permohonan #" . $request->mohon_id . " sudah diverifikasi dengan status diterima.");
-        } else {
-            return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
         }
     }
 }

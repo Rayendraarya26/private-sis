@@ -35,21 +35,13 @@
 
 									<input type="hidden" name="tipe" value="update-revisi">
 									<input type="hidden" name="mohon_id" value="{{$dataPermohon->mohon_id}}">
+									<input type="hidden" name="user_id" value="{{$dataPermohon->user_id}}">
+									<input type="hidden" name="mohon_cust_email" value="{{$dataPermohon->mohon_cust_email}}">
 									<input type="hidden" name="status_tipe" value="revisi">
-									<div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="status_judul">Judul *</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="status_judul" name="status_judul" class="form-control" value="{{old('status_judul')}}"/>
-                                        </div>
-                                    </div>
-
-
                                     <div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="status_pesan">Pernyataan *</label>
+                                        <label class="col-form-label col-sm-3" for="status_pesan">Keterangan Revisi *</label>
                                         <div class="col-sm-8">
-											<textarea class="form-control" placeholder="Pesan revisi..."
-                                                      name="status_pesan"
-                                                      id="status_pesan">{{old('status_pesan')}}</textarea>
+											<textarea class="form-control" placeholder="Pesan revisi..." name="status_pesan" id="status_pesan">{{old('status_pesan')}}</textarea>
                                         </div>
                                     </div>
 
