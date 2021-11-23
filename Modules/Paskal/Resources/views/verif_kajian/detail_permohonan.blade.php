@@ -31,8 +31,8 @@
               <div class="dt-avatar-wrapper">
                 <!-- Info -->
                 <div class="dt-avatar-info">
-                  <span class="dt-avatar-name display-4 mb-2 font-weight-light">Verifikasi Permohonan dari "{{$dataPermohon->mohon_cust_nama}}"</span>
-                  <span class="f-16">untuk "{{$dataPermohon->sert_nama}}"</span>
+                  <span class="dt-avatar-name display-4 mb-2 font-weight-light">Permohonan dari "{{$dataPermohon->mohon_cust_nama}}"</span>
+                  
                 </div>
                 <!-- /info -->
               </div>
@@ -83,7 +83,7 @@
                         <a class="nav-link active" data-toggle="tab" href="#pane1" role="tab" aria-controls="pane1" aria-selected="true">Overview</a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#pane2" role="tab" aria-controls="pane3" aria-selected="true" onClick="showDgDokumen()">Dokumen Pengajuan</a>
+                        <a class="nav-link" data-toggle="tab" href="#pane2" role="tab" aria-controls="pane3" aria-selected="true">Dokumen Pengajuan</a>
                       </li>
 					  <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#pane3" role="tab" aria-controls="pane4" aria-selected="true">Riwayat Pengajuan</a>
