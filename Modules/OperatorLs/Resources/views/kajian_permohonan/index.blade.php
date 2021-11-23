@@ -36,7 +36,7 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-permohonan") }}`,
-                rownumbers: true,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -67,103 +67,15 @@
                 columns: [[
                     {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
-                    {
-                        field: 'mohon_jenis_status',
-                        title: 'Jenis Permohonan <br> Sertifikat',
-                        width: 150,
-                        sortable: true,
-                        formatter: function (val) {
-                            switch (val) {
-                                case 'lama':
-                                    return "Lama";
-                                case 'baru':
-                                    return "Baru";
-                            }
-                        }
-                    },
-                    {field: 'sert_nama', title: 'Nama Sertifikasi', width: 320, sortable: true},
                     {field: 'mohon_cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
+                    {field: 'sert_nama', title: 'Nama Sertifikasi', width: 320, sortable: true},
                 ]],
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
-                    {
-                        field: 'mohon_jenis_status',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            data: [
-                                {value: '', text: 'Semua'},
-                                {value: 'lama', text: 'Lama'},
-                                {value: 'baru', text: 'Baru'}
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'mohon_jenis_status',
-                                    op: 'equal',
-                                    value: value
-                                });
-
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
                 ]);
         });
-
-		function confirmDelete() {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Menghapus Data ?`,
-                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Hapus',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					var idData = [];
-					var data = $('#ttData').datagrid('getData');
-					var opts = $('#ttData').datagrid('options');
-					for (var i = 0; i < data.rows.length; i++) {
-						var tr = opts.finder.getTr($('#ttData')[0],i);
-						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
-						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].negara_id);
-						}
-					}
-                    $.ajax({
-                        url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData },
-						type: 'POST',
-                        success: function (response) {
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            let dg = $('#ttData');
-                            dg.datagrid('reload');
-                        },
-                        error: function (err) {
-                            if (err.responseJSON.message) {
-                                toastCenter({
-                                    type: 'error',
-                                    title: err.responseJSON.message
-                                })
-                            }
-                        }
-                    });
-                }
-            });
-        }
     </script>
 @endpush

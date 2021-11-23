@@ -34,11 +34,11 @@
 									
 									<input type="hidden" name="tipe" value="update-upload-kajian-permohonan">
 									<input type="hidden" name="mohon_id" value="{{$dataPermohon->mohon_id}}">
-									<input type="hidden" name="status_tipe" value="informasi">
 									<div class="form-group row">
 										<label class="col-form-label col-sm-3" for="mohon_kajian_permohonan_file">Kajian Permohonan *</label>
 										<div class="col-sm-8">
 											<input class="form-control" type="file" name="mohon_kajian_permohonan_file">
+											<input type="hidden" id="mohon_kajian_permohonan_file_lama" name="mohon_kajian_permohonan_file_lama" class="form-control" value="{{$dataPermohon->mohon_kajian_permohonan_paskal_file}}"/>
 											<small id="" class="form-text">Note: Upload file Kajian Permohonan yang sudah ditanda tangani;</small>
 											@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '')
 												<hr/>
@@ -47,46 +47,53 @@
 										</div>
 									</div>
 									
-									<div class="form-group row">
-                                        <label class="col-form-label col-sm-3" for="mohon_perlu_tahap1">Perlu Proses Tahap 1?*</label>
-                                        <div class="col-sm-8">
-											<input type="hidden" id="mohon_kajian_permohonan_file_lama" name="mohon_kajian_permohonan_file_lama" class="form-control" value="{{$dataPermohon->mohon_kajian_permohonan_paskal_file}}"/>
-											<div class="form-check form-check-inline">
-												<input class="form-check-input" type="radio" name="mohon_perlu_tahap1" id="mohon_perlu_tahap1" value="ya" {{old('mohon_perlu_tahap1') == "ya" || $dataPermohon->mohon_perlu_tahap1 == "ya" ? "checked" :""}} >
-												<label class="form-check-label" for="mohon_perlu_tahap1">Ya</label>
-											</div>
-											<div class="form-check form-check-inline">
-												<input class="form-check-input" type="radio" name="mohon_perlu_tahap1" id="mohon_perlu_tahap1" value="tidak" {{old('mohon_perlu_tahap1') == "tidak"  || $dataPermohon->mohon_perlu_tahap1 == "tidak" ? "checked" :""}}>
-												<label class="form-check-label" for="mohon_perlu_tahap1">Tidak</label>
-											</div>
-                                        </div>
-                                    </div>
+									
 									<div class="form-group row">
 										<div class="table-responsive col-xl-12 col-md-12 col-12">
 											<table class="table table-bordered  mb-0">
 												<thead>
 													<tr>
+													  <th class="text-uppercase" scope="col">Sertifikasi</th>
 													  <th class="text-uppercase" scope="col">Komoditi(Merk, Type, Ukuran, Kapasitas Produksi/tahun)</th>
 													  <th class="text-uppercase" scope="col">SNI</th>
 													  <th class="text-uppercase" scope="col">Ruang Lingkup</th>
 													  <th class="text-uppercase" scope="col">NACE</th>
 													  <th class="text-uppercase" scope="col">EA</th>
+													  <th class="text-uppercase" scope="col">Tahap 1?</th>
 													</tr>
 												</thead>
 												<tbody>
 													@foreach($dataPermohonKomoditi as $dpk)
 													<tr>
+													  <td>{{$dpk->sert_nama}}</td>
 													  <td>
-														Komoditi : {{$dpk->komodt_nama}}<hr/>
-														Merk : {{$dpk->mohon_kmditi_merk}}<hr/>
-														Type : {{$dpk->mohon_kmditi_tipe}}<hr/>
-														Ukuran : {{$dpk->mohon_kmditi_ukuran}}<hr/>
-														Kapasitas Produksi/tahun : {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}<hr/>
+														- Komoditi : {{$dpk->komodt_nama}}<br/>
+														- Merk : {{$dpk->mohon_kmditi_merk}}<br/>
+														- Type : {{$dpk->mohon_kmditi_tipe}}<br/>
+														- Ukuran : {{$dpk->mohon_kmditi_ukuran}}<br/>
+														- Kapasitas Produksi/tahun : {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}<br/>
 													  </td>
-													  <td>{{$dpk->mohon_kmditi_sni}}</td>
+													  <td>@if($dpk->sert_is_product == 'tidak' && $dpk->mohon_det_jenis_status = 'baru') {{$dpk->sert_sni}} @else {{$dpk->mohon_kmditi_sni}} @endif</td>
 													  <td><input id="mohon_kmditi_ruang_lingkup_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_ruang_lingkup[{{$dpk->mohon_kmditi_id}}]"></td>
 													  <td><input id="mohon_kmditi_nace_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_nace[{{$dpk->mohon_kmditi_id}}][]"></td>
 													  <td><input id="mohon_kmditi_ea_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_ea[{{$dpk->mohon_kmditi_id}}]"></td>
+													  <td>
+														<div class="form-group row">
+															<div class="col-sm-12">
+																<div class="form-check form-check-inline">
+																	<input class="form-check-input" type="radio" name="mohon_det_perlu_tahap1[{{$dpk->mohon_kmditi_id}}]" id="mohon_det_perlu_tahap1_{{$dpk->mohon_kmditi_id}}" value="ya" {{old('mohon_det_perlu_tahap1[$dpk->mohon_kmditi_id]') == "ya" || $dpk->mohon_det_perlu_tahap1 == "ya" ? "checked" :""}} >
+																	<label class="form-check-label" for="mohon_det_perlu_tahap1_{{$dpk->mohon_kmditi_id}}">Ya</label>
+																</div>
+																<div class="form-check form-check-inline">
+																	<input class="form-check-input" type="radio" name="mohon_det_perlu_tahap1[{{$dpk->mohon_kmditi_id}}]" id="mohon_det_perlu_tahap1_{{$dpk->mohon_kmditi_id}}" value="tidak" {{old('mohon_det_perlu_tahap1[$dpk->mohon_kmditi_id]') == "tidak"  || $dpk->mohon_det_perlu_tahap1 == "tidak" ? "checked" :""}}>
+																	<label class="form-check-label" for="mohon_det_perlu_tahap1_{{$dpk->mohon_kmditi_id}}">Tidak</label>
+																</div>
+															</div>
+														</div>
+														
+														<input type="hidden" id="mohon_det_id_{{$dpk->mohon_kmditi_id}}" name="mohon_det_id[{{$dpk->mohon_kmditi_id}}]" class="form-control" value="{{$dpk->mohon_det_id}}"/>
+													  
+													  </td>
 													</tr>
 													@endforeach
 												</tbody>

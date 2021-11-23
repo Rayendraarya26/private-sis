@@ -2,15 +2,15 @@
 
 namespace Modules\Marketing\Http\Controllers;
 
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
 
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
@@ -59,7 +59,12 @@ class VerifikasiPermohonanController extends Controller
         $data->whereIn('mohon_approved_status', ['on-progress', 'fix']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				if($f->field == 'mohon_id')
+					$data->where('sis_permohonan.mohon_id', 'LIKE', '%' . $f->value . '%');
+				else if($f->field == 'created_at')
+					$data->where('sis_permohonan.created_at', 'LIKE', '%' . $f->value . '%');
+				else
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -67,7 +72,12 @@ class VerifikasiPermohonanController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
+				if($sort[$i] == 'mohon_id')
+					$data->orderBy('sis_permohonan.mohon_id', $order[$i]);
+				else if($sort[$i] == 'created_at')
+					$data->orderBy('sis_permohonan.created_at', $order[$i]);
+				else
+					$data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total
