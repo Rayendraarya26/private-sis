@@ -103,38 +103,60 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr><th scope="row">1</th><td>Jenis Pengajuan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_jenis_status}}</a></td></tr>
-								<tr><th scope="row">2</th><td>Ruang Lingkup Sertifikasi</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->sert_nama}}</a></td></tr>
-									<tr>
-										<td colspan="4">
-											<div class="table-responsive col-xl-12 col-md-12 col-12">
-											<table class="table table-bordered  mb-0">
-												<thead>
-													<tr>
-													  <th class="text-uppercase" scope="col">Komoditi</th>
-													  <th class="text-uppercase" scope="col">SNI</th>
-													  <th class="text-uppercase" scope="col">Merk</th>
-													  <th class="text-uppercase" scope="col">Type</th>
-													  <th class="text-uppercase" scope="col">Ukuran</th>
-													  <th class="text-uppercase" scope="col">Kapasitas Produksi/tahun</th>
-													</tr>
-												</thead>
-												<tbody>
-													@foreach($dataPermohonKomoditi as $dpk)
-													<tr>
-													  <td>{{$dpk->komodt_nama}}</td>
-													  <td>{{$dpk->mohon_kmditi_sni}}</td>
-													  <td>{{$dpk->mohon_kmditi_merk}}</td>
-													  <td>{{$dpk->mohon_kmditi_tipe}}</td>
-													  <td>{{$dpk->mohon_kmditi_ukuran}}</td>
-													  <td>{{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}</td>
-													</tr>
-													@endforeach
-												</tbody>
-											</table>
-											</div>
-										</td>
-									</tr>
+								<tr><th scope="row">1</th><td>Mengajukan permohonan</td><td>:</td><td></td></tr>
+								<tr>
+									<td colspan="4">
+										<div class="table-responsive col-xl-12 col-md-12 col-12">
+										<table class="table table-bordered  mb-0">
+											<thead>
+												<tr>
+												  <th class="text-uppercase" scope="col">Jenis</th>
+												  <th class="text-uppercase" scope="col">Sertifikasi</th>
+												</tr>
+											</thead>
+											<tbody>
+												@foreach($dataPermohonSertifikasi as $dpser)
+												<tr>
+												  <td>@if($dpser->mohon_det_jenis_status == 'baru') Baru @else Perpanjang @endif</td>
+												  <td>{{$dpser->sert_nama}}</td>
+												</tr>
+												@endforeach
+											</tbody>
+										</table>
+										</div>
+									</td>
+								</tr>
+								<tr><th scope="row">2</th><td>Komoditi Yang Diajukan</td><td>:</td><td></td></tr>
+								<tr>
+									<td colspan="4">
+										<div class="table-responsive col-xl-12 col-md-12 col-12">
+										<table class="table table-bordered  mb-0">
+											<thead>
+												<tr>
+												  <th class="text-uppercase" scope="col">Komoditi</th>
+												  <th class="text-uppercase" scope="col">SNI</th>
+												  <th class="text-uppercase" scope="col">Merk</th>
+												  <th class="text-uppercase" scope="col">Type</th>
+												  <th class="text-uppercase" scope="col">Ukuran</th>
+												  <th class="text-uppercase" scope="col">Kapasitas Produksi/tahun</th>
+												</tr>
+											</thead>
+											<tbody>
+												@foreach($dataPermohonKomoditi as $dpk)
+												<tr>
+												  <td>{{$dpk->komodt_nama}}</td>
+												  <td>@if($dpk->sert_is_product == 'ya') {{$dpk->mohon_kmditi_sni}} @else {{$dpk->sert_sni}} @endif</td>
+												  <td>{{$dpk->mohon_kmditi_merk}}</td>
+												  <td>{{$dpk->mohon_kmditi_tipe}}</td>
+												  <td>{{$dpk->mohon_kmditi_ukuran}}</td>
+												  <td>{{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}</td>
+												</tr>
+												@endforeach
+											</tbody>
+										</table>
+										</div>
+									</td>
+								</tr>							
 								<tr><th scope="row">3</th><td>Nama Klien</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama}}</a></td></tr>
 								<tr><th scope="row">4</th><td>Akta Pendirian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nomor_akta_pendirian}}</a></td></tr>
 								<tr><th scope="row">5</th><td>Nama Pemilik</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_pemilik}}</a></td></tr>
@@ -174,12 +196,6 @@
 												   Kode Pos : {{$dpp->mohon_pabrik_kode_pos}};<hr/> Fax : {{$dpp->mohon_pabrik_nomor_fax}};<hr/> Telp : {{$dpp->mohon_pabrik_nomor_telp}};<hr/> Hp : {{$dpp->mohon_pabrik_nomor_hp}}
 												  </td>
 												</tr>
-												<tr>
-												  <td>E-mail</td>
-												  <td>:</td>
-												  <td>{{$dpp->komodt_nama}}</td>
-												</tr>
-												<tr>
 												  <td>Kegiatan Utama</td>
 												  <td>:</td>
 												  <td>{{$dpp->mohon_pabrik_kegiatan_utama}}</td>
@@ -192,12 +208,12 @@
 												<tr>
 												  <td>Luas Tanah</td>
 												  <td>:</td>
-												  <td>{{$dpp->mohon_pabrik_luas_tanah}} Orang</td>
+												  <td>{{$dpp->mohon_pabrik_luas_tanah}}</td>
 												</tr>
 												<tr>
 												  <td>Luas Bangunan</td>
 												  <td>:</td>
-												  <td>{{$dpp->mohon_pabrik_luas_bangunan}} Orang</td>
+												  <td>{{$dpp->mohon_pabrik_luas_bangunan}}</td>
 												</tr>
 											</tbody>
 										</table>

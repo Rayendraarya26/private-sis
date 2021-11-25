@@ -2,18 +2,23 @@
 
 namespace Modules\Keuangan\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisBilling;
 use App\Models\BbkkpSis\SisBillingItems;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class BillingController extends Controller
@@ -110,16 +115,17 @@ class BillingController extends Controller
             }
         }
         // Pagination
-        $data->select("*");
+        $data->select("*", "sis_billing_items.mohon_id AS mohon_id");
 
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['mohon_id']       = $d->mohon_id;
             $x['itms_bil_id']    = $d->itms_bil_id;
             $x['itms_bil_total'] = $d->itms_bil_total;
             $x['itms_bil_tipe']  = $d->itms_bil_tipe;
             $x['itms_bil_desc']  = $d->itms_bil_desc;
-            $x['mohon_id']       = $d->mohon_id;
+            $x['mohon_det_id'] = $d->mohon_det_id;
             $x['cust_sert_id']   = $d->cust_sert_id;
             $x['is_new']         = false;
             $x['tipe']           = 'data-billing';
@@ -156,21 +162,23 @@ class BillingController extends Controller
 
     private function ajax_combogrid_permohonan(Request $request)
     {
-        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
+        $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('mohon_approved_status', '=', 'accepted')
 		->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')
         ->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya')
+        ->where('mohon_tagihan_biaya_status', '=', 'setuju')
         ->whereNotNull('mohon_pernyataan_persetujuan_file')
-		->whereNotIn('mohon_id', function ($query) use ($request) {
-			$query->select('mohon_id')->from('sis_jadwal_audit')->where('cust_id', '=', $request->cust_id)->groupBy('mohon_id');
+		->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
+			$query->select('mohon_det_id')->from('sis_jadwal_audit')->where('cust_id', '=', $request->cust_id)->groupBy('mohon_det_id');
 		})
         ->where('cust_id', '=', $request->cust_id);
 
         if ($request->jenis_status == 're-sertifikasi') {
-            $data->where('mohon_jenis_status', '=', 'lama');
+            $data->where('mohon_det_jenis_status', '=', 'lama');
         } else if ($request->jenis_status == 'sertifikasi') {
-            $data->where('mohon_jenis_status', '=', 'baru');
+            $data->where('mohon_det_jenis_status', '=', 'baru');
         }
 
         if (!empty($request->q)) {
@@ -189,14 +197,15 @@ class BillingController extends Controller
             $x['nama']                     = $d->sert_nama;
             $x['cust_sert_id']             = $d->cust_sert_id;
             $x['mohon_id']                 = $d->mohon_id;
+            $x['mohon_det_id']                 = $d->mohon_det_id;
             $x['cust_id']                  = $d->cust_id;
             $x['user_id']                  = $d->user_id;
             $x['sert_id']                  = $d->sert_id;
             $x['sert_nama']                = $d->sert_nama;
-            $x['mohon_harga_permohonan']   = $d->mohon_harga_permohonan;
+            $x['mohon_harga_permohonan']   = $d->mohon_det_harga_permohonan;
             $x['mohon_harus_lunas_status'] = $d->mohon_harus_lunas_status;
             $x['mohon_cust_nama']          = $d->mohon_cust_nama;
-            $x['mohon_jenis_status']       = $d->mohon_jenis_status;
+            $x['mohon_jenis_status']       = $d->mohon_det_jenis_status;
             $x['created_at']               = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']                = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
@@ -310,26 +319,18 @@ class BillingController extends Controller
             // add billing items
             $dataItems   = json_decode($request['data_billing_item']);
             $harus_lunas = 'ya';
+            $mohon_data = [];
             foreach ($dataItems as $itm) {
-                if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'surveilans') {
-                    SisPermohonanStatus::create([
-                        "status_mohon_id" => $itm->mohon_id,
-                        "status_tipe"     => "informasi",
-                        "status_judul"    => "Informasi Pengajuan",
-                        "status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada billing, silahkan lihat pada menu Billing anda.", $itm->mohon_id),
-                        "created_at"      => Carbon::now(),
-                        "updated_at"      => Carbon::now(),
-                    ]);
-
-                    if ($itm->bil_lunas == 'tidak') {
-                        $harus_lunas = 'tidak';
-                    }
-                }
                 $cust_sert_id = null;
-                $mohon_id     = null;
+                $mohon_id = null;
+                $mohon_det_id = null;
 
                 if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'surveilans') {
                     $mohon_id = $itm->mohon_id;
+                    $mohon_det_id = $itm->mohon_det_id;
+					if (in_array($mohon_id, $mohon_data)) {
+						$mohon_data[] = $mohon_id;
+					}
                 } else if (!is_null($itm->mohon_id) && $itm->bil_tipe == 'surveilans') {
                     $cust_sert_id = $itm->mohon_id;
                 }
@@ -338,6 +339,7 @@ class BillingController extends Controller
                 $newSisBillingItems->bill_id        = $newSisBilling->bill_id;
                 $newSisBillingItems->itms_bil_tipe  = $itm->bil_tipe;
                 $newSisBillingItems->mohon_id       = $mohon_id;
+                $newSisBillingItems->mohon_det_id       = $mohon_det_id;
                 $newSisBillingItems->cust_sert_id   = $cust_sert_id;
                 $newSisBillingItems->itms_bil_desc  = $itm->bil_desc;
                 $newSisBillingItems->itms_bil_total = $itm->bil_total;
@@ -345,7 +347,21 @@ class BillingController extends Controller
                 $newSisBillingItems->updated_at     = Carbon::now();
                 $newSisBillingItems->save();
             }
-
+			
+			if(!empty($mohon_data)){
+				foreach($mohon_data as $dt){
+					SisPermohonanStatus::create([
+						"status_mohon_id" => $dt,
+						"status_tipe"     => "informasi",
+						"status_judul"    => "Informasi Pengajuan",
+						"status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada billing, silahkan lihat pada menu Billing anda.", $dt),
+						"created_at"      => Carbon::now(),
+						"updated_at"      => Carbon::now(),
+					]);
+				}
+			}
+			
+			
             $newSisBilling->bill_harus_lunas = $harus_lunas;
             $newSisBilling->save();
 

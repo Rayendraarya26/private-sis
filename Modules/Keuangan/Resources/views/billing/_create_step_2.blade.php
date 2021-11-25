@@ -150,6 +150,7 @@
 					
                     total_biaya: 0,
                     mohon_id: null,
+                    mohon_det_id: null,
                     bil_lunas: null,
                     mohon_text: "-- Pilih Data --",
                     bill_items: [], // upload to server
@@ -179,19 +180,24 @@
 									$('#total_biaya').html(this.total_biaya);
 								}, 500)
                             }
+							
+							$(".tab-content").height("100%");
                         }, 500)
+						
                     },
                     validate() {
                         // if (this.jenis_sertifikasi_id == null) throw "Pilih Jenis Sertifikasi"
                         if (this.bill_items.length === 0) throw "Mohon isikan data item billing"
                     },
 					async resetFooterTabel() {
+						$(".tab-content").height("100%");
 						this.total_biaya = this.bill_items.reduce(function(sum, current) {
 						  return sum + parseInt(current.bil_total);
 						}, 0);
 						$('#total_biaya').html(this.total_biaya);
 					},
                     async resetFormItem() {
+						$(".tab-content").height("100%");
                         $("#itms_bil_desc").val("");
                         $("#itms_bil_total").val("");
                         await this.setComboDataPermohonan()
@@ -199,6 +205,7 @@
                         this.jenis_item_form_type = 'add';
                         this.jenis_item_form_edited_id = null;
                         this.mohon_id = null;
+                        this.mohon_det_id = null;
                         this.bil_lunas = null;
 						$("#data_permohonan").hide();
 						var $radios = $('input:radio[name=itms_bil_tipe]');
@@ -215,7 +222,8 @@
                         if (itms_bil_total === "") throw "Tuliskan Total(Rp.)";
                         if (itms_bil_desc === "") throw "Tuliskan Ddeskripsi";
 						if(itms_bil_tipe === 'sertifikasi' || itms_bil_tipe === 're-sertifikasi'){
-							if (mohon_id === "") throw "Pilih Data permohonan";
+							if (this.mohon_id === "") throw "Pilih Data permohonan";
+							if (this.mohon_det_id === "") throw "Pilih Data permohonan";
 						}
                     },
                     async addItem() {
@@ -223,6 +231,7 @@
                             this.validateItem()
                             let newItem = {
                                 "mohon_id": this.mohon_id,
+                                "mohon_det_id": this.mohon_det_id,
                                 "bil_lunas": this.bil_lunas,
                                 "bil_desc": $.trim($("#itms_bil_desc").val()),
                                 "bil_total": $.trim($("#itms_bil_total").val()),
@@ -296,18 +305,21 @@
                     calcelUpdateItem() {
                         this.jenis_item_form_type = "add";
                         this.resetFormItem();
+						$(".tab-content").height("100%");
                     },
 					async setComboDataPermohonan(){
 						let self = this;
                         let itms_bil_tipe = $('input[name=itms_bil_tipe]:checked', '#myForm').val();
+						$(".tab-content").height("100%");
 						
 						const currentaData = await idb.bill_data
                             .where({name: "billing"})
                             .first();
-							
+						
 						if(currentaData != null){
 							let url = ``;
 							this.mohon_id = null;
+							this.mohon_det_id = null;
 							this.bil_lunas = null;
 							$("#itms_bil_desc").val('');
 							$("#itms_bil_total").val('');
@@ -336,6 +348,7 @@
 									]],
 									onSelect: function (index, row) {
 										self.mohon_id = row.id;
+										self.mohon_det_id = row.mohon_det_id;
 										self.bil_lunas = row.mohon_harus_lunas_status;
 										self.mohon_text = row.deskripsi;
 										$("#itms_bil_desc").val(row.deskripsi)
@@ -364,12 +377,13 @@
 									columns: [[
 										{field: 'id', hidden: true},
 										{field: 'nama', title: 'Nama Sertifikat', width: 250, sortable: true,},
-										{field: 'cust_sert_nomor_referensi', title: 'No. Referensi', width: 250, sortable: true,},
+										{field: 'nomor_referensi', title: 'No. Referensi', width: 250, sortable: true,},
 										{field: 'cust_sert_tgl_sertifikat_awal', title: 'Tgl. Awal', width: 100, sortable: true,},
 										{field: 'cust_sert_tgl_sertifikat_perubahan', title: 'Tgl. Perubahan', width: 100, sortable: true,},
 									]],
 									onSelect: function (index, row) {
 										self.mohon_id = row.id;
+										self.mohon_det_id = null;
 										self.bil_lunas = 'ya';
 										self.mohon_text = row.deskripsi;
 										$("#itms_bil_desc").val(row.deskripsi)
@@ -380,11 +394,9 @@
 							else{
 								$("#data_permohonan").hide();
 								this.mohon_id = null;
+								this.mohon_det_id = null;
 								this.bil_lunas = null;
 							}
-							
-							
-							
 						}
                         
 					},

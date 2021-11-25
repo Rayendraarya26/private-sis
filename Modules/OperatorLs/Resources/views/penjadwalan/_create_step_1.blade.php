@@ -197,9 +197,6 @@
 								await self.setTanggalSelesai(data_date);
 							}
 						});
-						
-						
-						
                     },
                 }
             })

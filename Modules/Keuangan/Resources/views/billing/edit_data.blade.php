@@ -211,11 +211,13 @@
 				},
 				onBeginEdit:function(index,row){
 					var editors = $(this).datagrid('getEditors', index);
+					console.log(editors);
 					var ed_itms_bil_tipe = $(editors[0].target);
 					var ed_mohon_id  = $(editors[1].target);
 					var ed_cust_sert_id  = $(editors[2].target);
 					var ed_itms_bil_desc  = $(editors[3].target);
 					var ed_itms_bil_total  = $(editors[4].target);
+					var ed_mohon_det_id  = $(editors[5].target);
 					
 					ed_itms_bil_tipe.combobox('setValue',``);
 					if(row.itms_bil_tipe != ''){
@@ -278,9 +280,8 @@
 														precision:2,
 														value:`${rowData.mohon_harga_permohonan}`
 													});
-						$(ed_itms_bil_desc).textbox({
-														value:`${rowData.deskripsi}`
-													});
+						$(ed_itms_bil_desc).textbox({value:`${rowData.deskripsi}`});
+						$(ed_mohon_det_id).textbox({value:`${rowData.mohon_det_id}`});
 					}					
 					
 					if(row.is_new === ''){
@@ -309,8 +310,8 @@
 				},
                 frozenColumns: [[
 					{field: 'is_new', hidden: true},
-					{field: 'bill_id', title: '', hidden: true},
-					{field: 'itms_bil_id', title: '', hidden: true},
+					{field: 'bill_id', hidden: true},
+					{field: 'itms_bil_id', hidden: true},
                     {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
@@ -334,7 +335,7 @@
                     }
                 ]],
                 columns: [[
-                    {field: 'itms_bil_tipe', title: 'Tipe', width: 100, sortable: true,
+                    {field: 'itms_bil_tipe', title: 'Tipe', width: 100, sortable: false,
 						editor:{
 							type:'combobox',
 							options:{
@@ -346,7 +347,7 @@
 							}
 						}
 					},
-                    {field: 'mohon_id', title: 'ID<br/>Permohonan', width: 100, sortable: true,
+                    {field: 'mohon_id', title: 'ID<br/>Permohonan', width: 100, sortable: false,
 						editor:{
 							type:'combogrid',
 							options:{
@@ -364,12 +365,12 @@
 								required: false,
 								columns: [[
 									{field: 'id', hidden: true},
-									{field: 'nama', title: 'Permohonan', width: 250, sortable: true,},
+									{field: 'nama', title: 'Permohonan', width: 250, sortable: false,},
 								]],
 							}
 						}
 					},
-					{field: 'cust_sert_id', title: 'ID<br/>Sertifikat', width: 100, sortable: true,
+					{field: 'cust_sert_id', title: 'ID<br/>Sertifikat', width: 100, sortable: false,
 						editor:{
 							type:'combogrid',
 							options:{
@@ -395,8 +396,9 @@
 							}
 						}
 					},
-                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 320, sortable: true,editor: {type: 'textbox', options: {required: true}}},
-                    {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true,editor: {type: 'numberbox', options: {required: true}}, align:'right',},
+                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 320, sortable: false,editor: {type: 'textbox', options: {required: false}}},
+                    {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: false,editor: {type: 'numberbox', options: {required: false}}, align:'right',},
+					{field: 'mohon_det_id', hidden: true,editor: {type: 'textbox', options: {required: false}}},
                 ]],
             });
             dg.datagrid(

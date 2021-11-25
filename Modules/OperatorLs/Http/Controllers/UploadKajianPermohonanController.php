@@ -301,7 +301,17 @@ class UploadKajianPermohonanController extends Controller
                                 "mohon_kmditi_nace"          => implode(';', $dataInsert['mohon_kmditi_nace'][$key]),
                                 "mohon_kmditi_ea"            => $dataInsert['mohon_kmditi_ea'][$key],
                             ]);
-						$data_detail[$dataInsert['mohon_det_id'][$key]] = $dataInsert['mohon_det_perlu_tahap1'][$key];
+						
+						
+						if (array_key_exists($key,$data_detail)){
+							if($dataInsert['mohon_det_perlu_tahap1'][$key] == 'ya'){
+								$data_detail[$dataInsert['mohon_det_id'][$key]] = $dataInsert['mohon_det_perlu_tahap1'][$key];
+							}
+						}
+						else{
+							$data_detail[$dataInsert['mohon_det_id'][$key]] = $dataInsert['mohon_det_perlu_tahap1'][$key];
+						}
+						
                     }
                 }
 				
