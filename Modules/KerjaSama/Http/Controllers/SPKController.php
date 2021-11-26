@@ -2,17 +2,22 @@
 
 namespace Modules\KerjaSama\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\BreadcrumbsStruct;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class SPKController extends Controller
@@ -42,12 +47,14 @@ class SPKController extends Controller
 
     private function ajax_datagrid_permohonan(Request $request)
     {
-        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id");
+        $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
-		$data->whereIn('mohon_approved_status', ['accepted']);
-		$data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
-		$data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
-		$data->whereNotNull('mohon_pernyataan_persetujuan_file');
+        $data->whereIn('mohon_approved_status', ['accepted']);
+        $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
+        $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
+        $data->whereIn('mohon_tagihan_biaya_status', ['setuju']);
+        $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				if($f->field == 'status_step'){
@@ -55,6 +62,12 @@ class SPKController extends Controller
 						$data->whereNull('mohon_spk_file');
 					else if($f->value == 'sudah')
 						$data->whereNotNull('mohon_spk_file');						
+				}
+				else if($f->field == 'mohon_id'){
+					$data->where('sis_permohonan.mohon_id', 'LIKE', '%' . $f->value . '%');
+				}
+				else if($f->field == 'created_at'){
+					$data->where('sis_permohonan.created_at', 'LIKE', '%' . $f->value . '%');
 				}
 				else{
 					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -68,23 +81,29 @@ class SPKController extends Controller
             for ($i = 0; $i < count($sort); $i++) {
 				if($sort[$i] == 'status_step')
 					$data->orderBy('mohon_spk_file', $order[$i]);
+				if($sort[$i] == 'mohon_id')
+					$data->orderBy('sis_permohonan.mohon_id', $order[$i]);
+				else if($sort[$i] == 'created_at')
+					$data->orderBy('sis_permohonan.created_at', $order[$i]);
 				else
 					$data->orderBy($sort[$i], $order[$i]);
             }
         }
+		else{
+			$data->orderBy('mohon_spk_file', 'ASC');
+		}
         // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
-        $data->select("*", DB::raw("IF(mohon_spk_file!='', 're-upload', 'upload') as status_step"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
+        $data->groupBy('sis_permohonan.mohon_id');
+        $data->select("*", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"), DB::raw("IF(mohon_spk_file!='', 're-upload', 'upload') as status_step"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
+		
         // Result
         $result = [];
         foreach ($data->get() as $d) {
             $x['status_step']          = $d->status_step;
-            $x['cust_sert_id']          = $d->cust_sert_id;
             $x['mohon_id']              = $d->mohon_id;
             $x['cust_id']               = $d->cust_id;
-            $x['user_id']               = $d->user_id;
             $x['sert_id']               = $d->sert_id;
             $x['sert_nama']             = $d->sert_nama;
             $x['mohon_cust_nama']       = $d->mohon_cust_nama;
@@ -108,33 +127,34 @@ class SPKController extends Controller
 	
 	private function detail_permohonan(Request $request)
     {
-		$dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id']);
-		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
+		$dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id'])->select('*')
+						->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id')
+						->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id')
+						->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id')
+						->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id')
+						->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
+						
+        
+		$dataPermohonSertifikasi = SisPermohonan::where('sis_permohonan_detail.mohon_id', $request['mohon_id'])->select('*')
+								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
+								
+        $dataPermohonKomoditi = SisPermohonanKomoditi::where('sis_permohonan_detail.mohon_id', $request['mohon_id'])->select('*')
+								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+								->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
 
-        $dataPermohon->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id');
-		$dataPermohon->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id');
-		$dataPermohon->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id');
-		$dataPermohon->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id');
-		$dataPermohon->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
-		$dataPermohon->select('*');
-		
-		$dataPermohonKomoditi = SisPermohonanKomoditi::where('mohon_id', $request['mohon_id']);
-		$dataPermohonKomoditi->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
-		$dataPermohonKomoditi->select('*');
 
+        $dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $request['mohon_id'])->select('*')
+			->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id')
+			->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id')
+			->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
 
-        $dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $request['mohon_id']);
-		$dataPermohonPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id');
-		$dataPermohonPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id');
-		$dataPermohonPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
-		$dataPermohonPabrik->select('*');
+        $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $request['mohon_id'])->select('*')
+							->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
+							
 
-        $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $request['mohon_id']);
-		$dataPermohonanDokumen->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
-		$dataPermohonanDokumen->select('*');
-
-        $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $request['mohon_id']);
-		$dataPermohonanStatus->select('*');
+        $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $request['mohon_id'])->where('status_tipe', 'revisi')->select('*');
 		
 		$breadcrumbs = [
             new BreadcrumbsStruct('Kerja Sama'),
@@ -143,14 +163,15 @@ class SPKController extends Controller
         ];
 		
         $parser      = [
-            'module'      => $this->module,
-            'url'         => $this->url,
-            'dataPermohon' => $dataPermohon->get()[0],
-            'dataPermohonKomoditi' => $dataPermohonKomoditi->get(),
-            'dataPermohonPabrik' => $dataPermohonPabrik->get(),
+            'module'                => $this->module,
+            'url'                   => $this->url,
+            'dataPermohon'          => $dataPermohon->get()[0],
+            'dataPermohonKomoditi'  => $dataPermohonKomoditi->get(),
+            'dataPermohonPabrik'    => $dataPermohonPabrik->get(),
             'dataPermohonanDokumen' => $dataPermohonanDokumen->get(),
-            'dataPermohonanStatus' => $dataPermohonanStatus->get(),
-            'breadcrumbs' => $breadcrumbs
+            'dataPermohonanStatus'  => $dataPermohonanStatus->get(),
+            'dataPermohonSertifikasi'  => $dataPermohonSertifikasi->get(),
+            'breadcrumbs'           => $breadcrumbs
         ];
         return view('kerjasama::spk.detail_permohonan')->with($parser);
 	}
@@ -173,9 +194,9 @@ class SPKController extends Controller
             new BreadcrumbsStruct('Upload SPK "#' . $request['mohon_id'] . '"'),
         ];
 
-        $dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id']);
-		$dataPermohon->join('master_sertifikasi', 'master_sertifikasi.sert_id', '=', 'sis_permohonan.sert_id');
-		$dataPermohon->select('*');
+        $dataPermohon = SisPermohonan::where('sis_permohonan_detail.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->groupBy('sis_permohonan_detail.mohon_id')
+								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
 
         $parser = [
             'module'       => $this->module,

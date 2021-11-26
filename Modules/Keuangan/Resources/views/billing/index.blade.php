@@ -115,7 +115,16 @@
                     {field: 'cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                     {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true},
                 ]],
-				onLoadSuccess: function (data) {
+				onBeforeLoad: function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
+                    });
+                },
+                onLoadSuccess: function (data) {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         $(this).menubutton({
                             menu: '#dropdownMenu_' + data.rows[idx].bill_id

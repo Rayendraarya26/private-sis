@@ -68,7 +68,6 @@
                     aud_thp1_tujuan: `{{$dataJadwal->aud_thp1_tujuan}}`,
                     aud_thp1_tanggal_mulai: `{{$dataJadwal->aud_thp1_tanggal_mulai?->format("Y-m-d")}}`,
                     aud_thp1_tanggal_selesai: `{{$dataJadwal->aud_thp1_tanggal_selesai?->format("Y-m-d")}}`,
-					
                 },
                 mounted() {
                     this.setForm();
@@ -85,7 +84,7 @@
 						this.aud_thp1_tanggal_selesai = date;
 					},
                     validate() {
-                        if ($("#aud_thp1_tujuan").val() == '') throw "Isi Tanggal Mulai"
+                        if ($("#aud_thp1_tujuan").val() == '') throw "Isi Tujuan Audit"
                         if ($("#aud_thp1_tanggal_mulai").val() == '') throw "Isi Tanggal Mulai"
                         if ($("#aud_thp1_tanggal_selesai").val() == '') throw "Isi Tanggal Selesai"
                     },

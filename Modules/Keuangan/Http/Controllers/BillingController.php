@@ -319,6 +319,7 @@ class BillingController extends Controller
             // add billing items
             $dataItems   = json_decode($request['data_billing_item']);
             $harus_lunas = 'ya';
+            $bil_total = 0;
             $mohon_data = [];
             foreach ($dataItems as $itm) {
                 $cust_sert_id = null;
@@ -346,6 +347,8 @@ class BillingController extends Controller
                 $newSisBillingItems->created_at     = Carbon::now();
                 $newSisBillingItems->updated_at     = Carbon::now();
                 $newSisBillingItems->save();
+				
+				$bil_total = $bil_total + $itm->bil_total;
             }
 			
 			if(!empty($mohon_data)){
@@ -366,7 +369,27 @@ class BillingController extends Controller
             $newSisBilling->save();
 
             DB::commit();
+			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+			// Send Push
+			$notifStruct            = new NotifStruct();
+			$notifStruct->title     = 'Billing Invoice';
+			$notifStruct->message   = sprintf("Billing dengan nomor %s telah terbit, silahkan lakukan pembayaran dan konfirmasi ke sistem.", $request['bill_nomor_billing']);
+			$notifStruct->user_id   = $data_pelanggan?->user_id;
+			$notifStruct->click_url = url('/pelanggan/billing');
+			sendNotification($notifStruct);
 
+			// Send Email
+			$structEmail          = new EmailStruct();
+			$structEmail->subject = "Billing Invoice";
+			$structEmail->body    = view('keuangan::billing.mails.publish')
+				->with([
+					'nama'       => $data_pelanggan?->cust_nama,
+					'message'       => sprintf("Billing dengan nomor %s telah terbit dengan total biaya Rp. %s, silahkan lakukan pembayaran dan konfirmasi ke sistem.", $request['bill_nomor_billing'], $bil_total);
+					'link_verif'        => url('/pelanggan/billing'),
+				])->render();
+			$structEmail->to      = $data_pelanggan?->cust_email;
+			sendEmail($structEmail);
+			
             return responseJSON(200, null, "Data billing berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();

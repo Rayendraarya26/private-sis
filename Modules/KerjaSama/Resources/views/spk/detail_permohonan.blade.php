@@ -98,19 +98,24 @@
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
-								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
-								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a></th>
-								</tr>
-								<tr>
 								  <th class="text-uppercase" scope="col">File Kajian Permohonan(PASKAL)</th>
 								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a></th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a> @endif </th>
+								</tr>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a> @endif </th>
+								</tr>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Surat Tagihan Biaya</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_tagihan_biaya_file != '') <a href="{{url($dataPermohon->mohon_tagihan_biaya_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a> @endif </th>
 								</tr>
 								<tr>
 								  <th class="text-uppercase" scope="col">File Pernyataan Persetujuan</th>
 								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col"><a href="{{url($dataPermohon->mohon_pernyataan_persetujuan_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a></th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_pernyataan_persetujuan_file != '') <a href="{{url($dataPermohon->mohon_pernyataan_persetujuan_file)}}" target="_blank" class="btn btn-xs btn-primary">Download File</a> @endif </th>
 								</tr>
 								<tr>
 								  <th class="text-uppercase" scope="col">File SPK</th>
@@ -121,47 +126,61 @@
 						  </table>
 							
 						  <table class="table table-hover mb-0">
-							<thead>
-								<tr>
-								  <th scope="col">#</th>
-								  <th class="text-uppercase" scope="col"></th>
-								  <th class="text-uppercase" scope="col"></th>
-								  <th class="text-uppercase" scope="col"></th>
-								</tr>
-							</thead>
 							<tbody>
-								<tr><th scope="row">1</th><td>Jenis Pengajuan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_jenis_status}}</a></td></tr>
-								<tr><th scope="row">2</th><td>Ruang Lingkup Sertifikasi</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->sert_nama}}</a></td></tr>
-									<tr>
-										<td colspan="4">
-											<div class="table-responsive col-xl-12 col-md-12 col-12">
-											<table class="table table-bordered  mb-0">
-												<thead>
-													<tr>
-													  <th class="text-uppercase" scope="col">Komoditi</th>
-													  <th class="text-uppercase" scope="col">SNI</th>
-													  <th class="text-uppercase" scope="col">Merk</th>
-													  <th class="text-uppercase" scope="col">Type</th>
-													  <th class="text-uppercase" scope="col">Ukuran</th>
-													  <th class="text-uppercase" scope="col">Kapasitas Produksi/tahun</th>
-													</tr>
-												</thead>
-												<tbody>
-													@foreach($dataPermohonKomoditi as $dpk)
-													<tr>
-													  <td>{{$dpk->komodt_nama}}</td>
-													  <td>{{$dpk->mohon_kmditi_sni}}</td>
-													  <td>{{$dpk->mohon_kmditi_merk}}</td>
-													  <td>{{$dpk->mohon_kmditi_tipe}}</td>
-													  <td>{{$dpk->mohon_kmditi_ukuran}}</td>
-													  <td>{{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}</td>
-													</tr>
-													@endforeach
-												</tbody>
-											</table>
-											</div>
-										</td>
-									</tr>
+								<tr><th scope="row">1</th><td>Mengajukan permohonan</td><td>:</td><td></td></tr>
+								<tr>
+									<td colspan="4">
+										<div class="table-responsive col-xl-12 col-md-12 col-12">
+										<table class="table table-bordered  mb-0">
+											<thead>
+												<tr>
+												  <th class="text-uppercase" scope="col">Jenis</th>
+												  <th class="text-uppercase" scope="col">Sertifikasi</th>
+												</tr>
+											</thead>
+											<tbody>
+												@foreach($dataPermohonSertifikasi as $dpser)
+												<tr>
+												  <td>@if($dpser->mohon_det_jenis_status == 'baru') Baru @else Perpanjang @endif</td>
+												  <td>{{$dpser->sert_nama}}</td>
+												</tr>
+												@endforeach
+											</tbody>
+										</table>
+										</div>
+									</td>
+								</tr>
+								<tr><th scope="row">2</th><td>Komoditi Yang Diajukan</td><td>:</td><td></td></tr>
+								<tr>
+									<td colspan="4">
+										<div class="table-responsive col-xl-12 col-md-12 col-12">
+										<table class="table table-bordered  mb-0">
+											<thead>
+												<tr>
+												  <th class="text-uppercase" scope="col">Komoditi</th>
+												  <th class="text-uppercase" scope="col">SNI</th>
+												  <th class="text-uppercase" scope="col">Merk</th>
+												  <th class="text-uppercase" scope="col">Type</th>
+												  <th class="text-uppercase" scope="col">Ukuran</th>
+												  <th class="text-uppercase" scope="col">Kapasitas Produksi/tahun</th>
+												</tr>
+											</thead>
+											<tbody>
+												@foreach($dataPermohonKomoditi as $dpk)
+												<tr>
+												  <td>{{$dpk->komodt_nama}}</td>
+												  <td>@if($dpk->sert_is_product == 'ya') {{$dpk->mohon_kmditi_sni}} @else {{$dpk->sert_sni}} @endif</td>
+												  <td>{{$dpk->mohon_kmditi_merk}}</td>
+												  <td>{{$dpk->mohon_kmditi_tipe}}</td>
+												  <td>{{$dpk->mohon_kmditi_ukuran}}</td>
+												  <td>{{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}</td>
+												</tr>
+												@endforeach
+											</tbody>
+										</table>
+										</div>
+									</td>
+								</tr>
 								<tr><th scope="row">3</th><td>Nama Klien</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama}}</a></td></tr>
 								<tr><th scope="row">4</th><td>Akta Pendirian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nomor_akta_pendirian}}</a></td></tr>
 								<tr><th scope="row">5</th><td>Nama Pemilik</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_pemilik}}</a></td></tr>

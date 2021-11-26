@@ -103,6 +103,26 @@
 								</tr>
 							</thead>
 							<tbody>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Kajian Permohonan(PASKAL)</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-primary">Download File</a> @endif </th>
+								</tr>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-primary">Download File</a> @endif </th>
+								</tr>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Surat Tagihan Biaya</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_tagihan_biaya_file != '') <a href="{{url($dataPermohon->mohon_tagihan_biaya_file)}}" target="_blank" class="btn btn-primary">Download File</a> @endif </th>
+								</tr>
+								<tr>
+								  <th class="text-uppercase" scope="col">File Pernyataan Persetujuan</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_pernyataan_persetujuan_file != '') <a href="{{url($dataPermohon->mohon_pernyataan_persetujuan_file)}}" target="_blank" class="btn btn-primary">Download File</a> @endif </th>
+								</tr>
 								<tr><th scope="row">1</th><td>Mengajukan permohonan</td><td>:</td><td></td></tr>
 								<tr>
 									<td colspan="4">

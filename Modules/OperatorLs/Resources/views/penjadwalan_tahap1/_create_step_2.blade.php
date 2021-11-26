@@ -40,6 +40,7 @@
 								<select class="form-control" id="posisi">
 									<option value=""></option>
 									<option value="ketua">Ketua</option>
+									<option value="anggota">Anggota</option>
 									<option value="observer">Observer</option>
 								</select>
 							</div>
@@ -79,7 +80,7 @@
 					</div>
 				</div>
                 <div class="table-responsive">
-					<table class="table">
+					<table class="table table-bordered mb-0">
                         <thead>
 							<tr>
 								<th>Aksi</th>
@@ -169,6 +170,8 @@
 									formData.append("aud_thp1_tanggal_selesai", currentaData.tanggal_selesai)
 									formData.append("cust_id", currentaData.cust_id)
 									formData.append("mohon_id", currentaData.mohon_id)
+									formData.append("mohon_det_id", currentaData.mohon_det_id)
+									formData.append("sert_tahap1_jenis", currentaData.jenis_sertifikasi)
 									formData.append("bill_id", currentaData.bill_id)
 									formData.append("aud_thp1_tujuan", currentaData.tujuan)
 								}
@@ -267,10 +270,12 @@
                             columns: [[
                                 {field: 'peg_id', hidden: true},
                                 {field: 'peg_nip', title: 'NIP', width: 200, sortable: true,},
+                                {field: 'peg_kode', title: 'Kode', width: 120, sortable: true,},
                                 {field: 'peg_nama', title: 'Nama', width: 390, sortable: true,},
                             ]],
                             onSelect: async function (index, row) {
 								$("#peg_nama").val(`${row.peg_nama}`);
+								$("#kode").val(`${row.peg_kode}`);
                             },
                         });
 						

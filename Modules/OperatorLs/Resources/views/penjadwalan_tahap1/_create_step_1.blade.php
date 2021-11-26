@@ -17,7 +17,7 @@
 		</div>
 		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="aud_thp1_tanggal_selesai">Tujuan Audit</label>
-			<div class="col-xl-3">
+			<div class="col-xl-7">
 			  <textarea class="form-control" id="aud_thp1_tujuan" v-on:keyup="tujuanSet" v-model="aud_thp1_tujuan"></textarea>
 			</div>
 		</div>
@@ -67,9 +67,11 @@
                     cust_id: null,
                     bill_id: null,
                     mohon_id: null,
+                    mohon_det_id: null,
+                    jenis_sertifikasi: null,
                     aud_thp1_tanggal_mulai: null,
                     aud_thp1_tanggal_selesai: null,
-                    aud_thp1_tujuan: null,
+                    aud_thp1_tujuan: ``,
                 },
                 mounted() {
                     this.loadIdb();
@@ -91,6 +93,14 @@
 						this.mohon_id = id
 						await this.updateDatabase()
 					},
+					async setMohonDetailId(id) {
+						this.mohon_det_id = id
+						await this.updateDatabase()
+					},
+					async setJenis(val) {
+						this.jenis_sertifikasi = val;
+						await this.updateDatabase()
+					},
 					async setTanggalMulai(date) {
 						this.aud_thp1_tanggal_mulai = date;
 						await this.updateDatabase()
@@ -103,12 +113,14 @@
                         if (this.cust_id == null) throw "Pilih Pelanggan"
                         if (this.bill_id == null) throw "Pilih Pelanggan"
                         if (this.mohon_id == null) throw "Pilih Permohonan"
-                        if (this.aud_thp1_tujuan == null) throw "Isi Tujuan Audit"
+                        if (this.mohon_det_id == null) throw "Pilih Permohonan"
+                        if (this.jenis_sertifikasi == null) throw "Pilih Permohonan"
+                        if (this.aud_thp1_tujuan == '' || this.aud_thp1_tujuan == null) throw "Isi Tujuan Audit"
                         if (this.aud_thp1_tanggal_mulai == null) throw "Isi Tanggal Mulai"
                         if (this.aud_thp1_tanggal_selesai == null) throw "Isi Tanggal Selesai"
                     },
 					async updateDatabase() {
-						let dbData = {name: "penjadwalan", tanggal_mulai: this.aud_thp1_tanggal_mulai, tanggal_selesai: this.aud_thp1_tanggal_selesai, bill_id: this.bill_id, cust_id: this.cust_id, mohon_id: this.mohon_id, tujuan : this.aud_thp1_tujuan};
+						let dbData = {name: "penjadwalan", tanggal_mulai: this.aud_thp1_tanggal_mulai, tanggal_selesai: this.aud_thp1_tanggal_selesai, bill_id: this.bill_id, cust_id: this.cust_id, mohon_id: this.mohon_id, tujuan : this.aud_thp1_tujuan , mohon_det_id : this.mohon_det_id, jenis_sertifikasi : this.jenis_sertifikasi};
 						const currentData = await idb.tahap1_data.where({name: "penjadwalan"}).first();
 						if (currentData == null) {
 							await idb.tahap1_data.put(dbData);
@@ -124,7 +136,7 @@
                     async setForm(currentData) {
                         // tahap1_data_itms
 						if (currentData == null) {
-							let dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, bill_id: null, cust_id: null, mohon_id: null, tujuan : null};
+							let dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, bill_id: null, cust_id: null, mohon_id: null, tujuan : null, mohon_det_id : null, jenis_sertifikasi : null};
 							currentData = dbData;
                             await idb.tahap1_data.put(dbData);
                         }
@@ -132,6 +144,8 @@
 							this.cust_id= currentData.cust_id;
 							this.bill_id= currentData.bill_id;
 							this.mohon_id= currentData.mohon_id;
+							this.mohon_det_id= currentData.mohon_det_id;
+							this.jenis_sertifikasi= currentData.jenis_sertifikasi;
 							this.aud_thp1_tanggal_mulai= currentData.tanggal_mulai;
 							this.aud_thp1_tanggal_selesai= currentData.tanggal_selesai;
 							this.aud_thp1_tujuan= currentData.tujuan;
@@ -172,7 +186,7 @@
                             panelWidth: 600,
                             pagination: true,
                             nowrap: false,
-                            idField: 'mohon_id',
+                            idField: 'mohon_det_id',
                             textField: 'sert_nama',
                             editable: true,
                             method: 'get',
@@ -181,12 +195,16 @@
                             fitColumns: false,
                             required: true,
                             columns: [[
+                                {field: 'mohon_det_id', hidden: true,},
+                                {field: 'sert_tahap1_jenis', hidden: true,},
                                 {field: 'mohon_id', title: 'No.<br>Permohonan', width: 120, sortable: true,},
                                 {field: 'mohon_jenis_status', title: 'Jenis<br>Permohonan', width: 120, sortable: true,},
                                 {field: 'sert_nama', title: 'Serifikasi', width: 360, sortable: true,},
                             ]],
                             onSelect: async function (index, row) {
 								await self.setMohonId(row.mohon_id);
+								await self.setMohonDetailId(row.mohon_det_id);
+								await self.setJenis(row.sert_tahap1_jenis);
                             },
                         });
 						
@@ -194,9 +212,9 @@
 							$('#mohon_id').combogrid({url : `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${self.cust_id}`});
 						}
 						
-						if(self.mohon_id != null){
+						if(self.mohon_det_id != null){
 							setTimeout(() => {
-								$('#mohon_id').combogrid('setValue', `${self.mohon_id}`);
+								$('#mohon_id').combogrid('setValue', `${self.mohon_det_id}`);
 							}, 400);
 						}
 						

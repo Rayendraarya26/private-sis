@@ -42,6 +42,7 @@
 								<select class="form-control" id="posisi">
 									<option value=""></option>
 									<option value="ketua">Ketua</option>
+									<option value="anggota">Anggota</option>
 									<option value="observer">Observer</option>
 								</select>
 							</div>
@@ -231,6 +232,9 @@
 					{field: 'peg_nip', title: 'NIP', width: 200, sortable: true,},
 					{field: 'peg_nama', title: 'Nama', width: 390, sortable: true,},
 				]],
+				onSelect: function (index, row) {
+					$("#kode").val(`${row.peg_kode}`);
+				},
 			});
 			$('#tipe').val(`update-tim`);
 			$('#kode').val(``);
