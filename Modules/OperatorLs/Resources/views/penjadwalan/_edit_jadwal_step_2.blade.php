@@ -48,6 +48,7 @@
 								<input type="hidden" id="data_update" value="">
 								<input type="hidden" id="tipe" value="">
 								<input type="hidden" id="mohon_id" value="">
+								<input type="hidden" id="mohon_det_id" value="">
 								<input type="hidden" id="sert_id" value="">
 								<input type="hidden" id="cust_sert_id" value="">
 								<input type="hidden" id="nomor_sertifikat" value="">
@@ -254,6 +255,7 @@
 								]],
 								columns: [[
 									{field: 'jadw_audit_jenis', title: 'Jenis', width: 150, sortable: true},
+									{field: 'mohon_det_id', hidden: true},
 									{field: 'mohon_id', title: 'Permohonan No', width: 100, sortable: true},
 									{field: 'sert_nama', title: 'Serifikasi', width: 250, sortable: true},
 									{field: 'jadw_audit_nomor_sertifikat', title: 'No. Sertifikat', width: 120, sortable: true},
@@ -281,6 +283,7 @@
 		function setJenisAudit(dt_jenis){
 			const jadw_audit_id = $('#jadw_audit_id').val();
 			$("#mohon_id").val("");
+			$("#mohon_det_id").val("");
 			$("#cust_sert_id").val("");
 			$("#sert_id").val("");
 			$("#nomor_sertifikat").val("");
@@ -319,6 +322,7 @@
 						$("#cust_sert_id").val("");
 						$("#sert_id").val(row.sert_id);
 						$("#mohon_id").val(row.mohon_id);
+						$("#mohon_det_id").val(row.mohon_det_id);
 						if(row.cust_sert_id != ''){
 							$("#cust_sert_id").val(row.cust_sert_id);
 						}
@@ -339,9 +343,8 @@
 						}
 						else{
 							if(row.sert_is_product === 'ya'){
-								
 								$("#sertifikasi_komoditi").show();
-								let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${row.mohon_id}`;
+								let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_det_id=${row.mohon_det_id}`;
 								$('#cb_komoditi').combogrid({
 									pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: true, required: false,
 									columns: [[
@@ -371,7 +374,7 @@
 							}
 							else{
 								$.ajax({
-									url: `{{ url("$url/ajax?action=data-list-komoiditi") }}&mohon_id=${row.mohon_id}`,
+									url: `{{ url("$url/ajax?action=data-list-komoditi") }}&mohon_det_id=${row.mohon_det_id}`,
 									type: 'get',
 									processData: false,
 									contentType: false,
@@ -420,6 +423,7 @@
 						$("#cust_sert_id").val(row.cust_sert_id);
 						$("#sert_id").val(row.sert_id);
 						$("#mohon_id").val("");
+						$("#mohon_det_id").val("");
 						$("#nomor_sertifikat").val(row.nomor_sertifikat);
 						$("#nomor_referensi").val(row.nomor_referensi);
 						$("#komodt_id").val(row.komodt_id);
@@ -444,10 +448,10 @@
 
 				if(dt_jenis !== 'surveilans'){
 					$('#cb_data_id').combogrid({
-						value:`${obj.mohon_id}`
+						value:`${obj.mohon_det_id}`
 					});
 					if(dt_jenis !== 're-sertifikasi'){
-						let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${obj.mohon_id}`;
+						let urlComboKomoditi = `{{ url("$url/ajax?action=combogrid-permohonan-komoditi") }}&mohon_id=${obj.mohon_det_id}`;
 						$('#cb_komoditi').combogrid({
 							pageSize: '50', panelWidth: 650, pagination: true, idField: 'komodt_id', nowrap: false, textField: 'komodt_nama', editable: true, url: urlComboKomoditi, method: 'get', mode: 'remote', value: `${obj.komodt_id}`, multiSort: true, fitColumns: true, required: false,
 							columns: [[
@@ -468,6 +472,7 @@
 				}
 				
 				$("#mohon_id").val(obj.mohon_id);
+				$("#mohon_det_id").val(obj.mohon_det_id);
 				$("#cust_sert_id").val(obj.cust_sert_id);
 				$("#sert_id").val(obj.sert_id);
 				$("#nomor_sertifikat").val(obj.jadw_audit_nomor_sertifikat);
@@ -497,6 +502,7 @@
 			formDataItem.append("sert_id", $("#sert_id").val());
 			formDataItem.append("komodt_id", $("#komodt_id").val())
 			formDataItem.append("mohon_id", $("#mohon_id").val());
+			formDataItem.append("mohon_det_id", $("#mohon_det_id").val());
 			formDataItem.append("cust_sert_id", $("#cust_sert_id").val());
 			formDataItem.append("jadw_audit_nomor_sertifikat", $("#nomor_sertifikat").val());
 			formDataItem.append("jadw_audit_nomor_referensi", $("#nomor_referensi").val());

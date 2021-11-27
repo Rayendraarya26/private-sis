@@ -185,7 +185,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
         $cust_id = $request->cust_id;		
 		$data->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($cust_id) {
-            $query->select(DB::raw('IFNULL(sis_audit_tahap1.mohon_id, 0)'))
+            $query->select(DB::raw('IFNULL(sis_audit_tahap1.mohon_det_id, 0)'))
                 ->from('sis_audit_tahap1')
                 ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
                 ->where('sis_permohonan.cust_id', '=', $cust_id);
@@ -318,6 +318,14 @@ class PenjadwalanTahap1Controller extends Controller
                 $newSisAuditTahap1Tim->created_at      = Carbon::now();
                 $newSisAuditTahap1Tim->updated_at      = Carbon::now();
                 $newSisAuditTahap1Tim->save();
+				
+				$data_pegawai = MasterPegawai::where('peg_id', $itm->peg_id)->select('user_id')->first();
+				$notifStruct            = new NotifStruct();
+				$notifStruct->title     = 'Penunjukan Tim Tahap 1';
+				$notifStruct->message   = sprintf("Penjadwalan Tahap 1 telah diterbitkan dengan nomor permohonan #%s , yang akan dilakukan pada tanggal %s s/d %s.", $request['mohon_id'], $request['aud_thp1_tanggal_mulai'], $request['aud_thp1_tanggal_selesai']);
+				$notifStruct->user_id   = $data_pegawai?->user_id;
+				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+				sendNotification($notifStruct);
             }
 
             DB::commit();

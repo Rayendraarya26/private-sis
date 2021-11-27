@@ -2,16 +2,24 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\MasterPegawai;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SisJadwalTim;
+use App\Models\BbkkpSis\SisPelanggan;
+
+
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class TimController extends Controller
 {
@@ -161,6 +169,7 @@ class TimController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['peg_id']   = $d->peg_id;
+            $x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
             $x['peg_nama'] = $d->peg_nama;
             $x['peg_telp'] = $d->peg_telp;
             $x['peg_nip']  = $d->peg_nip;
@@ -335,6 +344,9 @@ class TimController extends Controller
     private function update_pengajuan_tim(Request $request)
     {
         $request->validate([
+            "cust_id" => 'required',
+            "jadw_tanggal_mulai" => 'required',
+            "jadw_tanggal_selesai" => 'required',
             "jadw_id" => 'required',
         ]);
 
@@ -372,6 +384,55 @@ class TimController extends Controller
             }
 
             DB::commit();
+			
+			$title = '';
+			$message = '';
+			if ($restJadwal->jadw_team_status == 'on-going') {
+				$title = 'Penyusunan Tim Audit Tahap II';
+				$message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan , yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])) , date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])) );
+            } 
+			else {
+                $title = 'Revisi Penyusunan Tim Audit Tahap II';
+				$message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan dan direvisi, yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])) , date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])) );
+            }
+			
+			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+			// Send Push
+			$notifStruct            = new NotifStruct();
+			$notifStruct->title     = $title;
+			$notifStruct->message   = $message;
+			$notifStruct->user_id   = $data_pelanggan?->user_id;
+			$notifStruct->click_url = url('/pelanggan/jadwal');
+			sendNotification($notifStruct);
+
+			// Send Email
+			$structEmail          = new EmailStruct();
+			$structEmail->subject = $title;
+			$structEmail->body    = view('operatorls::tim.mails.publish')
+				->with([
+					'nama'       => $data_pelanggan?->cust_nama,
+					'message'       => $message,
+					'link_verif'        => url('/pelanggan/jadwal'),
+				])->render();
+			$structEmail->to      = $data_pelanggan?->cust_email;
+			sendEmail($structEmail);
+			
+			/* $data_tim = SisJadwalTim::join('sis_jadwal', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id")
+				->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+				->select('*')
+				->where('sis_jadwal_tim.jadw_id', $request['jadw_id']);
+			
+			foreach ($data_tim->get() as $d) {
+				$d->peg_id;
+				// Send Push
+				$notifStruct            = new NotifStruct();
+				$notifStruct->title     = $title;
+				$notifStruct->message   = $message;
+				$notifStruct->user_id   = $d?->user_id;
+				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+				sendNotification($notifStruct);
+			} */
+			
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());

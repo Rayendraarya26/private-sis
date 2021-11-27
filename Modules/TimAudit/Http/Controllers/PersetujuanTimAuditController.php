@@ -2,10 +2,11 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisJadwal;
+
+use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -99,16 +100,16 @@ class PersetujuanTimAuditController extends Controller
         }
 
         // Tahap 1
-        $dataTahap1 = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
-        $dataTahap1->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
-        $dataTahap1->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
-        $dataTahap1->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
-        $dataTahap1->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-        $dataTahap1->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-
-        // Filter
-        $dataTahap1->where('master_pegawai.user_id', '=', auth()->id());
-        $dataTahap1->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'none');
+        $dataTahap1 = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
+			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+			->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
+			->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
+			->where('master_pegawai.user_id', '=', auth()->id())
+			->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'none');
+			
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 if ($f->field == 'jadw_id')
@@ -222,17 +223,19 @@ class PersetujuanTimAuditController extends Controller
                 DB::raw('GROUP_CONCAT(distinct sis_audit_tahap1_tim.thp1_tim_posisi) as jadw_tim_posisi'),
                 DB::raw('GROUP_CONCAT(distinct master_pegawai.peg_id) as peg_id')
             );
-
-            $dataJadwal->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id");
-            $dataJadwal->join('sis_permohonan_komoditi', "sis_permohonan.mohon_id", "=", "sis_permohonan_komoditi.mohon_id");
-            $dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id");
-            $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_permohonan.sert_id");
-            $dataJadwal->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
-            $dataJadwal->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
-            $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1_tim.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id");
-            $dataJadwal->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-
-            $dataJadwal->groupBy('sis_audit_tahap1.aud_thp1_id');
+			
+			$dataJadwal->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+				->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+				->join('sis_permohonan_komoditi', "sis_permohonan_komoditi.mohon_det_id", "=", "sis_permohonan_detail.mohon_det_id")
+				->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+				->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+				->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
+				->join('sis_audit_tahap1_tim', "sis_audit_tahap1_tim.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id")
+				->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
+				->groupBy('sis_audit_tahap1.aud_thp1_id');
+			
+            $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
         }
 
 

@@ -24,7 +24,7 @@
     </table>
     <div class="content" style="border-top: 1px solid rgba(0,0,0,0.05);">
         <h2 style="margin-top: 0;">
-            Penerbitan Jadwal Tahap I
+            Penerbitan Tim Tahap II
         </h2>
         <div style="color: #636363; font-size: 14px;">
             Kepada : {{ $nama }}

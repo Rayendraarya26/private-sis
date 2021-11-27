@@ -140,6 +140,12 @@
 				},
 				onBeginEdit:function(index,row){
 					var editors = $(this).datagrid('getEditors', index);
+					var ed_cb = $(editors[0].target);
+					var ed_kode = $(editors[1].target);
+					
+					ed_cb.combogrid('options').onSelect = function(index, rowData){
+						$(ed_kode).textbox({value:`${rowData.peg_kode}`});
+					}
 					
 					dgEdit = $(this);
 						for(var i=0; i<19; i++){
@@ -206,6 +212,7 @@
 								required: false,
 								columns: [[
 									{field: 'peg_id', hidden: true},
+									{field: 'peg_kode', hidden: true},
 									{field: 'peg_nip', title: 'NIP', width: 100, sortable: true,},
 									{field: 'peg_nama', title: 'Nama Pegawai', width: 250, sortable: true,},
 									{field: 'peg_telp', title: 'Telp', width: 100, sortable: true,},
@@ -256,7 +263,13 @@
                 if (result.value) {
                     $.ajax({
                         url: `{{url("$url/update")}}`,
-						data: { 'jadw_id': `{{$dataJadwal->jadw_id}}`, 'tipe': 'ajukan-tim' },
+						data: { 
+							'jadw_id': `{{$dataJadwal->jadw_id}}`,
+							'cust_id': `{{$dataJadwal->cust_id}}`,
+							'jadw_tanggal_mulai': `{{$dataJadwal->jadw_tanggal_mulai}}`,
+							'jadw_tanggal_selesai': `{{$dataJadwal->jadw_tanggal_selesai}}`,
+							'tipe': 'ajukan-tim' 
+						},
 						type: 'POST',
                         success: function (response) {
 							$.messager.progress('close');

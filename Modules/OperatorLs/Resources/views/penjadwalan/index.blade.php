@@ -105,8 +105,7 @@
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
-				onLoadSuccess: function (data) {
-                    onBeforeLoad: function () {
+				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
                         try {
                             $(this).menubutton('destroy');
