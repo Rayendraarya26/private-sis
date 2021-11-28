@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $peg_id
  * @property int $user_id
+ * @property string|null $peg_kode
  * @property string $peg_nama
  * @property string|null $peg_alamat
  * @property string|null $peg_telp
@@ -43,6 +44,7 @@ class MasterPegawai extends Model
 
 	protected $fillable = [
 		'user_id',
+		'peg_kode',
 		'peg_nama',
 		'peg_alamat',
 		'peg_telp',

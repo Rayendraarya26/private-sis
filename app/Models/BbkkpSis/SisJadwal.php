@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
  * @property string $jadw_team_status
+ * @property string|null $jadw_setujui_temuan
+ * @property Carbon|null $jadw_tanggal_rapat_akhir
  * @property string|null $jadw_file_kehadiran
  * @property string|null $jadw_file_notulen_rapat
  * @property string|null $jadw_file_kehadiran_komite
@@ -57,7 +59,8 @@ class SisJadwal extends Model
 
 	protected $dates = [
 		'jadw_tanggal_mulai',
-		'jadw_tanggal_selesai'
+		'jadw_tanggal_selesai',
+		'jadw_tanggal_rapat_akhir'
 	];
 
 	protected $fillable = [
@@ -66,6 +69,8 @@ class SisJadwal extends Model
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
 		'jadw_team_status',
+		'jadw_setujui_temuan',
+		'jadw_tanggal_rapat_akhir',
 		'jadw_file_kehadiran',
 		'jadw_file_notulen_rapat',
 		'jadw_file_kehadiran_komite',
