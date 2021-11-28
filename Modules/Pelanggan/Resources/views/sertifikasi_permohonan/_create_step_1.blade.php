@@ -45,6 +45,7 @@
                     // Jika Re-Sertifikasi
                     sertifikat_lama_id: null, // riwayat sertifikat
                     sertifikat_lama_text: null, // riwayat sertifikat
+                    sertifikat_lama_data: [],
 
                     master_sertifikat_id: null, // master sertifikat
                     master_sertifikat_text: null, // master sertifikat
@@ -170,6 +171,8 @@
                                 self.master_sertifikat_text       = row.sert_nama;
                                 self.master_sertifikat_is_product = row.sert_is_product;
 
+                                self.sertifikat_lama_data = [row];
+
                                 let komoditas = {
                                     'komoditi_id': row.komodt_id,
                                     'komoditi_nama': row.komodt_nama,
@@ -185,11 +188,13 @@
                                 self.data_komoditas.push(komoditas);
 
                                 const currentaData = await idb.pelanggan_permohonan.where({name: "sertifikat_lama"}).first();
-                                let dbData         = {name: "sertifikat_lama", value: row}
+                                let sertifikasi    = [];
+                                sertifikasi.push(row)
+                                let sertifikatData = {name: "sertifikat_lama", value: row, sertifikasi}
                                 if (currentaData == null) {
-                                    await idb.pelanggan_permohonan.put(dbData);
+                                    await idb.pelanggan_permohonan.put(sertifikatData);
                                 } else {
-                                    await idb.pelanggan_permohonan.update(currentaData.id, dbData);
+                                    await idb.pelanggan_permohonan.update(currentaData.id, sertifikatData);
                                 }
                             },
                         });
