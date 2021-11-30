@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisPermohonan|null $sis_permohonan
  * @property SisPelangganSertifikasi|null $sis_pelanggan_sertifikasi
  * @property MasterSertifikasi|null $master_sertifikasi
+ * @property Collection|SisAuditTahap1[] $sis_audit_tahap1s
+ * @property Collection|SisBillingItems[] $sis_billing_items
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
  *
  * @package App\Models\BbkkpSis
@@ -62,6 +64,16 @@ class SisPermohonanDetail extends Model
 	public function master_sertifikasi()
 	{
 		return $this->belongsTo(MasterSertifikasi::class, 'sert_id');
+	}
+
+	public function sis_audit_tahap1s()
+	{
+		return $this->hasMany(SisAuditTahap1::class, 'mohon_det_id');
+	}
+
+	public function sis_billing_items()
+	{
+		return $this->hasMany(SisBillingItems::class, 'mohon_det_id');
 	}
 
 	public function sis_permohonan_komoditis()

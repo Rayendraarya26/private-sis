@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $aud_thp1_id
  * @property int|null $bill_id
  * @property int $mohon_id
+ * @property int $mohon_det_id
  * @property string|null $sert_tahap1_jenis
  * @property string|null $aud_thp1_status
  * @property string|null $aud_thp1_ditutup
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property SisBilling|null $sis_billing
  * @property SisPermohonan $sis_permohonan
+ * @property SisPermohonanDetail $sis_permohonan_detail
  * @property Collection|SisAuditDetailTahap1[] $sis_audit_detail_tahap1s
  * @property Collection|SisAuditTahap1Detail[] $sis_audit_tahap1_details
  * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
@@ -53,7 +55,8 @@ class SisAuditTahap1 extends Model
 
 	protected $casts = [
 		'bill_id' => 'int',
-		'mohon_id' => 'int'
+		'mohon_id' => 'int',
+		'mohon_det_id' => 'int'
 	];
 
 	protected $dates = [
@@ -64,6 +67,7 @@ class SisAuditTahap1 extends Model
 	protected $fillable = [
 		'bill_id',
 		'mohon_id',
+		'mohon_det_id',
 		'sert_tahap1_jenis',
 		'aud_thp1_status',
 		'aud_thp1_ditutup',
@@ -93,6 +97,11 @@ class SisAuditTahap1 extends Model
 	public function sis_permohonan()
 	{
 		return $this->belongsTo(SisPermohonan::class, 'mohon_id');
+	}
+
+	public function sis_permohonan_detail()
+	{
+		return $this->belongsTo(SisPermohonanDetail::class, 'mohon_det_id');
 	}
 
 	public function sis_audit_detail_tahap1s()
