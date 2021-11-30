@@ -77,9 +77,8 @@ class PpcLaporanController extends Controller
         }
         
         $data->select("jadw_tanggal_mulai AS jadw_tanggal_mulai","jadw_tanggal_selesai AS jadw_tanggal_selesai", "cust_nama AS cust_nama", "jadw_jenis AS jadw_jenis", "sert_nama AS sert_nama", "sis_jadwal.jadw_id AS jadw_id");
-        $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
         $data->selectRaw("COUNT(DISTINCT sis_audit_ppc.audit_ppc_id) as total_file");
         $data->groupBy('sis_jadwal.jadw_id');
 

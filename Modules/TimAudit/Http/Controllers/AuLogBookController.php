@@ -2,8 +2,9 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
+
+use App\Http\Structs\BreadcrumbsStruct;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -85,9 +86,8 @@ class AuLogBookController extends Controller
 
         // Pagination
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
-        $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
         $data->skip(($request->page - 1) * $request->rows);

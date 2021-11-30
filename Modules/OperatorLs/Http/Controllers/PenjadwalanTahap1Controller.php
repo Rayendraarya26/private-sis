@@ -342,7 +342,7 @@ class PenjadwalanTahap1Controller extends Controller
 			// Send Email
 			$structEmail          = new EmailStruct();
 			$structEmail->subject = "Penjadwalan Tahap 1";
-			$structEmail->body    = view('keuangan::billing.mails.publish')
+			$structEmail->body    = view('operatorls::penjadwalan_tahap1.mails.publish')
 				->with([
 					'nama'       => $data_pelanggan?->cust_nama,
 					'message'       => sprintf("Penjadwalan Tahap 1 telah diterbitkan dengan nomor permohonan #%s , yang akan dilakukan pada tanggal %s s/d %s.", $request['mohon_id'], $request['aud_thp1_tanggal_mulai'], $request['aud_thp1_tanggal_selesai']),

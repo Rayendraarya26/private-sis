@@ -52,7 +52,7 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
+                        title: "<br/><br/>",
                         width: 130,
                         align: 'center',
                         formatter: function (val, row) {
@@ -65,6 +65,7 @@
                     },
                 ]],
                 columns: [[
+                    {field: 'jadw_id', title: 'No.<br/>Jadwal', width: 120, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
                     {

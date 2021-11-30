@@ -125,14 +125,7 @@
                                                 <small>(pdf/excel)</small>
                                             </label>
                                             <div class="col-sm-8">
-                                                <div class="custom-file">
-                                                    <input type="file" name="jadw_file_kehadiran"
-                                                           class="custom-file-input"
-                                                           id="jadw_file_kehadiran"
-                                                           accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                                    <label class="custom-file-label" for="jadw_file_kehadiran">
-                                                        Unggah file...</label>
-                                                </div>
+												<input type="file" name="jadw_file_kehadiran" id="jadw_file_kehadiran" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
                                                 @if(!empty($data->jadw_file_kehadiran))
                                                     <small>
                                                         <a href="{{asset($data->jadw_file_kehadiran)}}" target="_blank">
@@ -149,14 +142,7 @@
                                                 <small>(pdf/excel)</small>
                                             </label>
                                             <div class="col-sm-8">
-                                                <div class="custom-file">
-                                                    <input type="file" name="jadw_file_notulen_rapat"
-                                                           class="custom-file-input"
-                                                           id="jadw_file_notulen_rapat"
-                                                           accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                                    <label class="custom-file-label" for="jadw_file_notulen_rapat">
-                                                        Unggah file...</label>
-                                                </div>
+                                                    <input type="file" name="jadw_file_notulen_rapat" id="jadw_file_notulen_rapat" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
                                                 @if(!empty($data->jadw_file_notulen_rapat))
                                                     <small>
                                                         <a href="{{asset($data->jadw_file_notulen_rapat)}}"
@@ -167,10 +153,23 @@
                                                 @endif
                                             </div>
                                         </div>
-
-
+										
+										<div class="form-group row">
+                                            <label class="col-form-label col-sm-3" for="jadw_tanggal_rapat_akhir">
+                                                Tanggal Rapat*
+                                            </label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="jadw_tanggal_rapat_akhir" name="jadw_tanggal_rapat_akhir" style="max-width:300px;">
+                                                <input type="hidden" name="cust_nama" value="{{$data->sis_pelanggan->cust_nama}}">
+                                                <input type="hidden" name="cust_email" value="{{$data->sis_pelanggan->cust_email}}">
+                                                <input type="hidden" name="cust_id" value="{{$data->sis_pelanggan->cust_id}}">
+                                                <input type="hidden" name="user_id" value="{{$data->sis_pelanggan->user_id}}">
+                                                <input type="hidden" name="jadw_id" value="{{$data->jadw_id}}">
+                                            </div>
+                                        </div>
+										
                                         <button type="submit" class="btn btn-outline-primary btn-block">
-                                            <i class="fas fa-paper-plane"></i> Submit
+                                            <i class="fas fa-paper-plane"></i> Ajukan temuan ke Pelanggan?
                                         </button>
                                     </form>
                                 </div>
@@ -183,3 +182,42 @@
     </div>
 
 @endsection
+
+
+@push('javascript')
+    <script>
+        // Vue Step One
+		
+		function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+        }
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+        }
+		
+        $(document).ready(function () {
+            $('#jadw_tanggal_rapat_akhir').datebox({
+							required:true,
+							editable: false,
+							formatter:myformatter,
+							parser:myparser,
+							value:`@if(!empty($data->jadw_file_notulen_rapat)) {{$data->jadw_file_notulen_rapat}} @endif`,
+							onSelect: async function(date){
+								var data_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+							}
+						});;
+        })
+    </script>
+@endpush

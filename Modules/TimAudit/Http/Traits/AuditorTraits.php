@@ -43,9 +43,9 @@ trait AuditorTraits
     {
         $pegawaiID = auth()->user()->master_pegawai->peg_id;
         $data      = SisJadwal::with([
-            'sis_jadwal_audits.sis_audit_lks',
             'sis_jadwal_audits.sis_permohonan',
             'sis_jadwal_audits.master_komoditi',
+            'sis_audit_lks',
             'sis_pelanggan',
             'sis_jadwal_tims',
             'sis_audit_lap_lengkap',
@@ -81,9 +81,9 @@ trait AuditorTraits
     {
         $pegawaiID = auth()->user()->master_pegawai->peg_id;
         $data      = SisJadwal::with([
-            'sis_jadwal_audits.sis_audit_lks',
             'sis_jadwal_audits.sis_permohonan',
             'sis_jadwal_audits.master_komoditi',
+            'sis_audit_lks',
             'sis_pelanggan',
             'sis_jadwal_tims',
             'sis_audit_lap_lengkap',
@@ -108,9 +108,9 @@ trait AuditorTraits
     {
         $pegawaiID = auth()->user()->master_pegawai->peg_id;
         $data      = SisJadwal::with([
-            'sis_jadwal_audits.sis_audit_lks',
             'sis_jadwal_audits.sis_permohonan',
             'sis_jadwal_audits.master_komoditi',
+            'sis_audit_lks',
             'sis_pelanggan',
             'sis_audit_tim_komites',
             'sis_audit_lap_lengkap',

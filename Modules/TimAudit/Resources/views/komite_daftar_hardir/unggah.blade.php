@@ -141,10 +141,7 @@
                                             </label>
                                             <div class="col-sm-8">
                                                 <div class="custom-file">
-                                                    <input type="file" name="jadw_file_kehadiran_komite"
-                                                           class="custom-file-input"
-                                                           id="jadw_file_kehadiran_komite"
-                                                           accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+                                                    <input type="file" name="jadw_file_kehadiran_komite" class="custom-file-input" id="jadw_file_kehadiran_komite" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
                                                     <label class="custom-file-label" for="jadw_file_kehadiran_komite">Unggah file...</label>
 													<input type="hidden" name="jadw_id" value="{{$jadwal_id}}">
                                                 </div>

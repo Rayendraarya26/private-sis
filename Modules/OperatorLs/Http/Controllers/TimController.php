@@ -82,7 +82,7 @@ class TimController extends Controller
         // Pagination
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("count(distinct jadw_tim_id) AS total_tim");
-        $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, jadw_audit_jenis) SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
