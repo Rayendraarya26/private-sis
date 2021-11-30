@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Daftar Hadir')
+@section('title', 'Rapat Akhir')
 
 @section('content')
     <div class="dt-content">
@@ -22,7 +22,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Daftar Hadir & Notulen</h3>
+                            <h3 class="dt-card__title">Rapat Akhir & Notulen</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -57,9 +57,9 @@
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.is_uploaded) {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Unggah Ulang</a>`
+                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Isi Kelengkapan</a>`
                             } else {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Unggah Berkas</a>`
+                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Isi Kelengkapan</a>`
                             }
                         },
                     },
@@ -67,6 +67,7 @@
                 columns: [[
                     {field: 'jadw_id', title: 'No.<br/>Jadwal', width: 120, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
+                    {field: 'jadw_setujui_temuan', title: 'Persetujuan<br/>Temuan?', width: 150, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
                     {
                         field: 'total_jadwal', title: 'Jadwal', width: 80, sortable: true,

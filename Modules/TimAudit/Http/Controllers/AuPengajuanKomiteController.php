@@ -2,9 +2,10 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisAuditLapLengkap;
+
+use App\Http\Structs\BreadcrumbsStruct;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -55,27 +56,28 @@ class AuPengajuanKomiteController extends Controller
             $dataLKS = [
                 'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
             ];
-            foreach ($dataJadwal->sis_jadwal_audits as $ja) {
-                foreach ($ja->sis_audit_lks as $lks) {
-                    switch ($lks->lks_kategori_ketidaksesuaian) {
-                        case 'kritis':
-                            // jumlah
-                            $dataLKS['jumlah']['kritis'] += 1;
-                            $dataLKS['jumlah']['total']  += 1;
-                            break;
-                        case 'mayor':
-                            // jumlah
-                            $dataLKS['jumlah']['mayor'] += 1;
-                            $dataLKS['jumlah']['total'] += 1;
-                            break;
-                        case 'minor':
-                        case 'observasi':
-                            // jumlah
-                            $dataLKS['jumlah']['minor'] += 1;
-                            $dataLKS['jumlah']['total'] += 1;
-                            break;
-                    }
-                }
+            foreach ($dataJadwal as $ja) {
+				if(!empty($ja->sis_audit_lks)){foreach ($ja->sis_audit_lks as $lks) {
+						switch ($lks->lks_kategori_ketidaksesuaian) {
+							case 'kritis':
+								// jumlah
+								$dataLKS['jumlah']['kritis'] += 1;
+								$dataLKS['jumlah']['total']  += 1;
+								break;
+							case 'mayor':
+								// jumlah
+								$dataLKS['jumlah']['mayor'] += 1;
+								$dataLKS['jumlah']['total'] += 1;
+								break;
+							case 'minor':
+							case 'observasi':
+								// jumlah
+								$dataLKS['jumlah']['minor'] += 1;
+								$dataLKS['jumlah']['total'] += 1;
+								break;
+						}
+					}
+				}
             }
 			
 			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
@@ -121,27 +123,28 @@ class AuPengajuanKomiteController extends Controller
             $dataLKS = [
                 'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
             ];
-            foreach ($dataJadwal->sis_jadwal_audits as $ja) {
-                foreach ($ja->sis_audit_lks as $lks) {
-                    switch ($lks->lks_kategori_ketidaksesuaian) {
-                        case 'kritis':
-                            // jumlah
-                            $dataLKS['jumlah']['kritis'] += 1;
-                            $dataLKS['jumlah']['total']  += 1;
-                            break;
-                        case 'mayor':
-                            // jumlah
-                            $dataLKS['jumlah']['mayor'] += 1;
-                            $dataLKS['jumlah']['total'] += 1;
-                            break;
-                        case 'minor':
-                        case 'observasi':
-                            // jumlah
-                            $dataLKS['jumlah']['minor'] += 1;
-                            $dataLKS['jumlah']['total'] += 1;
-                            break;
-                    }
-                }
+            foreach ($dataJadwal as $ja) {
+				if(!empty($ja->sis_audit_lks)){foreach ($ja->sis_audit_lks as $lks) {
+						switch ($lks->lks_kategori_ketidaksesuaian) {
+							case 'kritis':
+								// jumlah
+								$dataLKS['jumlah']['kritis'] += 1;
+								$dataLKS['jumlah']['total']  += 1;
+								break;
+							case 'mayor':
+								// jumlah
+								$dataLKS['jumlah']['mayor'] += 1;
+								$dataLKS['jumlah']['total'] += 1;
+								break;
+							case 'minor':
+							case 'observasi':
+								// jumlah
+								$dataLKS['jumlah']['minor'] += 1;
+								$dataLKS['jumlah']['total'] += 1;
+								break;
+						}
+					}
+				}
             }
 			
 
@@ -221,8 +224,8 @@ class AuPengajuanKomiteController extends Controller
         $data->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
         $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
         $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
-        $data->join('sis_audit_lap_lengkap', "sis_jadwal.jadw_id", "=", "sis_audit_lap_lengkap.jadw_id");
-        $data->join('sis_audit_lap_ringkas', "sis_jadwal.jadw_id", "=", "sis_audit_lap_ringkas.jadw_id");
+        $data->leftJoin('sis_audit_lap_lengkap', "sis_jadwal.jadw_id", "=", "sis_audit_lap_lengkap.jadw_id");
+        $data->leftJoin('sis_audit_lap_ringkas', "sis_jadwal.jadw_id", "=", "sis_audit_lap_ringkas.jadw_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
@@ -230,7 +233,7 @@ class AuPengajuanKomiteController extends Controller
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ketua');
-        $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ketua');
+        // $data->where('sis_jadwal.jadw_setujui_temuan', '=', 'setuju');
         $data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {

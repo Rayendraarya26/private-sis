@@ -106,6 +106,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::get('/ajax', [AuDaftarHadirController::class, 'ajax']);
             Route::get('/unggah/{jadw_id}', [AuDaftarHadirController::class, 'unggah']);
             Route::post('/unggah/{jadw_id}', [AuDaftarHadirController::class, 'storeUnggah']);
+            Route::get('/detail', [AuDaftarHadirController::class, 'detail']);
         });
 
         Route::prefix("log-book")->group(function () {

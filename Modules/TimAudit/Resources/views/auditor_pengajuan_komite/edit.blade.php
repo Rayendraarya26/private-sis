@@ -135,6 +135,22 @@
 					<div class="dt-card__body">
 						<div class="form-group row">
 							<label class="col-form-label col-sm-2">
+								Laporan Ringkas
+							</label>
+							<div class="col-sm-10">
+								<a href="{{ url("$url/detail?tipe=lap-ringkas&jadw_id=$data->jadw_id") }}" target="_blank">Lihat laporan ringkas</a>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-form-label col-sm-2">
+								Laporan Lengkap
+							</label>
+							<div class="col-sm-10">
+								<a href="{{ url("$url/detail?tipe=lap-lengkap&jadw_id=$data->jadw_id") }}" target="_blank">Lihat laporan lengkap</a>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-form-label col-sm-2">
 								Daftar Periksa File Upload Tim
 							</label>
 							<div class="col-sm-10">

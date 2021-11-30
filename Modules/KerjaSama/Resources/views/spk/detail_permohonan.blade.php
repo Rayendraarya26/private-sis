@@ -311,7 +311,7 @@
 								<div class="card-footer d-flex flex-column justify-content-between p-0 text-sm-right">
 								  <!-- Pricing -->
 								  <a href="javascript:void(0)" class="display-5  mb-6">
-									<i class="icon icon-calendar icon-fw mr-2"></i><span class="align-middle">{{$dps->created_at?->format("Y-m-d H:i:s")}}</span> </a>
+									<i class="icon icon-calendar icon-fw mr-2"></i><span class="align-middle" style="font-size:12px;">{{$dps->created_at?->format("Y-m-d H:i:s")}}</span> </a>
 								  <!-- /pricing -->
 								</div>
 								<!-- /card footer -->

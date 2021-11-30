@@ -3,6 +3,7 @@
 namespace Modules\TimAudit\Http\Controllers;
 
 use App\Models\BbkkpSis\SisJadwal;
+use App\Models\BbkkpSis\SisJadwalLog;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 
 use App\Http\Structs\EmailStruct;
@@ -31,7 +32,7 @@ class AuDaftarHadirController extends Controller
         $breadcrumbs = [
             new BreadcrumbsStruct('Tim Audit'),
             new BreadcrumbsStruct('Auditor', url($this->url)),
-            new BreadcrumbsStruct('Daftar Hadir'),
+            new BreadcrumbsStruct('Rapat Akhir'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
@@ -39,23 +40,75 @@ class AuDaftarHadirController extends Controller
     }
 
     public function unggah(Request $request, $jadwalID)
-    {
-        try {
-            $dataJadwal  = $this->isKepalaAudit($jadwalID);
+    {		
+		try {
+            $dataJadwal  = $this->isKepalaAuditDetail($jadwalID);
             $breadcrumbs = [
-                new BreadcrumbsStruct('Tim Audit'),
-                new BreadcrumbsStruct('Auditor', url($this->url)),
-                new BreadcrumbsStruct('Daftar Hadir'),
-            ];
+				new BreadcrumbsStruct('Tim Audit'),
+				new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
+                new BreadcrumbsStruct('Rapat Akhir'),
+				new BreadcrumbsStruct('Kelengkapan'),
+			];
 
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
+            $dataLKS = [
+                'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+            ];
+            foreach ($dataJadwal as $ja) {
+				if(!empty($ja->sis_audit_lks)){foreach ($ja->sis_audit_lks as $lks) {
+						switch ($lks->lks_kategori_ketidaksesuaian) {
+							case 'kritis':
+								// jumlah
+								$dataLKS['jumlah']['kritis'] += 1;
+								$dataLKS['jumlah']['total']  += 1;
+								break;
+							case 'mayor':
+								// jumlah
+								$dataLKS['jumlah']['mayor'] += 1;
+								$dataLKS['jumlah']['total'] += 1;
+								break;
+							case 'minor':
+							case 'observasi':
+								// jumlah
+								$dataLKS['jumlah']['minor'] += 1;
+								$dataLKS['jumlah']['total'] += 1;
+								break;
+						}
+					}
+				}
+            }
+			
+			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
+							->where('sis_jadwal.jadw_id', '=', $jadwalID)->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
+			
+			
+			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
+							->where('sis_jadwal.jadw_id', '=', $jadwalID)->select('*');
+			
+			
+			
+			$SisJadwalLog = SisJadwalLog::where('jadw_id', $jadwalID)->where('jlog_tipe', 'revisi-temuan')->select('*');
+			
+            $parser = [
+				'module' => $this->module, 
+				'url' => $this->url, 
+				'breadcrumbs' => $breadcrumbs, 
+				'data' => $dataJadwal, 
+				'dataLKS' => $dataLKS,
+				'dataAuditTim' => $dataAuditTim->get(),
+				'dataTimLogbook' => $dataTimLogbook->get(),
+				'SisJadwalLog' => $SisJadwalLog->get(),
+			];
 
             return view("$this->view.unggah")->with($parser);
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
-
+	
     public function storeUnggah(Request $request, $jadwalID)
     {
 		$request->validate([
@@ -199,6 +252,7 @@ class AuDaftarHadirController extends Controller
 
             $x['is_uploaded']          = $isUploaded;
             $x['jadw_id']              = $d->jadw_id;
+            $x['jadw_setujui_temuan']              = $d->jadw_setujui_temuan;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
             $x['cust_nama']            = $d->cust_nama;
@@ -211,4 +265,37 @@ class AuDaftarHadirController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
+	
+	public function detail(Request $request)
+    {
+        $request->validate(['tipe' => 'required']);
+        return match ($request['tipe']) {
+            'lap-ringkas' => $this->detail_lap_ringkas($request),
+            'lap-lengkap' => $this->detail_lap_lengkap($request),
+            default         => null,
+        };
+    }
+	
+	public function detail_lap_ringkas(Request $request)
+    {
+		try {
+			$parser = [
+				'module' => $this->module, 
+				'url' => $this->url,
+			];
+            return view("$this->vie.detail.lap_ringkas")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
+	}
+	
+	public function detail_lap_lengkap(Request $request)
+    {
+		try {
+			
+            return view("$this->vie.detail.lap_lengkap")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
+	}
 }
