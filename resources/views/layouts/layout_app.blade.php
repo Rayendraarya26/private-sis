@@ -579,6 +579,7 @@
 
 <!-- Custom JavaScript -->
 <script src="{{ asset('assets/js/script.js') }}"></script>
+<script src="{{ asset('assets/js/lodash.min.js') }}"></script>
 <script src="{{ asset('assets/js/vue.min.js') }}"></script>
 <script src="{{ asset('assets/js/dexie.min.js') }}"></script>
 

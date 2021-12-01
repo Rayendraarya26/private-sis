@@ -19,6 +19,7 @@ use App\Models\BbkkpSis\SisPelangganDokumen;
 use App\Models\BbkkpSis\SisPelangganPabrik;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
+use App\Models\BbkkpSis\SisPermohonanDetail;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
@@ -73,17 +74,26 @@ class SertifikasiPermohonanController extends Controller
     {
         $request->validate([
             "pertanyaan_tambahan" => 'required',
-            "jenis_permohonan"    => 'required',
-            "jenis_sertifikasi"   => 'required',
+            "data_pengajuan"      => 'required',
+            "data_sertifikat"     => 'required',
         ]);
+
+        $dataPengajuan   = json_decode($request['data_pengajuan']);
+        $dataSertifikat  = json_decode($request['data_sertifikat']);
+        $totalSubmission = count($dataPengajuan);
+        $dataSubmission  = [];
+        for ($i = 0; $i < $totalSubmission; $i++) {
+            array_push($dataSubmission, [
+                'pengajuan'  => $dataPengajuan[$i],
+                'sertifikat' => $dataSertifikat[$i],
+            ]);
+        }
 
         // Set data uploaded file path (digunakan untuk delete file yang diupload ketika catch error)
         $uploadedPath = [];
         $custID       = auth()->user()?->sis_pelanggan->cust_id;
         try {
             if (!$request->hasFile('pertanyaan_tambahan')) throw new Exception("Mohon unggah pertanyaan tambahan", 400);
-            if ($request['jenis_permohonan'] == "lama" && empty($request['sertifikat_lama_id'])) throw new Exception("Sertifikat lama belum dipilih", 400);
-
             /* TODO:
              * 1. FIND: data sis_pelanggan, sis_pelanggan_dokumens, sis_pelanggan_pabrik
              * 2. FIND: master_sertifikasi dan dukumen yang dibutuhkan master_sertifikasi_dokumens (cek juga apakah semua dokumen sudah terupload)
@@ -96,26 +106,27 @@ class SertifikasiPermohonanController extends Controller
             $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumens", "sis_pelanggan_pabriks"])->find($custID)->first();
 
             // 2
-            $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumens.master_jenis_dok_perusahaan')->findOrFail($request['jenis_sertifikasi']);
-            $uploadedDocID         = [];
-            $requiredDocID         = [];
-            foreach ($dataSisPelanggan->sis_pelanggan_dokumens as $dokumen) {
-                array_push($uploadedDocID, $dokumen->jenis_dok_perusahaan_id);
-            }
-            foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumens as $dms) {
-                array_push($requiredDocID, $dms->jenis_dok_perusahaan_id);
-                if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new Exception(sprintf("Dokumen %s belum di unggah", $dataMasterSertifiaksi->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
+            foreach ($dataSubmission as $submission) {
+                $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumens.master_jenis_dok_perusahaan')->findOrFail($submission['sertifikat']->jenis_sertifikasi_id);
+                $uploadedDocID         = [];
+                $requiredDocID         = [];
+
+                foreach ($dataSisPelanggan->sis_pelanggan_dokumens as $dokumen) {
+                    array_push($uploadedDocID, $dokumen->jenis_dok_perusahaan_id);
+                }
+                foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumens as $dms) {
+                    array_push($requiredDocID, $dms->jenis_dok_perusahaan_id);
+                    if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new Exception(sprintf("Dokumen %s belum di unggah", $dms->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
+                }
+
+                if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($submission['sertifikat']->komoditas)) throw new Exception("Data komoditas belum di inputkan", 400);
             }
 
-            if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($request['data_komoditas'])) throw new Exception("Data komoditas belum di inputkan", 400);
 
             // 3.1 add sis_permohonan
             $newSisPermohonan                                  = new SisPermohonan();
             $newSisPermohonan->cust_id                         = $dataSisPelanggan->cust_id;
             $newSisPermohonan->user_id                         = $dataSisPelanggan->user_id;
-            $newSisPermohonan->sert_id                         = $request['jenis_sertifikasi'];
-            $newSisPermohonan->mohon_jenis_status              = $request['jenis_permohonan'];
-            $newSisPermohonan->cust_sert_id                    = $request['sertifikat_lama_id'];
             $newSisPermohonan->mohon_cust_email                = $dataSisPelanggan->cust_email;
             $newSisPermohonan->mohon_cust_nomor_telp           = $dataSisPelanggan->cust_nomor_telp;
             $newSisPermohonan->mohon_cust_nomor_fax            = $dataSisPelanggan->cust_nomor_fax;
@@ -150,6 +161,35 @@ class SertifikasiPermohonanController extends Controller
             $newSisPermohonan->updated_at                      = Carbon::now();
             $newSisPermohonan->save();
 
+            foreach ($dataSubmission as $submission) {
+                // 3.2 add sis_permohonan_detail
+                $newSisPermohonanDetail                         = new SisPermohonanDetail();
+                $newSisPermohonanDetail->mohon_id               = $newSisPermohonan->mohon_id;
+                $newSisPermohonanDetail->mohon_det_jenis_status = $submission['pengajuan']->jenis_pengajuan;
+                $newSisPermohonanDetail->cust_sert_id           = $submission['pengajuan']->sertifikat_lama_id;
+                $newSisPermohonanDetail->sert_id                = $submission['sertifikat']->jenis_sertifikasi_id;
+                $newSisPermohonanDetail->save();
+
+                // 3.3 add sis_permohonan_komoditi
+                if (count($submission['sertifikat']->komoditas) > 0) {
+                    foreach ($submission['sertifikat']->komoditas as $komoditi) {
+                        $newSisPermohonanKomoditas                                                 = new SisPermohonanKomoditi();
+                        $newSisPermohonanKomoditas->mohon_det_id                                   = $newSisPermohonanDetail->mohon_det_id;
+                        $newSisPermohonanKomoditas->komodt_id                                      = $komoditi->komoditi_id;
+                        $newSisPermohonanKomoditas->mohon_kmditi_sni                               = $komoditi->sni;
+                        $newSisPermohonanKomoditas->mohon_kmditi_merk                              = $komoditi->merk;
+                        $newSisPermohonanKomoditas->mohon_kmditi_tipe                              = $komoditi->tipe;
+                        $newSisPermohonanKomoditas->mohon_kmditi_ukuran                            = $komoditi->ukuran;
+                        $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditi->produksi_tahunan;
+                        $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditi->satuan_produksi;
+                        $newSisPermohonanKomoditas->created_at                                     = Carbon::now();
+                        $newSisPermohonanKomoditas->updated_at                                     = Carbon::now();
+                        $newSisPermohonanKomoditas->save();
+                    }
+                }
+            }
+
+
             // DEFINE BASE UPLOAD AND UPDATE mohon_pertanyaan_filepath
             $baseFileUpload     = sprintf(config("app.path_file_pengajuan"), $newSisPermohonan->mohon_id);
             $filePertanyaan     = $request->file('pertanyaan_tambahan');
@@ -160,7 +200,7 @@ class SertifikasiPermohonanController extends Controller
             $newSisPermohonan->mohon_pertanyaan_filepath = $filePertanyaanPath;
             $newSisPermohonan->save();
 
-            // 3.2 add sis_permohonan_pabrik
+            // 3.4 add sis_permohonan_pabrik
             if (!empty($dataSisPelanggan?->sis_pelanggan_pabriks)) {
                 foreach ($dataSisPelanggan?->sis_pelanggan_pabriks as $pabrik) {
                     $newSisPermohonanPabrik                               = new SisPermohonanPabrik();
@@ -185,7 +225,7 @@ class SertifikasiPermohonanController extends Controller
                 }
             }
 
-            // 3.3 add sis_permohonan_dokumens
+            // 3.5 add sis_permohonan_dokumens
             if (!empty($dataSisPelanggan?->sis_pelanggan_dokumens)) {
                 foreach ($dataSisPelanggan?->sis_pelanggan_dokumens as $dokumen) {
                     if (in_array($dokumen->jenis_dok_perusahaan_id, $requiredDocID)) {
@@ -211,25 +251,6 @@ class SertifikasiPermohonanController extends Controller
                         $newSisPermohonanDokumen->updated_at              = Carbon::now();
                         $newSisPermohonanDokumen->save();
                     }
-                }
-            }
-
-            // 3.4 add sis_permohonan_komoditi
-            $dataKomoditas = json_decode($request['data_komoditas']);
-            if (!empty($dataKomoditas)) {
-                foreach ($dataKomoditas as $komoditi) {
-                    $newSisPermohonanKomoditas                                                 = new SisPermohonanKomoditi();
-                    $newSisPermohonanKomoditas->mohon_id                                       = $newSisPermohonan->mohon_id;
-                    $newSisPermohonanKomoditas->komodt_id                                      = $komoditi->komoditi_id;
-                    $newSisPermohonanKomoditas->mohon_kmditi_sni                               = $komoditi->sni;
-                    $newSisPermohonanKomoditas->mohon_kmditi_merk                              = $komoditi->merk;
-                    $newSisPermohonanKomoditas->mohon_kmditi_tipe                              = $komoditi->tipe;
-                    $newSisPermohonanKomoditas->mohon_kmditi_ukuran                            = $komoditi->ukuran;
-                    $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditi->produksi_tahunan;
-                    $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditi->satuan_produksi;
-                    $newSisPermohonanKomoditas->created_at                                     = Carbon::now();
-                    $newSisPermohonanKomoditas->updated_at                                     = Carbon::now();
-                    $newSisPermohonanKomoditas->save();
                 }
             }
 
@@ -278,7 +299,7 @@ class SertifikasiPermohonanController extends Controller
                 @unlink($delPath);
             }
 
-            return responseJSON(500, null, $e->getMessage());
+            return responseJSON(500, null, $e->getMessage() . $e->getLine());
         }
     }
 
