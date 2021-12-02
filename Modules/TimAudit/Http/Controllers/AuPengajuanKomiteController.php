@@ -4,6 +4,9 @@ namespace Modules\TimAudit\Http\Controllers;
 
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisAuditLapLengkap;
+use App\Models\BbkkpSis\SisJadwalAudit;
+use App\Models\BbkkpSis\SisJadwalLog;
+use App\Models\BbkkpSis\SisAuditLks;
 
 use App\Http\Structs\BreadcrumbsStruct;
 use Exception;
@@ -38,6 +41,8 @@ class AuPengajuanKomiteController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'detail-audit' => $this->detail_audit($request),
+            'lap-ringkas' => $this->detail_lap_ringkas($request),
+            'lap-lengkap' => $this->detail_lap_lengkap($request),
             default         => null,
         };
     }

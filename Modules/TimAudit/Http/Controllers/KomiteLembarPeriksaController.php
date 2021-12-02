@@ -126,13 +126,6 @@ class KomiteLembarPeriksaController extends Controller
 
     private function edit_lihat_rekomendasi(Request $request)
 	{
-		$breadcrumbs = [
-            new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Komite', url($this->url)),
-            new BreadcrumbsStruct('Lembar Periksa', url($this->url)),
-            new BreadcrumbsStruct('Isi Rekomendasi'),
-        ];
-
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
@@ -204,7 +197,6 @@ class KomiteLembarPeriksaController extends Controller
         $parser = [
 			'module' => $this->module,
 			'url' => $this->url,
-			'breadcrumbs' => $breadcrumbs,
 			'dataJadwal' => $dataJadwal->get()[0],
 			'dataMohon' => $dataMohon->get(),
 			'dataThp1' => $dataThp1->get(),
