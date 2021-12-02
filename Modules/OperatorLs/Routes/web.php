@@ -20,6 +20,7 @@ use Modules\OperatorLs\Http\Controllers\SertifikatUjiController;
 use Modules\OperatorLs\Http\Controllers\TimController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanTahap1Controller;
 use Modules\OperatorLs\Http\Controllers\UploadKajianPermohonanController;
+use Modules\OperatorLs\Http\Controllers\PenjadwalanPencabutanController;
 
 Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
@@ -92,4 +93,16 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::get('/edit', [SertifikatUjiController::class, 'edit']);
         Route::post('/update', [SertifikatUjiController::class, 'update']);
     });
+	
+	Route::prefix("jadwal-pencabutan")->group(function () {
+        Route::get('/', [PenjadwalanPencabutanController::class, 'index']);
+        Route::get('/detail', [PenjadwalanPencabutanController::class, 'detail']);
+        Route::get('/ajax', [PenjadwalanPencabutanController::class, 'ajax']);
+        Route::get('/create', [PenjadwalanPencabutanController::class, 'create']);
+        Route::post('/store', [PenjadwalanPencabutanController::class, 'store']);
+        Route::get('/edit', [PenjadwalanPencabutanController::class, 'edit']);
+        Route::post('/update', [PenjadwalanPencabutanController::class, 'update']);
+        Route::delete('/delete', [PenjadwalanPencabutanController::class, 'destroy']);
+    });
+	
 });

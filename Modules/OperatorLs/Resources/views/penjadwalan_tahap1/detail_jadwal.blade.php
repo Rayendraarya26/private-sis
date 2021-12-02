@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Penyusunan Komite')
+@section('title', 'Detail Penjadwalan Tahap 1')
 
 @section('content')
     <div class="dt-content">

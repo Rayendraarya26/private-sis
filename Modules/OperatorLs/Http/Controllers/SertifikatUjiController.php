@@ -65,11 +65,10 @@ class SertifikatUjiController extends Controller
         $data->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
-
         $data->where('sis_jadwal_audit.jadw_id', '=', $request['jadw_id']);
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
-        #$data->where('master_sertifikasi.sert_is_product', '=', 'ya');
+		// $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
+        // $data->where('master_sertifikasi.sert_is_product', '=', 'ya');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -108,13 +107,25 @@ class SertifikatUjiController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+        $data->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
+        $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
+
+        // Filter
+        $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        // tambah jika not null file jadwal
-        $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
+        $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
+        $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ketua');
+        // $data->where('sis_jadwal.jadw_setujui_temuan', '=', 'setuju');
+        $data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
+		
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				if($f->field == 'jadw_id')
+					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+				else
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -122,19 +133,18 @@ class SertifikatUjiController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
+                if($sort[$i] == 'jadw_id')
+					$data->orderBy('sis_jadwal.jadw_id', $order[$i]);
+				else
+					$data->orderBy($sort[$i], $order[$i]);
             }
         }
 
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
-        $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
+        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_status_komite) AS status_komite");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'submited', 1, 0)) as total_submit_komite");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
-        $data->selectRaw("COUNT(DISTINCT sis_jadwal_audit.jadw_audit_id) as total_audit");
         $data->groupBy('sis_jadwal.jadw_id');
-        $data->havingRaw('total_submit_komite = total_audit');
-        $data->havingRaw('total_audit <= total_proses');
 
         $result = [];
         foreach ($data->get() as $d) {

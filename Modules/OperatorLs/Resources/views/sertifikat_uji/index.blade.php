@@ -36,7 +36,7 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: true,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -69,7 +69,6 @@
                 columns: [[
 					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
