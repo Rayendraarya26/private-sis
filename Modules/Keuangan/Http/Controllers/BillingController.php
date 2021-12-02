@@ -2,23 +2,20 @@
 
 namespace Modules\Keuangan\Http\Controllers;
 
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisBilling;
 use App\Models\BbkkpSis\SisBillingItems;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanStatus;
-
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class BillingController extends Controller
@@ -125,7 +122,7 @@ class BillingController extends Controller
             $x['itms_bil_total'] = $d->itms_bil_total;
             $x['itms_bil_tipe']  = $d->itms_bil_tipe;
             $x['itms_bil_desc']  = $d->itms_bil_desc;
-            $x['mohon_det_id'] = $d->mohon_det_id;
+            $x['mohon_det_id']   = $d->mohon_det_id;
             $x['cust_sert_id']   = $d->cust_sert_id;
             $x['is_new']         = false;
             $x['tipe']           = 'data-billing';
@@ -163,17 +160,17 @@ class BillingController extends Controller
     private function ajax_combogrid_permohonan(Request $request)
     {
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('mohon_approved_status', '=', 'accepted')
-		->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')
-        ->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya')
-        ->where('mohon_tagihan_biaya_status', '=', 'setuju')
-        ->whereNotNull('mohon_pernyataan_persetujuan_file')
-		->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
-			$query->select('mohon_det_id')->from('sis_jadwal_audit')->where('cust_id', '=', $request->cust_id)->groupBy('mohon_det_id');
-		})
-        ->where('cust_id', '=', $request->cust_id);
+            ->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')
+            ->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya')
+            ->where('mohon_tagihan_biaya_status', '=', 'setuju')
+            ->whereNotNull('mohon_pernyataan_persetujuan_file')
+            ->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
+                $query->select('mohon_det_id')->from('sis_jadwal_audit')->where('cust_id', '=', $request->cust_id)->groupBy('mohon_det_id');
+            })
+            ->where('cust_id', '=', $request->cust_id);
 
         if ($request->jenis_status == 're-sertifikasi') {
             $data->where('mohon_det_jenis_status', '=', 'lama');
@@ -197,7 +194,7 @@ class BillingController extends Controller
             $x['nama']                     = $d->sert_nama;
             $x['cust_sert_id']             = $d->cust_sert_id;
             $x['mohon_id']                 = $d->mohon_id;
-            $x['mohon_det_id']                 = $d->mohon_det_id;
+            $x['mohon_det_id']             = $d->mohon_det_id;
             $x['cust_id']                  = $d->cust_id;
             $x['user_id']                  = $d->user_id;
             $x['sert_id']                  = $d->sert_id;
@@ -319,19 +316,19 @@ class BillingController extends Controller
             // add billing items
             $dataItems   = json_decode($request['data_billing_item']);
             $harus_lunas = 'ya';
-            $bil_total = 0;
-            $mohon_data = [];
+            $bil_total   = 0;
+            $mohon_data  = [];
             foreach ($dataItems as $itm) {
                 $cust_sert_id = null;
-                $mohon_id = null;
+                $mohon_id     = null;
                 $mohon_det_id = null;
 
                 if (!is_null($itm->mohon_id) && $itm->bil_tipe != 'surveilans') {
-                    $mohon_id = $itm->mohon_id;
+                    $mohon_id     = $itm->mohon_id;
                     $mohon_det_id = $itm->mohon_det_id;
-					if (in_array($mohon_id, $mohon_data)) {
-						$mohon_data[] = $mohon_id;
-					}
+                    if (in_array($mohon_id, $mohon_data)) {
+                        $mohon_data[] = $mohon_id;
+                    }
                 } else if (!is_null($itm->mohon_id) && $itm->bil_tipe == 'surveilans') {
                     $cust_sert_id = $itm->mohon_id;
                 }
@@ -340,56 +337,56 @@ class BillingController extends Controller
                 $newSisBillingItems->bill_id        = $newSisBilling->bill_id;
                 $newSisBillingItems->itms_bil_tipe  = $itm->bil_tipe;
                 $newSisBillingItems->mohon_id       = $mohon_id;
-                $newSisBillingItems->mohon_det_id       = $mohon_det_id;
+                $newSisBillingItems->mohon_det_id   = $mohon_det_id;
                 $newSisBillingItems->cust_sert_id   = $cust_sert_id;
                 $newSisBillingItems->itms_bil_desc  = $itm->bil_desc;
                 $newSisBillingItems->itms_bil_total = $itm->bil_total;
                 $newSisBillingItems->created_at     = Carbon::now();
                 $newSisBillingItems->updated_at     = Carbon::now();
                 $newSisBillingItems->save();
-				
-				$bil_total = $bil_total + $itm->bil_total;
+
+                $bil_total = $bil_total + $itm->bil_total;
             }
-			
-			if(!empty($mohon_data)){
-				foreach($mohon_data as $dt){
-					SisPermohonanStatus::create([
-						"status_mohon_id" => $dt,
-						"status_tipe"     => "informasi",
-						"status_judul"    => "Informasi Pengajuan",
-						"status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada billing, silahkan lihat pada menu Billing anda.", $dt),
-						"created_at"      => Carbon::now(),
-						"updated_at"      => Carbon::now(),
-					]);
-				}
-			}
-			
-			
+
+            if(!empty($mohon_data)){
+                foreach($mohon_data as $dt){
+                    SisPermohonanStatus::create([
+                        "status_mohon_id" => $dt,
+                        "status_tipe"     => "informasi",
+                        "status_judul"    => "Informasi Pengajuan",
+                        "status_pesan"    => sprintf("Permohonan dengan nomor #%s telah diinputkan pada billing, silahkan lihat pada menu Billing anda.", $dt),
+                        "created_at"      => Carbon::now(),
+                        "updated_at"      => Carbon::now(),
+                    ]);
+                }
+            }
+
+
             $newSisBilling->bill_harus_lunas = $harus_lunas;
             $newSisBilling->save();
 
             DB::commit();
-			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
-			// Send Push
-			$notifStruct            = new NotifStruct();
-			$notifStruct->title     = 'Billing Invoice';
-			$notifStruct->message   = sprintf("Billing dengan nomor %s telah terbit, silahkan lakukan pembayaran dan konfirmasi ke sistem.", $request['bill_nomor_billing']);
-			$notifStruct->user_id   = $data_pelanggan?->user_id;
-			$notifStruct->click_url = url('/pelanggan/billing');
-			sendNotification($notifStruct);
+            $data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+            // Send Push
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = 'Billing Invoice';
+            $notifStruct->message   = sprintf("Billing dengan nomor %s telah terbit, silahkan lakukan pembayaran dan konfirmasi ke sistem.", $request['bill_nomor_billing']);
+            $notifStruct->user_id   = $data_pelanggan?->user_id;
+            $notifStruct->click_url = url('/pelanggan/billing');
+            sendNotification($notifStruct);
 
-			// Send Email
-			$structEmail          = new EmailStruct();
-			$structEmail->subject = "Billing Invoice";
-			$structEmail->body    = view('keuangan::billing.mails.publish')
-				->with([
-					'nama'       => $data_pelanggan?->cust_nama,
-					'message'       => sprintf("Billing dengan nomor %s telah terbit dengan total biaya Rp. %s, silahkan lakukan pembayaran dan konfirmasi ke sistem.", $request['bill_nomor_billing'], $bil_total);
-					'link_verif'        => url('/pelanggan/billing'),
-				])->render();
-			$structEmail->to      = $data_pelanggan?->cust_email;
-			sendEmail($structEmail);
-			
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = "Billing Invoice";
+            $structEmail->body    = view('keuangan::billing.mails.publish')
+                ->with([
+                    'nama'       => $data_pelanggan?->cust_nama,
+                    'message'    => sprintf("Billing dengan nomor %s telah terbit dengan total biaya Rp. %s, silahkan lakukan pembayaran dan konfirmasi ke sistem.", $request['bill_nomor_billing'], $bil_total),
+                    'link_verif' => url('/pelanggan/billing'),
+                ])->render();
+            $structEmail->to      = $data_pelanggan?->cust_email;
+            sendEmail($structEmail);
+
             return responseJSON(200, null, "Data billing berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
@@ -422,9 +419,9 @@ class BillingController extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
-            'data'       => $this->edit_data($request),
-            'pelunasan'  => $this->edit_pelunasan($request),
-            default      => null,
+            'data'      => $this->edit_data($request),
+            'pelunasan' => $this->edit_pelunasan($request),
+            default     => null,
         };
     }
 

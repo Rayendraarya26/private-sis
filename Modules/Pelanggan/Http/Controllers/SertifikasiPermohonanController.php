@@ -453,13 +453,13 @@ class SertifikasiPermohonanController extends Controller
     public function detail($mohonID)
     {
         $dataPemohon = SisPermohonan::with([
-            'sis_pelanggan_sertifikasi',
+            'sis_pelanggan_sertifikasis',
+            'sis_permohonan_details.master_sertifikasi',
+            'sis_permohonan_details.sis_permohonan_komoditis.master_komoditi',
             'sis_permohonan_dokumens.master_jenis_dok_perusahaan',
-            'sis_permohonan_komoditis.master_komoditi',
             'sis_permohonan_pabriks.master_kabupaten',
             'sis_permohonan_pabriks.master_kecamatan',
             'sis_permohonan_pabriks.master_provinsi',
-            'master_sertifikasi',
             'master_jenis_perusahaan',
             'master_badan_hukum',
             'master_negara',

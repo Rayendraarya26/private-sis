@@ -137,7 +137,7 @@
                     {
                         field: 'permohonan',
                         title: 'Data Permohonan',
-                        width: 200,
+                        width: 400,
                         sortable: false,
                         formatter: function (val, row) {
                             if (val != null) {
