@@ -55,25 +55,10 @@
                                 // Step 1
                                 const dataPengajuan = window.vueStepOne.data_pengajuan;
                                 formData.append("data_pengajuan", JSON.stringify(dataPengajuan))
-                                // const dataPermohonan = window.vueStepOne.data_pengajuan;
-                                // const dataSertifikat = window.vueStepOne.sertifikat_lama_id;
-                                // formData.append("jenis_permohonan", dataPermohonan)
-                                // if (dataPermohonan == "lama") {
-                                //     formData.append("sertifikat_lama_id", dataSertifikat)
-                                // }
 
                                 // Step 2
                                 const dataSertifikasi = window.vueStepTwo.data_sertifikat;
                                 formData.append("data_sertifikat", JSON.stringify(dataSertifikasi))
-                                // for (let i = 1; i <= window.vueStepTwo.total_pengajuan; i++) {
-                                //     const dataSertifikasi = window.vueStepTwo.index_setting_sertifikasi[i].jenis_sertifikasi_data;
-                                //     const dataKomoditas   = _.compact(window.vueStepTwo.komoditas);
-                                //     formData.append("jenis_sertifikasi[]", dataSertifikasi.sert_id)
-                                //     if (dataKomoditas.length > 0) {
-                                //         formData.append("data_komoditas", JSON.stringify(dataKomoditas))
-                                //     }
-                                // }
-
 
                                 // Step 3
                                 const dataPertanyaanTambahan = document.querySelector("#step3_pertanyaan_tambahan").files[0];
@@ -95,9 +80,8 @@
                                             title: res.message
                                         })
 
-                                        // await window.idb.pelanggan_permohonan.clear();
-                                        // await window.idb.pelanggan_permohonan_komoditas.clear();
-                                        {{--setTimeout(() => location.href = "{{url("$url")}}", 1000)--}}
+                                        await window.idb.pelanggan_permohonan.clear();
+                                        setTimeout(() => location.href = "{{url("$url")}}", 1000)
                                     },
                                     error: function (xhr) {
                                         self.loading_submit = false;

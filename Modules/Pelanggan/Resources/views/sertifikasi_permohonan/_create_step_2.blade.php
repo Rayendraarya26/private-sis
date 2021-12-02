@@ -31,9 +31,10 @@
                        class="form-control"
                        style="width: 100%">
                 <div style="text-align: center">
-                    <small v-if="window.vueStepOne.jenis_pengajuan == 'lama'">
-                        <i>Anda mengakukan Re-Sertifikasi <br> @{{ window.vueStepOne.sertifikat_lama_text }}</i>
+                    <small v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'lama'">
+                        <i>Re-Sertifikasi @{{ window.vueStepOne.data_pengajuan[idx].sertifikat_lama_text }}</i>
                     </small>
+                    <small v-else><i>Sertifikasi baru</i></small>
                 </div>
             </div>
         </div>
@@ -284,26 +285,15 @@
                         }, 500)
                     },
                     validate() {
-                        this.data_sertifikat.map(e => {
+                        this.data_sertifikat.map((e, idx) => {
                             if (e.jenis_sertifikasi_id == null) throw "Pilih Jenis Sertifikasi"
-                            if (e.jenis_sertifikasi_is_product === "ya" && e.komoditas.length === 0) throw "Mohon lengkapi data komoditas";
+                            if (e.jenis_sertifikasi_is_product === "ya" && e.komoditas.length === 0) throw `Pengajuan ${idx + 1}: Mohon lengkapi data komoditas`;
 
                             // validasi dokumen
                             e.dokumens.map(dok => {
                                 if (dok.my_document == null) throw `Upload ${dok.dt_name}`
                             })
                         })
-                        // for (let i = 1; i <= this.total_pengajuan; i++) {
-                        //     if (this.data_sertifikat[i].jenis_sertifikasi_id == null) throw "Pilih Jenis Sertifikasi"
-                        //
-                        //     this.data_sertifikat[i].map(e => {
-                        //         if (e.my_document == null) throw `Upload ${e.dt_name}`
-                        //     })
-                        //
-                        //     if (this.data_sertifikat[i].jenis_sertifikasi_is_product === "ya") {
-                        //         if (this.komoditas[i].length === 0) throw "Mohon lengkapi data komoditas"
-                        //     }
-                        // }
                     },
                     async pengajuanAdd() {
                         this.data_sertifikat.push({
@@ -428,7 +418,7 @@
 
                             await idb.pelanggan_permohonan.update(dataPermohonanIDB.id, dataPermohonanIDB);
                             this.data_sertifikat[pengajuanIndex].komoditas = dataPermohonanIDB.step2.komoditas;
-                            // await this.resetFormKomoditas(pengajuanIndex);
+                            await this.resetFormKomoditas(pengajuanIndex);
                         } catch (message) {
                             swalWithBootstrapButtons({
                                 title: `Validasi Komoditas`,

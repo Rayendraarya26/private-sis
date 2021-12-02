@@ -135,20 +135,23 @@
                         }
                     },
                     {
-                        field: 'mohon_jenis_status',
-                        title: 'Jenis Permohonan <br> Sertifikat',
-                        width: 150,
-                        sortable: true,
-                        formatter: function (val) {
-                            switch (val) {
-                                case 'lama':
-                                    return "Lama";
-                                case 'baru':
-                                    return "Baru";
+                        field: 'permohonan',
+                        title: 'Data Permohonan',
+                        width: 200,
+                        sortable: false,
+                        formatter: function (val, row) {
+                            if (val != null) {
+                                if (val.length > 0) {
+                                    let htmls = "<ul>";
+                                    val.map(e => {
+                                        htmls += `<li>${e.sert_nama} <br><i>${e.mohon_det_jenis_status}</i></li>`
+                                    })
+                                    htmls += "</ul>"
+                                    return htmls
+                                }
                             }
-                        }
+                        },
                     },
-                    {field: 'sert_nama', title: 'Nama Sertifikasi', width: 220, sortable: true},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 220, sortable: true},
                 ]],
                 onBeforeLoad: function () {
@@ -171,6 +174,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'permohonan', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
                     {
                         field: 'mohon_approved_status',
@@ -188,27 +192,6 @@
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
                                     field: 'mohon_approved_status',
-                                    op: 'equal',
-                                    value: value
-                                });
-
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
-                    {
-                        field: 'mohon_jenis_status',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            data: [
-                                {value: '', text: 'Semua'},
-                                {value: 'lama', text: 'Lama'},
-                                {value: 'baru', text: 'Baru'}
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'mohon_jenis_status',
                                     op: 'equal',
                                     value: value
                                 });

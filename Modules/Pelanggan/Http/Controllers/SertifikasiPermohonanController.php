@@ -555,7 +555,7 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_datagrid(Request $request)
     {
-        $data = SisPermohonan::join('master_sertifikasi', "sis_permohonan.sert_id", "=", "master_sertifikasi.sert_id")
+        $data = SisPermohonan::with(['sis_permohonan_details.master_sertifikasi'])
             ->with([
                 "sis_permohonan_statuses" => function ($query) {
                     $query->where("status_tipe", "revisi");
@@ -578,7 +578,7 @@ class SertifikasiPermohonanController extends Controller
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;
         // Pagination
-        $data->select("sis_permohonan.*", "master_sertifikasi.sert_nama", "master_sertifikasi.sert_id")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("sis_permohonan.*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
         // Result
         $result = [];
@@ -590,6 +590,13 @@ class SertifikasiPermohonanController extends Controller
                     'status_judul' => $rev->status_judul,
                     'status_pesan' => $rev->status_pesan,
                     'created_at'   => $rev->created_at?->isoFormat('LLLL'),
+                ]);
+            }
+            $dtPermohonan = [];
+            foreach ($d->sis_permohonan_details as $detail) {
+                array_push($dtPermohonan, [
+                    'mohon_det_jenis_status' => $detail->mohon_det_jenis_status == "lama" ? "Re-Sertifikasi" : "Pemohonan Baru",
+                    'sert_nama'              => $detail->master_sertifikasi->sert_nama,
                 ]);
             }
 
@@ -604,6 +611,7 @@ class SertifikasiPermohonanController extends Controller
             $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']             = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['revisi']                = $dtRevisi;
+            $x['permohonan']            = $dtPermohonan;
             array_push($result, $x);
         }
 
