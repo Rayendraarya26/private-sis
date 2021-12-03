@@ -260,26 +260,29 @@
                                     }
                                 }
 
-                                await this.setComboDataSertifikasi(idx) // set easyui
+                                setTimeout(async () => {
+                                    await this.setComboDataSertifikasi(idx) // set easyui
 
-                                if (pengajuan.jenis_pengajuan == "lama") {
-                                    let row = {
-                                        sert_id: pengajuan.master_sertifikat_id,
-                                        sert_nama: pengajuan.master_sertifikat_text,
-                                        sert_is_product: pengajuan.master_sertifikat_is_product,
-                                    }
-                                    await this.comboDataSertifikasiOnSelect(idx, row) // set default value
-                                } else {
-                                    let dataPermohonanIDB = await idb.pelanggan_permohonan.where({'name': 'jenis_permohonan_' + idx}).first();
-                                    if (dataPermohonanIDB.step2.jenis_sertifikasi != null) {
+                                    if (pengajuan.jenis_pengajuan == "lama") {
                                         let row = {
-                                            sert_id: dataPermohonanIDB.step2.jenis_sertifikasi.sert_id,
-                                            sert_nama: dataPermohonanIDB.step2.jenis_sertifikasi.sert_nama,
-                                            sert_is_product: dataPermohonanIDB.step2.jenis_sertifikasi.sert_is_product,
+                                            sert_id: pengajuan.master_sertifikat_id,
+                                            sert_nama: pengajuan.master_sertifikat_text,
+                                            sert_is_product: pengajuan.master_sertifikat_is_product,
                                         }
                                         await this.comboDataSertifikasiOnSelect(idx, row) // set default value
+                                    } else {
+                                        let dataPermohonanIDB = await idb.pelanggan_permohonan.where({'name': 'jenis_permohonan_' + idx}).first();
+                                        if (dataPermohonanIDB.step2.jenis_sertifikasi != null) {
+                                            let row = {
+                                                sert_id: dataPermohonanIDB.step2.jenis_sertifikasi.sert_id,
+                                                sert_nama: dataPermohonanIDB.step2.jenis_sertifikasi.sert_nama,
+                                                sert_is_product: dataPermohonanIDB.step2.jenis_sertifikasi.sert_is_product,
+                                            }
+                                            await this.comboDataSertifikasiOnSelect(idx, row) // set default value
+                                        }
                                     }
-                                }
+                                }, 1000)
+
                             })
 
                             setTimeout(() => $(".tab-content").height("100%"), 1500);

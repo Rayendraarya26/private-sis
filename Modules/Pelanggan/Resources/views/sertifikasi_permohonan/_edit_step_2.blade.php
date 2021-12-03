@@ -251,17 +251,16 @@
                                 this.data_sertifikat[idx].komoditas                    = pengajuan.data_komoditas
 
 
-                                setTimeout(() => {
+                                setTimeout(async () => {
                                     this.setComboDataSertifikasi(idx) // set easyui
+
+                                    let row = {
+                                        sert_id: pengajuan.master_sertifikat_id,
+                                        sert_nama: pengajuan.master_sertifikat_text,
+                                        sert_is_product: pengajuan.master_sertifikat_is_product,
+                                    }
+                                    await this.comboDataSertifikasiOnSelect(idx, row) // set default value
                                 }, 1000)
-
-
-                                let row = {
-                                    sert_id: pengajuan.master_sertifikat_id,
-                                    sert_nama: pengajuan.master_sertifikat_text,
-                                    sert_is_product: pengajuan.master_sertifikat_is_product,
-                                }
-                                await this.comboDataSertifikasiOnSelect(idx, row) // set default value
                             })
 
                             setTimeout(() => $(".tab-content").height("100%"), 1500);

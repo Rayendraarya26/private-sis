@@ -134,6 +134,7 @@
                             }
                         }
                     },
+                    {field: 'mohon_id', title: '#No<br>Pengajuan', width: 100, sortable: true, align: "center"},
                     {
                         field: 'permohonan',
                         title: 'Data Permohonan',
@@ -212,7 +213,7 @@
 
             swalWithBootstrapButtons({
                 title: `Hapus Permohonan ?`,
-                text: `Menghapus permohonan untuk sertifikat "${nama}" bersifat permanen dan tidak dapat di kembalikan`,
+                text: `Menghapus permohonan untuk sertifikat dengan no pengajuan "${id}" bersifat permanen dan tidak dapat di kembalikan`,
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Hapus',
@@ -221,7 +222,7 @@
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        url: `{{url("$url/temuan/{jadw_id}/delete/{lks_id}")}}`,
+                        url: `{{url("$url/delete")}}`,
                         type: 'DELETE',
                         dataType: 'json',
                         data: {mohon_id: id},
