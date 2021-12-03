@@ -78,20 +78,22 @@ class PersetujuanTimAuditController extends Controller
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+        $dataKomite->groupBy('sis_jadwal.jadw_id');
 
         foreach ($data->get() as $d) {
-            $x['jadw_status']              = 'tahap-2';
-            $x['jadw_id']                  = $d->jadw_id;
-            $x['jadw_tanggal_mulai']       = $d->jadw_tanggal_mulai;
-            $x['jadw_tanggal_selesai']     = $d->jadw_tanggal_selesai;
-            $x['cust_nama']                = $d->cust_nama;
-            $x['sert_nama']                = $d->sert_nama;
-            $x['jadw_jenis']               = $d->jadw_jenis;
-            $x['jadw_audit_jenis']         = $d->jadw_audit_jenis;
-            $x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
-            $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
-            // $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
-            array_push($result, $x);
+			if($d->jadw_id != ''){
+				$x['jadw_status']              = 'tahap-2';
+				$x['jadw_id']                  = $d->jadw_id;
+				$x['jadw_tanggal_mulai']       = $d->jadw_tanggal_mulai;
+				$x['jadw_tanggal_selesai']     = $d->jadw_tanggal_selesai;
+				$x['cust_nama']                = $d->cust_nama;
+				$x['sert_nama']                = $d->sert_nama;
+				$x['jadw_jenis']               = $d->jadw_jenis;
+				$x['jadw_audit_jenis']         = $d->jadw_audit_jenis;
+				$x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
+				$x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
+				array_push($result, $x);
+			}
         }
 
         // Tahap 1
