@@ -47,23 +47,14 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
-                        width: 80,
+                        title: "",
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;			
-							btnEdit += `<div data-options="iconCls:'fas fa-handshake'" onclick="location.href = '{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_audit_jenis}'">Persetujuan</div>`;
+							btnEdit += `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-handshake"></i> Persetujuan</a>`;
 							
-                            return `
-								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
-										<i class="fa fa-setting"></i> Aksi
-									</button>
-									<div id="${dom}" style="width:150px; display: none;">
-										@if(authorized("{$module}@edit")) ${btnEdit} @endif
-								</div>
-							</div>`
+                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
                         }
                     }
                 ]],
@@ -76,22 +67,6 @@
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
-				onBeforeLoad: function () {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        try {
-                            $(this).menubutton('destroy');
-                        } catch (e) {
-                            console.log('failed destroy');
-                        }
-                    });
-                },
-                onLoadSuccess: function (data) {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
-                        });
-                    });
-                },
             });
             dg.datagrid(
                 'enableFilter', [

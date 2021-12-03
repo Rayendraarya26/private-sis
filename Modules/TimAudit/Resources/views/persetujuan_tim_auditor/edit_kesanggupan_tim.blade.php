@@ -37,10 +37,36 @@
 						</div>
 						<div class="dt-card__body">
 							<div id="vueKesanggupan">
+							@if($jenis == 'komite')
+								<p>
+								Kepada Yth:
+								<br/>
+								1. {{$dataJadwal->peg_nama}} (<b>{{$dataJadwal->jadw_tim_posisi}}</b>)
+								<br/><br/>
+								Mohon untuk bisa dilakukan review dan evaluasi terhadap kecukupan dokumen sertifikasi guna Penetapan :
+								<br/>
+								{{$dataJadwal->sert_nama}}
+								<br/>
+								atas nama :
+								<br/>
+								<h4 style="text-align:center;">{{$dataJadwal->cust_nama}}</h4>
+								
+								<div class="form-group custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" name="ck_agreement" id="ck_agreement" aria-label="sanggup" v-model="agreement">
+									<label class="custom-control-label" for="ck_agreement">Saya menyatakan  sanggup *).</label>
+								</div>
+								</p>
+							@else
 								<p>
 								Kami menunjuk Saudara menjadi <b>{{$dataJadwal->jadw_tim_posisi}}</b> *)<br/>
-								Saya menyatakan <input type="checkbox" name="ck_agreement" id="ck_agreement" aria-label="sanggup" v-model="agreement"> <b>sanggup</b> *) ditunjuk sebagai Tim Audit/PPC/TAT *)<br/>Saya menyatakan pernah melakukan/tidak pernah melakukan *) layanan konsultansi sistem manajemen terhadap perusahaan ini dalam 2 (dua) tahun terakhir.
+								<div class="form-group custom-control custom-checkbox">
+									<input type="checkbox" class="custom-control-input" name="ck_agreement" id="ck_agreement" aria-label="sanggup" v-model="agreement">
+									<label class="custom-control-label" for="ck_agreement">Saya menyatakan  sanggup *) ditunjuk sebagai Tim Audit/PPC/TAT *)<br/>Saya menyatakan pernah melakukan/tidak pernah melakukan *) layanan konsultansi sistem manajemen terhadap perusahaan ini dalam 2 (dua) tahun terakhir..</label>
+								</div>
 								</p>
+							@endif
+							
+								
 								<div style="padding-top: 20px">
 									<template v-if="loading_submit">
 										<div class="fa-3x" style="text-align: center">
@@ -99,7 +125,7 @@
                                 formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
                                 formData.append("tipe", `kesanggupan-tim`);
                                 formData.append("peg_id", `{{$dataJadwal->peg_id}}`);
-                                formData.append("jenis", `{{$dataJadwal->jadw_audit_jenis}}`);
+                                formData.append("jenis", `{{$jenis}}`);
 								
                                 this.loading_submit = true;
                                 let self = this;
