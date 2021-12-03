@@ -305,21 +305,24 @@ class SertifikasiPermohonanController extends Controller
 
     public function edit($mohonID)
     {
-        $dataPemohon           = SisPermohonan::with([
-            'sis_pelanggan_sertifikasi',
+        $dataPemohon = SisPermohonan::with([
+            'sis_pelanggan_sertifikasis',
+            'sis_permohonan_details.master_sertifikasi',
+            'sis_permohonan_details.sis_permohonan_komoditis.master_komoditi',
+            'sis_permohonan_details.sis_pelanggan_sertifikasi',
             'sis_permohonan_dokumens.master_jenis_dok_perusahaan',
-            'sis_permohonan_komoditis.master_komoditi',
             'sis_permohonan_pabriks.master_kabupaten',
             'sis_permohonan_pabriks.master_kecamatan',
             'sis_permohonan_pabriks.master_provinsi',
-            'master_sertifikasi',
             'master_jenis_perusahaan',
             'master_badan_hukum',
             'master_negara',
             'master_provinsi',
             'master_kabupaten',
             'master_kecamatan',
-        ])->where("user_id", auth()->id())->findOrFail($mohonID);
+        ])
+            ->where("user_id", auth()->id())->findOrFail($mohonID);
+
         $masterBadanHukum      = MasterBadanHukum::all();
         $masterJenisPerusahaan = MasterJenisPerusahaan::all();
 
@@ -348,8 +351,22 @@ class SertifikasiPermohonanController extends Controller
             $request->validate([
                 "mohon_id"            => 'required|integer',
                 "pertanyaan_tambahan" => 'sometimes|mimetypes:application/pdf',
-                'data_komoditas'      => 'sometimes'
+                'data_pengajuan'      => 'required',
+                'data_sertifikat'     => 'required'
             ]);
+
+            $dataPengajuan   = json_decode($request['data_pengajuan']);
+            $dataSertifikat  = json_decode($request['data_sertifikat']);
+            $totalSubmission = count($dataPengajuan);
+            $dataSubmission  = [];
+            for ($i = 0; $i < $totalSubmission; $i++) {
+                array_push($dataSubmission, [
+                    'pengajuan'  => $dataPengajuan[$i],
+                    'sertifikat' => $dataSertifikat[$i],
+                ]);
+            }
+
+            // dd($dataSubmission);
 
             /* TODO:
              * 1. FIND: data sis_permohonan dengan id mohon_id
@@ -357,31 +374,30 @@ class SertifikasiPermohonanController extends Controller
              * 3. UPDATE: pertanyaan tambahan (jika di upload)
              *  */
 
-            $dataPemohon = SisPermohonan::with(['master_sertifikasi'])
+            $dataPemohon = SisPermohonan::with(['sis_permohonan_details.master_sertifikasi'])
                 ->where('mohon_id', $request['mohon_id'])
                 ->where('cust_id', auth()->user()->sis_pelanggan->cust_id)->first();
 
-            if ($dataPemohon->master_sertifikasi->sert_is_product == "ya") {
-                if (empty($request['data_komoditas'])) throw new Exception("Data komoditas dibutuhkan", 500);
-                $dataKomoditas = json_decode($request['data_komoditas']);
-                SisPermohonanKomoditi::where('mohon_id', $dataPemohon->mohon_id)->delete(); // Delete ROW
-                foreach ($dataKomoditas as $komoditas) {
-                    SisPermohonanKomoditi::firstOrCreate(
-                        [
-                            'komodt_id'                                      => $komoditas->komoditi_id,
-                            'mohon_kmditi_sni'                               => $komoditas->sni,
-                            'mohon_kmditi_merk'                              => $komoditas->merk,
-                            'mohon_kmditi_tipe'                              => $komoditas->tipe,
-                            'mohon_kmditi_ukuran'                            => $komoditas->ukuran,
-                            'mohon_kmditi_kapasitas_produksi_tahunan'        => $komoditas->produksi_tahunan,
-                            'mohon_kmditi_kapasitas_produksi_tahunan_satuan' => $komoditas->satuan_produksi,
-                        ],
-                        [
-                            'mohon_id'   => $dataPemohon->mohon_id,
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]
-                    );
+            // 2
+            foreach ($dataSubmission as $submission) {
+                $mohonDetail = SisPermohonanDetail::with('master_sertifikasi')
+                    ->where('mohon_id', $request['mohon_id'])->findOrFail($submission['sertifikat']->mohon_det_id);
+
+                if ($mohonDetail->master_sertifikasi->sert_is_product == "ya" &&
+                    count($submission['sertifikat']->komoditas) == 0) throw new Exception("Data komoditas dibutuhkan", 500);
+
+                SisPermohonanKomoditi::where('mohon_det_id', $mohonDetail->mohon_det_id)->delete(); // Delete ROW
+                foreach ($submission['sertifikat']->komoditas as $komoditas) {
+                    $newKomoditi                                                 = new SisPermohonanKomoditi();
+                    $newKomoditi->mohon_det_id                                   = $mohonDetail->mohon_det_id;
+                    $newKomoditi->komodt_id                                      = $komoditas->komoditi_id;
+                    $newKomoditi->mohon_kmditi_sni                               = $komoditas->sni;
+                    $newKomoditi->mohon_kmditi_merk                              = $komoditas->merk;
+                    $newKomoditi->mohon_kmditi_tipe                              = $komoditas->tipe;
+                    $newKomoditi->mohon_kmditi_ukuran                            = $komoditas->ukuran;
+                    $newKomoditi->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditas->produksi_tahunan;
+                    $newKomoditi->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditas->satuan_produksi;
+                    $newKomoditi->save();
                 }
             }
 
@@ -417,7 +433,7 @@ class SertifikasiPermohonanController extends Controller
                         // Send Push
                         $notifStruct            = new NotifStruct();
                         $notifStruct->title     = sprintf("Perbaikan permohonan no #%d", $dataPemohon->mohon_id);
-                        $notifStruct->message   = sprintf("%s telah memperbaiki permohonan %s pada sertifikasi", $dataPemohon->mohon_cust_nama, $dataPemohon->master_sertifikasi->sert_nama);
+                        $notifStruct->message   = sprintf("%s telah memperbarui permohonan sertifikasi", $dataPemohon->mohon_cust_nama);
                         $notifStruct->user_id   = $marketing?->ug_user_id;
                         $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
                         sendNotification($notifStruct);
@@ -445,7 +461,7 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            return responseJSON(500, null, $e->getMessage());
+            return responseJSON(500, null, $e->getMessage() . ' | ' . $e->getLine());
         }
 
     }
@@ -467,7 +483,7 @@ class SertifikasiPermohonanController extends Controller
             'master_kabupaten',
             'master_kecamatan',
         ])
-            ->findOrFail($mohonID);
+            ->where("user_id", auth()->id())->findOrFail($mohonID);
 
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),

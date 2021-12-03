@@ -54,20 +54,12 @@
                                 formData.append("mohon_id", {{$dataPemohon->mohon_id}})
 
                                 // Step 1
-                                const dataPermohonan = window.vueStepOne.jenis_pengajuan;
-                                const dataSertifikat = window.vueStepOne.sertifikat_lama_id;
-                                formData.append("jenis_permohonan", dataPermohonan)
-                                if (dataPermohonan == "lama") {
-                                    formData.append("sertifikat_lama_id", dataSertifikat)
-                                }
+                                const dataPengajuan = window.vueStepOne.data_pengajuan;
+                                formData.append("data_pengajuan", JSON.stringify(dataPengajuan))
 
                                 // Step 2
-                                const dataSertifikasi = window.vueStepTwo.jenis_sertifikasi_data;
-                                const dataKomoditas   = window.vueStepTwo.komoditas;
-                                formData.append("jenis_sertifikasi", dataSertifikasi.sert_id)
-                                if (dataSertifikasi.sert_is_product == "ya") {
-                                    formData.append("data_komoditas", JSON.stringify(dataKomoditas))
-                                }
+                                const dataSertifikasi = window.vueStepTwo.data_sertifikat;
+                                formData.append("data_sertifikat", JSON.stringify(dataSertifikasi))
 
                                 // Step 3
                                 const dataPertanyaanTambahan = document.querySelector("#step3_pertanyaan_tambahan").files[0];
@@ -77,8 +69,8 @@
 
 
                                 // Submit Permohonan
-                                this.loading_submit = true;
-                                let self            = this;
+                                // this.loading_submit = true;
+                                let self = this;
                                 $.ajax({
                                     url: `{{action("$module@update")}}`,
                                     type: 'post',

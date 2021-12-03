@@ -198,11 +198,12 @@
                                     <td>@{{ kom.produksi_tahunan }}</td>
                                     <td>@{{ kom.satuan_produksi }}</td>
                                     <td v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">
-                                        <button class="btn btn-xs btn-danger" @click="deleteKomoditi(idx, kom.id)">
-                                            <i class="fad fa-trash"></i> Hapus
-                                        </button>
                                         <button class="btn btn-xs btn-warning" @click="editKomoditi(idx, kom.id)">
                                             <i class="fad fa-pencil"></i> Edit
+                                        </button>
+                                        <button class="btn btn-xs btn-danger" @click="deleteKomoditi(idx, kom.id)"
+                                                :disabled="data_sertifikat[idx].jenis_komoditas_form_type == 'update'">
+                                            <i class="fad fa-trash"></i> Hapus
                                         </button>
                                     </td>
                                 </tr>
@@ -517,7 +518,7 @@
                         let self = this;
                         let url  = `{{ url("$url/ajax?action=combogrid_komoditas") }}&is_product=${this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_is_product}`
                         if (search != null) {
-                            url += '&q=' + search
+                            url += '&q=' + encodeURI(search)
                         }
 
                         $('#step2_komoditi_datas' + pengajuanIndex).combogrid({

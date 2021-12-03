@@ -93,7 +93,6 @@
     });
 
     idb.pelanggan_permohonan.clear();
-    idb.pelanggan_permohonan_komoditas.clear();
     idb.bill_data.clear();
     idb.bill_data_itms.clear();
     idb.jadwal_data.clear();

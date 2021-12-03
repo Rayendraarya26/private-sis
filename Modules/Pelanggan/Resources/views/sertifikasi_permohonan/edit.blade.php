@@ -6,7 +6,13 @@
     <!-- HTML -->
     <link rel="stylesheet" href="{{asset("assets/plugins/smartwizard/css/smart_wizard_all.min.css")}}">
     <style>
-
+        .step1_image {
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 @endpush
 

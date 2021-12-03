@@ -89,8 +89,8 @@
                         if (currentData.length > 0) {
                             currentData.map(async (e, idx) => {
                                 this.pengajuanAdd();
-                                this.data_pengajuan[idx].jenis_pengajuan = e.value
-                                await this.setJenisPermohonan(idx, e.value)
+                                this.data_pengajuan[idx].jenis_pengajuan = e.value // lama|baru
+                                await this.setJenisPermohonan(idx, e.value) // lama|baru
                                 setTimeout(() => $(".tab-content").height("100%"), 500);
                             })
                         } else {
@@ -208,8 +208,8 @@
                     setComboSertifikatLama(pengajuanIndex) {
                         let self = this;
                         let url  = `{{ url("$url/ajax?action=combogrid_sertifikat_lama") }}`
-                        if (self.sertifikat_lama_id != null) {
-                            url += "&q=" + this.sertifikat_lama_text;
+                        if (this.data_pengajuan[pengajuanIndex].sertifikat_lama_id != null) {
+                            url += "&q=" + this.data_pengajuan[pengajuanIndex].sertifikat_lama_text;
                         }
 
                         $('#step1_sertifikat_lama' + pengajuanIndex).combogrid({
