@@ -25,7 +25,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_file_notulen_rapat
  * @property string|null $jadw_file_kehadiran_komite
  * @property string|null $jadw_jenis
- * @property string|null $jadw_is_pencabutan
+ * @property string|null $jadw_is_khusus_komite
+ * @property string|null $jadw_berita_acara_nomor
+ * @property Carbon|null $jadw_berita_acara_tanggal
+ * @property string|null $jadw_is_tutup
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
  * @property Carbon $created_at
@@ -61,7 +64,8 @@ class SisJadwal extends Model
 	protected $dates = [
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
-		'jadw_tanggal_rapat_akhir'
+		'jadw_tanggal_rapat_akhir',
+		'jadw_berita_acara_tanggal'
 	];
 
 	protected $fillable = [
@@ -76,7 +80,10 @@ class SisJadwal extends Model
 		'jadw_file_notulen_rapat',
 		'jadw_file_kehadiran_komite',
 		'jadw_jenis',
-		'jadw_is_pencabutan',
+		'jadw_is_khusus_komite',
+		'jadw_berita_acara_nomor',
+		'jadw_berita_acara_tanggal',
+		'jadw_is_tutup',
 		'cust_id',
 		'jadw_file_jadwal'
 	];

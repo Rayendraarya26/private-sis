@@ -66,7 +66,7 @@
 
 
                                 // Submit Permohonan
-                                // this.loading_submit = true;
+                                this.loading_submit = true;
                                 let self = this;
                                 $.ajax({
                                     url: `{{action("$module@store")}}`,
