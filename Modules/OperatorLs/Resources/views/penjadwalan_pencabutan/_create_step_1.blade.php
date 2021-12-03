@@ -4,7 +4,7 @@
 		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Pilih Data Pelanggan</label>
 			<div class="col-xl-7">
-			  <input class="form-control" name="cust_id" id="cust_id" aria-describedby="cust_idHelp" style="min-width:300px;">
+			  <input class="form-control" name="cust_id" id="cust_id" aria-describedby="cust_idHelp" >
 				<small id="cust_idHelp" class="form-text">Note: Silahkan pilih pelanggan.</small>
 			</div>
 		</div>
@@ -75,7 +75,6 @@
             window.vueStepOne = new Vue({
                 el: "#vueStepOne",
                 data: {
-                    bill_id: null,
                     cust_id: null,
                     jenis: null,
                     jadw_tanggal_mulai: null,
@@ -85,10 +84,6 @@
                     this.loadIdb();
                 },
                 methods: {
-					async setBillId(id) {
-						this.bill_id = id
-						await this.updateDatabase()
-					},
 					async setCustId(id) {
 						this.cust_id = id
 						await this.updateDatabase()
@@ -107,35 +102,33 @@
 					},
                     validate() {
                         if (this.cust_id == null) throw "Pilih Pelanggan"
-                        if (this.bill_id == null) throw "Pilih Pelanggan"
                         if (this.jenis == null) throw "Pilih jenis jadwal"
                         if (this.jadw_tanggal_mulai == null) throw "Isi Tanggal Mulai"
                         if (this.jadw_tanggal_selesai == null) throw "Isi Tanggal Selesai"
                     },
 					async updateDatabase() {
-						let dbData = {name: "penjadwalan", tanggal_mulai: this.jadw_tanggal_mulai, tanggal_selesai: this.jadw_tanggal_selesai, jenis: this.jenis, cust_id: this.cust_id, bill_id : this.bill_id};
-						const currentData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
+						let dbData = {name: "pencabutan", tanggal_mulai: this.jadw_tanggal_mulai, tanggal_selesai: this.jadw_tanggal_selesai, jenis: this.jenis, cust_id: this.cust_id};
+						const currentData = await idb.pencabutan_data.where({name: "pencabutan"}).first();
 						if (currentData == null) {
-							await idb.jadwal_data.put(dbData);
+							await idb.pencabutan_data.put(dbData);
                         } else {
-							await idb.jadwal_data.update(currentData.id, dbData);
+							await idb.pencabutan_data.update(currentData.id, dbData);
                         }
 					},
                     async loadIdb() {
-						let currentData = await idb.jadwal_data.where({name: "penjadwalan"}).first();
+						let currentData = await idb.pencabutan_data.where({name: "pencabutan"}).first();
 						await this.setForm(currentData);
 						
                     },
                     async setForm(currentData) {
-                        // jadwal_data_itms
+                        // pencabutan_data_itms
 						if (currentData == null) {
-							let dbData = {name: "penjadwalan", tanggal_mulai: null, tanggal_selesai: null, jenis: null, cust_id: null, bill_id: null};
+							let dbData = {name: "pencabutan", tanggal_mulai: null, tanggal_selesai: null, jenis: null, cust_id: null};
 							currentData = dbData;
-                            await idb.jadwal_data.put(dbData);
+                            await idb.pencabutan_data.put(dbData);
                         }
 						else{
 							this.cust_id= currentData.cust_id;
-							this.bill_id= currentData.bill_id;
 							this.jenis= currentData.jenis;
 							this.jadw_tanggal_mulai= currentData.tanggal_mulai;
 							this.jadw_tanggal_selesai= currentData.tanggal_selesai;
@@ -166,11 +159,10 @@
                             columns: [[
                                 {field: 'cust_id', hidden: true},
                                 {field: 'cust_nama', title: 'Nama Pelanggan', width: 390, sortable: true,},
-                                {field: 'bill_nomor_billing', title: 'Nomor Billing', width: 200, sortable: true,},
+                                {field: 'total_sert', title: 'Total<br/>Sertifikat', width: 100, sortable: true,},
                             ]],
                             onSelect: async function (index, row) {
 								await self.setCustId(row.cust_id);
-								await self.setBillId(row.bill_id);
                             },
                         });
 						

@@ -78,9 +78,9 @@
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;							
 							if(row.status != 'closed')
-								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-jadwal&jadw_id=${row.jadw_id}'">Edit Jadwal</div>`;
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=edit-tim&jadw_id=${row.jadw_id}'">Edit Jadwal</div>`;
 							else 
-								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/detail") }}?tipe=detail-jadwal&jadw_id=${row.jadw_id}'">Detail Jadwal</div>`;
+								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/detail") }}?tipe=detail-tim&jadw_id=${row.jadw_id}'">Detail Jadwal</div>`;
 							
                             return `
 								<div>

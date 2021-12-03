@@ -39,20 +39,20 @@
                                 </li>
 								<li class="nav-item">
                                     <a class="nav-link" href="#step-3">
-                                        <strong>Langkah 3</strong> <br>Daftar Tim
+                                        <strong>Langkah 3</strong> <br>Daftar Tim Komite
                                     </a>
                                 </li>
                             </ul>
 
                             <div class="tab-content">
                                 <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
-                                    @include("operatorls::penjadwalan._create_step_1")
+                                    @include("$view._create_step_1")
                                 </div>
                                 <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
-                                    @include("operatorls::penjadwalan._create_step_2")
+                                    @include("$view._create_step_2")
                                 </div>
 								<div id="step-3" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
-                                    @include("operatorls::penjadwalan._create_step_2")
+                                    @include("$view._create_step_3")
                                 </div>
                             </div>
                         </div>
