@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisJadwal
  * 
  * @property int $jadw_id
- * @property int $bill_id
+ * @property int|null $bill_id
  * @property string $jadw_tanggal_status
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
@@ -25,12 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_file_notulen_rapat
  * @property string|null $jadw_file_kehadiran_komite
  * @property string|null $jadw_jenis
+ * @property string|null $jadw_is_pencabutan
  * @property int $cust_id
  * @property string|null $jadw_file_jadwal
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisBilling $sis_billing
+ * @property SisBilling|null $sis_billing
  * @property SisPelanggan $sis_pelanggan
  * @property SisAuditKomitePeriksa $sis_audit_komite_periksa
  * @property SisAuditKomiteRekomendasi $sis_audit_komite_rekomendasi
@@ -75,6 +76,7 @@ class SisJadwal extends Model
 		'jadw_file_notulen_rapat',
 		'jadw_file_kehadiran_komite',
 		'jadw_jenis',
+		'jadw_is_pencabutan',
 		'cust_id',
 		'jadw_file_jadwal'
 	];
