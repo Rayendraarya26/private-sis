@@ -10,7 +10,7 @@
 				<div class="col-xl-12">
 					<div class="dt-card">
 					  <div class="dt-card__header">
-						<div class="dt-card__heading"><h3 class="dt-card__title">Informasi Data Jadwal No. #{{$dataJadwal->jadw_id}}</h3></div>
+						<div class="dt-card__heading"><h3 class="dt-card__title">Rekomendasi Persetujuan Jadwal No. #{{$dataJadwal->jadw_id}}</h3></div>
 					  </div>
 					  <div class="dt-card__body">
 						<div class="table-responsive col-xl-12 col-md-12 col-12">
@@ -21,7 +21,7 @@
 								<tbody>
 									<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
 									<tr><td>Komoditas</td><td>: {{  $dataJadwal->komodt_nama}}</td></tr>
-									<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
+									<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_tipe}}</td></tr>
 									<tr><td>SM/SNI yang diacu</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
 									<tr><td>Alamat</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
 								</tbody>

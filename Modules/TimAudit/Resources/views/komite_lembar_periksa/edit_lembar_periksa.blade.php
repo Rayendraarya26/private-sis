@@ -4,7 +4,6 @@
 
 @push("css")
     <!-- HTML -->
-    <link rel="stylesheet" href="{{asset("assets/plugins/smartwizard/css/smart_wizard_all.min.css")}}">
 	<style>
 		#label-form{
 			font-weight:normal;
@@ -157,6 +156,7 @@
 								</label>
 								<div class="col-sm-8">
 										<input type="file" class="form-control" aria-label="File Kehadiran Komite" name="jadw_file_kehadiran_komite" id="jadw_file_kehadiran_komite" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+										<input type="hidden" value="@if(isset($dataJadwal->jadw_file_kehadiran_komite)) {{$dataJadwal->jadw_file_kehadiran_komite}} @endif" id="jadw_file_kehadiran_komite_lama">
 								</div>
 							</div>
 							<div class="table-responsive col-xl-12 col-md-12 col-12">
@@ -164,7 +164,6 @@
 									<thead>
 										<tr>
 										  <th scope="col">Status</th>
-										  <th scope="col">Tanggal <br/> Surveilans Berikutnya</th>
 										  <th class="text-uppercase" scope="col">Jenis Audit</th>
 										  <th class="text-uppercase" scope="col">Sertifikasi</th>
 										  <th class="text-uppercase" scope="col">SNI</th>
@@ -177,6 +176,17 @@
 									@foreach($dataAudit as $dau)
 										<tr>
 										  <td scope="col">
+										  @if($dau->jadw_audit_jenis == 'pengaktifan')
+											  <div class="form-check mb-2">
+												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="ya" checked>
+												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tetap dapat menggunakan</label>
+											  </div>
+										  @elseif($dau->jadw_audit_jenis == 'pencabutan')
+											  <div class="form-check mb-2">
+												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="tidak" checked>
+												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
+											  </div>
+										  @else
 											  <div class="form-check mb-2">
 												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd1{{$dau->jadw_audit_id}}" value="ya">
 												<label class="form-check-label" for="rd1{{$dau->jadw_audit_id}}">
@@ -193,11 +203,11 @@
 
 											  <!-- Radio Button -->
 											  <div class="form-check mb-2">
-												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="option2">
+												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="tidak">
 												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
-											  </div>											  
+											  </div>
+											@endif
 										  </td>
-										  <td><input type="text" class="form-control" name="tanggal[{{$dau->jadw_audit_id}}]" id="tanggal_{{$dau->jadw_audit_id}}" style="max-width:120px;"></td>
 										  <td>{{$dau->jadw_audit_jenis}}</td>
 										  <td>{{$dau->sert_nama}}</td>
 										  <td>{{$dau->jadw_audit_sni}}</td>
@@ -241,24 +251,6 @@
             cancelButtonClass: 'btn btn-warning mr-2 mb-2',
             buttonsStyling: false,
         });
-		function myformatter(date){
-            var y = date.getFullYear();
-            var m = date.getMonth()+1;
-            var d = date.getDate();
-            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
-        }
-        function myparser(s){
-            if (!s) return new Date();
-            var ss = (s.split('-'));
-            var y = parseInt(ss[0],10);
-            var m = parseInt(ss[1],10);
-            var d = parseInt(ss[2],10);
-            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
-                return new Date(y,m-1,d);
-            } else {
-                return new Date();
-            }
-        }
 			
         $(document).ready(function () {
             window.vueLembarPeriksa = new Vue({
@@ -437,18 +429,6 @@
 							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
 							],
 						});
-						
-						@foreach($dataAudit as $dau)
-						$('#tanggal_{{$dau->jadw_audit_id}}').datebox({
-							required:true,
-							editable: false,
-							formatter:myformatter,
-							parser:myparser,
-							value:`<?php 
-							echo date('Y-m-d', strtotime('+1 year'));
-							?>`,
-						});
-						@endforeach
 					})
 				},
                 methods: {
@@ -498,8 +478,11 @@
 						   toastCenter({type: 'warning',title: "Silahkan isikan keputusan untuk '{{$dau->sert_nama}}'"});
 						}
 						@endforeach
-						else if($('#jadw_file_kehadiran_komite').val() === ''){
-							toastCenter({type: 'warning',title: "Silahkan upload file daftar kehadiran"});
+						else if ($.trim($("#jadw_file_kehadiran_komite").val()) === "") {
+							toastCenter({
+										type: 'warning',
+										title: "Silahkan Unggah File Kehadiran Komite"
+									})
 						}
 						else{
 							swalWithBootstrapButtons({
@@ -531,6 +514,7 @@
 									formData.append("komte_priksa_penilaian_13", tinyMCE.get('komte_priksa_penilaian_13').getContent())
 									const file = document.querySelector("#jadw_file_kehadiran_komite").files[0];
 									formData.append("jadw_file_kehadiran_komite", file)
+									formData.append("jadw_file_kehadiran_komite_lama", $("#jadw_file_kehadiran_komite_lama").val())
 									
 									@foreach($dataAudit as $dau)
 									formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());

@@ -23,12 +23,13 @@ use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
 use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
-use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
-use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
-use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
 use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
 use Modules\TimAudit\Http\Controllers\PpcLaporanController;
 use Modules\TimAudit\Http\Controllers\PpcLogBookController;
+use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
+use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
+use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
+use Modules\TimAudit\Http\Controllers\KomiteBeritaAcaraController;
 
 Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
     // ============================== Persetujuan TIM ==============================
@@ -147,6 +148,14 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::any('/ajax', [KomiteLembarPeriksaController::class, 'ajax']);
             Route::get('/edit', [KomiteLembarPeriksaController::class, 'edit']);
             Route::post('/update', [KomiteLembarPeriksaController::class, 'update']);
+        });
+		
+		Route::prefix("berita-acara")->group(function () {
+            Route::get('/', [KomiteBeritaAcaraController::class, 'index']);
+            Route::any('/ajax', [KomiteBeritaAcaraController::class, 'ajax']);
+            Route::get('/detail', [KomiteBeritaAcaraController::class, 'detail']);
+            Route::get('/edit', [KomiteBeritaAcaraController::class, 'edit']);
+            Route::post('/update', [KomiteBeritaAcaraController::class, 'update']);
         });
     });
 

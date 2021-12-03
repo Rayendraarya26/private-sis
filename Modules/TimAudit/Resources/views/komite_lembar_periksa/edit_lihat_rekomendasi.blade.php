@@ -48,7 +48,7 @@
 		<tbody>
 			<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
 			<tr><td>Komoditas</td><td>: {{  $dataJadwal->komodt_nama}}</td></tr>
-			<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
+			<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_tipe}}</td></tr>
 			<tr><td>SM/SNI yang diacu</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
 			<tr><td>Alamat</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
 		</tbody>

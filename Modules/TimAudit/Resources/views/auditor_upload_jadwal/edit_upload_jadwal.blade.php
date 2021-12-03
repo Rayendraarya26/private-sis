@@ -139,7 +139,7 @@
                             if (result.value) {
 								if ($.trim($("#jadw_file_jadwal").val()) === "") {
 									toastCenter({
-												type: 'success',
+												type: 'warning',
 												title: "Silahkan Unggah File Jadwal"
 											})
 								}

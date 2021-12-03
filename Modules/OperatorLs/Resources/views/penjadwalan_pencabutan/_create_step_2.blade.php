@@ -19,11 +19,27 @@
 				<div id="form-tambah" style="display:none;">
 					<form action="#" id="form_id">
 						<div class="form-group form-row">
+							<label class="col-xl-3 col-form-label text-sm-left" for="cust_id">Pilih Jenis</label>
+							<div class="col-xl-9">
+								  <div class="custom-control custom-radio custom-control-inline">
+									<input value="pengaktifan" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe4" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('pengaktifan')">
+									<label class="custom-control-label" for="jadw_audit_jenis_tipe4">Pengaktifan</label>
+								  </div>
+								  <div class="custom-control custom-radio custom-control-inline">
+									<input value="pencabutan" aria-describedby="jadw_audit_jenis_tipeHelp" type="radio" id="jadw_audit_jenis_tipe2" name="jadw_audit_jenis_tipe" class="custom-control-input" @click="setJenisAudit('pencabutan')">
+									<label class="custom-control-label" for="jadw_audit_jenis_tipe2">Pencabutan</label>
+								  </div>
+								<small id="jadw_audit_jenis_tipeHelp" class="form-text">Note: Silahkan pilih tipe audit items.</small>
+							</div>
+						</div>
+						
+						<div class="form-group form-row">
 							<label class="col-xl-3 col-form-label text-sm-left" for="cb_data_id" >Data Permohonan/Sertifikat</label>
 							<div class="col-xl-8">
 								<input type="text" class="form-control" id="cb_data_id">
 								<small class="form-text">Note: Data re-sertifikasi dan sertifikasi untuk data permohonan; Data surveilans untuk data sertifikat.</small>
 								
+								<input type="hidden" id="jenis_audit" value="">
 								<input type="hidden" id="mohon_id" value="">
 								<input type="hidden" id="mohon_det_id" value="">
 								<input type="hidden" id="sert_id" value="">
@@ -112,7 +128,8 @@
 					<table class="table table-bordered mb-0">
                         <thead>
 							<tr>
-								<th>Aksi</th>
+								<th></th>
+								<th>Jenis</th>
 								<th>Sertifikasi</th>
 								<th>Nomor Sertifikat</th>
 								<th>Nomor<br>Referensi</th>
@@ -141,6 +158,7 @@
 											</div>
 										</div>
 									</td>
+									<td>@{{ itm.jenis }}</td>
 									<td>@{{ itm.sert_nama }}</td>
 									<td>@{{ itm.nomor_sertifikat }}</td>
 									<td>@{{ itm.nomor_referensi }}</td>
@@ -227,7 +245,11 @@
 							this.setForm();
 						}, 500);					
 					},
+					async setJenisAudit(dt_jenis){
+						$("#jenis_audit").val(dt_jenis);
+					},
 					async setForm(){
+						$("#jenis_audit").val("");
 						$("#mohon_id").val("");
 						$("#cust_sert_id").val("");
 						$("#sert_id").val("");
@@ -292,7 +314,10 @@
 							if(this.form_edited_id != null){
 								let selectedItem = await window.idb.pencabutan_data_itms.get(this.form_edited_id);
 								$('#cb_data_id').combogrid('setValue', `${selectedItem.cust_sert_id}`);
+								var $radios = $('input:radio[name=jadw_audit_jenis_tipe]');
+								$radios.filter(`[value=${selectedItem.jenis}]`).prop('checked', true);
 								
+								$("#jenis_audit").val(selectedItem.jenis);
 								$("#mohon_id").val(selectedItem.mohon_id);
 								$("#cust_sert_id").val(selectedItem.cust_sert_id);
 								$("#sert_id").val(selectedItem.sert_id);
@@ -358,6 +383,7 @@
 							try {
 								this.validateItem()
 								await window.idb.pencabutan_data_itms.update(this.form_edited_id, {
+									"jenis": $("#jenis_audit").val(),
 									"mohon_id": $("#mohon_id").val(),
 									"mohon_det_id": $("#mohon_det_id").val(),
 									"cust_sert_id": $("#cust_sert_id").val(),
@@ -400,6 +426,7 @@
 						try {
                             this.validateItem()
                             let newItem = {
+                                "jenis": $("#jenis_audit").val(),
                                 "mohon_id": $("#mohon_id").val(),
 								"cust_sert_id": $("#cust_sert_id").val(),
 								"sert_id": $("#sert_id").val(),

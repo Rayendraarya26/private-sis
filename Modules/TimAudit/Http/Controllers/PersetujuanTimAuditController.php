@@ -78,7 +78,7 @@ class PersetujuanTimAuditController extends Controller
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $dataKomite->groupBy('sis_jadwal.jadw_id');
+        $data->groupBy('sis_jadwal.jadw_id');
 
         foreach ($data->get() as $d) {
 			if($d->jadw_id != ''){
@@ -268,7 +268,7 @@ class PersetujuanTimAuditController extends Controller
             $dataJadwal->groupBy('sis_jadwal.jadw_id');
 
             $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
-			$dataJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- Penggunaan / Pembekuan Sertifikat', sert_nama) SEPARATOR ',<br/>') as sert_nama");
+			$dataJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- Penggunaan / Pembekuan Sertifikat ', sert_nama) SEPARATOR ',<br/>') as sert_nama");
             $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
             $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
             $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");

@@ -173,7 +173,7 @@ class PenjadwalanPencabutanController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		$data->where('sis_jadwal.jadw_is_pencabutan', '=', 'ya');
+		$data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'ya');
 		$data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
         
         // Filter
@@ -288,7 +288,7 @@ class PenjadwalanPencabutanController extends Controller
             $newSisJadwal->jadw_tanggal_status  = 'accepted';
             $newSisJadwal->jadw_team_status  = 'accepted';
             $newSisJadwal->jadw_setujui_temuan  = 'setuju';
-            $newSisJadwal->jadw_is_pencabutan  = 'ya';
+            $newSisJadwal->jadw_is_khusus_komite  = 'ya';
             $newSisJadwal->jadw_tanggal_mulai   = $request['jadw_tanggal_mulai'];
             $newSisJadwal->jadw_tanggal_selesai = $request['jadw_tanggal_selesai'];
             $newSisJadwal->jadw_jenis           = $request['jadw_jenis'];
@@ -313,7 +313,7 @@ class PenjadwalanPencabutanController extends Controller
 						'jadw_id' => $newSisJadwal->jadw_id,
 						'jadw_audit_status_komite' => 'submited',
 						'jadw_audit_status' => 'on-going',
-						'jadw_audit_jenis' => 're-sertifikasi',
+						'jadw_audit_jenis' => $itm->jenis,
 						'mohon_id' => ($itm->mohon_id != '') ? $itm->mohon_id : null,
 						'sert_id' => $itm->sert_id,
 						'komodt_id' => $komoditi_id,

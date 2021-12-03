@@ -2,11 +2,6 @@
 
 @section('title', 'Rekomendasi untuk Persetujuan')
 
-@push("css")
-    <!-- HTML -->
-    <link rel="stylesheet" href="{{asset("assets/plugins/smartwizard/css/smart_wizard_all.min.css")}}">
-@endpush
-
 @section('content')
     <div class="dt-content">
 		<div class="col-xl-12">
@@ -20,7 +15,7 @@
 					  <div class="dt-card__body">
 						<div class="accordion" id="accordion-example">
 							<div class="card">
-								<div class="card-header" id="headingOne"><h5 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">Diajukan untuk</button></h5></div>
+								<div class="card-header" id="headingOne"><h5 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">1. Diajukan untuk</button></h5></div>
 								<div id="collapse-one" class="collapse hide" aria-labelledby="headingOne" data-parent="#accordion-example">
 								  <div class="card-body">
 									<div class="table-responsive col-xl-12 col-md-12 col-12">
@@ -28,7 +23,7 @@
 											<tbody>
 												<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
 												<tr><td>Komoditas</td><td>: {{$dataJadwal->komodt_nama}}</td></tr>
-												<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
+												<tr><td>Type</td><td>: {{$dataJadwal->jadw_audit_tipe}}</td></tr>
 												<tr><td>SM/SNI yang diacu</td><td>: {{$dataJadwal->jadw_audit_sni}}</td></tr>
 												<tr><td>Alamat</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
 											</tbody>
@@ -38,7 +33,7 @@
 							    </div>
 								
 								<div class="card-header" id="headingTwo">
-								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">Kronologis kegiatan *)</button></h5>
+								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">2. Kronologis kegiatan *)</button></h5>
 								</div>
 								<div id="collapse-two" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion-example">
 								  <div class="card-body">
@@ -53,7 +48,7 @@
 											</tr>
 											<tr>
 												<td>
-												Permohonan sertifikasi dari pemohon
+												Permohonan sertifikasi dari pemohon :
 												<ul>
 													@foreach($dataMohon as $dp)
 													<li>Surat pemohon No {{$dp->mohon_id}} tanggal {{ $dp->created_at?->format("d M Y") }}</li>
@@ -142,9 +137,9 @@
 								</div>
 								
 								<div class="card-header" id="heading3">
-								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-two" aria-expanded="false" aria-controls="collapse-two">3. LKS ditutup tanggal @if($dataJadwal->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($dataJadwal->lks_expired_date_perbaikan)) }} @endif</button></h5>
+								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-tree" aria-expanded="false" aria-controls="collapse-two">3. LKS ditutup tanggal @if($dataJadwal->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($dataJadwal->lks_expired_date_perbaikan)) }} @endif</button></h5>
 								</div>
-								<div id="collapse-two" class="collapse" aria-labelledby="heading3" data-parent="#accordion-example">
+								<div id="collapse-tree" class="collapse" aria-labelledby="heading3" data-parent="#accordion-example">
 								  <div class="card-body">
 									@foreach($dataPPC as $ppc)
 										Pengambilan Contoh*) untuk SPPT SNI
@@ -174,7 +169,7 @@
 				<div class="col-xl-12">
 					<div class="dt-card">
 					  <div class="dt-card__header">
-						<div class="dt-card__heading"><h3 class="dt-card__title">Upload Hasil Uji</h3></div>
+						<div class="dt-card__heading"><h3 class="dt-card__title">Rekomendasi Persetujuan</h3></div>
 					  </div>
 					  <div class="dt-card__body">
 						<div id="vueRekomendasi">
@@ -185,17 +180,17 @@
 								</div>
 							</div>
 							<div class="form-group form-row">
-								<label class="col-md-2 col-sm-3 text-sm-right mb-4 mb-sm-0">Tutup Rekomendasi?</label>
+								<label class="col-md-2 col-sm-3 text-sm-right mb-4 mb-sm-0">Simpan Draft ?</label>
 								<div class="col-md-10 col-sm-9">
 								  <div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status1" value="ditutup" @click="setTutup('ditutup')">
-									<label class="form-check-label" for="aud_thp1_status1">Tutup</label>
+									<label class="form-check-label" for="aud_thp1_status1">Ya</label>
 								  </div>
 								  <div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status2" value="on-going" @click="setTutup('on-going')" >
 									<label class="form-check-label" for="aud_thp1_status2">Tidak</label>
 								  </div>
-									<small class="form-text">Note: Jika ditutup maka akan muncul pada menu penilaian komite, jika tidak maka sebaliknya, dan masih bisa diedit.</small>
+									<small class="form-text">Note: Jika "ya" maka akan muncul pada menu penilaian komite, jika "tidak" maka sebaliknya, dan masih bisa diedit.</small>
 								</div>
 							</div>
 							

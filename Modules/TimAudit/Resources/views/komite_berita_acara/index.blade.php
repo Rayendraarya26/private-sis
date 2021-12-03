@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Lembar Periksa')
+@section('title', 'Berita Acara')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal Audit</h3>
+                            <h3 class="dt-card__title">Data Jadwal Audit dan Input Beruta Acara</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -52,7 +52,7 @@
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;	
-							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=lembar-periksa&jadw_id=${row.jadw_id}'">Lembar Periksa</div>`;
+							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=berita-acara&jadw_id=${row.jadw_id}'">Berita Acara</div>`;
                             return `
 								<div>
 									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">

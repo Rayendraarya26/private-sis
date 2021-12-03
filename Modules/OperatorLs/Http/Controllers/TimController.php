@@ -62,7 +62,7 @@ class TimController extends Controller
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '!=', 'fixed');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '!=', 'submited');
-		$data->where('sis_jadwal.jadw_is_pencabutan', '=', 'tidak');
+		$data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
