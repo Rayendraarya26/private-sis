@@ -63,17 +63,17 @@
 							</div>
 							<div class="form-group">
 								<template v-if="jenis_item_form_type == 'add'">
-									<button class="btn btn-sm btn-success" @click="addItem">
+									<a href="javascript:void(0)" class="btn btn-sm btn-success" @click="addItem">
 										<i class="fas fa-plus"></i> Tambah
-									</button>
+									</a>
 								</template>
 								<template v-else>
-									<button class="btn btn-sm btn-primary" @click="updateItem">
+									<a href="javascript:void(0)" class="btn btn-sm btn-primary" @click="updateItem">
 										<i class="fas fa-save"></i> Simpan
-									</button>
-									<button class="btn btn-sm btn-danger" @click="calcelUpdateItem">
+									</a>
+									<a href="javascript:void(0)" class="btn btn-sm btn-danger" @click="calcelUpdateItem">
 										<i class="fas fa-close"></i> Batal
-									</button>
+									</a>
 								</template>
 							</div>
 						</form>
