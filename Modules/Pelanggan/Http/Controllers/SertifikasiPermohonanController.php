@@ -32,6 +32,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class SertifikasiPermohonanController extends Controller
 {
@@ -106,8 +107,10 @@ class SertifikasiPermohonanController extends Controller
             $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumens", "sis_pelanggan_pabriks"])->find($custID)->first();
 
             // 2
+            $sertifikatNama = [];
             foreach ($dataSubmission as $submission) {
                 $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumens.master_jenis_dok_perusahaan')->findOrFail($submission['sertifikat']->jenis_sertifikasi_id);
+                array_push($sertifikatNama, $dataMasterSertifiaksi->sert_nama);
                 $uploadedDocID         = [];
                 $requiredDocID         = [];
 
@@ -165,9 +168,9 @@ class SertifikasiPermohonanController extends Controller
                 // 3.2 add sis_permohonan_detail
                 $newSisPermohonanDetail                         = new SisPermohonanDetail();
                 $newSisPermohonanDetail->mohon_id               = $newSisPermohonan->mohon_id;
-                $newSisPermohonanDetail->mohon_det_jenis_status = $submission['pengajuan']->jenis_pengajuan;
-                $newSisPermohonanDetail->cust_sert_id           = $submission['pengajuan']->sertifikat_lama_id;
-                $newSisPermohonanDetail->sert_id                = $submission['sertifikat']->jenis_sertifikasi_id;
+                $newSisPermohonanDetail->mohon_det_jenis_status = property_exists($submission['pengajuan'], 'jenis_pengajuan') ? $submission['pengajuan']->jenis_pengajuan : null;
+                $newSisPermohonanDetail->cust_sert_id           = property_exists($submission['pengajuan'], 'sertifikat_lama_id') ? $submission['pengajuan']->sertifikat_lama_id : null;
+                $newSisPermohonanDetail->sert_id                = property_exists($submission['sertifikat'], 'jenis_sertifikasi_id') ? $submission['sertifikat']->jenis_sertifikasi_id : null;
                 $newSisPermohonanDetail->save();
 
                 // 3.3 add sis_permohonan_komoditi
@@ -285,7 +288,7 @@ class SertifikasiPermohonanController extends Controller
                 "status_mohon_id" => $newSisPermohonan->mohon_id,
                 "status_tipe"     => "informasi",
                 "status_judul"    => "Pengajuan Permohonan",
-                "status_pesan"    => sprintf("%s mengajukan permohonan sertifikasi %s", auth()->user()->user_fullname, $dataMasterSertifiaksi->sert_nama),
+                "status_pesan"    => sprintf("%s mengajukan %d permohonan sertifikasi (%s)", $newSisPermohonan->mohon_cust_nama, $totalSubmission, implode(", ", $sertifikatNama)),
                 "created_at"      => Carbon::now(),
                 "updated_at"      => Carbon::now(),
             ]);
@@ -299,7 +302,7 @@ class SertifikasiPermohonanController extends Controller
                 @unlink($delPath);
             }
 
-            return responseJSON(500, null, $e->getMessage() . $e->getLine());
+            return responseJSON(500, null, $e->getMessage() . ' | line:' . $e->getLine());
         }
     }
 
@@ -422,7 +425,7 @@ class SertifikasiPermohonanController extends Controller
                     "status_mohon_id" => $dataPemohon->mohon_id,
                     "status_tipe"     => "informasi",
                     "status_judul"    => "Perbaikan Revisi",
-                    "status_pesan"    => sprintf("%s telah melakukan perbaikan revisi", auth()->user()->user_fullname),
+                    "status_pesan"    => sprintf("%s telah melakukan perbaikan revisi", $dataPemohon->mohon_cust_nama),
                     "created_at"      => Carbon::now(),
                     "updated_at"      => Carbon::now(),
                 ]);
@@ -537,6 +540,68 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
+    public function approveHarga(Request $request)
+    {
+        $request->validate(['mohon_id' => 'required|integer', 'status' => ['required', Rule::in(['setuju', 'tidak'])]]);
+
+        try {
+            DB::beginTransaction();
+            $dataPemohon                             = SisPermohonan::where('user_id', auth()->id())->findOrFail($request['mohon_id']);
+            $dataPemohon->mohon_tagihan_biaya_status = $request['status'];
+            $dataPemohon->save();
+
+            // Send Notification to Marketing
+            $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
+            if ($groupMarketing) {
+                foreach ($groupMarketing as $marketing) {
+                    if ($request['status'] == "setuju") {
+                        // Send Push
+                        $notifStruct            = new NotifStruct();
+                        $notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $dataPemohon->mohon_id);
+                        $notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
+                        $notifStruct->user_id   = $marketing?->ug_user_id;
+                        $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+                        sendNotification($notifStruct);
+
+                        // Add Pengajuan Status
+                        SisPermohonanStatus::create([
+                            "status_mohon_id" => $dataPemohon->mohon_id,
+                            "status_tipe"     => "informasi",
+                            "status_judul"    => "Pemohon menyetujui harga sertifikasi",
+                            "status_pesan"    => sprintf("%s menyetujui sertifikasi dengan harga Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
+                            "created_at"      => Carbon::now(),
+                            "updated_at"      => Carbon::now(),
+                        ]);
+                    } else {
+                        // Send Push
+                        $notifStruct            = new NotifStruct();
+                        $notifStruct->title     = sprintf("#%d Pemohon menolak harga sertifikasi", $dataPemohon->mohon_id);
+                        $notifStruct->message   = sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
+                        $notifStruct->user_id   = $marketing?->ug_user_id;
+                        $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+                        sendNotification($notifStruct);
+
+                        // Add Pengajuan Status
+                        SisPermohonanStatus::create([
+                            "status_mohon_id" => $dataPemohon->mohon_id,
+                            "status_tipe"     => "informasi",
+                            "status_judul"    => "Pemohon menolak harga sertifikasi",
+                            "status_pesan"    => sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
+                            "created_at"      => Carbon::now(),
+                            "updated_at"      => Carbon::now(),
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+            return responseJSON(200, null, "Approval berhasil " . ucwords($request['status']));
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, null, $e->getMessage());
+        }
+    }
+
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
@@ -616,18 +681,20 @@ class SertifikasiPermohonanController extends Controller
                 ]);
             }
 
-            $x['cust_sert_id']          = $d->cust_sert_id;
-            $x['mohon_id']              = $d->mohon_id;
-            $x['cust_id']               = $d->cust_id;
-            $x['user_id']               = $d->user_id;
-            $x['sert_id']               = $d->sert_id;
-            $x['sert_nama']             = $d->sert_nama;
-            $x['mohon_approved_status'] = $d->mohon_approved_status;
-            $x['mohon_jenis_status']    = $d->mohon_jenis_status;
-            $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $x['update_at']             = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $x['revisi']                = $dtRevisi;
-            $x['permohonan']            = $dtPermohonan;
+            $x['cust_sert_id']               = $d->cust_sert_id;
+            $x['mohon_id']                   = $d->mohon_id;
+            $x['cust_id']                    = $d->cust_id;
+            $x['user_id']                    = $d->user_id;
+            $x['sert_id']                    = $d->sert_id;
+            $x['sert_nama']                  = $d->sert_nama;
+            $x['mohon_approved_status']      = $d->mohon_approved_status;
+            $x['mohon_jenis_status']         = $d->mohon_jenis_status;
+            $x['mohon_tagihan_biaya_status'] = $d->mohon_tagihan_biaya_status;
+            $x['mohon_harga_permohonan']     = $d->mohon_harga_permohonan;
+            $x['created_at']                 = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['update_at']                  = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['revisi']                     = $dtRevisi;
+            $x['permohonan']                 = $dtPermohonan;
             array_push($result, $x);
         }
 

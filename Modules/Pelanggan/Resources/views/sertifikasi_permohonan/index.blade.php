@@ -74,12 +74,16 @@
                             let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.mohon_id}', '${row.sert_nama}')">Delete</div>`;
                             let btnTrack  = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
+                            let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}')">Approve Harga</div>`;
 
                             if (row.mohon_approved_status !== "on-progress") {
                                 btnDelete = "";
                                 if (row.mohon_approved_status !== "revisi") {
                                     btnEdit = "";
                                 }
+                            }
+                            if (row.mohon_tagihan_biaya_status != "proses") {
+                                btnApproveHarga = "";
                             }
 
 
@@ -90,6 +94,7 @@
                         </button>
                         <div id="${dom}" style="width:150px; display: none;">
                             @if(authorized("{$module}@detail")) ${btnDetail} @endif
+                            @if(authorized("{$module}@approveHarga")) ${btnApproveHarga} @endif
                             @if(authorized("{$module}@edit")) ${btnEdit} @endif
                             @if(authorized("{$module}@track")) ${btnTrack} @endif
                             <!-- <div class="menu-sep"></div> -->
@@ -100,6 +105,7 @@
                     }
                 ]],
                 columns: [[
+                    {field: 'mohon_id', title: '#No<br>Pengajuan', width: 100, sortable: true, align: "center"},
                     {
                         field: 'mohon_approved_status',
                         title: 'Status <br> Permohonan',
@@ -134,7 +140,32 @@
                             }
                         }
                     },
-                    {field: 'mohon_id', title: '#No<br>Pengajuan', width: 100, sortable: true, align: "center"},
+                    {
+                        field: 'mohon_tagihan_biaya_status',
+                        title: 'Persetujuan <br> Biaya',
+                        width: 120,
+                        sortable: true,
+                        formatter: function (val) {
+                            switch (val) {
+                                case 'proses':
+                                    return "Proses";
+                                case 'tidak':
+                                    return "Ditolak";
+                                case 'setuju':
+                                    return "Disetujui";
+                            }
+                        },
+                        styler: function (val) {
+                            switch (val) {
+                                case 'proses':
+                                    return 'color:black;background-color:#f57f17;';
+                                case 'tidak':
+                                    return 'color:white;background-color:#b71c1c;';
+                                case 'setuju':
+                                    return 'color:white;background-color:#2e7d32;';
+                            }
+                        }
+                    },
                     {
                         field: 'permohonan',
                         title: 'Data Permohonan',
@@ -152,6 +183,31 @@
                                 }
                             }
                         },
+                    },
+                    {
+                        field: 'mohon_harga_permohonan',
+                        title: 'Biaya Sertifikasi',
+                        width: 220,
+                        sortable: true,
+                        align: 'right',
+                        formatter: function (val, row) {
+                            if (val) {
+                                let signed = "";
+                                @if(authorized("{$module}@detail"))
+                                if (row.mohon_tagihan_biaya_status == "proses" && val > 0) {
+                                    signed = `<span style="cursor:pointer;" onclick="confirmHarga(${row.mohon_id})"><i class="fas fa-question"></i> Butuh Persetujuan</span>`
+                                } else if (row.mohon_tagihan_biaya_status == "tidak") {
+                                    signed = `<span style="color: red"><i class="fas fa-close"></i> Tolak</span>`
+                                } else if (row.mohon_tagihan_biaya_status == "setuju") {
+                                    signed = `<span style="color: green"><i class="fas fa-check"></i> Setuju</span>`
+                                }
+                                @endif
+
+                                    return val.toString().formatUang(".") + `<br> ${signed}`
+                            } else {
+                                return 0
+                            }
+                        }
                     },
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 220, sortable: true},
                 ]],
@@ -201,8 +257,85 @@
                             }
                         }
                     },
+                    {
+                        field: 'mohon_tagihan_biaya_status',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'proses', text: 'Proses'},
+                                {value: 'tidak', text: 'Ditolak'},
+                                {value: 'setuju', text: 'Disetujui'},
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'mohon_tagihan_biaya_status',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
                 ]);
         });
+
+        @if(authorized("{$module}@detail"))
+        function confirmHarga(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Persetujuan Harga ?`,
+                html: `Jika anda menolak maka proses pengajuan akan berhenti ditahap ini, keputusan ini bersifat permanen <br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Setuju',
+                cancelButtonText: 'Tolak',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                let status = null;
+                if (result.value) {
+                    status = "setuju"
+                } else if (result.dismiss === swal.DismissReason.cancel) {
+                    status = "tidak"
+                }
+
+                if (status !== null) {
+                    $.ajax({
+                        url: `{{url("$url/approve-harga")}}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {mohon_id: id, status},
+                        success: function (response) {
+                            toastCenter({
+                                type: 'success',
+                                title: response.message
+                            })
+
+                            // Destroy MenuButton (rebuild onloadsuccess)
+                            let dg = $('#ttData');
+                            dg.datagrid('getPanel').find('.btn-action').each(function () {
+                                $(this).menubutton('destroy');
+                            })
+                            dg.datagrid('reload');
+                        },
+                        error: function (xhr) {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+        @endif
 
         function confirmDelete(id, nama) {
             const swalWithBootstrapButtons = swal.mixin({

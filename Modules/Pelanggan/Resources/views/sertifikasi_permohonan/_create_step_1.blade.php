@@ -95,7 +95,6 @@
                             })
                         } else {
                             this.pengajuanAdd();
-                            setTimeout(() => $(".tab-content").height("100%"), 500);
                         }
                     },
                     pengajuanAdd() {
@@ -110,6 +109,8 @@
                             master_sertifikat_is_product: null, // master sertifikat
                             data_komoditas: [],
                         })
+
+                        setTimeout(() => $(".tab-content").height("100%"), 500);
                     },
                     validate() {
                         this.data_pengajuan.map((e, idx) => {

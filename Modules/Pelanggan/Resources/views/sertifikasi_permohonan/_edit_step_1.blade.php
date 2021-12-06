@@ -123,6 +123,7 @@
                         }
 
                         $('#step1_sertifikat_lama' + pengajuanIndex).combogrid({
+                            readonly: true,
                             pageSize: '50',
                             // panelWidth: 400,
                             pagination: true,
