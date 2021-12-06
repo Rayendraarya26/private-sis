@@ -146,7 +146,11 @@ class PenjadwalanTahap1Controller extends Controller
 
     private function ajax_combogrid_pelanggan(Request $request)
     {
-        $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id");
+        $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
+			->whereNotIn('bill_id', function ($query) use ($request) {
+                $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
+            });
+		
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {
@@ -154,7 +158,7 @@ class PenjadwalanTahap1Controller extends Controller
         }
 
         // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(distinct sis_billing.bill_id) as total'))->first()->total;
         // Pagination
         $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
@@ -188,6 +192,7 @@ class PenjadwalanTahap1Controller extends Controller
             $query->select(DB::raw('IFNULL(sis_audit_tahap1.mohon_det_id, 0)'))
                 ->from('sis_audit_tahap1')
                 ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+                ->whereNotNull('sis_audit_tahap1.mohon_det_id')
                 ->where('sis_permohonan.cust_id', '=', $cust_id);
         });
 		

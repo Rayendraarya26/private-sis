@@ -10,6 +10,7 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUser;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -317,15 +318,64 @@ class UploadKajianPermohonanController extends Controller
 				
 				if(!empty($data_detail)){
 					foreach ($data_detail as $key => $val) {
+						$dataPermohon = SisPermohonan::where('sis_permohonan_detail.mohon_det_id', $key)->select('*')->groupBy('sis_permohonan_detail.mohon_id')
+								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")->get()[0];
+						
+						$data_update = [];
+						if( $dataPermohon->cust_sert_id == '' ){							
+							$counterRef = DB::table('sis_pelanggan_sertifikasi')->select(DB::raw("COUNT(`cust_sert_id`)+1 AS counterSert"))->where('sert_id', '=', $dataPermohon->sert_id)->get()[0];
+							
+							$sert_format_referensi = explode('/',$dataPermohon->sert_format_referensi);
+							$nomor_ref = '';
+							if(!empty($sert_format_referensi)){
+								$countDat = count($sert_format_referensi);
+								$jt = 0;
+								foreach($sert_format_referensi as $dat){
+									if($dat == '{NOMOR}')
+										$nomor_ref .= $counterRef->counterSert;
+									else if($dat == '{TAHUN4}')
+										$nomor_ref .= date("Y");
+									else if($dat == '{TAHUN2}')
+										$nomor_ref .= date("y");
+									else
+										$nomor_ref .= $dat;
+									
+									$jt++;
+									if($countDat != $jt)
+										$nomor_ref .= '/';
+								}
+							}
+							
+							$data_update = [
+											"mohon_det_no_referensi" => $nomor_ref ,
+											"mohon_det_perlu_tahap1" => $val,
+										];
+						}
+						else{
+							$data_update =[
+                                "mohon_det_perlu_tahap1" => $val,
+                            ];
+						}
+						
                         DB::table('sis_permohonan_detail')
                             ->where('mohon_det_id', $key)
-                            ->update([
-                                "mohon_det_perlu_tahap1" => $val,
-                            ]);
+                            ->update($data_update);
                     }
 				}
             });
-
+			
+			
+			$dataUser = SysUser::whereIn('ug_group_id', ['9'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+			foreach ($dataUser->get() as $us) {
+				$notifUsr            = new NotifStruct();
+				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
+				$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diupload silahkan verifikasi.", $data['mohon_id'], $data['mohon_cust_nama']);
+				$notifUsr->user_id   = $us->user_id;
+				$notifUsr->click_url = url('/paskal/verifikasi');
+				sendNotification($notifUsr);
+			}
+			
             return redirect($this->url)->with('message', "Upload Kajian Permohonan #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi validasi oleh PJT.");
         } else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);

@@ -1,17 +1,3 @@
-@push('css')
-    <style>
-        .komoditi-button {
-            padding-top: 15px;
-        }
-
-        @media screen and (max-width: 450px) {
-            .komoditi-button {
-                padding-top: 0;
-            }
-        }
-    </style>
-@endpush
-
 <div class="row" id="vueStepTwo">
     <div class="col-md-12" style="padding-bottom: 20px">
         <div class="row">
@@ -75,29 +61,28 @@
 								  <input type="number" class="form-control" id="itms_bil_total">
 								</div>
 							</div>
-							</form>
-						<div class="col-md-12 komoditi-button">
-							<template v-if="jenis_item_form_type == 'add'">
-								<button class="btn btn-sm btn-success" @click="addItem">
-									<i class="fas fa-plus"></i> Tambah
-								</button>
-							</template>
-							<template v-else>
-								<button class="btn btn-sm btn-primary" @click="updateItem">
-									<i class="fas fa-save"></i> Simpan
-								</button>
-								<button class="btn btn-sm btn-danger" @click="calcelUpdateItem">
-									<i class="fas fa-close"></i> Batal
-								</button>
-							</template>
-						</div>
+							<div class="form-group">
+								<template v-if="jenis_item_form_type == 'add'">
+									<button class="btn btn-sm btn-success" @click="addItem">
+										<i class="fas fa-plus"></i> Tambah
+									</button>
+								</template>
+								<template v-else>
+									<button class="btn btn-sm btn-primary" @click="updateItem">
+										<i class="fas fa-save"></i> Simpan
+									</button>
+									<button class="btn btn-sm btn-danger" @click="calcelUpdateItem">
+										<i class="fas fa-close"></i> Batal
+									</button>
+								</template>
+							</div>
+						</form>
 					</div>
                 </div>
-
             </div>
             <div class="col-md-12">
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table table-bordered mb-0">
                         <thead>
                         <tr>
                             <th>Tipe</th>
@@ -178,6 +163,7 @@
 									  return sum + parseInt(current.bil_total);
 									}, 0);
 									$('#total_biaya').html(this.total_biaya);
+									$(".tab-content").height("100%");
 								}, 500)
                             }
 							

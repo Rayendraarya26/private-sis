@@ -7,6 +7,7 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUser;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -232,7 +233,17 @@ class UploadKajianPermohonanController extends Controller
                     'mohon_kajian_permohonan_paskal_file'  => $dataInsert['mohon_kajian_permohonan_paskal_file'],
                 ]);
             });
-
+			
+			$dataUser = SysUser::whereIn('ug_group_id', ['10'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+			foreach ($dataUser->get() as $us) {
+				$notifUsr            = new NotifStruct();
+				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PASKAL) No #' . $request['mohon_id'];
+				$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diupload silahkan verifikasi..", $data['mohon_id'], $data['mohon_cust_nama']);
+				$notifUsr->user_id   = $us->user_id;
+				$notifUsr->click_url = url('/paskal/verifikasi');
+				sendNotification($notifUsr);
+			}
+			
             return redirect($this->url)->with('message', "Upload Kajian Permohonan #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi validasi oleh PASKAL.");
         } else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);

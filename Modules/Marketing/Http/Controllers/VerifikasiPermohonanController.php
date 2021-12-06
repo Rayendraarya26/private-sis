@@ -7,6 +7,7 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUser;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -248,6 +249,9 @@ class VerifikasiPermohonanController extends Controller
             SisPermohonan::findOrFail($request['mohon_id'])->update(['mohon_approved_status' => 'accepted']);
         });
 		
+		
+		
+			
 		// Send Push
 		$notifStruct            = new NotifStruct();
 		$notifStruct->title     = 'Permohonan anda untuk nomor #' . $request['mohon_id'] . ' telah diterima.';
@@ -255,6 +259,22 @@ class VerifikasiPermohonanController extends Controller
 		$notifStruct->user_id   = $data['user_id'];
 		$notifStruct->click_url = url('/pelanggan/sertifikasi/permohonan');
 		sendNotification($notifStruct);
+		
+		// Send Push TIM LS dan Marketing		
+		$dataUser = SysUser::whereIn('ug_group_id', ['6', '4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+		foreach ($dataUser->get() as $us) {
+            $notifUsr            = new NotifStruct();
+			$notifUsr->title     = 'Upload Kajian Permohonan #' . $request['mohon_id'];
+			$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s ,yang telah melalui proses verifikasi dan diputuskan diterima.", $data['mohon_id'], $data['mohon_cust_nama']);
+			$notifUsr->user_id   = $us->user_id;
+			
+			if($us->ug_group_id == '4' )
+				$notifUsr->click_url = url('/marketing/kajian-permohonan');
+			else
+				$notifUsr->click_url = url('/operatorls/kajian-permohonan');
+			
+			sendNotification($notifUsr);
+        }
 
 		// Send Email
 		$structEmail          = new EmailStruct();

@@ -214,6 +214,10 @@ class UploadTagihanBiayaController extends Controller
     {
         $request->validate([
             'mohon_id' => 'required|integer',
+            'user_id' => 'required',
+            'cust_id' => 'required',
+            'mohon_cust_nama' => 'required',
+            'mohon_cust_email' => 'required',
             'mohon_det_harga_permohonan' => 'required|array|min:1',
             'mohon_tagihan_biaya_file_lama' => 'nullable|string',
             'mohon_tagihan_biaya_file' => 'required|mimes:pdf'
@@ -254,6 +258,25 @@ class UploadTagihanBiayaController extends Controller
                     'mohon_harga_permohonan'  => $total_biaya,
                 ]);
             });
+			
+			$notifCust           = new NotifStruct();
+			$notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
+			$notifCust->message   = sprintf("Silahkan lakukan persetujuan Biaya untuk permohonan nomor #%s untuk %s yang telah ditentukan.", $request['mohon_id'], $request['mohon_cust_nama']);
+			$notifCust->user_id   =  $request['user_id'];
+			$notifCust->click_url = url('/marpelanggan/sertifikasi/permohonan');
+			sendNotification($notifCust);
+			
+			// Send Email
+			$structEmail          = new EmailStruct();
+			$structEmail->subject = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
+			$structEmail->body    = view('marketing::tagihan_biaya.mails.publish')
+				->with([
+					'pemohonNama'       => $request['mohon_cust_nama'],
+					'pemohonSertifNama' => $request['sert_nama'],
+					'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
+				])->render();
+			$structEmail->to      = $request['mohon_cust_email'];
+			sendEmail($structEmail);
 
             return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
         } else {

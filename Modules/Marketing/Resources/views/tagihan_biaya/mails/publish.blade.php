@@ -30,7 +30,7 @@
             {{ $pemohonNama }} mengajukan permohonan sertifikasi {{ $pemohonSertifNama }} 
 			<br>
 			<div style="color: blue; font-size: 12px;">
-				Mohon maaf karena beberapa alasan kami telah menerima permintaan anda.
+				Silahkan lakukan Persetujuan Biaya untuk permohonan anda, dengan mengklik tombol di bawah ini.
 			</div>
             <br>
             <div style="color: #636363; font-size: 14px;">

@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Penyusunan Komite')
+@section('title', 'Persetujuan Tim')
 
 @section('content')
     <div class="dt-content">
@@ -20,8 +20,8 @@
 								<tr><td>Kode NACE</td><td>: {{$dataJadwal->jadw_audit_kode_nace}}</td></tr>
 								<tr><td>EA Code</td><td>: {{$dataJadwal->jadw_audit_kode_ea}}</td></tr>
 								<tr><td>Komoditas</td><td>: {{$dataJadwal->komodt_nama}}</td></tr><tr><td>Ruang Lingkup</td><td>: {{$dataJadwal->jadw_audit_ruang_lingkup}}</td></tr>
-								<tr><td>Standar Acuan</td><td>: {{$dataJadwal->jadw_audit_standart_acuan}}</td></tr>
-								<tr><td>Kegiatan</td><td>: {{$dataJadwal->jadw_audit_kegiatan}}</td></tr>
+								@if($jenis != 'tahap-1')<tr><td>Standar Acuan</td><td>: {{$dataJadwal->jadw_audit_standart_acuan}}</td></tr>@endif
+								@if($jenis != 'tahap-1')<tr><td>Kegiatan</td><td>: {{$dataJadwal->jadw_audit_kegiatan}}</td></tr>@endif
 								<tr><td>Tujuan Audit</td><td>: {{$dataJadwal->jadw_audit_tujuan_audit}}</td></tr>
 							</tbody>
 						</table>

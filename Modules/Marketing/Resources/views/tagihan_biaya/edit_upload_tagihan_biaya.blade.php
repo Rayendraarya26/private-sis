@@ -34,6 +34,10 @@
 									
 									<input type="hidden" name="tipe" value="update-upload-tagihan-biaya">
 									<input type="hidden" name="mohon_id" value="{{$dataPermohon->mohon_id}}">
+									<input type="hidden" name="cust_id" value="{{$dataPermohon->cust_id}}">
+									<input type="hidden" name="user_id" value="{{$dataPermohon->user_id}}">
+									<input type="hidden" name="mohon_cust_nama" value="{{$dataPermohon->user_id}}">
+									<input type="hidden" name="mohon_cust_email" value="{{$dataPermohon->mohon_cust_email}}">
 									<div class="form-group row">
 										<label class="col-form-label col-sm-3" for="mohon_tagihan_biaya_file">Surat Tagihan Biaya *</label>
 										<div class="col-sm-8">
@@ -61,7 +65,7 @@
 													  <td>{{$dpk->sert_nama}}</td>
 													  <td>{!! nl2br($dpk->komodt_nama) !!}</td>
 													  <td>
-														<input class="form-control" id="mohon_det_harga_permohonan{{$dpk->mohon_det_id}}" name="mohon_det_harga_permohonan[{{$dpk->mohon_det_id}}]" value="{{$dpk->mohon_det_harga_permohonan}}" autocomplete="nope">
+														<input class="form-control" id="mohon_det_harga_permohonan{{$dpk->mohon_det_id}}" name="mohon_det_harga_permohonan[{{$dpk->mohon_det_id}}]" value="{{$dpk->mohon_det_harga_permohonan}}" autocomplete="off">
 													  </td>
 													</tr>
 													@endforeach

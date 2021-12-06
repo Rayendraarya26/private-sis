@@ -2,15 +2,16 @@
 
 namespace Modules\Keuangan\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisBilling;
 use App\Models\BbkkpSis\SisBillingItems;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -168,7 +169,11 @@ class BillingController extends Controller
             ->where('mohon_tagihan_biaya_status', '=', 'setuju')
             ->whereNotNull('mohon_pernyataan_persetujuan_file')
             ->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
-                $query->select('mohon_det_id')->from('sis_jadwal_audit')->where('cust_id', '=', $request->cust_id)->groupBy('mohon_det_id');
+                $query->select('mohon_det_id')->from('sis_jadwal_audit')
+					->join('sis_jadwal', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")
+					->whereNotNull('mohon_det_id')
+					->where('cust_id', '=', $request->cust_id)
+					->groupBy('mohon_det_id');
             })
             ->where('cust_id', '=', $request->cust_id);
 
@@ -182,7 +187,7 @@ class BillingController extends Controller
             $data->where('sert_nama', 'LIKE', '%' . $request->q . '%');
         }
         // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        $total = $data->select(DB::raw('COUNT(DISTINCT sis_permohonan_detail.mohon_det_id) as total'))->first()->total;
         // Pagination
         $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 

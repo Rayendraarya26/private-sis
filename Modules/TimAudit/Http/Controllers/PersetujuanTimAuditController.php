@@ -234,6 +234,7 @@ class PersetujuanTimAuditController extends Controller
                 DB::raw("'tahap-1' as jadw_audit_jenis"),
                 DB::raw("sis_audit_tahap1.aud_thp1_id as jadw_id"),
                 DB::raw("sis_audit_tahap1.aud_thp1_tujuan as jadw_audit_tujuan_audit"),
+                DB::raw('GROUP_CONCAT(DISTINCT sis_permohonan_detail.mohon_det_no_referensi) as jadw_audit_nomor_referensi'),
                 DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'),
                 DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_nace) as jadw_audit_kode_nace'),
                 DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ea) as jadw_audit_kode_ea'),

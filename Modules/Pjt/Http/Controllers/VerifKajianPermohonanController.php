@@ -7,6 +7,7 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUser;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -178,7 +179,20 @@ class VerifKajianPermohonanController extends Controller
                 'mohon_verif_kajian_permohonan_pjt' => 'ya',
             ]);
         });
-
+		
+		$dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id'])->select('*')->get()[0];
+		if($dataPermohon->mohon_verif_kajian_permohonan_paskal == 'ya' && $dataPermohon->mohon_verif_kajian_permohonan_pjt == 'ya'){
+			$dataUser = SysUser::whereIn('ug_group_id', ['4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+			foreach ($dataUser->get() as $us) {
+				$notifUsr            = new NotifStruct();
+				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PASKAL) No. #' . $request['mohon_id'];
+				$notifUsr->message   = sprintf("Verifikasi Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diverifikasi, silahkan lakukan proses Tagihan Biaya.", $dataPermohon->mohon_id, $dataPermohon->mohon_cust_nama);
+				$notifUsr->user_id   = $us->user_id;
+				$notifUsr->click_url = url('/marketing/tagihan-biaya');
+				sendNotification($notifUsr);
+			}
+		}
+		
         return redirect($this->url)->with('message', "Verifikasi Kajian Permohonan #" . $request->mohon_id . " telah diterima.");
     }
 }
