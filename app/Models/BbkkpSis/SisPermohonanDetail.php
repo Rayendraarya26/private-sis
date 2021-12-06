@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $cust_sert_id
  * @property int|null $sert_id
  * @property string|null $mohon_det_perlu_tahap1
+ * @property string|null $mohon_det_no_referensi
  * @property float|null $mohon_det_harga_permohonan
  * 
  * @property SisPermohonan|null $sis_permohonan
@@ -48,6 +49,7 @@ class SisPermohonanDetail extends Model
 		'cust_sert_id',
 		'sert_id',
 		'mohon_det_perlu_tahap1',
+		'mohon_det_no_referensi',
 		'mohon_det_harga_permohonan'
 	];
 
