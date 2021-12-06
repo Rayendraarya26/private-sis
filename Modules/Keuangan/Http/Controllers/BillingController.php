@@ -169,11 +169,30 @@ class BillingController extends Controller
             ->where('mohon_tagihan_biaya_status', '=', 'setuju')
             ->whereNotNull('mohon_pernyataan_persetujuan_file')
             ->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
-                $query->select('mohon_det_id')->from('sis_jadwal_audit')
+                /* $query->select('mohon_det_id')->from('sis_jadwal_audit')
 					->join('sis_jadwal', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")
 					->whereNotNull('mohon_det_id')
 					->where('cust_id', '=', $request->cust_id)
-					->groupBy('mohon_det_id');
+					->groupBy('mohon_det_id')->union(
+						DB::table('sis_audit_tahap1')->select(['mohon_det_id'])->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_audit_tahap1.bill_id')->where('cust_id', '=', $request->cust_id)
+					); */
+					
+				$query->selectRaw("mohon_det_id AS id
+								FROM
+								  sis_jadwal_audit
+								  INNER JOIN sis_jadwal
+									ON sis_jadwal.jadw_id = sis_jadwal_audit.jadw_id
+								WHERE mohon_det_id IS NOT NULL
+								  AND cust_id = '". $request->cust_id ."'
+								GROUP BY mohon_det_id
+								UNION
+								SELECT
+								  mohon_det_id AS id
+								FROM
+								  sis_audit_tahap1
+								  INNER JOIN sis_billing
+									ON sis_billing.bill_id = sis_audit_tahap1.bill_id
+								WHERE cust_id = '". $request->cust_id ."'");
             })
             ->where('cust_id', '=', $request->cust_id);
 

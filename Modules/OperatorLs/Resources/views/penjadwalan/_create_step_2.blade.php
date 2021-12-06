@@ -67,21 +67,9 @@
 								<input type="hidden" id="ukuran" value="">
 								<input type="hidden" id="satuan" value="">
 								<input type="hidden" id="kapasitas_produksi" value="">
+								<input type="hidden" id="kode_nace" value="">
+								<input type="hidden" id="kode_ea" value="">
 								
-							</div>
-						</div>
-						
-						<div class="form-group form-row" id="sertifikasi_komoditi1">
-							<label class="col-xl-3 col-form-label text-sm-left" >Kode NACE</label>
-							<div class="col-xl-8">
-								<input id="kode_nace" value="">
-							</div>
-						</div>
-						
-						<div class="form-group form-row" id="sertifikasi_komoditi2">
-							<label class="col-xl-3 col-form-label text-sm-left" >Kode EA</label>
-							<div class="col-xl-8">
-								<input id="kode_ea" value="">
 							</div>
 						</div>
 						
@@ -336,9 +324,6 @@
 							this.form_type = 'add';
 							this.form_edited_id = null;
 							$("#form-tambah").show();
-							$("#sertifikasi_komoditi").hide();
-							$("#sertifikasi_komoditi1").hide();
-							$("#sertifikasi_komoditi2").hide();
 
 							$(".tab-content").height("100%");
 						}, 500);						
@@ -366,13 +351,9 @@
 						$("#kode_nace").val("");
 						if(dt_jenis === 'sertifikasi'){
 							$("#sertifikasi_komoditi").hide();
-							// $("#sertifikasi_komoditi1").show();
-							// $("#sertifikasi_komoditi2").show();
 						}
 						else{
 							$("#sertifikasi_komoditi").hide();
-							// $("#sertifikasi_komoditi1").hide();
-							// $("#sertifikasi_komoditi2").hide();
 						}
 						
 						let urlCombo = ``;	
@@ -398,6 +379,7 @@
 										$("#sert_nama").val(row.sert_nama);
 										$("#mohon_id").val(row.mohon_id);
 										$("#mohon_det_id").val(row.mohon_det_id);
+										$("#nomor_referensi").val(row.nomor_referensi);
 										
 										if(row.cust_sert_id != ''){
 											$("#cust_sert_id").val(row.cust_sert_id);
@@ -625,10 +607,6 @@
 							this.form_type = 'update';
 							this.form_edited_id = id;
 							$("#form-tambah").show();
-							$("#sertifikasi_komoditi").hide();
-							$("#sertifikasi_komoditi1").hide();
-							$("#sertifikasi_komoditi2").hide();
-
 							$(".tab-content").height("100%");
 							
 							let selectedItem = await window.idb.jadwal_data_itms.get(id);

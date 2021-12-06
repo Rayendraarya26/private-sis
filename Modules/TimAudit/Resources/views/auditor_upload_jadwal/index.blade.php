@@ -36,7 +36,7 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: true,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
@@ -47,23 +47,12 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
+                        title: "",
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-							let dom = `dropdownMenu_${row.jadw_id}`;
-                            let btnEdit = ``;		
-							btnEdit += `<div data-options="iconCls:'fas fa-cloud-upload'" onclick="location.href = '{{ url("$url/edit") }}?tipe=upload-jadwal&jadw_id=${row.jadw_id}'">Upload Jadwal</div>`;
-							
-                            return `
-								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
-										<i class="fa fa-setting"></i> Aksi
-									</button>
-									<div id="${dom}" style="width:150px; display: none;">
-										@if(authorized("{$module}@edit")) ${btnEdit} @endif
-								</div>
-							</div>`
+							let btnEdit = `<a href="{{ url("$url/edit") }}?tipe=upload-jadwal&jadw_id=${row.jadw_id}" class="btn btn-primary btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Upload Jadwal</a>`;
+                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`;
                         }
                     }
                 ]],
@@ -84,23 +73,7 @@
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
-                ]],
-				onBeforeLoad: function () {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        try {
-                            $(this).menubutton('destroy');
-                        } catch (e) {
-                            console.log('failed destroy');
-                        }
-                    });
-                },
-                onLoadSuccess: function (data) {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
-                        });
-                    });
-                },
+                ]]
             });
             dg.datagrid(
                 'enableFilter', [

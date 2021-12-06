@@ -323,6 +323,7 @@
 						$("#sert_id").val(row.sert_id);
 						$("#mohon_id").val(row.mohon_id);
 						$("#mohon_det_id").val(row.mohon_det_id);
+						$("#nomor_referensi").val(row.nomor_referensi);
 						if(row.cust_sert_id != ''){
 							$("#cust_sert_id").val(row.cust_sert_id);
 						}
@@ -359,7 +360,7 @@
 										$("#mohon_komoditi_id").val(rowK.mohon_kmditi_id);
 										$("#komodt_id").val(rowK.komodt_id);
 										$("#komodt_nama").val(rowK.komodt_nama);
-										$("#tipe").val(rowK.mohon_kmditi_tipe);
+										$("#tipe_komoditi").val(rowK.mohon_kmditi_tipe);
 										$("#merk").val(rowK.mohon_kmditi_merk);
 										$("#sni").val(rowK.mohon_kmditi_sni);
 										$("#ukuran").val(rowK.mohon_kmditi_ukuran);
@@ -383,7 +384,7 @@
 											$("#mohon_komoditi_id").val('');
 											$("#komodt_id").val(res.komodt_id);
 											$("#komodt_nama").val(res.komoditi_nama);
-											$("#tipe").val(res.tipe);
+											$("#tipe_komoditi").val(res.tipe);
 											$("#merk").val(res.merk);
 											$("#ukuran").val(res.ukuran);
 											

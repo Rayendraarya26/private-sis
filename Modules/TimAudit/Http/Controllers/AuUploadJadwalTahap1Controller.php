@@ -79,8 +79,7 @@ class AuUploadJadwalTahap1Controller extends Controller
 
         // Pagination
         $data->select("*", "sis_audit_tahap1.aud_thp1_id AS aud_thp1_id");
-        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct thp1_tim_kesanggupan) AS thp1_tim_kesanggupan");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, ' (' , UPPER(IF(sis_permohonan_detail.cust_sert_id IS NULL, 'baru', 'lama')), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
         $data->groupBy('sis_audit_tahap1.aud_thp1_id');

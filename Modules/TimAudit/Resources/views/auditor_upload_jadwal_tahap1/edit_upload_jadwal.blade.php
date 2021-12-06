@@ -7,7 +7,7 @@
 		<div class="col-xl-12">
 			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
 			<div class="row">
-				<div class="col-xl-6">
+				<div class="col-xl-12">
 					<div class="card">
 					  <div class="card-body p-0">									
 						<table class="table">

@@ -75,8 +75,7 @@ class AuTahap1Controller extends Controller
 
         // Pagination
         $data->select("*", "sis_audit_tahap1.aud_thp1_id AS aud_thp1_id");
-        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct thp1_tim_kesanggupan) AS thp1_tim_kesanggupan");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, ' (' , UPPER(IF(sis_permohonan_detail.cust_sert_id IS NULL, 'baru', 'lama')), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
         $data->groupBy('sis_audit_tahap1.aud_thp1_id');
@@ -193,6 +192,7 @@ class AuTahap1Controller extends Controller
             "aud_thp1_id" => 'required',
             "sert_id"     => 'required',
             "mohon_id"    => 'required',
+            "sert_tahap1_jenis"    => 'required',
         ]);
 
         try {
@@ -214,23 +214,43 @@ class AuTahap1Controller extends Controller
 
             $restDataDet = DB::table('sis_audit_tahap1_detail')->where('aud_thp1_id', $request['aud_thp1_id'])->first();
             if ($restDataDet === null) {
-                $dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
+				if($request['sert_tahap1_jenis'] == 'sni'){
+					$dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
 
-                if ($dts !== null) {
-                    foreach ($dts as $dt) {
-                        DB::table('sis_audit_tahap1_detail')->insert([
-                            'aud_thp1_id'                 => intval($aud_thp1_id),
-                            'klausul_thp1_id'             => intval($dt->klausul_thp1_id),
-                            'aud_thp1_det_thp1_nomor'     => $dt->klausul_thp1_nomor,
-                            'aud_thp1_det_peryataan'      => $dt->klausul_thp1_peryataan,
-                            'aud_thp1_det_is_tinjauan'    => $dt->klausul_thp1_is_tinjauan,
-                            'aud_thp1_det_kode_dok'       => NULL,
-                            'aud_thp1_det_judul_dok'      => NULL,
-                            'aud_thp1_det_hasil_tinjauan' => NULL,
-                            'aud_thp1_det_keterangan'     => NULL,
-                        ]);
-                    }
-                }
+					if ($dts !== null) {
+						foreach ($dts as $dt) {
+							DB::table('sis_audit_tahap1_detail')->insert([
+								'aud_thp1_id'                 => intval($aud_thp1_id),
+								'klausul_thp1_id'             => intval($dt->klausul_thp1_id),
+								'aud_thp1_det_thp1_nomor'     => $dt->klausul_thp1_nomor,
+								'aud_thp1_det_peryataan'      => $dt->klausul_thp1_peryataan,
+								'aud_thp1_det_is_tinjauan'    => $dt->klausul_thp1_is_tinjauan,
+								'aud_thp1_det_kode_dok'       => NULL,
+								'aud_thp1_det_judul_dok'      => NULL,
+								'aud_thp1_det_hasil_tinjauan' => NULL,
+								'aud_thp1_det_keterangan'     => NULL,
+							]);
+						}
+					}
+				}
+				else if($request['sert_tahap1_jenis'] == 'pusat'){
+					$dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
+
+					if ($dts !== null) {
+						foreach ($dts as $dt) {
+							DB::table('sis_audit_tahap1_detail')->insert([
+								'aud_thp1_id'                 => intval($aud_thp1_id),
+								'klausul_thp1_id'             => intval($dt->klausul_thp1_id),
+								'aud_thp1_det_thp1_nomor'     => $dt->klausul_thp1_nomor,
+								'aud_thp1_det_persyaratan'      => $dt->klausul_thp1_peryataan,
+								'aud_thp1_det_is_tinjauan'    => $dt->klausul_thp1_is_tinjauan,
+								'aud_thp1_det_nilai'       => NULL,
+								'aud_thp1_det_satuan'      => NULL,
+							]);
+						}
+					}
+				}
+                
             }
 
             DB::commit();
@@ -246,6 +266,7 @@ class AuTahap1Controller extends Controller
             "aud_thp1_id"           => 'required',
             "sert_id"               => 'required',
             "mohon_id"              => 'required',
+            "jenis"              => 'required',
             "kolom_v"               => 'required',
             "kolom_vi"              => 'required',
             "kolom_vii"             => 'required',
@@ -257,9 +278,11 @@ class AuTahap1Controller extends Controller
             "status_audit"          => 'required',
             "tutup_audit"           => 'required',
             "detail_hasil_tinjauan" => 'required',
-            "detail_judul_dok"      => 'required',
             "detail_keterangan"     => 'required',
-            "detail_kode_dok"       => 'required',
+            "detail_judul_dok"      => 'nullable',
+            "detail_kode_dok"       => 'nullable',
+            "detail_nilai"       => 'nullable',
+            "detail_satuan"       => 'nullable',
         ]);
         try {
             DB::beginTransaction();
@@ -284,19 +307,36 @@ class AuTahap1Controller extends Controller
                     "aud_thp1_kolom_xii"  => $request['kolom_xii'],
                     "updated_at"          => Carbon::now(),
                 ]);
-
-            if (!empty($request['detail_kode_dok'])) {
-                foreach ($request['detail_kode_dok'] as $key => $val) {
-                    DB::table('sis_audit_tahap1_detail')
-                        ->where('aud_thp1_det_id', $key)
-                        ->update([
-                            'aud_thp1_det_kode_dok'       => $val,
-                            'aud_thp1_det_judul_dok'      => isset($request['detail_judul_dok'][$key]) ? $request['detail_judul_dok'][$key] : NULL,
-                            'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
-                            'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-                        ]);
-                }
-            }
+			
+			if($request['jenis'] == 'sni'){
+				if (!empty($request['detail_kode_dok'])) {
+					foreach ($request['detail_kode_dok'] as $key => $val) {
+						DB::table('sis_audit_tahap1_detail')
+							->where('aud_thp1_det_id', $key)
+							->update([
+								'aud_thp1_det_kode_dok'       => $val,
+								'aud_thp1_det_judul_dok'      => isset($request['detail_judul_dok'][$key]) ? $request['detail_judul_dok'][$key] : NULL,
+								'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
+								'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+							]);
+					}
+				}
+			}
+			else if($request['jenis'] == 'pusat'){
+				if (!empty($request['detail_nilai'])) {
+					foreach ($request['detail_nilai'] as $key => $val) {
+						DB::table('sis_audit_tahap1_detail')
+							->where('aud_thp1_det_id', $key)
+							->update([
+								'aud_thp1_det_nilai'       => $val,
+								'aud_thp1_det_satuan'      => isset($request['detail_satuan'][$key]) ? $request['detail_satuan'][$key] : NULL,
+								'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
+								'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+							]);
+					}
+				}
+			}
+            
 
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');

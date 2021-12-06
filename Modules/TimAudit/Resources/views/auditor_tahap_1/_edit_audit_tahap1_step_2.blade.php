@@ -66,15 +66,15 @@
                     </div>
 				</div>
 				<div class="form-group">
-					<label class="label-form">Tutup Audit Tahap I?</label>
+					<label class="label-form">Simpan sebagai Draft?</label>
 					<div class="col-md-12">
                       <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="aud_thp1_ditutup" id="aud_thp1_ditutup1" value="ya" @click="setTutupAudit('ya')" @if(isset($dataAudit->aud_thp1_ditutup)) @if($dataAudit->aud_thp1_ditutup == 'ya') checked @endif @endif>
-                        <label class="form-check-label" for="aud_thp1_ditutup1">Selesai/Ditutup</label>
+                        <label class="form-check-label" for="aud_thp1_ditutup1">Tidak</label>
                       </div>
                       <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="aud_thp1_ditutup" id="aud_thp1_ditutup2" value="tidak" @click="setTutupAudit('tidak')" @if(isset($dataAudit->aud_thp1_ditutup)) @if($dataAudit->aud_thp1_ditutup == 'tidak') checked @endif @endif>
-                        <label class="form-check-label" for="aud_thp1_ditutup2">Proses/Belum ditutup</label>
+                        <label class="form-check-label" for="aud_thp1_ditutup2">Ya</label>
                       </div>
                     </div>
 				</div>
@@ -145,6 +145,7 @@
 								formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}');
 								formData.append("sert_id", '{{$dataJadwal->sert_id}}');
 								formData.append("mohon_id", '{{$dataJadwal->mohon_id}}');
+								formData.append("jenis", '{{$dataJadwal->sert_tahap1_jenis}}');
 								formData.append("kolom_v", tinyMCE.get('kolom_v').getContent());
 								formData.append("kolom_vi", tinyMCE.get('kolom_vi').getContent());
 								formData.append("kolom_vii", tinyMCE.get('kolom_vii').getContent());
@@ -161,8 +162,13 @@
 										var myRadio = $("input[name=hasil_tinjauan_{{$dpk->aud_thp1_det_id}}]");
 										var checkedValue = myRadio.filter(":checked").val();
 										formData.append("detail_hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]", checkedValue);
+										@if($dataJadwal->sert_tahap1_jenis == 'sni')
 										formData.append("detail_kode_dok[{{$dpk->aud_thp1_det_id}}]", $('input[name="kode_dok[{{$dpk->aud_thp1_det_id}}]').val());
 										formData.append("detail_judul_dok[{{$dpk->aud_thp1_det_id}}]", $('input[name="judul_dok[{{$dpk->aud_thp1_det_id}}]').val());
+										@elseif($dataJadwal->sert_tahap1_jenis == 'pusat')
+										formData.append("detail_nilai[{{$dpk->aud_thp1_det_id}}]", $('input[name="nilai[{{$dpk->aud_thp1_det_id}}]').val());
+										formData.append("detail_satuan[{{$dpk->aud_thp1_det_id}}]", $('input[name="satuan[{{$dpk->aud_thp1_det_id}}]').val());
+										@endif
 										formData.append("detail_keterangan[{{$dpk->aud_thp1_det_id}}]", $('textarea[name="keterangan_{{$dpk->aud_thp1_det_id}}').val());
 									@endif
 								@endforeach

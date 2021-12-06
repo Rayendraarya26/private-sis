@@ -107,6 +107,7 @@
 						$.messager.progress();
 						let formData = new FormData();
 						formData.append("tipe", 'update-generate-tahap1')
+						formData.append("sert_tahap1_jenis", '{{$dataJadwal->sert_tahap1_jenis}}')
 						formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}')
 						formData.append("sert_id", '{{$dataJadwal->sert_id}}')
 						formData.append("mohon_id", '{{$dataJadwal->mohon_id}}')

@@ -284,6 +284,7 @@ class PenjadwalanController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['nomor_sni']                = $d->sert_sni;
+			$x['nomor_referensi']  = $d->mohon_det_no_referensi;
 			
             if ($request->jenis_status == 're-sertifikasi') {
                 $x['komodt_id']        = $d->komodt_id;
