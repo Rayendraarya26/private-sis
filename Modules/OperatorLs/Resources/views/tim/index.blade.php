@@ -87,7 +87,7 @@
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                     {field: 'jadw_team_status', title: 'Status<br/>Tim', width: 100, sortable: true},
-                    {field: 'total_tim', title: 'Jumlah<br/>Tim', width: 100, sortable: true},
+                    {field: 'total_tim', title: 'Jumlah<br/>Tim', width: 100, sortable: false},
                 ]],
 				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
@@ -117,7 +117,6 @@
                             panelHeight: 'auto',
                             value: '',
                             data: [
-                                {value: 'accepted', text: 'Accepted'},
                                 {value: 'revisi', text: 'Revisi'},
                                 {value: 'on-going', text: 'On-going'},
                                 {value: '', text: 'Semua'}

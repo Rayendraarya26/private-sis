@@ -644,13 +644,13 @@
 
     async function initIDB() {
         window.idb = new Dexie("bbkkp_sis");
-        window.idb.version(74).stores({
+        window.idb.version(80).stores({
             pelanggan_permohonan: "++id, &name, value",
 			bill_data: "++id, &name, value",
 			bill_data_itms: "++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas",
 			jadwal_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id",
 			jadwal_data_itms: "++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id",
-			tahap1_data: "++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi",
+			tahap1_data: "++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart",
 			tahap1_data_tim: "++id, peg_id, peg_nama, kode, posisi",
 			pencabutan_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id",
 			pencabutan_data_itms: "++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id",

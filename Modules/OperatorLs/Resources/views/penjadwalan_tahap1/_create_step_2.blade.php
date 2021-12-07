@@ -174,6 +174,7 @@
 									formData.append("sert_tahap1_jenis", currentaData.jenis_sertifikasi)
 									formData.append("bill_id", currentaData.bill_id)
 									formData.append("aud_thp1_tujuan", currentaData.tujuan)
+									formData.append("aud_thp1_standart_acuan", currentaData.standart)
 								}
 								// Step 2
 								const dataTims = this.jadwal_tims;

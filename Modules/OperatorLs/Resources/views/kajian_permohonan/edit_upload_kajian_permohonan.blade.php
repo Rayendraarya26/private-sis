@@ -125,7 +125,7 @@
 				width: 200,
 				multiple: true,
 				method: 'get',
-				valueField:'nama',
+				valueField:'id',
 				textField:'nama',
 			});
 			

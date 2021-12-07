@@ -266,7 +266,7 @@ class UploadKajianPermohonanController extends Controller
             'mohon_kajian_permohonan_file_lama' => 'nullable|string',
             'mohon_kajian_permohonan_file'      => 'required|file|mimes:doc,pdf,docx,zip,xls,xlsx'
         ]);
-
+		
         $dataInsert = [
             'mohon_id'                   => $request->mohon_id,
             'mohon_det_id'         => $request->mohon_det_id,
@@ -295,11 +295,12 @@ class UploadKajianPermohonanController extends Controller
 				$data_detail = [];
                 if (!empty($dataInsert['mohon_kmditi_ruang_lingkup'])) {
                     foreach ($dataInsert['mohon_kmditi_ruang_lingkup'] as $key => $val) {
+						$mohon_kmditi_nace = MasterKodeNace::select(DB::raw("IFNULL(GROUP_CONCAT(DISTINCT kode_nace_nama SEPARATOR '; '), '') as kode"))->whereIn('kode_nace_id', $dataInsert['mohon_kmditi_nace'][$key])->first()->kode;
                         DB::table('sis_permohonan_komoditi')
                             ->where('mohon_kmditi_id', $key)
                             ->update([
                                 "mohon_kmditi_ruang_lingkup" => $val,
-                                "mohon_kmditi_nace"          => implode(';', $dataInsert['mohon_kmditi_nace'][$key]),
+                                "mohon_kmditi_nace"          => $mohon_kmditi_nace,
                                 "mohon_kmditi_ea"            => $dataInsert['mohon_kmditi_ea'][$key],
                             ]);
 						

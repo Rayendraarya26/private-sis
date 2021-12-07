@@ -52,7 +52,8 @@ class BillingController extends Controller
     private function ajax_datagrid_billing(Request $request)
     {
         $data = SisBilling::join('sis_billing_items', "sis_billing.bill_id", "=", "sis_billing_items.bill_id");
-        $data->join('sis_pelanggan', "sis_billing.cust_id", "=", "sis_pelanggan.cust_id");
+        $data->join('sis_pelanggan', "sis_billing.cust_id", "=", "sis_pelanggan.cust_id")
+			->leftJoin('sis_jadwal', "sis_billing.bill_id", "=", "sis_jadwal.bill_id");
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -77,12 +78,13 @@ class BillingController extends Controller
         // Total
         $total = $data->select(DB::raw('count(distinct sis_billing.bill_id) as total'))->first()->total;
         // Pagination
-        $data->select("*", DB::raw('SUM(sis_billing_items.itms_bil_total) as itms_bil_total'))->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("*", DB::raw('SUM(sis_billing_items.itms_bil_total) as itms_bil_total'), "sis_billing.bill_id AS bill_id", "sis_jadwal.bill_id AS jdwl_bill_id")->skip(($request->page - 1) * $request->rows)->take($request->rows);
         $data->groupBy('sis_billing.bill_id');
 
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['jdwl_bill_id'] = ($d->jdwl_bill_id != '') ? 'terjadwalkan' : 'belum';
             $x['bill_status_pembayaran'] = ($d->bill_payment_file != '') ? 'sudah' : 'belum';
             $x['bill_payment_status']    = $d->bill_payment_status;
             $x['itms_bil_total']         = number_format($d->itms_bil_total, 2, ',', '.');
@@ -580,8 +582,31 @@ class BillingController extends Controller
     {
         $request->validate([
             "bil_id" => 'required',
+            "cust_id" => 'required',
         ]);
         SisBilling::findOrFail($request['bil_id'])->update(['bill_payment_status' => 'lunas']);
+		
+		$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+		// Send Push
+		$notifStruct            = new NotifStruct();
+		$notifStruct->title     = 'Informasi Billing';
+		$notifStruct->message   = sprintf("Billing dengan nomor %s telah dinyatakan LUNAS.", $request['bill_nomor_billing']);
+		$notifStruct->user_id   = $data_pelanggan?->user_id;
+		$notifStruct->click_url = url('/pelanggan/billing');
+		sendNotification($notifStruct);
+
+		// Send Email
+		$structEmail          = new EmailStruct();
+		$structEmail->subject = "Informasi Billing";
+		$structEmail->body    = view('keuangan::billing.mails.publish')
+			->with([
+				'nama'       => $data_pelanggan?->cust_nama,
+				'message'    => sprintf("Billing dengan nomor %s telah dinyatakan LUNAS.", $request['bill_nomor_billing']),
+				'link_verif' => url('/pelanggan/billing'),
+			])->render();
+		$structEmail->to      = $data_pelanggan?->cust_email;
+		sendEmail($structEmail);
+		
         return redirect($this->url)->with('message', "Nomor biling #" . $request->bill_nomor_billing . " sudah berhasil dilunaskan.");
     }
 

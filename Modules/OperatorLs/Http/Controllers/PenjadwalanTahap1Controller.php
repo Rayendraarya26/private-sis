@@ -285,6 +285,7 @@ class PenjadwalanTahap1Controller extends Controller
             "aud_thp1_tanggal_mulai"   => 'required',
             "aud_thp1_tanggal_selesai" => 'required',
             "aud_thp1_tujuan"          => 'required',
+            "aud_thp1_standart_acuan"          => 'required',
             "jadwal_tims"              => 'required',
         ]);
 
@@ -297,6 +298,7 @@ class PenjadwalanTahap1Controller extends Controller
             $newSisAuditTahap1->aud_thp1_tanggal_mulai   = $request['aud_thp1_tanggal_mulai'];
             $newSisAuditTahap1->aud_thp1_tanggal_selesai = $request['aud_thp1_tanggal_selesai'];
             $newSisAuditTahap1->aud_thp1_tujuan          = $request['aud_thp1_tujuan'];
+            $newSisAuditTahap1->aud_thp1_standart_acuan		= $request['aud_thp1_standart_acuan'];
             $newSisAuditTahap1->created_at               = Carbon::now();
             $newSisAuditTahap1->updated_at               = Carbon::now();
             $newSisAuditTahap1->save();
@@ -450,6 +452,7 @@ class PenjadwalanTahap1Controller extends Controller
             "aud_thp1_tanggal_mulai"   => 'required',
             "aud_thp1_tanggal_selesai" => 'required',
             "aud_thp1_tujuan"          => 'required',
+            "aud_thp1_standart_acuan"          => 'required',
         ]);
 
         try {
@@ -458,6 +461,7 @@ class PenjadwalanTahap1Controller extends Controller
                 'aud_thp1_tanggal_mulai'   => $request['aud_thp1_tanggal_mulai'],
                 'aud_thp1_tanggal_selesai' => $request['aud_thp1_tanggal_selesai'],
                 'aud_thp1_tujuan'          => $request['aud_thp1_tujuan'],
+                'aud_thp1_standart_acuan'          => $request['aud_thp1_standart_acuan'],
             ];
             SisAuditTahap1::findOrFail($request['aud_thp1_id'])->update($dt_update);
             DB::commit();

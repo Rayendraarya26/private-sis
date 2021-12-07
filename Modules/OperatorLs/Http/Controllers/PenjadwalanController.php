@@ -155,7 +155,10 @@ class PenjadwalanController extends Controller
         $data->where('sis_jadwal_audit.jadw_id', '=', $request['jadw_id']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                if($f->field == 'jadw_id')
+					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+				else
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -163,7 +166,10 @@ class PenjadwalanController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
+                if($sort[$i] == 'jadw_id')
+					$data->orderBy('sis_jadwal.jadw_id', $order[$i]);
+				else
+					$data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total
@@ -205,7 +211,10 @@ class PenjadwalanController extends Controller
 
     private function ajax_combogrid_pelanggan(Request $request)
     {
-        $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id");
+        $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
+		->whereNotIn('bill_id', function ($query) use ($request) {
+                $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
+            });
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {

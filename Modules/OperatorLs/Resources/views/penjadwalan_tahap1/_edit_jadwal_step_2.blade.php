@@ -138,6 +138,7 @@
 								formData.append("aud_thp1_tanggal_mulai", window.vueStepOne.aud_thp1_tanggal_mulai);
 								formData.append("aud_thp1_tanggal_selesai", window.vueStepOne.aud_thp1_tanggal_selesai);
 								formData.append("aud_thp1_tujuan", window.vueStepOne.aud_thp1_tujuan);
+								formData.append("aud_thp1_standart_acuan", window.vueStepOne.aud_thp1_standart_acuan);
 
 								this.loading_submit = true;
 								let self = this;

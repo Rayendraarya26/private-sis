@@ -47,19 +47,22 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "<br><br>",
+                        title: "<br><br><br>",
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.aud_thp1_id}`;
                             let btnEdit = ``;	
-							if(row.aud_thp1_status != 'on-going'){
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Revisi Audit</div>`;
+							if(row.aud_thp1_status_temuan == 'proses'){
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Audit</div>`;
+							}
+							else if(row.aud_thp1_status_temuan == 'diajukan'){
 								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
 								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
 							}
 							else {
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Audit</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Revisi Audit</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-flag'" onclick="location.href = '{{ url("$url/print") }}?tipe=lihat-revisi&aud_thp1_id=${row.aud_thp1_id}'">Lihat Revisi</div>`;
 							}
 							
                             return `
@@ -80,6 +83,7 @@
                             return `${row.aud_thp1_id}`
                         }
 					},
+                    {field: 'aud_thp1_status_temuan', title: 'Status<br/>Pengajuan<br/>Temuan', width: 150, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'aud_thp1_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
@@ -106,6 +110,29 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+					{
+                        field: 'aud_thp1_status_temuan',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            value: '',
+                            data: [
+                                {value: 'proses', text: 'Proses/Draft'},
+                                {value: 'diajukan', text: 'Diajukan'},
+                                {value: 'revisi', text: 'Revisi'},
+                                {value: '', text: 'Semua'}
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'aud_thp1_status_temuan',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
 					{
                         field: 'aud_thp1_status',
                         type: 'combobox',

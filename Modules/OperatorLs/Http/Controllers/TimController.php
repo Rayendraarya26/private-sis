@@ -60,12 +60,15 @@ class TimController extends Controller
 
         // Filter
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
-        $data->where('sis_jadwal.jadw_team_status', '!=', 'fixed');
+        $data->whereNotIn('sis_jadwal.jadw_team_status', ['accepted', 'fixed']);
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '!=', 'submited');
 		$data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                if($f->field == 'jadw_id')
+					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+				else
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -73,7 +76,10 @@ class TimController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
+                if($sort[$i] == 'jadw_id')
+					$data->orderBy('sis_jadwal.jadw_id', $order[$i]);
+				else
+					$data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total

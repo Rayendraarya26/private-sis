@@ -20,6 +20,12 @@
 			</div>
 		</div>
 		<div class="form-group">
+			<label class="col-xl-3 col-form-label text-sm-left" for="aud_thp1_tanggal_selesai">Standart Acuan</label>
+			<div class="col-xl-7">
+			  <textarea class="form-control" id="aud_thp1_standart_acuan" v-on:keyup="standartSet" v-model="aud_thp1_standart_acuan"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
 			<label class="col-xl-3 col-form-label text-sm-left" for="aud_thp1_tanggal_mulai">Tanggal Mulai</label>
 			<div class="col-xl-3">
 			  <input type="text" class="form-control" id="aud_thp1_tanggal_mulai" style="max-width:300px;">
@@ -66,6 +72,7 @@
                     bill_id: `{{$dataJadwal->bill_id}}`,
                     mohon_id: `{{$dataJadwal->mohon_id}}`,
                     aud_thp1_tujuan: `{{$dataJadwal->aud_thp1_tujuan}}`,
+                    aud_thp1_standart_acuan: `{{$dataJadwal->aud_thp1_standart_acuan}}`,
                     aud_thp1_tanggal_mulai: `{{$dataJadwal->aud_thp1_tanggal_mulai?->format("Y-m-d")}}`,
                     aud_thp1_tanggal_selesai: `{{$dataJadwal->aud_thp1_tanggal_selesai?->format("Y-m-d")}}`,
                 },
@@ -75,7 +82,9 @@
                 methods: {
 					tujuanSet: async function(event) {
 						this.aud_thp1_tujuan = $('#aud_thp1_tujuan').val();
-						console.log($('#aud_thp1_tujuan').val());
+					},
+					standartSet: async function(event) {
+						this.aud_thp1_standart_acuan = $('#aud_thp1_standart_acuan').val();
 					},
 					async setTanggalMulai(date) {
 						this.aud_thp1_tanggal_mulai = date;
@@ -85,11 +94,13 @@
 					},
                     validate() {
                         if ($("#aud_thp1_tujuan").val() == '') throw "Isi Tujuan Audit"
+                        if ($("#aud_thp1_standart_acuan").val() == '') throw "Isi Stadart Acuan"
                         if ($("#aud_thp1_tanggal_mulai").val() == '') throw "Isi Tanggal Mulai"
                         if ($("#aud_thp1_tanggal_selesai").val() == '') throw "Isi Tanggal Selesai"
                     },
                     async setForm() {
 						$('#aud_thp1_tujuan').val(`${this.aud_thp1_tujuan}`);
+						$('#aud_thp1_standart_acuan').val(`${this.aud_thp1_standart_acuan}`);
 						let self = this;
 						
 						$('#aud_thp1_tanggal_mulai').datebox({

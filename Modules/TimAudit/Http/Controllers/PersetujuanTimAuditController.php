@@ -234,6 +234,7 @@ class PersetujuanTimAuditController extends Controller
                 DB::raw("'tahap-1' as jadw_audit_jenis"),
                 DB::raw("sis_audit_tahap1.aud_thp1_id as jadw_id"),
                 DB::raw("sis_audit_tahap1.aud_thp1_tujuan as jadw_audit_tujuan_audit"),
+                DB::raw("sis_audit_tahap1.aud_thp1_standart_acuan as jadw_audit_standart_acuan"),
                 DB::raw('GROUP_CONCAT(DISTINCT sis_permohonan_detail.mohon_det_no_referensi) as jadw_audit_nomor_referensi'),
                 DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'),
                 DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_nace) as jadw_audit_kode_nace'),
@@ -246,8 +247,8 @@ class PersetujuanTimAuditController extends Controller
 			$dataJadwal->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
 				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
 				->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-				->join('sis_permohonan_komoditi', "sis_permohonan_komoditi.mohon_det_id", "=", "sis_permohonan_detail.mohon_det_id")
-				->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+				->leftJoin('sis_permohonan_komoditi', "sis_permohonan_komoditi.mohon_det_id", "=", "sis_permohonan_detail.mohon_det_id")
+				->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
 				->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
 				->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
 				->join('sis_audit_tahap1_tim', "sis_audit_tahap1_tim.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id")

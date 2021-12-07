@@ -52,6 +52,15 @@
 
 @push("javascript")
     <script>
+		function statusStyle(value,row,index){
+            if (value == 'lunas'){
+                return 'background-color:blue;color:white;';
+            }
+			else{
+				return 'background-color:#ffee00;color:red;';
+			}
+        }
+		
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -87,7 +96,9 @@
 								}
 							}
 							else{
-								btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="confirmBelumLunas(${row.bill_id})">Set Belum Lunas</div>`;
+								if(row.jdwl_bill_id == 'belum'){
+									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="confirmBelumLunas(${row.bill_id})">Set Belum Lunas</div>`;
+								}
 								btnDetail += `<div data-options="iconCls:'fad fa-folder-open'" onclick="location.href = '{{ url("$url/detail") }}?bill_id=${row.bill_id}'">Detail</div>`;
 							}
 							
@@ -108,7 +119,7 @@
                 ]],
                 columns: [[
                     {field: 'bill_status_pembayaran', title: 'Sudah<br>Dibayar?', width: 100, sortable: true},
-                    {field: 'bill_payment_status', title: 'Lunas ?', width: 100, sortable: true},
+                    {field: 'bill_payment_status', title: 'Lunas ?', width: 100, sortable: true, styler:statusStyle},
                     {field: 'bill_nomor_billing', title: 'No.<br/>Billing', width: 120, sortable: true},
                     {field: 'bill_billing_date', title: 'Tanggal<br/>Billing', width: 100, sortable: true},
                     {field: 'bill_due_date', title: 'Jatuh<br/>Tempo', width: 100, sortable: true},
@@ -141,9 +152,10 @@
                         type: 'combobox',
                         options: {
                             panelHeight: 'auto',
-                            value: 'proses',
+                            value: '',
                             data: [
-                                {value: 'proses', text: 'Proses'},
+                                {value: 'menunggu pembayaran', text: 'menunggu pembayaran'},
+                                {value: 'menunggu konfirmasi', text: 'menunggu konfirmasi'},
                                 {value: 'lunas', text: 'Lunas'},
                                 {value: '', text: 'Semua'}
                             ],

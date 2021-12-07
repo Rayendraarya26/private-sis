@@ -37,6 +37,7 @@
                                     @csrf
                                     <input type="hidden" name="tipe" value="pelunasan">
                                     <input type="hidden" name="bil_id" value="{{old('bil_id') ?? $data_billing->bill_id}}">
+                                    <input type="hidden" name="cust_id" value="{{old('cust_id') ?? $data_billing->cust_id}}">
                                     <input type="hidden" name="bill_nomor_billing" value="{{old('bill_nomor_billing') ?? $data_billing->bill_nomor_billing}}">
 									<div class="table-responsive">
 										<table class="table table-hover mb-0">

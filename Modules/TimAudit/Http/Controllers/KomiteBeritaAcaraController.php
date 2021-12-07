@@ -387,7 +387,7 @@ class KomiteBeritaAcaraController extends Controller
 
 			// Send Email
 			$structEmail          = new EmailStruct();
-			$structEmail->subject = "Penjadwalan Pencabutan Sertifikasi";
+			$structEmail->subject = "Proses Sertifikasi Telah Selesai";
 			$structEmail->body    = view("$this->view.mails.publish")
 				->with([
 					'nama'       => $data_pelanggan?->cust_nama,
