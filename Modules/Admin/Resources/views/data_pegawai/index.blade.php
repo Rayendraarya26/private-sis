@@ -83,7 +83,7 @@
                     },
                 ]],
                 columns: [[
-
+                    {field: 'peg_kode', title: 'Kode', width: 60, sortable: true},
                     {field: 'user_fullname', title: 'Fullname', width: 200, sortable: true},
                     {field: 'user_email', title: 'Email', width: 200, sortable: true},
                     {
@@ -110,6 +110,7 @@
                 'enableFilter', [
                     {field: 'ck', type: 'label'},
                     {field: 'action', type: 'label'},
+                    {field: 'peg_kode', type: 'label'},
                     {field: 'user_picture', type: 'label'},
                     {field: 'user_last_login', type: 'label'},
                     {field: 'user_created_at', type: 'label'},

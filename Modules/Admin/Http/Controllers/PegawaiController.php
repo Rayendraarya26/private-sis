@@ -53,6 +53,7 @@ class PegawaiController extends Controller
             $request->validate([
                 'nip'           => 'required|string',
                 'fullname'      => 'required|string',
+                'peg_kode'      => 'required|string',
                 'email'         => 'required|email|min:4|unique:App\Models\BbkkpSis\SysUser,user_email',
                 'password'      => 'required|min:4|confirmed',
                 'foto'          => 'sometimes|max:500|mimes:jpeg,jpg,png',
@@ -96,6 +97,7 @@ class PegawaiController extends Controller
             $pegawai                 = new MasterPegawai();
             $pegawai->user_id        = $newUser->user_id;
             $pegawai->peg_nama       = $newUser->user_fullname;
+            $pegawai->peg_kode       = $request['peg_kode'];
             $pegawai->peg_alamat     = $request['alamat'];
             $pegawai->peg_telp       = $request['no_telp'];
             $pegawai->peg_nip        = $request['nip'];
@@ -165,6 +167,7 @@ class PegawaiController extends Controller
         $oldPath      = [];
         $request->validate([
             'nip'           => 'required|string',
+            'peg_kode'      => 'required|string',
             'fullname'      => 'required|string',
             'email'         => 'required|email|min:4',
             'password'      => 'sometimes|min:4|confirmed',
@@ -213,6 +216,7 @@ class PegawaiController extends Controller
             // Update Master Pegarai
             $pegawai             = $currentUser->master_pegawai;
             $pegawai->peg_nama   = $currentUser->user_fullname;
+            $pegawai->peg_kode   = $request['peg_kode'];
             $pegawai->peg_alamat = $request['alamat'];
             $pegawai->peg_telp   = $request['no_telp'];
             $pegawai->peg_nip    = $request['nip'];
@@ -298,6 +302,7 @@ class PegawaiController extends Controller
     private function ajax_datagrid(Request $request)
     {
         $data = SysUser::whereNotIn('ug_group_id', [1, 3])
+            ->with('master_pegawai')
             ->leftJoin('sys_user_group', 'ug_user_id', '=', 'user_id');
         // Filter
         if (!empty($request->filterRules)) {
@@ -327,6 +332,7 @@ class PegawaiController extends Controller
             $x['user_id']         = $d->user_id;
             $x['user_fullname']   = $d->user_fullname;
             $x['user_email']      = $d->user_email;
+            $x['peg_kode']        = $d->master_pegawai->peg_kode;
             $x['user_is_active']  = ucwords($d->user_is_active);
             $x['user_picture']    = url(config("app.url_profile_image") . $d->user_picture);
             $x['user_last_login'] = !empty($d->user_last_login) ? Carbon::createFromFormat('Y-m-d H:i:s', $d->user_last_login)->format("d M Y, h:i:s") : $d->user_last_login;

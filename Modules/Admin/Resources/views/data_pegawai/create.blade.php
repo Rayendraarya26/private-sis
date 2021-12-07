@@ -45,6 +45,13 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="peg_kode">Kode Pegawai*</label>
+                                        <div class="col-sm-8">
+                                            <input class="form-control" placeholder="Masukkan kode pegawai..." type="text"
+                                                   name="peg_kode" id="peg_kode" value="{{old('peg_kode')}}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="email">Email*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan email..." type="email"

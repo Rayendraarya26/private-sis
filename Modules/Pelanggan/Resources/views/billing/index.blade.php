@@ -79,7 +79,11 @@
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.bill_payment_status != 'lunas') {
-                                return `<a href="{{url("$url/upload")}}/${row.bill_id}" class="btn btn-xs btn-success"><i class="fad fa-upload"></i> Bukti Pembayaran </a>`
+                                let btnColor = 'btn-success';
+                                if (row.bill_payment_file != null){
+                                    btnColor = "btn-warning"
+                                }
+                                return `<a href="{{url("$url/upload")}}/${row.bill_id}" class="btn btn-xs ${btnColor}"><i class="fad fa-upload"></i> Bukti Pembayaran </a>`
                             }
                         }
                     }
@@ -118,7 +122,7 @@
                             if (val.length > 0) {
                                 let items = "<ul>";
                                 val.map(e => {
-                                    items += `<li>${e.itms_bil_tipe.toUpperCase()} <br>${e.itms_bil_desc} <br> <i>Rp${e.itms_bil_total.toString().formatUang('.')}<i></li>`
+                                    items += `<li>${e.itms_bil_tipe.toUpperCase()} <br>${e.itms_bil_desc} <br> <i>Rp${e.itms_bil_total.toString().formatUang('.')}</i></li>`
                                 })
                                 items += "</ul>";
 
