@@ -29,7 +29,7 @@
 									</div>
 								</div>
 								<div class="form-group form-row">
-									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">Rekomendasi Komite</label>
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">Lembar Periksa</label>
 									<div class="col-xl-5">
 										<a href="{{ url("$url/detail") }}?tipe=detail-periksa&jadw_id={{$dataJadwal->jadw_id}}" target="blank">Lihat Data</a>
 									</div>

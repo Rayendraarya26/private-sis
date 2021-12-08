@@ -295,6 +295,7 @@ class PenjadwalanTahap1Controller extends Controller
             $newSisAuditTahap1->mohon_id                 = $request['mohon_id'];
             $newSisAuditTahap1->mohon_det_id                 = $request['mohon_det_id'];
             $newSisAuditTahap1->bill_id                  = $request['bill_id'];
+            $newSisAuditTahap1->sert_tahap1_jenis   = $request['sert_tahap1_jenis'];
             $newSisAuditTahap1->aud_thp1_tanggal_mulai   = $request['aud_thp1_tanggal_mulai'];
             $newSisAuditTahap1->aud_thp1_tanggal_selesai = $request['aud_thp1_tanggal_selesai'];
             $newSisAuditTahap1->aud_thp1_tujuan          = $request['aud_thp1_tujuan'];
