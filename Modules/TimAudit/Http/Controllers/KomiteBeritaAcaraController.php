@@ -88,7 +88,7 @@ class KomiteBeritaAcaraController extends Controller
 		
 		$data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+        $data->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', UPPER(jadw_audit_jenis) ) SEPARATOR ',<br/>') AS jadw_audit_jenis");
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];
@@ -377,8 +377,9 @@ class KomiteBeritaAcaraController extends Controller
 										'sert_id'  => $restDataAudit->sert_id,
 										'cust_id'  => $restDataAudit->cust_id,
 										'mohon_id'  => $restDataAudit->mohon_id,
+										// digenerate
 										'cust_sert_nomor_sertifikat'  => NULL,
-										'cust_sert_nomor_referensi'  => NULL,
+										'cust_sert_nomor_referensi'  => $restDataAudit->jadw_audit_nomor_referensi,
 										'cust_sert_nomor_sni'  => $restDataAudit->jadw_audit_sni,
 										'cust_sert_lingkup'  => $restDataAudit->jadw_audit_ruang_lingkup,
 										'kode_ea_nama'  => $restDataAudit->jadw_audit_kode_ea,
@@ -465,28 +466,30 @@ class KomiteBeritaAcaraController extends Controller
 
             DB::commit();
 						
-			
-            // Notifikasi
-            $data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
-			// Send Push
-			$notifStruct            = new NotifStruct();
-			$notifStruct->title     = "Proses Sertifikasi Telah Selesai";
-			$notifStruct->message   = sprintf("Berita acara telah diterbitkan, proses sertifikasi anda telah selesai.");
-			$notifStruct->user_id   = $data_pelanggan?->user_id;
-			$notifStruct->click_url = url('/pelanggan/sertifikasi/data');
-			sendNotification($notifStruct);
+			if($request['jadw_is_tutup'] == 'ya'){
+				// Notifikasi
+				$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+				// Send Push
+				$notifStruct            = new NotifStruct();
+				$notifStruct->title     = "Proses Sertifikasi Telah Selesai";
+				$notifStruct->message   = sprintf("Berita acara telah diterbitkan, proses sertifikasi anda telah selesai.");
+				$notifStruct->user_id   = $data_pelanggan?->user_id;
+				$notifStruct->click_url = url('/pelanggan/sertifikasi/data');
+				sendNotification($notifStruct);
 
-			// Send Email
-			$structEmail          = new EmailStruct();
-			$structEmail->subject = "Proses Sertifikasi Telah Selesai";
-			$structEmail->body    = view("$this->view.mails.publish")
-				->with([
-					'nama'       => $data_pelanggan?->cust_nama,
-					'message'       => sprintf("Berita acara telah diterbitkan, proses sertifikasi anda telah selesai"),
-					'link_verif'        => url('/pelanggan/sertifikasi/data'),
-				])->render();
-			$structEmail->to      = $data_pelanggan?->cust_email;
-			sendEmail($structEmail);
+				// Send Email
+				$structEmail          = new EmailStruct();
+				$structEmail->subject = "Proses Sertifikasi Telah Selesai";
+				$structEmail->body    = view("$this->view.mails.publish")
+					->with([
+						'nama'       => $data_pelanggan?->cust_nama,
+						'message'       => sprintf("Berita acara telah diterbitkan, proses sertifikasi anda telah selesai"),
+						'link_verif'        => url('/pelanggan/sertifikasi/data'),
+					])->render();
+				$structEmail->to      = $data_pelanggan?->cust_email;
+				sendEmail($structEmail);
+			}
+            
 			
 			
             return responseJSON(200, ['asd'], 'Berhasil menyimpan data');

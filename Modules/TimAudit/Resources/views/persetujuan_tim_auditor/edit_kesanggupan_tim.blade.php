@@ -45,7 +45,7 @@
 								<br/><br/>
 								Mohon untuk bisa dilakukan review dan evaluasi terhadap kecukupan dokumen sertifikasi guna Penetapan :
 								<br/>
-								{{$dataJadwal->sert_nama}}
+								{!! $dataJadwal->sert_nama !!}
 								<br/>
 								atas nama :
 								<br/>

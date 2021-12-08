@@ -184,11 +184,11 @@
 								<div class="col-md-10 col-sm-9">
 								  <div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status1" value="ditutup" @click="setTutup('ditutup')">
-									<label class="form-check-label" for="aud_thp1_status1">Ya</label>
+									<label class="form-check-label" for="aud_thp1_status1">Tidak</label>
 								  </div>
 								  <div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="rekmd_komte_status" id="aud_thp1_status2" value="on-going" @click="setTutup('on-going')" >
-									<label class="form-check-label" for="aud_thp1_status2">Tidak</label>
+									<label class="form-check-label" for="aud_thp1_status2">Ya</label>
 								  </div>
 									<small class="form-text">Note: Jika "ya" maka akan muncul pada menu penilaian komite, jika "tidak" maka sebaliknya, dan masih bisa diedit.</small>
 								</div>

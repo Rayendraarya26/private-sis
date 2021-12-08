@@ -2,15 +2,21 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
-use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\MasterPegawai;
 use App\Models\BbkkpSis\SisAuditTimKomite;
 use App\Models\BbkkpSis\SisJadwal;
+
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class KomiteController extends Controller
 {
@@ -74,8 +80,8 @@ class KomiteController extends Controller
         // Pagination
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("count(distinct komite_id) AS total_tim");
-        $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
+        $data->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', UPPER(jadw_audit_jenis) ) SEPARATOR ',<br/>') AS jadw_audit_jenis");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
         $data->groupBy('sis_jadwal.jadw_id');
@@ -329,6 +335,21 @@ class KomiteController extends Controller
             $newSisJadwalLog->save();
              */
             DB::commit();
+			$dataTim = SisAuditTimKomite::join('sis_jadwal', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataTim->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
+			$dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$dataTim->where('sis_jadwal.jadw_id', '=', $request['jadw_id']);
+			$dataTim->select("*");
+			$dataTim->groupBy('sis_audit_tim_komite.komite_id');
+			foreach ($dataTim->get() as $d) {
+				$notifStruct            = new NotifStruct();
+				$notifStruct->title     = 'Permohonan Penujukan Tim Komite';;
+				$notifStruct->message   = sprintf("Penyusunan Tim Komite telah diterbitkan , yang telah dilakukan pada tanggal %s s/d %s, untuk jadwal nomor #%s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($restJadwal->jadw_tanggal_mulai)) , date("d-m-Y", strtotime($restJadwal->jadw_tanggal_selesai)), $request['jadw_id'] );
+				$notifStruct->user_id   = $d?->user_id;
+				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+				sendNotification($notifStruct);
+			}
+			
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());

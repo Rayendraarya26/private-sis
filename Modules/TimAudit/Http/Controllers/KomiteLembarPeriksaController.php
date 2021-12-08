@@ -105,7 +105,7 @@ class KomiteLembarPeriksaController extends Controller
 		
 		$data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+        $data->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', UPPER(jadw_audit_jenis) ) SEPARATOR ',<br/>') AS jadw_audit_jenis");
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];

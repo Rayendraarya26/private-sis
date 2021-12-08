@@ -113,11 +113,11 @@
 									<label class="col-md-2 col-sm-3 text-sm-right mb-4 mb-sm-0">Simpan Draft ?</label>
 									<div class="col-md-10 col-sm-9">
 									  <div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="jadw_is_tutup" id="status1" value="tidak" >
+										<input class="form-check-input" type="radio" name="jadw_is_tutup" id="status1" value="tidak" @click="setTutup('tidak')">
 										<label class="form-check-label" for="status1">Ya</label>
 									  </div>
 									  <div class="form-check form-check-inline">
-										<input class="form-check-input" type="radio" name="jadw_is_tutup" id="status2" value="ya" checked>
+										<input class="form-check-input" type="radio" name="jadw_is_tutup" id="status2" value="ya" checked @click="setTutup('ya')">
 										<label class="form-check-label" for="status2">Tidak</label>
 									  </div>
 										<small class="form-text">Note: Jika "ya" maka akan muncul pada menu penilaian komite, jika "tidak" maka sebaliknya, dan masih bisa diedit.</small>
@@ -177,6 +177,7 @@
             window.vueLembarPeriksa = new Vue({
                 el: "#vueLembarPeriksa",
                 data: {
+                    tutup_berita: `tidak`,
                     status_submit: true,
                     loading_submit: false,
                 },
@@ -217,6 +218,9 @@
 					})
 				},
                 methods: {
+					async setTutup(dt){
+						this.tutup_berita = dt;
+					},
                     submitData() {
 						if ($("#jadw_berita_acara_nomor").val() === '') {
 							toastCenter({type: 'warning',title: "Silahkan Isi Nomor Berita Acara"});
@@ -256,14 +260,13 @@
 								reverseButtons: true
 							}).then(async (result) => {
 								if (result.value) {
-									// Submit Permohonan
 									let formData = new FormData();
 									formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
 									formData.append("cust_id", `{{$dataJadwal->cust_id}}`);
 									formData.append("tipe", `berita-acara`);
 									formData.append('jadw_berita_acara_nomor', $("#jadw_berita_acara_nomor").val());
 									formData.append('jadw_berita_acara_tanggal', $("#jadw_berita_acara_tanggal").val());
-									formData.append('jadw_is_tutup', $("input[name='jadw_is_tutup]:checked").val());
+									formData.append('jadw_is_tutup', this.tutup_berita);
 									@foreach($dataAudit as $dau)
 									formData.append('tanggal_terbit[{{$dau->jadw_audit_id}}]', $("input[name='tanggal_terbit[{{$dau->jadw_audit_id}}]']").val());
 									formData.append('tanggal_berakhir[{{$dau->jadw_audit_id}}]', $("input[name='tanggal_berakhir[{{$dau->jadw_audit_id}}]']").val());
