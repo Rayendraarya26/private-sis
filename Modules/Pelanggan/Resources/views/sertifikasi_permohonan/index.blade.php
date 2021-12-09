@@ -81,14 +81,12 @@
                                 if (row.mohon_approved_status !== "revisi") {
                                     btnEdit = "";
                                 }
-                            } else if (
-                                row.mohon_approved_status !== "accepted" &&
-                                row.mohon_tagihan_biaya_status == "proses" &&
-                                (row.mohon_harga_permohonan == 0 || row.mohon_harga_permohonan == null)
-                            ) {
+                            }
+
+                            if (row.mohon_tagihan_biaya_status == "proses" && (row.mohon_harga_permohonan == 0 || row.mohon_harga_permohonan == null)) {
                                 btnApproveHarga = "";
                             }
-                            
+
                             return `
                         <div>
                         <button class="btn-action btn-info" data-index="${row.mohon_id}" title="Aksi">
