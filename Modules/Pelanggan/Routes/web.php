@@ -7,6 +7,7 @@ use Modules\Pelanggan\Http\Controllers\JadwalController;
 use Modules\Pelanggan\Http\Controllers\ProfilPerusahaanController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiDataController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
+use Modules\Pelanggan\Http\Controllers\Tahap1Controller;
 
 Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
     Route::redirect('/', '/dashboard');
@@ -46,6 +47,12 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::post('approve/tanggal/{jadwal_id}', [JadwalController::class, 'processApproveTanggal']);
         Route::get('approve/tim/{jadwal_id}', [JadwalController::class, 'approveTim']);
         Route::post('approve/tim/{jadwal_id}', [JadwalController::class, 'processApproveTim']);
+    });
+
+    Route::prefix("tahap1")->group(function () {
+        Route::get("/", [Tahap1Controller::class, 'index']);
+        Route::any("/ajax", [Tahap1Controller::class, 'ajax']);
+        Route::post("/responded", [Tahap1Controller::class, 'responded']);
     });
 
     Route::prefix("audit")->group(function () {

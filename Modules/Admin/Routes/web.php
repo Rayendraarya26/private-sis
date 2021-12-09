@@ -6,7 +6,7 @@ use Modules\Admin\Http\Controllers\PegawaiController;
 use Modules\Admin\Http\Controllers\PelangganController;
 use Modules\Admin\Http\Controllers\HomepageController;
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'restrict'])->group(function () {
     Route::prefix("data/pelanggan")->group(function () {
         Route::get('/', [PelangganController::class, 'index']);
         Route::get('/create', [PelangganController::class, 'create']);

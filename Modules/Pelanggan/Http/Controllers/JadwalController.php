@@ -69,12 +69,12 @@ class JadwalController extends Controller
         foreach ($data->get() as $d) {
             $logs = [];
             foreach ($d->sis_jadwal_logs as $log) {
-                array_push($logs, [
+                $logs[] = [
                     'tipe'    => $log->jlog_tipe,
                     'judul'   => $log->jlog_judul,
                     'pesan'   => $log->jlog_pesan,
                     'tanggal' => $log->created_at->isoFormat('LLLL'),
-                ]);
+                ];
             }
 
             $x['jadw_id']              = $d->jadw_id;
@@ -86,7 +86,7 @@ class JadwalController extends Controller
             $x['jadw_file_jadwal']     = $d->jadw_file_jadwal;
             $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
             $x['logs']                 = $logs;
-            array_push($result, $x);
+            $result[] = $x;
 
         }
 
