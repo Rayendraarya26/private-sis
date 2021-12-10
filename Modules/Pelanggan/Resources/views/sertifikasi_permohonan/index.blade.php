@@ -176,7 +176,7 @@
                                 if (val.length > 0) {
                                     let htmls = "<ul>";
                                     val.map(e => {
-                                        htmls += `<li>${e.sert_nama} <br><i>${e.mohon_det_jenis_status}</i></li>`
+                                        htmls += `<li>${e.sert_nama} <br><b>(<i>${e.mohon_det_jenis_status}</i>)</b></li>`
                                     })
                                     htmls += "</ul>"
                                     return htmls

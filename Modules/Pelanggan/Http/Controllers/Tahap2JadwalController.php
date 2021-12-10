@@ -11,20 +11,22 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class JadwalController extends Controller
+class Tahap2JadwalController extends Controller
 {
     public $module = self::class;
-    private $url = 'pelanggan/jadwal';
+    private $url = 'pelanggan/tahap2/jadwal';
+    private $view = 'pelanggan::tahap2_jadwal';
 
     public function index()
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Tahap 2'),
             new BreadcrumbsStruct('Jadwal'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
-        return view('pelanggan::jadwal.index')->with($parser);
+        return view("$this->view.index")->with($parser);
     }
 
     public function ajax(Request $request)
@@ -127,7 +129,7 @@ class JadwalController extends Controller
 
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view('pelanggan::jadwal.approve_tanggal')->with($parser);
+        return view("$this->view.approve_tanggal")->with($parser);
     }
 
     public function processApproveTanggal(Request $request, $jadwalID)
@@ -192,7 +194,7 @@ class JadwalController extends Controller
 
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view('pelanggan::jadwal.approve_tim')->with($parser);
+        return view("$this->view.approve_tim")->with($parser);
     }
 
     public function processApproveTim(Request $request, $jadwalID)

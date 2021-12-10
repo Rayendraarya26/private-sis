@@ -1,13 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Pelanggan\Http\Controllers\AuditController;
 use Modules\Pelanggan\Http\Controllers\BillingController;
-use Modules\Pelanggan\Http\Controllers\JadwalController;
 use Modules\Pelanggan\Http\Controllers\ProfilPerusahaanController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiDataController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
-use Modules\Pelanggan\Http\Controllers\Tahap1Controller;
+use Modules\Pelanggan\Http\Controllers\Tahap1JadwalController;
+use Modules\Pelanggan\Http\Controllers\Tahap1PerbaikanController;
+use Modules\Pelanggan\Http\Controllers\Tahap1PersetujuanController;
+use Modules\Pelanggan\Http\Controllers\Tahap2JadwalController;
+use Modules\Pelanggan\Http\Controllers\Tahap2PerbaikanController;
+use Modules\Pelanggan\Http\Controllers\Tahap2PersetujuanController;
 
 Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
     Route::redirect('/', '/dashboard');
@@ -41,27 +44,56 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
     });
 
     Route::prefix("jadwal")->group(function () {
-        Route::get("/", [JadwalController::class, 'index']);
-        Route::any("/ajax", [JadwalController::class, 'ajax']);
-        Route::get('approve/tanggal/{jadwal_id}', [JadwalController::class, 'approveTanggal']);
-        Route::post('approve/tanggal/{jadwal_id}', [JadwalController::class, 'processApproveTanggal']);
-        Route::get('approve/tim/{jadwal_id}', [JadwalController::class, 'approveTim']);
-        Route::post('approve/tim/{jadwal_id}', [JadwalController::class, 'processApproveTim']);
+        Route::get("/", [Tahap2JadwalController::class, 'index']);
+        Route::any("/ajax", [Tahap2JadwalController::class, 'ajax']);
+        Route::get('approve/tanggal/{jadwal_id}', [Tahap2JadwalController::class, 'approveTanggal']);
+        Route::post('approve/tanggal/{jadwal_id}', [Tahap2JadwalController::class, 'processApproveTanggal']);
+        Route::get('approve/tim/{jadwal_id}', [Tahap2JadwalController::class, 'approveTim']);
+        Route::post('approve/tim/{jadwal_id}', [Tahap2JadwalController::class, 'processApproveTim']);
     });
 
-    Route::prefix("tahap1")->group(function () {
-        Route::get("/", [Tahap1Controller::class, 'index']);
-        Route::any("/ajax", [Tahap1Controller::class, 'ajax']);
-        Route::post("/responded", [Tahap1Controller::class, 'responded']);
+    Route::prefix('tahap1')->group(function () {
+        Route::prefix("jadwal")->group(function () {
+            Route::get("/", [Tahap1JadwalController::class, 'index']);
+            Route::any("/ajax", [Tahap1JadwalController::class, 'ajax']);
+        });
+
+        Route::prefix("persetujuan-temuan")->group(function () {
+            Route::get("/", [Tahap1PersetujuanController::class, 'index']);
+            Route::any("/ajax", [Tahap1PersetujuanController::class, 'ajax']);
+        });
+
+        Route::prefix("perbaikan-temuan")->group(function () {
+            Route::get("/", [Tahap1PerbaikanController::class, 'index']);
+            Route::any("/ajax", [Tahap1PerbaikanController::class, 'ajax']);
+        });
     });
+
+    Route::prefix('tahap2')->group(function () {
+        Route::prefix("jadwal")->group(function () {
+            Route::get("/", [Tahap2JadwalController::class, 'index']);
+            Route::any("/ajax", [Tahap2JadwalController::class, 'ajax']);
+        });
+
+        Route::prefix("persetujuan-temuan")->group(function () {
+            Route::get("/", [Tahap2PersetujuanController::class, 'index']);
+            Route::any("/ajax", [Tahap2PersetujuanController::class, 'ajax']);
+        });
+
+        Route::prefix("perbaikan-temuan")->group(function () {
+            Route::get("/", [Tahap2PerbaikanController::class, 'index']);
+            Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
+        });
+    });
+
 
     Route::prefix("audit")->group(function () {
-        Route::get("/", [AuditController::class, 'index']);
-        Route::any("/ajax", [AuditController::class, 'ajax']);
-        Route::get('/temuan-lks/{jadwal_id}', [AuditController::class, 'temuanLKS']);
-        Route::get('/temuan-lks/{jadwal_id}/detail/{lks_id}', [AuditController::class, 'detailLKS']);
-        Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [AuditController::class, 'perbaikanLKS']);
-        Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [AuditController::class, 'processPerbaikanLKS']);
+        Route::get("/", [Tahap2PerbaikanController::class, 'index']);
+        Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
+        Route::get('/temuan-lks/{jadwal_id}', [Tahap2PerbaikanController::class, 'temuanLKS']);
+        Route::get('/temuan-lks/{jadwal_id}/detail/{lks_id}', [Tahap2PerbaikanController::class, 'detailLKS']);
+        Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'perbaikanLKS']);
+        Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'processPerbaikanLKS']);
     });
 
 });

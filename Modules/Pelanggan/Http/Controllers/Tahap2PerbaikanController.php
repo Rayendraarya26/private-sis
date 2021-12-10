@@ -15,20 +15,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class AuditController extends Controller
+class Tahap2PerbaikanController extends Controller
 {
     public $module = self::class;
-    private $url = 'pelanggan/audit';
+    private $url = 'pelanggan/tahap2/perbaikan-temuan';
+    private $view = "pelanggan::tahap2_perbaikan";
 
     public function index()
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),
-            new BreadcrumbsStruct('Audit'),
+            new BreadcrumbsStruct('Tahpa 2'),
+            new BreadcrumbsStruct('Perbaikan Temuan'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
-        return view('pelanggan::audit.index')->with($parser);
+        return view("$this->view.index")->with($parser);
     }
 
     public function temuanLKS(Request $request, $jadwalID)
@@ -44,7 +46,7 @@ class AuditController extends Controller
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view('pelanggan::audit.temuan_lks')->with($parser);
+        return view("$this->view.temuan_lks")->with($parser);
     }
 
     public function detailLKS(Request $request, $jadwalID, $lksID)
@@ -64,7 +66,7 @@ class AuditController extends Controller
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view('pelanggan::audit.detail_lks')->with($parser);
+        return view("$this->view.detail_lks")->with($parser);
     }
 
     public function perbaikanLKS(Request $request, $jadwalID, $lksID)
@@ -84,7 +86,7 @@ class AuditController extends Controller
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view('pelanggan::audit.perbaikan')->with($parser);
+        return view("$this->view.perbaikan")->with($parser);
     }
 
     public function processPerbaikanLKS(Request $request, $jadwalID, $lksID)

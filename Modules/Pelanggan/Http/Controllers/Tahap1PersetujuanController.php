@@ -8,17 +8,18 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
-class Tahap1Controller extends Controller
+class Tahap1PersetujuanController extends Controller
 {
     public $module = self::class;
-    private $url = 'pelanggan/tahap1';
-    private $view = "pelanggan::tahap1";
+    private $url = 'pelanggan/tahap1/persetujuan-temuan';
+    private $view = "pelanggan::tahap1_persetujuan";
 
     public function index()
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),
             new BreadcrumbsStruct('Tahap 1'),
+            new BreadcrumbsStruct('Persetujuan Temuan'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
