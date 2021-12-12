@@ -68,20 +68,20 @@ class Tahap1PerbaikanController extends Controller
             $team = [];
             foreach ($d->sis_audit_tahap1_tims as $tim) {
                 $team[] = [
-                    'kode' => $tim->thp1_tim_kode,
-                    'nama' => $tim->master_pegawai->peg_nama,
+                    'kode'   => $tim->thp1_tim_kode,
+                    'nama'   => $tim->master_pegawai->peg_nama,
+                    'posisi' => $tim->thp1_tim_posisi,
                 ];
             }
 
             $x['aud_thp1_id']                = $d->aud_thp1_id;
-            $x['aud_thp1_status_temuan']     = ucwords($d->aud_thp1_status_temuan);
-            $x['aud_thp1_tanggal_mulai']     = $d->aud_thp1_tanggal_mulai?->format("Y-m-d");
-            $x['aud_thp1_tanggal_selesai']   = $d->aud_thp1_tanggal_selesai?->format("Y-m-d");
+            $x['sert_tahap1_jenis']          = strtolower($d->sert_tahap1_jenis);
+            $x['aud_thp1_status_temuan']     = strtolower($d->aud_thp1_status_temuan);
             $x['aud_thp1_file_notulen']      = $d->aud_thp1_file_notulen;
             $x['aud_thp1_file_daftar_hadir'] = $d->aud_thp1_file_daftar_hadir;
             $x['jadw_file_jadwal']           = $d->jadw_file_jadwal;
-            $x['enable_approval_tim']        = $d->sis_jadwal_tims->count() > 0;
-            $x['team']                       = $team;
+            $x['tanggal']                    = $d->aud_thp1_tanggal_mulai?->isoFormat("LL") . ' s/d ' . $d->aud_thp1_tanggal_selesai?->isoFormat("LL");
+            $x['tims']                       = $team;
             $result[]                        = $x;
 
         }

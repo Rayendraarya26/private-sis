@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Tahap 1')
+@section('title', 'Persetujuan Tahap 1')
 
 @section('content')
     <div class="dt-content">
@@ -30,6 +30,59 @@
 
 @push("javascript")
     <script>
+        function confirmTahap1(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Konfirmasi Tahap 1 ?`,
+                html: `keputusan ini bersifat permanen <br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Setuju',
+                cancelButtonText: 'Tolak',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                let status = null;
+                if (result.value) {
+                    status = "setuju"
+                } else if (result.dismiss === swal.DismissReason.cancel) {
+                    status = "tidak"
+                }
+
+                if (status !== null) {
+                    $.ajax({
+                        url: `{{url("$url/approve-temuan")}}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {aud_thp1_id: id, status},
+                        success: function (response) {
+                            toastCenter({
+                                type: 'success',
+                                title: response.message
+                            })
+
+                            // Destroy MenuButton (rebuild onloadsuccess)
+                            let dg = $('#ttData');
+                            dg.datagrid('getPanel').find('.btn-action').each(function () {
+                                $(this).menubutton('destroy');
+                            })
+                            dg.datagrid('reload');
+                        },
+                        error: function (xhr) {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -47,84 +100,147 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 120,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            return `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs"><i class="fas fa-warning"></i> Temuan LKS</a>`;
+                            let dom        = `dropdownMenu_${row.aud_thp1_id}`;
+                            let btnDetail  = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.aud_thp1_id}'">Detail</div>`;
+                            let btnCetak   = `<div data-options="iconCls:'fad fa-print'" onclick="location.href = '{{url("$url/cetak")}}/${row.aud_thp1_id}'">Cetak</div>`;
+                            let btnApprove = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTahap1('${row.aud_thp1_id}')">Persetujuan</div>`;
+
+                            if (row.aud_thp1_status_temuan == "proses") {
+                                btnApprove = "";
+                            }
+
+                            return `
+                        <div>
+                        <button class="btn-action btn-info" data-index="${row.aud_thp1_id}" title="Aksi">
+                            <i class="fa fa-setting"></i> Aksi
+                        </button>
+                            <div id="${dom}" style="width:150px; display: none;">
+                            @if(authorized("{$module}@detail")) ${btnDetail} @endif
+                            @if(authorized("{$module}@approveTemuan")) ${btnApprove} @endif
+                            @if(authorized("{$module}@cetak")) ${btnCetak} @endif
+                            </div>`;
                         }
                     }
                 ]],
                 columns: [[
                     {
-                        field: 'jadw_jenis', title: 'Status Audit', width: 200, sortable: true,
+                        field: 'aud_thp1_status_temuan', title: 'Temuan', width: 200, sortable: true,
                         formatter: function (val) {
                             switch (val) {
-                                case 'tunggal':
-                                    return 'Tunggal';
-                                case 'gabungan':
-                                    return 'Gabungan';
-                                case 'integrasi':
-                                    return 'Intergrasi';
+                                case 'proses':
+                                    return 'Proses';
+                                case 'diajukan':
+                                    return 'Diajukan';
+                                case 'revisi':
+                                    return 'Revisi';
+                                case 'setuju':
+                                    return 'Setuju';
+                            }
+                        },
+                        styler: function (val) {
+                            switch (val) {
+                                case 'proses':
+                                    return 'color:black;background-color:#f57f17;';
+                                case 'setuju':
+                                    return 'color:white;background-color:#2e7d32;';
+                                case 'revisi':
+                                    return 'color:white;background-color:#e65100;';
+                                case 'diajukan':
+                                    return 'color:black;background-color:#4caf50;';
+                            }
+                        }
+                    },
+                    {
+                        field: 'sert_tahap1_jenis', title: 'Jenis', width: 200, sortable: true,
+                        formatter: function (val) {
+                            switch (val) {
+                                case 'pusat':
+                                    return 'Pusat';
+                                case 'sni':
+                                    return 'SNI';
                             }
                         }
                     },
                     {field: 'tanggal', title: 'Tanggal Pelaksanaan', width: 200, sortable: true},
                     {
-                        field: 'audits', title: 'Agenda', width: 200, sortable: true,
-                        formatter: function (val) {
-                            let htmls = ""
-                            if (val.length > 0) {
-                                htmls += `<ol>`
-                                val.map(e => {
-                                    htmls += `
-                                    <li>
-                                        <b>${e.jadw_audit_jenis}</b> <br> No. Sert: ${e.jadw_audit_nomor_sertifikat} <br> No. Ref: ${e.jadw_audit_nomor_referensi}
-                                    </li>`
-                                })
-                                htmls += `</ol>`
-                            }
-
-                            return htmls
-                        }
-                    },
-                    {
                         field: 'tims', title: 'Tim Auditor', width: 200, sortable: true,
                         formatter: function (val) {
                             let htmls = ""
                             if (val.length > 0) {
-                                htmls += `<ol>`
+                                htmls += `<ul>`
                                 val.map(e => {
                                     htmls += `
                                     <li>
-                                        <b>${e.tim_posisi}</b> <br> ${e.tim_nama} (${e.tim_kode})
+                                        <b>${e.posisi}</b> <br> ${e.nama} (${e.kode})
                                     </li>`
                                 })
-                                htmls += `</ol>`
+                                htmls += `</ul>`
                             }
 
                             return htmls
                         }
                     },
                 ]],
+                onBeforeLoad: function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
+                    });
+                },
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].aud_thp1_id
+                        });
+                    });
+                },
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'tanggal', type: 'label'},
                     {
-                        field: 'jadw_jenis',
+                        field: 'sert_tahap1_jenis',
                         type: 'combobox',
                         options: {
                             panelHeight: 'auto',
                             data: [
                                 {value: '', text: 'Semua'},
-                                {value: 'tunggal', text: 'Tunggal'},
-                                {value: 'gabungan', text: 'Gabungan'},
-                                {value: 'integrasi', text: 'Intergrasi'},
+                                {value: 'pusat', text: 'Pusat'},
+                                {value: 'sni', text: 'SNI'},
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
-                                    field: 'jadw_jenis',
+                                    field: 'sert_tahap1_jenis',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
+                    {
+                        field: 'aud_thp1_status_temuan',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'proses', text: 'Pusat'},
+                                {value: 'diajukan', text: 'Diajukan'},
+                                {value: 'revisi', text: 'Revisi'},
+                                {value: 'setuju', text: 'Setuju'},
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'aud_thp1_status_temuan',
                                     op: 'equal',
                                     value: value
                                 });

@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Tahap 1')
+@section('title', 'Perbaikan Tahap 1')
 
 @section('content')
     <div class="dt-content">
@@ -50,56 +50,52 @@
                         width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            return `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs"><i class="fas fa-warning"></i> Temuan LKS</a>`;
+                            let btnCetak = `<a href="{{url("$url/cetak")}}/${row.jadw_id}" class="btn btn-primary btn-block btn-xs"><i class="fas fa-print"></i> Cetak</a>`
+                            return btnCetak
                         }
                     }
                 ]],
                 columns: [[
                     {
-                        field: 'jadw_jenis', title: 'Status Audit', width: 200, sortable: true,
+                        field: 'aud_thp1_status_temuan', title: 'Temuan', width: 200, sortable: true,
                         formatter: function (val) {
                             switch (val) {
-                                case 'tunggal':
-                                    return 'Tunggal';
-                                case 'gabungan':
-                                    return 'Gabungan';
-                                case 'integrasi':
-                                    return 'Intergrasi';
+                                case 'proses':
+                                    return 'Proses';
+                                case 'diajukan':
+                                    return 'Diajukan';
+                                case 'revisi':
+                                    return 'Revisi';
+                                case 'setuju':
+                                    return 'Setuju';
+                            }
+                        }
+                    },
+                    {
+                        field: 'sert_tahap1_jenis', title: 'Jenis', width: 200, sortable: true,
+                        formatter: function (val) {
+                            switch (val) {
+                                case 'pusat':
+                                    return 'Pusat';
+                                case 'sni':
+                                    return 'SNI';
                             }
                         }
                     },
                     {field: 'tanggal', title: 'Tanggal Pelaksanaan', width: 200, sortable: true},
                     {
-                        field: 'audits', title: 'Agenda', width: 200, sortable: true,
-                        formatter: function (val) {
-                            let htmls = ""
-                            if (val.length > 0) {
-                                htmls += `<ol>`
-                                val.map(e => {
-                                    htmls += `
-                                    <li>
-                                        <b>${e.jadw_audit_jenis}</b> <br> No. Sert: ${e.jadw_audit_nomor_sertifikat} <br> No. Ref: ${e.jadw_audit_nomor_referensi}
-                                    </li>`
-                                })
-                                htmls += `</ol>`
-                            }
-
-                            return htmls
-                        }
-                    },
-                    {
                         field: 'tims', title: 'Tim Auditor', width: 200, sortable: true,
                         formatter: function (val) {
                             let htmls = ""
                             if (val.length > 0) {
-                                htmls += `<ol>`
+                                htmls += `<ul>`
                                 val.map(e => {
                                     htmls += `
                                     <li>
-                                        <b>${e.tim_posisi}</b> <br> ${e.tim_nama} (${e.tim_kode})
+                                        <b>${e.posisi}</b> <br> ${e.nama} (${e.kode})
                                     </li>`
                                 })
-                                htmls += `</ol>`
+                                htmls += `</ul>`
                             }
 
                             return htmls
@@ -112,19 +108,41 @@
                     {field: 'action', type: 'label'},
                     {field: 'tanggal', type: 'label'},
                     {
-                        field: 'jadw_jenis',
+                        field: 'sert_tahap1_jenis',
                         type: 'combobox',
                         options: {
                             panelHeight: 'auto',
                             data: [
                                 {value: '', text: 'Semua'},
-                                {value: 'tunggal', text: 'Tunggal'},
-                                {value: 'gabungan', text: 'Gabungan'},
-                                {value: 'integrasi', text: 'Intergrasi'},
+                                {value: 'pusat', text: 'Pusat'},
+                                {value: 'sni', text: 'SNI'},
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {
-                                    field: 'jadw_jenis',
+                                    field: 'aud_thp1_status_temuan',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
+                    {
+                        field: 'aud_thp1_status_temuan',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'proses', text: 'Pusat'},
+                                {value: 'diajukan', text: 'Diajukan'},
+                                {value: 'revisi', text: 'Revisi'},
+                                {value: 'setuju', text: 'Setuju'},
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'sert_tahap1_jenis',
                                     op: 'equal',
                                     value: value
                                 });

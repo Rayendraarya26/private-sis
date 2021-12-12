@@ -61,6 +61,9 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::prefix("persetujuan-temuan")->group(function () {
             Route::get("/", [Tahap1PersetujuanController::class, 'index']);
             Route::any("/ajax", [Tahap1PersetujuanController::class, 'ajax']);
+            Route::any("/detail", [Tahap1PersetujuanController::class, 'detail']);
+            Route::any("/cetak", [Tahap1PersetujuanController::class, 'cetak']);
+            Route::any("/approve-temuan", [Tahap1PersetujuanController::class, 'approveTemuan']);
         });
 
         Route::prefix("perbaikan-temuan")->group(function () {
