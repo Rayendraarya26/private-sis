@@ -31,6 +31,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/plugins/easyui/themes/material/easyui.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/plugins/cooltipz/cooltipz.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/morrisjs/morris.css') }}">
 
     <style>
         /*.table-responsive {*/
@@ -590,6 +591,9 @@
 <script src="{{ asset('assets/plugins/easyui/datagrid-filter.js') }}"></script>
 <script src="{{ asset('assets/plugins/easyui/datagrid-export.js') }}"></script>
 <script src="{{ asset('assets/plugins/easyui/jquery.edatagrid.js') }}"></script>
+<script src="{{ asset('assets/plugins/sparkline/jquery.sparkline.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/raphael/raphael-min.js') }}"></script>
+<script src="{{ asset('assets/plugins/morrisjs/morris.min.js') }}"></script>
 
 <script>
     const toast = swal.mixin({
