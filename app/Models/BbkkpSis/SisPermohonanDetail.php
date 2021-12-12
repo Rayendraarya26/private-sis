@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property MasterSertifikasi|null $master_sertifikasi
  * @property Collection|SisAuditTahap1[] $sis_audit_tahap1s
  * @property Collection|SisBillingItems[] $sis_billing_items
+ * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
  *
  * @package App\Models\BbkkpSis
@@ -76,6 +77,11 @@ class SisPermohonanDetail extends Model
 	public function sis_billing_items()
 	{
 		return $this->hasMany(SisBillingItems::class, 'mohon_det_id');
+	}
+
+	public function sis_jadwal_audits()
+	{
+		return $this->hasMany(SisJadwalAudit::class, 'mohon_det_id');
 	}
 
 	public function sis_permohonan_komoditis()
