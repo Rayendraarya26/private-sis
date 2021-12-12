@@ -9,6 +9,7 @@ use Modules\Home\Http\Controllers\NotificationController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/ajax', [DashboardController::class, 'ajax']);
 
     Route::prefix('notification')->group(function () {
         Route::get("/", [NotificationController::class, 'index'])->name('notification');
