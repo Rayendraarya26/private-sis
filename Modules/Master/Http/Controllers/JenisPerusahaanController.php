@@ -55,13 +55,14 @@ class JenisPerusahaanController extends Controller
     {
         $request->validate([
             'jenis_perusahaan_id'   => 'required|integer',
-            'jenis_perusahaan_nama' => 'required|string'
+            'jenis_perusahaan_nama' => 'required|string',
+            'jenis_perusahaan_color' => 'required|string'
         ]); // auto redirect back jika tidak valid
 
         try {
             //DB::beginTransaction(); // Jika mau menggunkan transaction
             $data = MasterJenisPerusahaan::findOrFail($request['jenis_perusahaan_id'])
-                ->update($request->only("jenis_perusahaan_nama"));
+                ->update($request->only(["jenis_perusahaan_nama", "jenis_perusahaan_color"]));
             //DB::commit();
             return redirect()->back()->with('message', "Update data berhasil");
         } catch (Exception $e) {
@@ -134,8 +135,9 @@ class JenisPerusahaanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['jenis_perusahaan_id']   = $d->jenis_perusahaan_id;
-            $x['jenis_perusahaan_nama'] = $d->jenis_perusahaan_nama;
+            $x['jenis_perusahaan_id']       = $d->jenis_perusahaan_id;
+            $x['jenis_perusahaan_nama']     = $d->jenis_perusahaan_nama;
+            $x['jenis_perusahaan_color']    = $d->jenis_perusahaan_color;
             array_push($result, $x);
         }
 

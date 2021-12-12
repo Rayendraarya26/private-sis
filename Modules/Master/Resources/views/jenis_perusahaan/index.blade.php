@@ -78,12 +78,20 @@
                 ]],
                 columns: [[
                     {field: 'jenis_perusahaan_nama', title: 'Jenis Perusahaan', width: 220, sortable: true},
+                    {field: 'jenis_perusahaan_color', title: 'Warna', width: 100, sortable: false,
+                        formatter: function(value){
+                            if (value) {
+                                return `<div style="display: inline-flex;"><div style="width: 12px; height: 16px; background-color: ${value}"></div>&nbsp;${value}</div>`;
+                            }
+                        }
+                    },
                 ]],
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'jenis_perusahaan_nama', type: 'textbox'},
+                    {field: 'jenis_perusahaan_color', type: 'label'},
                 ]);
         });
 

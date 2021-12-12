@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $jenis_perusahaan_id
  * @property string|null $jenis_perusahaan_nama
  * @property string|null $jenis_perusahaan_deskripsi
+ * @property string|null $jenis_perusahaan_color
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -31,7 +32,8 @@ class MasterJenisPerusahaan extends Model
 
 	protected $fillable = [
 		'jenis_perusahaan_nama',
-		'jenis_perusahaan_deskripsi'
+		'jenis_perusahaan_deskripsi',
+		'jenis_perusahaan_color'
 	];
 
 	public function sis_pelanggans()

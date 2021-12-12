@@ -40,6 +40,12 @@
                                             <input class="form-control" placeholder="Masukkan nama jenis perusahaan ..." type="text" name="jenis_perusahaan_nama" id="jenis_perusahaan_nama" value="{{old('jenis_perusahaan_nama')}}">
                                         </div>
                                     </div>
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="jenis_perusahaan_color">Warna*</label>
+                                        <div class="col-sm-2">
+                                            <input class="form-control" type="color" name="jenis_perusahaan_color" id="jenis_perusahaan_color" value="{{old('jenis_perusahaan_color')}}">
+                                        </div>
+                                    </div>
 
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
