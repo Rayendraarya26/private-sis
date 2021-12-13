@@ -127,7 +127,6 @@ class Tahap2JadwalController extends Controller
             ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
             ->firstOrFail();
 
-
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
         return view("$this->view.approve_tanggal")->with($parser);
     }
