@@ -50,26 +50,26 @@
                         width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            return `<a href="{{url("$url/detail")}}/${row.jadw_id}" class="btn btn-primary btn-block btn-xs"><i class="fas fa-info"></i> Detail</a>`
+                            return `<a href="{{url("$url/detail")}}/${row.aud_thp1_id}" class="btn btn-primary btn-block btn-xs"><i class="fas fa-info"></i> Detail</a>`
                         }
                     }
                 ]],
                 columns: [[
-                    {
-                        field: 'aud_thp1_status_temuan', title: 'Temuan', width: 200, sortable: true,
-                        formatter: function (val) {
-                            switch (val) {
-                                case 'proses':
-                                    return 'Proses';
-                                case 'diajukan':
-                                    return 'Diajukan';
-                                case 'revisi':
-                                    return 'Revisi';
-                                case 'setuju':
-                                    return 'Setuju';
-                            }
-                        }
-                    },
+                    // {
+                    //     field: 'aud_thp1_status_temuan', title: 'Temuan', width: 200, sortable: true,
+                    //     formatter: function (val) {
+                    //         switch (val) {
+                    //             case 'proses':
+                    //                 return 'Proses';
+                    //             case 'diajukan':
+                    //                 return 'Diajukan';
+                    //             case 'revisi':
+                    //                 return 'Revisi';
+                    //             case 'setuju':
+                    //                 return 'Setuju';
+                    //         }
+                    //     }
+                    // },
                     {
                         field: 'sert_tahap1_jenis', title: 'Jenis', width: 200, sortable: true,
                         formatter: function (val) {

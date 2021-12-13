@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Persetujuan Tahap 1')
+@section('title', 'Persetujuan Temuan Tahap 1')
 
 @section('content')
     <div class="dt-content">
@@ -105,10 +105,11 @@
                         formatter: function (val, row) {
                             let dom        = `dropdownMenu_${row.aud_thp1_id}`;
                             let btnDetail  = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.aud_thp1_id}'">Detail</div>`;
-                            let btnCetak   = `<div data-options="iconCls:'fad fa-print'" onclick="location.href = '{{url("$url/cetak")}}/${row.aud_thp1_id}'">Cetak</div>`;
+                            let btnCetakLap   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/laporan', '_blank')">Laporan</div>`;
+                            let btnCetakTinjauan   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/tinjauan', '_blank')">Hasil Tinjauan</div>`;
                             let btnApprove = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTahap1('${row.aud_thp1_id}')">Persetujuan</div>`;
 
-                            if (row.aud_thp1_status_temuan == "proses") {
+                            if (row.aud_thp1_status_temuan !== "diajukan") {
                                 btnApprove = "";
                             }
 
@@ -120,7 +121,8 @@
                             <div id="${dom}" style="width:150px; display: none;">
                             @if(authorized("{$module}@detail")) ${btnDetail} @endif
                             @if(authorized("{$module}@approveTemuan")) ${btnApprove} @endif
-                            @if(authorized("{$module}@cetak")) ${btnCetak} @endif
+                            @if(authorized("{$module}@cetakLaporan")) ${btnCetakLap} @endif
+                            @if(authorized("{$module}@cetakTinjauan")) ${btnCetakTinjauan} @endif
                             </div>`;
                         }
                     }

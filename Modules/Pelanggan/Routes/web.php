@@ -12,7 +12,7 @@ use Modules\Pelanggan\Http\Controllers\Tahap2JadwalController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PerbaikanController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PersetujuanController;
 
-Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
+Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
     Route::redirect('/', '/dashboard');
 
     Route::get("profil-perusahaan", [ProfilPerusahaanController::class, 'index']);
@@ -55,20 +55,17 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
     Route::prefix('tahap1')->group(function () {
         Route::prefix("jadwal")->group(function () {
             Route::get("/", [Tahap1JadwalController::class, 'index']);
+            Route::get("/detail/{aud_thp1_id}", [Tahap1JadwalController::class, 'detail']);
             Route::any("/ajax", [Tahap1JadwalController::class, 'ajax']);
         });
 
         Route::prefix("persetujuan-temuan")->group(function () {
             Route::get("/", [Tahap1PersetujuanController::class, 'index']);
             Route::any("/ajax", [Tahap1PersetujuanController::class, 'ajax']);
-            Route::any("/detail", [Tahap1PersetujuanController::class, 'detail']);
-            Route::any("/cetak", [Tahap1PersetujuanController::class, 'cetak']);
-            Route::any("/approve-temuan", [Tahap1PersetujuanController::class, 'approveTemuan']);
-        });
-
-        Route::prefix("perbaikan-temuan")->group(function () {
-            Route::get("/", [Tahap1PerbaikanController::class, 'index']);
-            Route::any("/ajax", [Tahap1PerbaikanController::class, 'ajax']);
+            Route::get("/detail/{aud_thp1_id}", [Tahap1PersetujuanController::class, 'detail']);
+            Route::get("/cetak/{aud_thp1_id}/tinjauan", [Tahap1PersetujuanController::class, 'cetakTinjauan']);
+            Route::get("/cetak/{aud_thp1_id}/laporan", [Tahap1PersetujuanController::class, 'cetakLaporan']);
+            Route::post("/approve-temuan", [Tahap1PersetujuanController::class, 'approveTemuan']);
         });
     });
 

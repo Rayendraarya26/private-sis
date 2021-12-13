@@ -26,6 +26,27 @@ class Tahap1JadwalController extends Controller
         return view("$this->view.index")->with($parser);
     }
 
+    public function detail(Request $request, $ID)
+    {
+        $data = SisAuditTahap1::with([
+            'sis_permohonan_detail.master_sertifikasi',
+            'sis_audit_tahap1_details',
+            'sis_audit_tahap1_revisis',
+            'sis_audit_tahap1_tims.master_pegawai',
+        ])
+            ->findOrFail($ID);
+
+        $breadcrumbs = [
+            new BreadcrumbsStruct('Pelanggan'),
+            new BreadcrumbsStruct('Tahap 1'),
+            new BreadcrumbsStruct('Jadwal', url($this->url)),
+            new BreadcrumbsStruct('Detail'),
+        ];
+
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
+        return view("$this->view.detail")->with($parser);
+    }
+
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
