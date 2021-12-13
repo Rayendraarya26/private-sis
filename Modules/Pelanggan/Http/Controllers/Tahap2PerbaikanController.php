@@ -121,7 +121,7 @@ class Tahap2PerbaikanController extends Controller
 
             if (count($data->sis_audit_lks_files) > 0) {
                 foreach ($data->sis_audit_lks_files as $file) {
-                    array_push($successDeletedPath, public_path($file->lks_filepath));
+                    $successDeletedPath[] = public_path($file->lks_filepath);
                     $file->delete();
                 }
             }
@@ -141,7 +141,7 @@ class Tahap2PerbaikanController extends Controller
                         'created_at'   => Carbon::now(),
                     ]);
 
-                    array_push($failedDeletedPath, public_path($newSisLksFile->lks_filepath));
+                    $failedDeletedPath[] = public_path($newSisLksFile->lks_filepath);
                 }
             }
 
@@ -184,6 +184,7 @@ class Tahap2PerbaikanController extends Controller
                     $query->orderBy(DB::raw("FIELD(jadw_tim_posisi, 'ketua', 'auditor', 'ppc', 'observer')"));
                 }
             ])
+            ->where('jadw_setujui_temuan', 'setuju')
             ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id);
         // Filter
         if (!empty($request->filterRules)) {
@@ -209,19 +210,19 @@ class Tahap2PerbaikanController extends Controller
         foreach ($data->get() as $d) {
             $timAudit = [];
             foreach ($d->sis_jadwal_tims as $tim) {
-                array_push($timAudit, [
+                $timAudit[] = [
                     "tim_nama"   => $tim->master_pegawai->peg_nama,
                     'tim_kode'   => $tim->jadw_tim_kode,
                     'tim_posisi' => ucwords($tim->jadw_tim_posisi),
-                ]);
+                ];
             }
             $jadwalAudit = [];
             foreach ($d->sis_jadwal_audits as $jadwal) {
-                array_push($jadwalAudit, [
+                $jadwalAudit[] = [
                     'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
                     'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
                     'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
-                ]);
+                ];
             }
 
             $x['tims']             = $timAudit;
@@ -235,7 +236,7 @@ class Tahap2PerbaikanController extends Controller
             } else {
                 $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
             }
-            array_push($result, $x);
+            $result[] = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -290,7 +291,7 @@ class Tahap2PerbaikanController extends Controller
             $x['lks_perbaikan_tindakan']       = $d->lks_perbaikan_tindakan;
             $x['lks_expired_date_perbaikan']   = $d->lks_expired_date_perbaikan?->format('Y-m-d H:i:s');
 
-            array_push($result, $x);
+            $result[] = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

@@ -30,6 +30,104 @@
 
 @push("javascript")
     <script>
+        function promptRevisi(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-default mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: 'Keterangan Revisi',
+                input: 'text',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Revisi',
+                cancelButtonText: 'Batal',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    submitApproval(id, 'revisi', result.value)
+                }
+            });
+        }
+
+        function promptAgree(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: 'Setujui Temuan ?',
+                html: `Keputusan ini bersifat permanen dan tidak dapat dikembalikan<br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    submitApproval(id, 'setuju', null)
+                }
+            });
+        }
+
+        function submitApproval(id, status, message) {
+            $.ajax({
+                url: `{{url("$url/approve/temuan")}}`,
+                type: 'POST',
+                dataType: 'json',
+                data: {jadw_id: id, jadw_setujui_temuan: status, message},
+                success: function (response) {
+                    toastCenter({
+                        type: 'success',
+                        title: response.message
+                    })
+
+                    location.href = "/{{$url}}"
+                },
+                error: function (xhr) {
+                    if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                    else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                }
+            });
+        }
+
+        function confirmTemuan(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Konfirmasi Temuan 1 ?`,
+                html: `keputusan ini bersifat permanen <br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Setuju',
+                cancelButtonText: 'Tolak',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                let status = null;
+                if (result.value) {
+                    promptAgree(id)
+                } else if (result.dismiss === swal.DismissReason.cancel) {
+                    promptRevisi(id)
+                }
+            });
+        }
+
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -50,21 +148,27 @@
                         width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            return `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs"><i class="fas fa-warning"></i> Temuan LKS</a>`;
+                            let btnTemuan  = `<a href="{{url("$url/detail")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs"><i class="fas fa-warning"></i> Temuan LKS</a>`;
+                            let btnApprove = `<button onclick="confirmTemuan(${row.jadw_id})" class="btn btn-primary btn-block btn-xs"><i class="fas fa-check-circle"></i> Approval</button>`;
+
+                            if (row.jadw_setujui_temuan != "diajukan") {
+                                btnApprove = "";
+                            }
+                            return btnTemuan + btnApprove
                         }
                     }
                 ]],
                 columns: [[
                     {
-                        field: 'jadw_jenis', title: 'Status Audit', width: 200, sortable: true,
+                        field: 'jadw_setujui_temuan', title: 'Status Persetujuan', width: 200, sortable: true,
                         formatter: function (val) {
                             switch (val) {
-                                case 'tunggal':
-                                    return 'Tunggal';
-                                case 'gabungan':
-                                    return 'Gabungan';
-                                case 'integrasi':
-                                    return 'Intergrasi';
+                                case 'diajukan':
+                                    return 'Diajukan';
+                                case 'setuju':
+                                    return 'Setuju';
+                                case 'revisi':
+                                    return 'Revisi';
                             }
                         }
                     },
@@ -112,15 +216,15 @@
                     {field: 'action', type: 'label'},
                     {field: 'tanggal', type: 'label'},
                     {
-                        field: 'jadw_jenis',
+                        field: 'jadw_setujui_temuan',
                         type: 'combobox',
                         options: {
                             panelHeight: 'auto',
                             data: [
                                 {value: '', text: 'Semua'},
-                                {value: 'tunggal', text: 'Tunggal'},
-                                {value: 'gabungan', text: 'Gabungan'},
-                                {value: 'integrasi', text: 'Intergrasi'},
+                                {value: 'diajukan', text: 'Diajukan'},
+                                {value: 'setuju', text: 'Setuju'},
+                                {value: 'revisi', text: 'Revisi'},
                             ],
                             onChange: function (value) {
                                 dg.datagrid('addFilterRule', {

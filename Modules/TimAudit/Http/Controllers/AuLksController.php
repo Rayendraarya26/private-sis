@@ -94,9 +94,8 @@ class AuLksController extends Controller
             $dataTim = $dataJadwal->sis_jadwal_tims()->where("peg_id", $pegawaiID)->firstOrFail();
 
             SisAuditLks::updateOrCreate(
-                ['lks_id' => $request['lks_id'], 'jadw_audit_id' => $request['jadw_audit_id']],
+                ['lks_id' => $request['lks_id'], 'jadw_id' => $dataJadwal->jadw_id],
                 [
-                    'jadw_audit_id'                => $request['jadw_audit_id'],
                     'jadw_tim_id'                  => $dataTim->jadw_tim_id,
                     'lks_status'                   => 'proses',
                     'lks_uraian_ketidaksesuaian'   => $request['lks_uraian_ketidaksesuaian'],
@@ -141,7 +140,6 @@ class AuLksController extends Controller
     public function detailTemuan(Request $request, $jadwalID, $lksID)
     {
         try {
-            // 1.
             $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])->findOrFail($jadwalID);
             $dataLKS    = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])->findOrFail($lksID);
 
@@ -215,7 +213,7 @@ class AuLksController extends Controller
 
     private function ajax_datagrid_jadwal_audit(Request $request)
     {
-        $data = SisJadwal::with('sis_jadwal_audits.sis_audit_lks');
+        $data = SisJadwal::with('sis_jadwal_audits', 'sis_audit_lks');
         $data->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
@@ -264,10 +262,7 @@ class AuLksController extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
-            $totalTemuanLKS = 0;
-            foreach ($d->sis_jadwal_audits as $ja) {
-                $totalTemuanLKS += $ja->sis_audit_lks->count();
-            }
+            $totalTemuanLKS = $d->sis_audit_lks->count();
 
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
@@ -277,7 +272,7 @@ class AuLksController extends Controller
             $x['jadw_jenis']           = ucwords($d->jadw_jenis);
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
             $x['total_temuan']         = $totalTemuanLKS;
-            array_push($result, $x);
+            $result[]                  = $x;
         }
 
 
@@ -287,8 +282,8 @@ class AuLksController extends Controller
     private function ajax_datagrid_lks(Request $request)
     {
         $request->validate(['jadwal_id' => 'required|numeric']);
-        $data                                  = SisAuditLks::join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
-            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+
+        $data = SisAuditLks::join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
             ->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_tim_id', '=', 'sis_audit_lks.jadw_tim_id')
             ->where('sis_jadwal.jadw_id', $request['jadwal_id']);
 
