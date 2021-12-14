@@ -89,17 +89,12 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
         Route::prefix("perbaikan-temuan")->group(function () {
             Route::get("/", [Tahap2PerbaikanController::class, 'index']);
             Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
+            Route::get('/temuan-lks/{jadwal_id}', [Tahap2PerbaikanController::class, 'temuanLKS']);
+            Route::get('/temuan-lks/{jadwal_id}/detail', [Tahap2PerbaikanController::class, 'detailAllLKS']);
+            // Route::get('/temuan-lks/{jadwal_id}/detail/{lks_id}', [Tahap2PerbaikanController::class, 'detailLKS']);
+            // Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'perbaikanLKS']);
+            // Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'processPerbaikanLKS']);
+            Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-text/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanText']);
         });
     });
-
-
-    Route::prefix("audit")->group(function () {
-        Route::get("/", [Tahap2PerbaikanController::class, 'index']);
-        Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
-        Route::get('/temuan-lks/{jadwal_id}', [Tahap2PerbaikanController::class, 'temuanLKS']);
-        Route::get('/temuan-lks/{jadwal_id}/detail/{lks_id}', [Tahap2PerbaikanController::class, 'detailLKS']);
-        Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'perbaikanLKS']);
-        Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'processPerbaikanLKS']);
-    });
-
 });

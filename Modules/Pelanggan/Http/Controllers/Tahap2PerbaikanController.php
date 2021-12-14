@@ -14,6 +14,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class Tahap2PerbaikanController extends Controller
 {
@@ -35,7 +36,8 @@ class Tahap2PerbaikanController extends Controller
 
     public function temuanLKS(Request $request, $jadwalID)
     {
-        $data = SisJadwal::where('sis_jadwal.jadw_id', $jadwalID)
+        $data = SisJadwal::with(['sis_audit_lks.sis_jadwal_tim'])
+            ->where('sis_jadwal.jadw_id', $jadwalID)
             ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
             ->first();
 
@@ -47,6 +49,30 @@ class Tahap2PerbaikanController extends Controller
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
         return view("$this->view.temuan_lks")->with($parser);
+    }
+
+    public function detailAllLKS(Request $request, $jadwalID)
+    {
+        try {
+            $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])->findOrFail($jadwalID);
+            $dataLKS    = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
+                ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
+                ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+                ->where('sis_jadwal.jadw_id', $jadwalID)
+                ->get();
+
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Pelanggan'),
+                new BreadcrumbsStruct('Tahap 2'),
+                new BreadcrumbsStruct('Persetujuan Temuan', url($this->url)),
+                new BreadcrumbsStruct('Detail'),
+            ];
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS];
+            return view("$this->view.detail_all_lks")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage() . ' | ' . $e->getLine()]);
+        }
     }
 
     public function detailLKS(Request $request, $jadwalID, $lksID)
@@ -165,6 +191,38 @@ class Tahap2PerbaikanController extends Controller
         }
     }
 
+    public function savePerbaikanText(Request $request, $jadwalID, $lksID)
+    {
+        $request->validate([
+            'key'   => ['required', Rule::in(['lks_perbaikan_analisa', 'lks_perbaikan_koreksi', 'lks_perbaikan_tindakan', 'lks_bukti_tindakan_perbaikan'])],
+            'value' => 'required'
+        ]);
+
+        try {
+            $data = SisAuditLks::with(['sis_jadwal', 'sis_audit_lks_files'])
+                ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
+                ->where('sis_jadwal.jadw_id', $jadwalID)
+                ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+                ->where('sis_audit_lks.lks_id', $lksID)
+                ->first();
+            if (empty($data)) throw new Exception("Data Audit tidak ditemukan");
+
+            DB::beginTransaction();
+
+            $key              = $request['key'];
+            $value            = $request['value'];
+            $data->$key      = $value;
+            $data->lks_status = 'fixed';
+            $data->save();
+
+            DB::commit();
+            return responseJSON(200, [], "Perbaikan LKS berhasil disimpan");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
+        }
+    }
+
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
@@ -246,9 +304,8 @@ class Tahap2PerbaikanController extends Controller
     {
         $request->validate(['jadwal_id' => 'required|integer']);
 
-        $data = SisAuditLks::with(['sis_audit_lks_revisis', 'sis_audit_lks_files', 'sis_jadwal_audit'])
-            ->join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
-            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+        $data = SisAuditLks::with(['sis_audit_lks_revisis', 'sis_audit_lks_files'])
+            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
             ->where('sis_jadwal.jadw_id', $request['jadwal_id'])
             ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id);
         // Filter
