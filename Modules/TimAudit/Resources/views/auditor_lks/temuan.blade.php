@@ -281,7 +281,7 @@
                                 </div>
 
 
-                                <a href="{{url("$url")}}" class="btn btn-outline-info">
+                                <a :href="loading_submit ? '#' : '{{url("$url")}}'" class="btn btn-outline-info">
                                     <i class="fad fa-arrow-left"></i> Kembali
                                 </a>
                                 <div class="stickyButton" style="float: right;">
@@ -352,6 +352,7 @@
         new Vue({
             el: "#auditorApp",
             data: {
+                maxAuditDate: moment("{{$data->jadw_tanggal_selesai->format("Y-m-d")}}", "YYYY-MM-DD"),
                 loading_submit: false,
                 update_kategori: [],
                 update_date_revisi: [],
@@ -366,7 +367,6 @@
                     this.buildTinyMCEUraian()
                     this.buildTinyMCEKlausul();
                 }, 500)
-
             },
             methods: {
                 doFilterAuditor: function () {
@@ -482,12 +482,32 @@
                         });
                     }
 
-                    let data = {lks_id: lksID, data: $(`#lks_kategori_${lksID}`).val()}
+                    let value = $(`#lks_kategori_${lksID}`).val();
+                    let data  = {lks_id: lksID, data: value}
                     if (available) {
                         this.update_kategori[availableIdx] = data
                     } else {
                         this.update_kategori.push(data)
                     }
+
+                    let targetDateID = `#lks_daterevisi_${lksID}`;
+                    let tmpDate      = moment(this.maxAuditDate)
+                    switch (value) {
+                        case "kritis":
+                            tmpDate.add(0, 'd')
+                            break;
+                        case "mayor":
+                            tmpDate.add(1, 'M')
+                            break;
+                        case "minor":
+                            tmpDate.add(2, 'M')
+                            break;
+                        case "observasi":
+                            tmpDate.add(3, 'M')
+                            break;
+                    }
+                    $(targetDateID).val(tmpDate.format("YYYY-MM-DD"))
+                    this.changeDateRevisi(lksID)
                 },
                 changeDateRevisi(lksID) {
                     let available    = false;

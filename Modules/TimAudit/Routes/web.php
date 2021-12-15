@@ -79,14 +79,16 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/', [AuLksController::class, 'index']);
             Route::get('/ajax', [AuLksController::class, 'ajax']);
             Route::get('/temuan/{jadw_id}', [AuLksController::class, 'temuan']);
+            Route::post('/temuan/{jadw_id}/ajukan', [AuLksController::class, 'ajukanTemuan']);
+            Route::post('/temuan/{jadw_id}/generate', [AuLksController::class, 'generate']);
+            Route::post('/temuan/{jadw_id}/save-draft', [AuLksController::class, 'saveDraft']);
+
             Route::get('/temuan/{jadw_id}/tambah', [AuLksController::class, 'addTemuan']);
             Route::post('/temuan/{jadw_id}/tambah', [AuLksController::class, 'storeTemuan']);
             Route::get('/temuan/{jadw_id}/edit/{lks_id}', [AuLksController::class, 'editTemuan']);
             Route::get('/temuan/{jadw_id}/detail/{lks_id}', [AuLksController::class, 'detailTemuan']);
             Route::delete('/temuan/{jadw_id}/delete/{lks_id}', [AuLksController::class, 'deleteTemuan']);
             Route::post('/temuan/{jadw_id}/verif/{lks_id}', [AuLksController::class, 'verifTemuan']);
-            Route::post('/temuan/{jadw_id}/generate', [AuLksController::class, 'generate']);
-            Route::post('/temuan/{jadw_id}/save-draft', [AuLksController::class, 'saveDraft']);
         });
 
         Route::prefix("laporan-ringkas")->group(function () {

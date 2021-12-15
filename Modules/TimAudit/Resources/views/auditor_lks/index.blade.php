@@ -36,6 +36,44 @@
 
 @push("javascript")
     <script>
+        function confirmAjukan(jadwalID) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Ajukan LKS?`,
+                text: `Pastikan semua data sudah benar sebelum anda mengajukan LKS ke client`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: `{{url("$url/temuan")}}/${jadwalID}/ajukan`,
+                        method: 'POST',
+                        dataType: 'json',
+                        success: function (response) {
+                            toastCenter({
+                                type: 'success',
+                                title: response.message
+                            })
+
+                            $('#ttData').datagrid('reload');
+                        },
+                        error: function (xhr) {
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -56,15 +94,24 @@
                         width: 130,
                         align: 'center',
                         formatter: function (val, row) {
+                            let btnTemuan = "";
+                            let btnSubmit = "";
                             if (row.total_temuan > 0) {
-                                return `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-warning">(${row.total_temuan}) Temuan LKS</a>`
+                                btnTemuan = `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block">(${row.total_temuan}) Temuan LKS</a>`
                             } else {
-                                return `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-check"></i> Temuan LKS</a>`
+                                btnTemuan = `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-success btn-block"><i class="fas fa-check"></i> Temuan LKS</a>`
                             }
+
+                            if (row.jadw_setujui_temuan == "none") {
+                                btnSubmit = `<button onclick="confirmAjukan(${row.jadw_id})" class="btn btn-xs btn-success btn-block"><i class="fas fa-paper-plane"></i> Ajukan LKS</a>`
+                            }
+
+                            return btnTemuan + btnSubmit
                         },
                     },
                 ]],
                 columns: [[
+                    {field: 'jadw_setujui_temuan', title: 'Pengajuan ?', width: 200, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
                     {
