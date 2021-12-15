@@ -16,6 +16,12 @@
             border-color: red;
         }
 
+        .dropzone {
+            width: 100%;
+            height: 200px;
+            min-height: 0px !important;
+        }
+
     </style>
 @endpush
 
@@ -117,6 +123,7 @@
 
 
                         {{-- Data LKS --}}
+                        @php($lksIDs=[])
                         <div class="custom-container">
                             <div class="col-md-12">
                                 <table class="table">
@@ -130,9 +137,9 @@
                                         <th>Bukti Tindakan Perbaikan</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="tbody-lks">
                                     @foreach($data->sis_audit_lks as $lks)
-
+                                        @php($lksIDs[] = $lks->lks_id)
                                         <tr>
                                             <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
                                             <td>
@@ -151,7 +158,7 @@
                                                               name="editor_perbaikan_analisis"
                                                               id="editor_perbaikan_analisis_{{$lks->lks_id}}"
                                                               @change="saveAnalisa({{$lks->lks_id}})"
-                                                              aria-label="editor revisi analisis">{{old('editor_perbaikan_analisis') ?? $lks->lks_perbaikan_analisa}}</textarea>
+                                                              aria-label="editor revisi analisis">{!! $lks->lks_perbaikan_analisa !!}</textarea>
                                                 </div>
                                                 <div style="padding: 10px 0 0 0">
                                                     <b style="font-size: 12px">Koreksi: </b>
@@ -159,7 +166,7 @@
                                                               placeholder="Masukkaan deskripsi..."
                                                               name="editor_perbaikan_tindakan"
                                                               id="editor_perbaikan_tindakan_{{$lks->lks_id}}"
-                                                              aria-label="editor revisi tindakan">{{old('editor_perbaikan_tindakan') ?? $lks->lks_perbaikan_koreksi}}</textarea>
+                                                              aria-label="editor revisi tindakan">{!! $lks->lks_perbaikan_koreksi !!}</textarea>
                                                 </div>
                                                 <div style="padding: 10px 0 0 0">
                                                     <b style="font-size: 12px">Tindakan Korektif: </b>
@@ -167,7 +174,7 @@
                                                               placeholder="Masukkaan deskripsi..."
                                                               name="editor_perbaikan_korektif"
                                                               id="editor_perbaikan_korektif_{{$lks->lks_id}}"
-                                                              aria-label="editor revisi korektif">{{old('editor_perbaikan_korektif') ?? $lks->lks_perbaikan_tindakan}}</textarea>
+                                                              aria-label="editor revisi korektif">{!! $lks->lks_perbaikan_tindakan !!}</textarea>
                                                 </div>
                                             </td>
                                             <td>
@@ -177,15 +184,35 @@
                                                               placeholder="Masukkaan deskripsi..."
                                                               name="editor_tindakan_perbaikan"
                                                               id="editor_tindakan_perbaikan_{{$lks->lks_id}}"
-                                                              aria-label="editor revisi korektif">{{old('editor_tindakan_perbaikan') ?? $lks->lks_bukti_tindakan_perbaikan}}</textarea>
+                                                              aria-label="editor revisi korektif">{{ $lks->lks_bukti_tindakan_perbaikan }}</textarea>
                                                 </div>
 
-                                                @foreach($lks->sis_audit_lks_files as $file)
+                                                <div style="padding-top: 20px">
+                                                    <small>(jika ada, unggah file bukti perbaikan)</small>
+                                                    <div class="custom-file">
+                                                        <input type="file" class="custom-file-input"
+                                                               id="file_perbaikan_{{$lks->lks_id}}" multiple
+                                                               @change="uploadFile({{$lks->lks_id}},...arguments)"
+                                                               accept="image/png,image/jpg,application/zip, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/octet-stream, application/vnd.oasis.opendocument.text">
+                                                        <label class="custom-file-label"
+                                                               for="file_perbaikan_{{$lks->lks_id}}">
+                                                            Unggah file perbaikan...</label>
+                                                    </div>
+                                                    <small id="file_info_{{$lks->lks_id}}"></small>
+                                                </div>
+
+                                                @if(count($lks->sis_audit_lks_files) > 0)
                                                     <br>
-                                                    <a href="{{asset($file->lks_filepath)}}">
-                                                        <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
-                                                    </a>
-                                                @endforeach
+                                                    <small>Melakukan upload ulang berarti menghapus file yang
+                                                        lama</small>
+
+                                                    @foreach($lks->sis_audit_lks_files as $file)
+                                                        <br>
+                                                        <a href="{{asset($file->lks_filepath)}}" target="_blank">
+                                                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
+                                                        </a>
+                                                    @endforeach
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -193,16 +220,23 @@
                                 </table>
                             </div>
 
-                            <a href="{{url("$url")}}" class="btn btn-info btn-outline-info">
-                                <i class="fas fa-arrow-left"></i> Kembali
+                            <a href="{{url("$url")}}" class="btn btn-outline-info">
+                                <i class="fad fa-arrow-left"></i> Kembali
                             </a>
                             <div class="stickyButton" style="float: right">
-                                <button class="btn btn-primary" @click="saveDraft()" type="button">
-                                    <i class="fas fa-save"></i> Simpan Draft
-                                </button>
+                                <template v-if="loading_submit">
+                                    <div class="fa-3x" style="text-align: center">
+                                        <i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <button class="btn btn-primary" @click="saveDraft()" type="button"
+                                            id="btnSaveDraft">
+                                        <i class="fas fa-save"></i> Simpan Draft
+                                    </button>
+                                </template>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -211,6 +245,7 @@
 @endsection
 
 @push("javascript")
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
@@ -218,10 +253,13 @@
         $(document).ready(function () {
             new Vue({
                 el: "#lksPage",
+                data: {
+                    perbaikan_berkas: [],
+                    loading_submit: false,
+                    lksIDs: {{json_encode($lksIDs)}}
+                },
                 mounted() {
                     setTimeout(() => {
-                        // this.buildDropzone()
-
                         this.buildTinyMCEPenyebab()
                         this.buildTinyMCEKoreksi()
                         this.buildTinyMCETindakan()
@@ -230,13 +268,19 @@
                 },
                 methods: {
                     buildTinyMCEPenyebab() {
-                        $(".editor_perbaikan_analisis").html(`
-                            <p>Analis Penyebab:&nbsp;</p>
-                            <ul>
-                            <li>....</li>
-                            <li>....</li>
-                            </ul>
-                        `);
+                        // this.lksIDs.map(lksID => {
+                        //     let targetID = `#editor_perbaikan_analisis_${lksID}`;
+                        //     let htmlText = $(targetID).html();
+                        //     if (htmlText == "" || htmlText == null) {
+                        //         $(targetID).html(`
+                        //             <p>Analisis:</p>
+                        //             <ul>
+                        //             <li>...</li>
+                        //             <li>...</li>
+                        //             </ul>
+                        //         `);
+                        //     }
+                        // })
 
                         tinyMCE.init({
                             invalid_elements: "script",
@@ -262,14 +306,20 @@
                             ],
                         });
                     },
-                    buildTinyMCEKoreksi() {
-                        $(".editor_perbaikan_tindakan").html(`
-                            <p>Koreksi:</p>
-                            <ul>
-                            <li>...</li>
-                            <li>...</li>
-                            </ul>
-                        `);
+                    buildTinyMCETindakan() {
+                        // this.lksIDs.map(lksID => {
+                        //     let targetID = `#editor_perbaikan_tindakan${lksID}`;
+                        //     let htmlText = $(targetID).html();
+                        //     if (htmlText == "" || htmlText == null) {
+                        //         $(targetID).html(`
+                        //             <p>Koreksi:</p>
+                        //             <ul>
+                        //             <li>...</li>
+                        //             <li>...</li>
+                        //             </ul>
+                        //         `);
+                        //     }
+                        // })
 
                         tinyMCE.init({
                             invalid_elements: "script",
@@ -295,15 +345,20 @@
                             ],
                         });
                     },
-                    buildTinyMCETindakan() {
-                        $(".editor_perbaikan_korektif").html(`
-                            <p>Tindakan Korektif:</p>
-                            <ul>
-                            <li>....</li>
-                            <li>....</li>
-                            </ul>
-                            <p>&nbsp;</p>
-                            <p>&nbsp;</p>`);
+                    buildTinyMCEKoreksi() {
+                        // this.lksIDs.map(lksID => {
+                        //     let targetID = `#editor_perbaikan_korektif${lksID}`;
+                        //     let htmlText = $(targetID).html();
+                        //     if (htmlText == "" || htmlText == null) {
+                        //         $(targetID).html(`
+                        //             <p>Koreksi:</p>
+                        //             <ul>
+                        //             <li>...</li>
+                        //             <li>...</li>
+                        //             </ul>
+                        //         `);
+                        //     }
+                        // })
 
                         tinyMCE.init({
                             invalid_elements: "script",
@@ -330,14 +385,19 @@
                         });
                     },
                     buildTinyMCETindakanPerbaikan() {
-                        $(".editor_tindakan_perbaikan").html(`
-                            <p>Tindakan Perbaikan:</p>
-                            <ul>
-                            <li>....</li>
-                            <li>....</li>
-                            </ul>
-                            <p>&nbsp;</p>
-                            <p>&nbsp;</p>`);
+                        // this.lksIDs.map(lksID => {
+                        //     let targetID = `#editor_tindakan_perbaikan${lksID}`;
+                        //     let htmlText = $(targetID).html();
+                        //     if (htmlText == "" || htmlText == null) {
+                        //         $(targetID).html(`
+                        //             <p>Koreksi:</p>
+                        //             <ul>
+                        //             <li>...</li>
+                        //             <li>...</li>
+                        //             </ul>
+                        //         `);
+                        //     }
+                        // })
 
                         tinyMCE.init({
                             invalid_elements: "script",
@@ -364,9 +424,10 @@
                         });
                     },
                     saveDraft() {
-                        let self      = this;
+                        let needReload = false;
+                        let self       = this;
                         // Saving draft
-                        let dtPromise = [];
+                        let dtPromise  = [];
                         tinymce.editors.forEach(async function (editor) {
                             let data    = tinyMCE.get(editor.settings.id).getContent()
                             let lksArr  = editor.settings.id.split("_")
@@ -387,32 +448,98 @@
                                     key = "lks_bukti_tindakan_perbaikan"
                                     break;
                             }
-                            dtPromise.push(self.saveToDatabase(resolve, reject, lksID, key, data))
+                            dtPromise.push(self.saveToDatabase(lksID, key, data))
                         });
 
-                        Promise.all(dtPromise).then((values) => {
-                            console.log(values)
-                            toastCenter({
-                                type: 'success',
-                                title: "Simpan draft berhasil"
+                        if (this.perbaikan_berkas.length > 0) {
+                            needReload = true;
+                            this.perbaikan_berkas.forEach(async function (berkas) {
+                                dtPromise.push(self.saveFileToDatabase(berkas.lks_id, berkas.files))
                             })
+                        }
+
+                        this.loading_submit = true;
+                        Promise.all(dtPromise)
+                            .then(() => {
+                                this.loading_submit = false;
+                                toastCenter({
+                                    type: 'success',
+                                    title: "Simpan draft berhasil"
+                                })
+
+                                if (needReload) {
+                                    location.reload();
+                                }
+                            })
+                            .catch(() => {
+                                this.loading_submit = false;
+                            })
+                    },
+                    async uploadFile(lksID, file) {
+                        let available    = false;
+                        let availableIdx = 0;
+                        if (this.perbaikan_berkas.length == 0) {
+                            available = false;
+                        } else {
+                            this.perbaikan_berkas.map((e, idx) => {
+                                if (e.lks_id == lksID) {
+                                    available    = true;
+                                    availableIdx = idx
+                                }
+                            });
+                        }
+
+                        let data = {lks_id: lksID, files: file.target.files}
+                        if (available) {
+                            this.perbaikan_berkas[availableIdx] = data
+                        } else {
+                            this.perbaikan_berkas.push(data)
+                        }
+
+                        $(`#file_info_${lksID}`).html(`${data.files.length} berkas akan di unggah`)
+                    },
+                    async saveFileToDatabase(lksID, files) {
+                        return new Promise((resolve, reject) => {
+                            let requestForm = new FormData();
+                            console.log(files.length)
+                            for (let i = 0; i <= files.length; i++) {
+                                if (files[i] != undefined) {
+                                    requestForm.append(`files[]`, files[i])
+                                }
+                            }
+
+                            axios.post(`{{url("$url/temuan-lks/$data->jadw_id/save-perbaikan-file")}}/${lksID}`, requestForm)
+                                .then(function () {
+                                    resolve();
+                                })
+                                .catch(function () {
+                                    reject();
+                                });
                         });
                     },
-                    async saveToDatabase(resolve, reject, lksID, key, value) {
-                        $.ajax({
-                            url: `{{url("$url/temuan-lks/$data->jadw_id/save-perbaikan-text")}}/${lksID})`,
-                            type: 'POST',
-                            dataType: 'json',
-                            data: {key, value},
-                            success: function (response) {
-                                resolve()
-                                console.log(response.message)
-                            },
-                            error: function (xhr) {
-                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                    async saveToDatabase(lksID, key, value) {
+                        return new Promise((resolve, reject) => {
+                            if (value == null || value == "") {
+                                reject()
+                                return toastCenter({type: 'error', 'title': "Text editor tidak dapat kosong"})
                             }
-                        });
+                            $.ajax({
+                                url: `{{url("$url/temuan-lks/$data->jadw_id/save-perbaikan-text")}}/${lksID}`,
+                                type: 'POST',
+                                method: 'POST',
+                                dataType: 'json',
+                                data: {key, value},
+                                success: function (response) {
+                                    console.log(response.message)
+                                    resolve()
+                                },
+                                error: function (xhr) {
+                                    if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                    else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                                    reject();
+                                }
+                            });
+                        })
                     }
                 }
             });

@@ -23,15 +23,15 @@ use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
 use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
-use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
-use Modules\TimAudit\Http\Controllers\PpcLaporanController;
-use Modules\TimAudit\Http\Controllers\PpcLogBookController;
+use Modules\TimAudit\Http\Controllers\KomiteBeritaAcaraController;
 use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\KomiteRekomPersetujuanController;
-use Modules\TimAudit\Http\Controllers\KomiteBeritaAcaraController;
+use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
+use Modules\TimAudit\Http\Controllers\PpcLaporanController;
+use Modules\TimAudit\Http\Controllers\PpcLogBookController;
 
-Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
+Route::prefix('timaudit')->middleware(['auth'])->group(function () {
     // ============================== Persetujuan TIM ==============================
     Route::prefix("persetujuan-tim")->group(function () {
         Route::prefix("auditor")->group(function () {
@@ -85,6 +85,8 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::get('/temuan/{jadw_id}/detail/{lks_id}', [AuLksController::class, 'detailTemuan']);
             Route::delete('/temuan/{jadw_id}/delete/{lks_id}', [AuLksController::class, 'deleteTemuan']);
             Route::post('/temuan/{jadw_id}/verif/{lks_id}', [AuLksController::class, 'verifTemuan']);
+            Route::post('/temuan/{jadw_id}/generate', [AuLksController::class, 'generate']);
+            Route::post('/temuan/{jadw_id}/save-draft', [AuLksController::class, 'saveDraft']);
         });
 
         Route::prefix("laporan-ringkas")->group(function () {
@@ -149,8 +151,8 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::get('/edit', [KomiteLembarPeriksaController::class, 'edit']);
             Route::post('/update', [KomiteLembarPeriksaController::class, 'update']);
         });
-		
-		Route::prefix("berita-acara")->group(function () {
+
+        Route::prefix("berita-acara")->group(function () {
             Route::get('/', [KomiteBeritaAcaraController::class, 'index']);
             Route::any('/ajax', [KomiteBeritaAcaraController::class, 'ajax']);
             Route::get('/detail', [KomiteBeritaAcaraController::class, 'detail']);

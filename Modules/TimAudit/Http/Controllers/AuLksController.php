@@ -5,6 +5,7 @@ namespace Modules\TimAudit\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SisJadwal;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -38,7 +39,11 @@ class AuLksController extends Controller
         try {
             // ============================== validation to access this page ==============================
             // 1.
-            $dataJadwal = $this->involvedAuditor($jadwalID);
+            $dataJadwal = $this->involvedAuiditorWithFilter($jadwalID, $request['auditor'] ?? "all");
+
+            if (empty($request['auditor']) && !empty(auth()->user()->master_pegawai->peg_kode)) {
+                return redirect("$this->url/temuan/$jadwalID?auditor=" . auth()->user()->master_pegawai->peg_kode);
+            }
 
             $breadcrumbs = [
                 new BreadcrumbsStruct('Tim Audit'),
@@ -53,6 +58,64 @@ class AuLksController extends Controller
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 
+    }
+
+    public function generate(Request $request, $jadwalID)
+    {
+        $request->validate(['total' => 'required']);
+        try {
+            if ($request['total'] <= 0) throw new Exception("Total harus lebih dari 0");
+
+            $pegawaiID  = auth()->user()->master_pegawai->peg_id;
+            $dataJadwal = $this->involvedAuditor($jadwalID);
+            $dataTim    = $dataJadwal->sis_jadwal_tims()->where("peg_id", $pegawaiID)->firstOrFail();
+
+            DB::beginTransaction();
+            for ($i = 0; $i < $request['total']; $i++) {
+                SisAuditLks::updateOrCreate(
+                    ['lks_id' => $request['lks_id'], 'jadw_id' => $dataJadwal->jadw_id],
+                    [
+                        'jadw_tim_id'                  => $dataTim->jadw_tim_id,
+                        'lks_status'                   => 'proses',
+                        'lks_uraian_ketidaksesuaian'   => "Ubah text ini ...",
+                        'lks_kategori_ketidaksesuaian' => "Ubah text ini ...",
+                        'lks_klausul_ketidaksesuaian'  => "Ubah text ini ...",
+                        'lks_expired_date_perbaikan'   => Carbon::now()
+                    ]
+                );
+            }
+            DB::commit();
+
+            return responseJSON(200, [], "Generate berhasil");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
+
+    public function saveDraft(Request $request, $jadwalID)
+    {
+        $request->validate([
+            'lks_id' => 'required',
+            'key'    => ['required', Rule::in(['lks_uraian_ketidaksesuaian', 'lks_kategori_ketidaksesuaian', 'lks_klausul_ketidaksesuaian', 'lks_expired_date_perbaikan'])],
+            'value'  => 'required'
+        ]);
+        
+        $data = SisAuditLks::find($request['lks_id']);
+        try {
+            DB::beginTransaction();
+
+            $key        = $request['key'];
+            $value      = $request['value'];
+            $data->$key = $value;
+            $data->save();
+
+            DB::commit();
+            return responseJSON(200, [], "LKS berhasil disimpan");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, [], $e->getMessage() . '| err:' . $e->getLine());
+        }
     }
 
     public function addTemuan(Request $request, $jadwalID)
@@ -328,7 +391,7 @@ class AuLksController extends Controller
             $x['lks_sudah_ditutup']            = $d->lks_sudah_ditutup;
             $x['lks_status']                   = $d->lks_status;
             $x['lks_id']                       = $d->lks_id;
-            array_push($result, $x);
+            $result[]                          = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

@@ -211,7 +211,7 @@ class Tahap2PerbaikanController extends Controller
 
             $key              = $request['key'];
             $value            = $request['value'];
-            $data->$key      = $value;
+            $data->$key       = $value;
             $data->lks_status = 'fixed';
             $data->save();
 
@@ -219,6 +219,56 @@ class Tahap2PerbaikanController extends Controller
             return responseJSON(200, [], "Perbaikan LKS berhasil disimpan");
         } catch (Exception $e) {
             DB::rollBack();
+            return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
+        }
+    }
+
+    public function savePerbaikanFile(Request $request, $jadwalID, $lksID)
+    {
+        $failedDeletedPath = [];
+        try {
+            if (!$request->hasFile("files")) throw new Exception("File tidak dapat kosong");
+
+            $data = SisAuditLks::with(['sis_jadwal', 'sis_audit_lks_files'])
+                ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
+                ->where('sis_jadwal.jadw_id', $jadwalID)
+                ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+                ->where('sis_audit_lks.lks_id', $lksID)
+                ->first();
+            if (empty($data)) throw new Exception("Data Audit tidak ditemukan");
+            DB::beginTransaction();
+
+            if (count($data->sis_audit_lks_files) > 0) {
+                foreach ($data->sis_audit_lks_files as $file) {
+                    $successDeletedPath[] = public_path($file->lks_filepath);
+                    $file->delete();
+                }
+            }
+
+            $baseFileUpload = sprintf(config("app.path_file_perbaikan_lks"), $data->lks_id);
+            foreach ($request->file('files') as $berkas) {
+                if (!empty($berkas)) {
+                    $filePebaikan       = $berkas;
+                    $filePebaikanName   = Str::slug($filePebaikan->getClientOriginalName()) . '-' . time() . '.' . $filePebaikan->getClientOriginalExtension();
+                    $filePebaikanFolder = $baseFileUpload;
+                    if (!File::exists($filePebaikanFolder)) File::makeDirectory($filePebaikanFolder, 0777, true, true);
+                    $filePebaikan->move($filePebaikanFolder, $filePebaikanName);
+
+                    $newSisLksFile       = SisAuditLksFile::create([
+                        'lks_id'       => $data->lks_id,
+                        'lks_filepath' => sprintf("%s/%s", $filePebaikanFolder, $filePebaikanName),
+                        'created_at'   => Carbon::now(),
+                    ]);
+                    $failedDeletedPath[] = public_path($newSisLksFile->lks_filepath);
+                }
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            foreach ($failedDeletedPath as $del) {
+                @unlink($del);
+            }
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -288,7 +338,7 @@ class Tahap2PerbaikanController extends Controller
             $x['jadw_id']          = $d->jadw_id;
             $x['jadw_jenis']       = $d->jadw_jenis;
             $x['jadw_file_jadwal'] = asset($d->jadw_file_jadwal);
-
+            $x['total_temuan']     = $d->sis_audit_lks->count();
             if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
                 $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
             } else {

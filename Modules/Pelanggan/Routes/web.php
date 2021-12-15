@@ -95,6 +95,7 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
             // Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'perbaikanLKS']);
             // Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'processPerbaikanLKS']);
             Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-text/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanText']);
+            Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-file/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanFile']);
         });
     });
 });

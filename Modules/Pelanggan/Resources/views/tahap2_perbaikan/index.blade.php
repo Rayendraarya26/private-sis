@@ -60,7 +60,7 @@
                         width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnTemuan = `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs"><i class="fas fa-warning"></i> Temuan LKS</a>`;
+                            let btnTemuan = `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs">${row.total_temuan} Temuan LKS</a>`;
                             let btnDetail = `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}/detail" class="btn btn-primary btn-block btn-xs"><i class="fas fa-info"></i> Detail LKS</a>`;
                             return btnDetail + btnTemuan
                         }
