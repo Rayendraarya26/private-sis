@@ -188,6 +188,8 @@ class Tahap2PersetujuanController extends Controller
                 ];
             }
 
+            $totalTemuanLKS = $d->sis_audit_lks->count();
+
             $x['tims']                = $timAudit;
             $x['audits']              = $jadwalAudit;
             $x['revisi']              = $dataRevisi;
@@ -195,6 +197,7 @@ class Tahap2PersetujuanController extends Controller
             $x['jadw_jenis']          = $d->jadw_jenis;
             $x['jadw_setujui_temuan'] = $d->jadw_setujui_temuan;
             $x['jadw_file_jadwal']    = asset($d->jadw_file_jadwal);
+            $x['total_temuan']        = $totalTemuanLKS;
 
             if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
                 $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));

@@ -96,17 +96,20 @@
                         formatter: function (val, row) {
                             let btnTemuan = "";
                             let btnSubmit = "";
-                            if (row.total_temuan > 0) {
-                                btnTemuan = `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block">(${row.total_temuan}) Temuan LKS</a>`
-                            } else {
-                                btnTemuan = `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-success btn-block"><i class="fas fa-check"></i> Temuan LKS</a>`
-                            }
+                            let btnVerif  = "";
+                            if (row.jadw_setujui_temuan == "none" || row.jadw_setujui_temuan == "revisi") {
+                                if (row.total_temuan > 0) {
+                                    btnTemuan = `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block">(${row.total_temuan}) Temuan LKS</a>`
+                                } else {
+                                    btnTemuan = `<a href="{{url("$url/temuan")}}/${row.jadw_id}" class="btn btn-xs btn-success btn-block"><i class="fas fa-check"></i> Temuan LKS</a>`
+                                }
 
-                            if (row.jadw_setujui_temuan == "none") {
                                 btnSubmit = `<button onclick="confirmAjukan(${row.jadw_id})" class="btn btn-xs btn-success btn-block"><i class="fas fa-paper-plane"></i> Ajukan LKS</a>`
+                            } else if (row.jadw_setujui_temuan == "setuju") {
+                                btnVerif = `<a href="{{url("$url/temuan")}}/${row.jadw_id}/verifikasi" class="btn btn-xs btn-primary btn-block">(${row.total_temuan}) Verifikasi LKS</a>`
                             }
 
-                            return btnTemuan + btnSubmit
+                            return btnTemuan + btnSubmit + btnVerif
                         },
                     },
                 ]],

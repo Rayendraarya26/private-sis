@@ -80,6 +80,9 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/ajax', [AuLksController::class, 'ajax']);
             Route::get('/temuan/{jadw_id}', [AuLksController::class, 'temuan']);
             Route::post('/temuan/{jadw_id}/ajukan', [AuLksController::class, 'ajukanTemuan']);
+            Route::get('/temuan/{jadw_id}/verifikasi', [AuLksController::class, 'verifikasiTemuan']);
+            Route::post('/temuan/{jadw_id}/verifikasi', [AuLksController::class, 'processVerifikasiTemuan']);
+            Route::post('/temuan/{jadw_id}/revisi', [AuLksController::class, 'processRevisiTemuan']);
             Route::post('/temuan/{jadw_id}/generate', [AuLksController::class, 'generate']);
             Route::post('/temuan/{jadw_id}/save-draft', [AuLksController::class, 'saveDraft']);
 
