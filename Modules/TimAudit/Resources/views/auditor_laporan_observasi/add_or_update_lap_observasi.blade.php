@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Tambah / Perbarui Laporan Ringkas')
+@section('title', 'Tambah / Perbarui Laporan Observasi')
 
 @section('content')
     <div class="dt-content" id="temuanPage">
@@ -23,7 +23,7 @@
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
                             <h3 class="dt-card__title" style="text-align: center">
-                                LAPORAN RINGKAS
+                                LAPORAN OBSERVASI
                             </h3>
                         </div>
                     </div>
@@ -146,7 +146,7 @@
                         <div class="dt-card__header">
                             <div class="dt-card__heading">
                                 <h3 class="dt-card__title" style="text-align: center">
-                                    TULIS LAPORAN RINGKAS
+                                    TULIS LAPORAN OBSERVASI
                                 </h3>
                             </div>
                         </div>
@@ -156,63 +156,18 @@
                                   enctype="multipart/form-data">
                                 @csrf
 
-                                <div class="form-group row" style="display:none;">
-                                    <label class="col-form-label col-sm-3" for="lap_ringkas_filepath">
-                                        Berkas
-                                        <br>
-                                        <small>(pdf/excel)</small>
-                                        <br>
-                                        @error('lap_ringkas_filepath')
-                                        <br><span style="color: red">{{$message}}</span>
-                                        @enderror
-                                    </label>
-                                    <div class="col-sm-8">
-                                        <div class="custom-file">
-                                            <input type="file" name="lap_ringkas_filepath"
-                                                   class="custom-file-input"
-                                                   id="lap_ringkas_filepath"
-                                                   accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                            <label class="custom-file-label" for="lap_ringkas_filepath">
-                                                Unggah file...</label>
-                                        </div>
-                                        @if(!empty($data->sis_audit_lap_ringkas->lap_ringkas_filepath))
-                                            <small>
-                                                <a href="{{asset($data->sis_audit_lap_ringkas->lap_ringkas_filepath)}}"
-                                                   target="_blank">
-                                                    <i class="fad fa-download"></i> Download berkas
-                                                </a>
-                                            </small>
-                                        @endif
-                                    </div>
-                                </div>
-
                                 <div class="form-group row">
-                                    <label class="col-form-label col-sm-3" for="lap_ringkas_kesimpulan">
-                                        Ringkasan Hasil / Kesimpulan*
-                                        @error('lap_ringkas_kesimpulan')
+                                    <label class="col-form-label col-sm-3" for="obsvasi_uraian">
+                                        Uraian Observasian *
+                                        @error('obsvasi_uraian')
                                         <br><span style="color: red">{{$message}}</span>
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
                                         <textarea class="form-control" placeholder="Masukkaan uraian..."
-                                                  name="lap_ringkas_kesimpulan"
-                                                  aria-label="Uraian ketidaksesuaian"
-                                                  id="lap_ringkas_kesimpulan">{{old('lap_ringkas_kesimpulan') ?? $data->sis_audit_lap_ringkas?->lap_ringkas_kesimpulan}}</textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-group row">
-                                    <label class="col-form-label col-sm-3" for="lap_ringkas_rekomendasi">
-                                        Rekomendasi*
-                                        @error('lap_ringkas_rekomendasi')
-                                        <br><span style="color: red">{{$message}}</span>
-                                        @enderror
-                                    </label>
-                                    <div class="col-sm-8">
-                                        <textarea class="form-control" placeholder="Masukkaan uraian..."
-                                                  name="lap_ringkas_rekomendasi"
-                                                  aria-label="Uraian ketidaksesuaian"
-                                                  id="lap_ringkas_rekomendasi">{{old('lap_ringkas_rekomendasi') ?? $data->sis_audit_lap_ringkas?->lap_ringkas_rekomendasi}}</textarea>
+                                                  name="obsvasi_uraian"
+                                                  aria-label="Uraian Observasi"
+                                                  id="obsvasi_uraian">{{old('obsvasi_uraian') ?? $data->sis_audit_observasi?->obsvasi_uraian}}</textarea>
                                     </div>
                                 </div>
 
@@ -234,10 +189,10 @@
     </script>
 
     <script>
-        function initRingkasanEditor() {
+        function initObservasianEditor() {
             tinyMCE.init({
                 invalid_elements: "script",
-                selector: '#lap_ringkas_kesimpulan',
+                selector: '#obsvasi_uraian',
                 plugins: 'autosave link image lists',
                 relative_urls: false,
                 height: 500,
@@ -259,34 +214,8 @@
             });
         }
 
-        function initRekomendasiEditor() {
-            tinyMCE.init({
-                invalid_elements: "script",
-                selector: '#lap_ringkas_rekomendasi',
-                plugins: 'autosave link image lists',
-                relative_urls: false,
-                height: 500,
-                placeholder: 'Tuliskan Rekomendasi...',
-                images_reuse_filename: true,
-                automatic_uploads: true,
-                images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-                images_upload_credentials: true,
-                toolbar: [
-                    {name: 'history', items: ['undo', 'redo']},
-                    {name: 'styles', items: ['styleselect']},
-                    {name: 'formatting', items: ['bold', 'italic']},
-                    {name: 'alignment', items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']},
-                    {name: 'list', items: ['bullist', 'numlist']},
-                    {name: 'indentation', items: ['outdent', 'indent']},
-                    {name: 'link', items: ['link', 'image']},
-                    {name: 'restore', items: ['restoredraft']},
-                ],
-            });
-        }
-
         $(document).ready(function () {
-            initRingkasanEditor();
-            initRekomendasiEditor();
+            initObservasianEditor();
         });
     </script>
 @endpush

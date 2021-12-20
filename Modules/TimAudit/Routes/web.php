@@ -17,6 +17,7 @@ use Modules\TimAudit\Http\Controllers\AuDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\AuDaftarPeriksaController;
 use Modules\TimAudit\Http\Controllers\AuLapLengkapController;
 use Modules\TimAudit\Http\Controllers\AuLapRingkasController;
+use Modules\TimAudit\Http\Controllers\AuLapObservasiController;
 use Modules\TimAudit\Http\Controllers\AuLksController;
 use Modules\TimAudit\Http\Controllers\AuLogBookController;
 use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
@@ -99,6 +100,13 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/ajax', [AuLapRingkasController::class, 'ajax']);
             Route::get('/laporan/{jadw_id}', [AuLapRingkasController::class, 'laporan']);
             Route::post('/laporan/{jadw_id}', [AuLapRingkasController::class, 'processLaporan']);
+        });
+		
+		Route::prefix("laporan-observasi")->group(function () {
+            Route::get('/', [AuLapObservasiController::class, 'index']);
+            Route::get('/ajax', [AuLapObservasiController::class, 'ajax']);
+            Route::get('/laporan/{jadw_id}', [AuLapObservasiController::class, 'laporan']);
+            Route::post('/laporan/{jadw_id}', [AuLapObservasiController::class, 'processLaporan']);
         });
 
         Route::prefix("laporan-lengkap")->group(function () {
