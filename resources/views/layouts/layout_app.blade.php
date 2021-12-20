@@ -568,15 +568,6 @@
 <script src="{{ asset('/node_modules/masonry-layout/dist/masonry.pkgd.min.js') }}"></script>
 <script src="{{ asset('/node_modules/sweetalert2/dist/sweetalert2.js') }}"></script>
 
-<script src="{{ asset('/node_modules/chart.js/dist/Chart.min.js') }}"></script>
-
-<!-- Resources -->
-<script src="{{ asset('/node_modules/ammap3/ammap/ammap.js') }}"></script>
-<script src="{{ asset('/node_modules/ammap3/ammap/maps/js/continentsLow.js') }}"></script>
-<script src="{{ asset('/node_modules/ammap3/ammap/themes/light.js') }}"></script>
-
-<script src="{{ asset('/node_modules/amcharts3/amcharts/amcharts.js') }}"></script>
-<script src="{{ asset('/node_modules/amcharts3/amcharts/gauge.js') }}"></script>
 
 <!-- Custom JavaScript -->
 <script src="{{ asset('assets/js/script.js') }}"></script>
@@ -584,7 +575,9 @@
 <script src="{{ asset('assets/js/vue.min.js') }}"></script>
 <script src="{{ asset('assets/js/dexie.min.js') }}"></script>
 
-<script src="{{ asset('assets/fontawesome/js/all.min.js') }}"></script>
+<script src="{{ asset('assets/fontawesome/js/fontawesome.min.js') }}"></script>
+<script src="{{ asset('assets/fontawesome/js/solid.min.js') }}"></script>
+<script src="{{ asset('assets/fontawesome/js/duotone.min.js') }}"></script>
 
 <script src="{{ asset('assets/plugins/ckeditor/ckeditor.js') }}"></script>
 <script src="{{ asset('assets/plugins/easyui/jquery.easyui.min.js') }}"></script>

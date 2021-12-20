@@ -348,29 +348,6 @@ class AuLksController extends Controller
         }
     }
 
-    public function ajukanTemuan(Request $request, $jadwalID)
-    {
-        $data = SisJadwal::findOrFail($jadwalID);
-        try {
-            $tim = SisJadwalTim::where('jadw_id', $jadwalID)->where('peg_id', auth()->user()->master_pegawai->peg_id)->where('jadw_tim_posisi', 'ketua')->first();
-            if (empty($tim)) throw new Exception("Hanya ketua auditor yang dapat melakukan submit");
-
-            $data->jadw_setujui_temuan = "diajukan";
-            $data->save();
-
-            SisJadwalLog::create([
-                'jadw_id'    => $jadwalID,
-                'jlog_tipe'  => 'informasi',
-                'jlog_judul' => 'Pengajuan LKS',
-                'jlog_pesan' => sprintf('%s (BBKKP) meminta persetujuan %d temuan LKS kepada Client', auth()->user()->user_fullname, $data->sis_audit_lks->count()),
-            ]);
-
-            return responseJSON(200, [], "Pengajuan berhasil");
-        } catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
-        }
-    }
-
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);

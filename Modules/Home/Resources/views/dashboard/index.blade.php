@@ -184,26 +184,32 @@
 					</div>
 			  	</div>
 			  	<div class="dt-card__body">
-			  		<canvas id="chart-permohonan"></canvas>
-			  	</div>
-			</div>
-		</div>
-	</div>
+                    <canvas id="chart-permohonan"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @endsection
 
 @push("javascript")
-<script>
-	let color = Chart.helpers.color;
-	let charts = [];
+    <script src="{{ asset('/node_modules/chart.js/dist/Chart.min.js') }}"></script>
+    <script src="{{ asset('/node_modules/ammap3/ammap/ammap.js') }}"></script>
+    <script src="{{ asset('/node_modules/ammap3/ammap/maps/js/continentsLow.js') }}"></script>
+    <script src="{{ asset('/node_modules/ammap3/ammap/themes/light.js') }}"></script>
 
-	$(function()
-	{
-		let jenis_pelanggan_data = <?= json_encode($company_types->toArray()) ?>;
+    <script src="{{ asset('/node_modules/amcharts3/amcharts/amcharts.js') }}"></script>
+    <script src="{{ asset('/node_modules/amcharts3/amcharts/gauge.js') }}"></script>
+    <script>
+        let color  = Chart.helpers.color;
+        let charts = [];
 
-		new Chart(document.getElementById('jenis-pelanggan'), {
-	      	type: 'doughnut',
+        $(function () {
+            let jenis_pelanggan_data = <?= json_encode($company_types->toArray()) ?>;
+
+            new Chart(document.getElementById('jenis-pelanggan'), {
+                type: 'doughnut',
 	      	data: {
 	      		labels: $.map(jenis_pelanggan_data, function(row){
 	      			return row.jenis_perusahaan_nama;

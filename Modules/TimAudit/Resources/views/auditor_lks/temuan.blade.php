@@ -160,10 +160,7 @@
                                         <tr>
                                             <th>Auditor</th>
                                             <th>Uraian Ketidaksesuaian</th>
-                                            <th>Tindakan Perbaikan <br>
-                                                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
-                                            </th>
-                                            <th>Bukti Tindakan Perbaikan</th>
+                                            <th>Aksi</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tbody-lks">
@@ -173,62 +170,70 @@
                                                 <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
                                                 <td>
                                                     @if(auth()->user()->master_pegawai->peg_id == $lks->sis_jadwal_tim->master_pegawai->peg_id)
-                                                        <div style="padding-bottom: 10px">
-                                                            <b style="font-size: 12px">Uraian Ketidaksesuaian: </b>
-                                                            <textarea class="form-control editor_uraian"
-                                                                      placeholder="Masukkaan deskripsi..."
-                                                                      name="editor_uraian_{{$lks->lks_id}}"
-                                                                      id="editor_uraian_{{$lks->lks_id}}"
-                                                                      @change="saveAnalisa({{$lks->lks_id}})"
-                                                                      aria-label="editor revisi analisis">{!! $lks->lks_uraian_ketidaksesuaian !!}</textarea>
-                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div style="padding-bottom: 10px">
+                                                                    <b style="font-size: 12px">Uraian Ketidaksesuaian: </b>
+                                                                    <textarea class="form-control editor_uraian"
+                                                                              placeholder="Masukkaan deskripsi..."
+                                                                              name="editor_uraian_{{$lks->lks_id}}"
+                                                                              id="editor_uraian_{{$lks->lks_id}}"
+                                                                              @change="saveAnalisa({{$lks->lks_id}})"
+                                                                              aria-label="editor revisi analisis">{!! $lks->lks_uraian_ketidaksesuaian !!}</textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <div style="padding-bottom: 10px">
+                                                                    <b style="font-size: 12px">Klausul Ketidaksesuaian: </b>
+                                                                    <textarea class="form-control editor_klausul"
+                                                                              placeholder="Masukkaan deskripsi..."
+                                                                              name="editor_klausul_{{$lks->lks_id}}"
+                                                                              id="editor_klausul_{{$lks->lks_id}}"
+                                                                              @change="saveAnalisa({{$lks->lks_id}})"
+                                                                              aria-label="editor revisi analisis">{!! $lks->lks_klausul_ketidaksesuaian !!}</textarea>
+                                                                </div>
+                                                            </div>
 
-                                                        <div style="padding-bottom: 10px">
-                                                            <b style="font-size: 12px">Kategori Ketidaksesuaian: </b>
-                                                            <select aria-label="kategori ketidaksesuaian"
-                                                                    @change="changeKategori({{$lks->lks_id}}, ...arguments)"
-                                                                    name="lks_kategori_{{$lks->lks_id}}"
-                                                                    class="form-control"
-                                                                    id="lks_kategori_{{$lks->lks_id}}">
-                                                                <option selected disabled>-- Pilih Kategori --</option>
-                                                                <option
-                                                                    value="observasi" {{$lks->lks_kategori_ketidaksesuaian == "observasi" ? 'selected': ""}}>
-                                                                    Observasi
-                                                                </option>
-                                                                <option
-                                                                    value="minor" {{$lks->lks_kategori_ketidaksesuaian == "minor" ? 'selected': ""}}>
-                                                                    Minor
-                                                                </option>
-                                                                <option
-                                                                    value="mayor" {{$lks->lks_kategori_ketidaksesuaian == "mayor" ? 'selected': ""}}>
-                                                                    Mayor
-                                                                </option>
-                                                                <option
-                                                                    value="kritis" {{$lks->lks_kategori_ketidaksesuaian == "kritis" ? 'selected': ""}}>
-                                                                    Kritis
-                                                                </option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div style="padding-bottom: 10px">
-                                                            <b style="font-size: 12px">Klausul Ketidaksesuaian: </b>
-                                                            <textarea class="form-control editor_klausul"
-                                                                      placeholder="Masukkaan deskripsi..."
-                                                                      name="editor_klausul_{{$lks->lks_id}}"
-                                                                      id="editor_klausul_{{$lks->lks_id}}"
-                                                                      @change="saveAnalisa({{$lks->lks_id}})"
-                                                                      aria-label="editor revisi analisis">{!! $lks->lks_klausul_ketidaksesuaian !!}</textarea>
-                                                        </div>
-
-                                                        <div>
-                                                            <b style="font-size: 12px">Tgl Max Revisi: </b>
-                                                            <input type="date" name="lks_daterevisi_{{$lks->lks_id}}"
-                                                                   class="form-control"
-                                                                   @change="changeDateRevisi({{$lks->lks_id}})"
-                                                                   aria-label="tgl max revisi"
-                                                                   value="{{$lks->lks_expired_date_perbaikan?->format("Y-m-d")}}"
-                                                                   id="lks_daterevisi_{{$lks->lks_id}}">
-                                                            <small><i>klik lagi untuk menghilangkan tanggal</i></small>
+                                                            <div class="col-md-6">
+                                                                <div style="padding-bottom: 10px">
+                                                                    <b style="font-size: 12px">Kategori Ketidaksesuaian: </b>
+                                                                    <select aria-label="kategori ketidaksesuaian"
+                                                                            @change="changeKategori({{$lks->lks_id}}, ...arguments)"
+                                                                            name="lks_kategori_{{$lks->lks_id}}"
+                                                                            class="form-control"
+                                                                            id="lks_kategori_{{$lks->lks_id}}">
+                                                                        <option selected disabled>-- Pilih Kategori --</option>
+                                                                        <option
+                                                                            value="observasi" {{$lks->lks_kategori_ketidaksesuaian == "observasi" ? 'selected': ""}}>
+                                                                            Observasi
+                                                                        </option>
+                                                                        <option
+                                                                            value="minor" {{$lks->lks_kategori_ketidaksesuaian == "minor" ? 'selected': ""}}>
+                                                                            Minor
+                                                                        </option>
+                                                                        <option
+                                                                            value="mayor" {{$lks->lks_kategori_ketidaksesuaian == "mayor" ? 'selected': ""}}>
+                                                                            Mayor
+                                                                        </option>
+                                                                        <option
+                                                                            value="kritis" {{$lks->lks_kategori_ketidaksesuaian == "kritis" ? 'selected': ""}}>
+                                                                            Kritis
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div>
+                                                                    <b style="font-size: 12px">Tgl Max Revisi: </b>
+                                                                    <input type="date" name="lks_daterevisi_{{$lks->lks_id}}"
+                                                                           class="form-control"
+                                                                           @change="changeDateRevisi({{$lks->lks_id}})"
+                                                                           aria-label="tgl max revisi"
+                                                                           value="{{$lks->lks_expired_date_perbaikan?->format("Y-m-d")}}"
+                                                                           id="lks_daterevisi_{{$lks->lks_id}}">
+                                                                    <small><i>klik lagi untuk menghilangkan tanggal</i></small>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     @else
                                                         {!! $lks->lks_uraian_ketidaksesuaian !!}
@@ -244,35 +249,9 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <div style="padding: 10px 0 0 0">
-                                                        <b style="font-size: 12px">Analisis Penyebab: </b>
-                                                        <p>{!! $lks->lks_perbaikan_analisa !!}</p>
-                                                    </div>
-                                                    <div style="padding: 10px 0 0 0">
-                                                        <p>{!! $lks->lks_perbaikan_koreksi !!}</p>
-                                                    </div>
-                                                    <div style="padding: 10px 0 0 0">
-                                                        <b style="font-size: 12px">Tindakan Korektif: </b>
-                                                        <p>{!! $lks->lks_perbaikan_tindakan !!}</p>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div style="padding: 10px 0 0 0">
-                                                        <b style="font-size: 12px">Tindakan Perbaikan: </b>
-                                                        <p>{!! $lks->lks_bukti_tindakan_perbaikan !!}</p>
-                                                    </div>
-                                                    @if(count($lks->sis_audit_lks_files) > 0)
-                                                        <br>
-                                                        <small>Berkas yang diunggah oleh client:</small>
-
-                                                        @foreach($lks->sis_audit_lks_files as $file)
-                                                            <br>
-                                                            <a href="{{asset($file->lks_filepath)}}" target="_blank">
-                                                                <i class="fad fa-download"></i>
-                                                                Berkas {{$loop->iteration}}
-                                                            </a>
-                                                        @endforeach
-                                                    @endif
+                                                    <button class="btn btn-danger">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -380,7 +359,7 @@
                         plugins: 'autosave link image lists',
                         relative_urls: false,
                         height: 300,
-                        width: 400,
+                        width: '100%',
                         placeholder: 'Tuliskan koreksi...',
                         images_reuse_filename: true,
                         automatic_uploads: true,
@@ -405,7 +384,7 @@
                         plugins: 'autosave link image lists',
                         relative_urls: false,
                         height: 300,
-                        width: 400,
+                        width: '100%',
                         placeholder: 'Tuliskan koreksi...',
                         images_reuse_filename: true,
                         automatic_uploads: true,

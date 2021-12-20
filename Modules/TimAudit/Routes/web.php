@@ -80,7 +80,6 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/', [AuLksController::class, 'index']);
             Route::get('/ajax', [AuLksController::class, 'ajax']);
             Route::get('/temuan/{jadw_id}', [AuLksController::class, 'temuan']);
-            Route::post('/temuan/{jadw_id}/ajukan', [AuLksController::class, 'ajukanTemuan']);
             Route::get('/temuan/{jadw_id}/verifikasi', [AuLksController::class, 'verifikasiTemuan']);
             Route::post('/temuan/{jadw_id}/verifikasi', [AuLksController::class, 'processVerifikasiTemuan']);
             Route::post('/temuan/{jadw_id}/revisi', [AuLksController::class, 'processRevisiTemuan']);
@@ -101,7 +100,7 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/laporan/{jadw_id}', [AuLapRingkasController::class, 'laporan']);
             Route::post('/laporan/{jadw_id}', [AuLapRingkasController::class, 'processLaporan']);
         });
-		
+
 		Route::prefix("laporan-observasi")->group(function () {
             Route::get('/', [AuLapObservasiController::class, 'index']);
             Route::get('/ajax', [AuLapObservasiController::class, 'ajax']);

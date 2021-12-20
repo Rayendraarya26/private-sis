@@ -27,7 +27,8 @@
     <!-- Load Styles -->
 
     <link rel="stylesheet" href="{{asset('assets/css/lite-style-1.min.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/fontawesome/css/all.min.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/fontawesome/css/fontawesome.min.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/fontawesome/css/light.min.css')}}">
     <!-- /load styles -->
 
     <script>
@@ -73,7 +74,7 @@
 
 <!-- Custom JavaScript -->
 <script src="{{asset('assets/js/script.js')}}"></script>
-<script src="{{asset('assets/fontawesome/js/all.min.js')}}"></script>
+<script async src="{{asset('assets/fontawesome/js/fontawesome.min.js')}}"></script>
 
 <script src="{{ asset('assets/js/dexie.min.js') }}"></script>
 
