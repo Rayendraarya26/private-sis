@@ -78,9 +78,9 @@ class AuLksController extends Controller
                     [
                         'jadw_tim_id'                  => $dataTim->jadw_tim_id,
                         'lks_status'                   => 'proses',
-                        'lks_uraian_ketidaksesuaian'   => "Tulis uraian ketidaksesuaian",
-                        'lks_kategori_ketidaksesuaian' => "observasi",
-                        'lks_klausul_ketidaksesuaian'  => "Tulis klausul ketidaksesuaian",
+                        'lks_uraian_ketidaksesuaian'   => null,
+                        'lks_kategori_ketidaksesuaian' => "minor",
+                        'lks_klausul_ketidaksesuaian'  => null,
                         'lks_expired_date_perbaikan'   => $dataJadwal->jadw_tanggal_selesai->addMonths(2),
                     ]
                 );

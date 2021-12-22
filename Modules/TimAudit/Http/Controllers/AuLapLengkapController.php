@@ -45,30 +45,27 @@ class AuLapLengkapController extends Controller
             $dataLKS = [
                 'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
             ];
-            foreach ($dataJadwal->sis_jadwal_audits as $ja) {
-                if (!empty($ja->sis_audit_lks)) {
-                    foreach ($ja->sis_audit_lks as $lks) {
-                        switch ($lks->lks_kategori_ketidaksesuaian) {
-                            case 'kritis':
-                                // jumlah
-                                $dataLKS['jumlah']['kritis'] += 1;
-                                $dataLKS['jumlah']['total']  += 1;
-                                break;
-                            case 'mayor':
-                                // jumlah
-                                $dataLKS['jumlah']['mayor'] += 1;
-                                $dataLKS['jumlah']['total'] += 1;
-                                break;
-                            case 'minor':
-                            case 'observasi':
-                                // jumlah
-                                $dataLKS['jumlah']['minor'] += 1;
-                                $dataLKS['jumlah']['total'] += 1;
-                                break;
-                        }
-                    }
+            foreach ($dataJadwal->sis_audit_lks as $lks) {
+                switch ($lks->lks_kategori_ketidaksesuaian) {
+                    case 'kritis':
+                        // jumlah
+                        $dataLKS['jumlah']['kritis'] += 1;
+                        $dataLKS['jumlah']['total']  += 1;
+                        break;
+                    case 'mayor':
+                        // jumlah
+                        $dataLKS['jumlah']['mayor'] += 1;
+                        $dataLKS['jumlah']['total'] += 1;
+                        break;
+                    case 'minor':
+                    case 'observasi':
+                        // jumlah
+                        $dataLKS['jumlah']['minor'] += 1;
+                        $dataLKS['jumlah']['total'] += 1;
+                        break;
                 }
             }
+
 
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
 
@@ -108,30 +105,27 @@ class AuLapLengkapController extends Controller
             $dataLKS = [
                 'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
             ];
-            foreach ($dataJadwal->sis_jadwal_audits as $ja) {
-                if (!empty($ja->sis_audit_lks)) {
-                    foreach ($ja->sis_audit_lks as $lks) {
-                        switch ($lks->lks_kategori_ketidaksesuaian) {
-                            case 'kritis':
-                                // jumlah
-                                $dataLKS['jumlah']['kritis'] += 1;
-                                $dataLKS['jumlah']['total']  += 1;
-                                break;
-                            case 'mayor':
-                                // jumlah
-                                $dataLKS['jumlah']['mayor'] += 1;
-                                $dataLKS['jumlah']['total'] += 1;
-                                break;
-                            case 'minor':
-                            case 'observasi':
-                                // jumlah
-                                $dataLKS['jumlah']['minor'] += 1;
-                                $dataLKS['jumlah']['total'] += 1;
-                                break;
-                        }
-                    }
+            foreach ($dataJadwal->sis_audit_lks as $lks) {
+                switch ($lks->lks_kategori_ketidaksesuaian) {
+                    case 'kritis':
+                        // jumlah
+                        $dataLKS['jumlah']['kritis'] += 1;
+                        $dataLKS['jumlah']['total']  += 1;
+                        break;
+                    case 'mayor':
+                        // jumlah
+                        $dataLKS['jumlah']['mayor'] += 1;
+                        $dataLKS['jumlah']['total'] += 1;
+                        break;
+                    case 'minor':
+                    case 'observasi':
+                        // jumlah
+                        $dataLKS['jumlah']['minor'] += 1;
+                        $dataLKS['jumlah']['total'] += 1;
+                        break;
                 }
             }
+
 
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
 

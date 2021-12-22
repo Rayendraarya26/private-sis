@@ -46,7 +46,7 @@
                     </div>
                     <div class="dt-card__body">
                         <div class="col-lg-12">
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <tr>
                                     <td style="width: 50px">1</td>
                                     <td>Jenis Kegiatan</td>
@@ -155,12 +155,12 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12">
-                                    <table class="table">
+                                    <table class="table table-bordered">
                                         <thead>
                                         <tr>
                                             <th>Auditor</th>
                                             <th>Uraian Ketidaksesuaian</th>
-                                            <th>Aksi</th>
+                                            <th style="width: 10%">Aksi</th>
                                         </tr>
                                         </thead>
                                         <tbody id="tbody-lks">
@@ -231,7 +231,8 @@
                                                                            aria-label="tgl max revisi"
                                                                            value="{{$lks->lks_expired_date_perbaikan?->format("Y-m-d")}}"
                                                                            id="lks_daterevisi_{{$lks->lks_id}}">
-                                                                    <small><i>klik lagi untuk menghilangkan tanggal</i></small>
+                                                                    <small><i>klik icon dikanan untuk memunculkan
+                                                                            tanggal</i></small>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -249,9 +250,14 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-danger">
-                                                        <i class="fas fa-trash"></i> Delete
-                                                    </button>
+                                                    @if(auth()->user()->master_pegawai->peg_id == $lks->sis_jadwal_tim->master_pegawai->peg_id)
+                                                        <button class="btn btn-danger btn-block btn-sm"
+                                                                @click="promptDelete({{$lks->lks_id}})">
+                                                            <i class="fas fa-trash"></i> Delete
+                                                        </button>
+                                                    @else
+                                                        -
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -263,19 +269,22 @@
                                 <a :href="loading_submit ? '#' : '{{url("$url")}}'" class="btn btn-outline-info">
                                     <i class="fad fa-arrow-left"></i> Kembali
                                 </a>
-                                <div class="stickyButton" style="float: right;">
-                                    <template v-if="loading_submit">
-                                        <div class="fa-3x" style="text-align: center">
-                                            <i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
-                                        </div>
-                                    </template>
-                                    <template v-else>
-                                        <button class="btn btn-primary" @click="saveDraft()" type="button"
-                                                id="btnSaveDraft">
-                                            <i class="fas fa-save"></i> Simpan
+
+                                @if(count($data->sis_audit_lks) > 0)
+                                    <div class="stickyButton" style="float: right;">
+                                        <template v-if="loading_submit">
+                                            <div class="fa-3x" style="text-align: center">
+                                                <i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <button class="btn btn-primary" @click="saveDraft()" type="button"
+                                                    id="btnSaveDraft">
+                                                <i class="fas fa-save"></i> Simpan Draft
                                         </button>
                                     </template>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -360,7 +369,7 @@
                         relative_urls: false,
                         height: 300,
                         width: '100%',
-                        placeholder: 'Tuliskan koreksi...',
+                        placeholder: 'Tuliskan uraian...',
                         images_reuse_filename: true,
                         automatic_uploads: true,
                         images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
@@ -385,7 +394,7 @@
                         relative_urls: false,
                         height: 300,
                         width: '100%',
-                        placeholder: 'Tuliskan koreksi...',
+                        placeholder: 'Tuliskan klausul...',
                         images_reuse_filename: true,
                         automatic_uploads: true,
                         images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
@@ -444,6 +453,45 @@
                         error: function (xhr) {
                             if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
                             else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                },
+                promptDelete(lksID) {
+                    const swalWithBootstrapButtons = swal.mixin({
+                        confirmButtonClass: 'btn btn-danger mb-2',
+                        cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+                        buttonsStyling: false,
+                    });
+
+                    swalWithBootstrapButtons({
+                        title: 'Hapus LKS ?',
+                        type: "warning",
+                        html: 'Menghapus data LKS bersifat permanen dan tidak dapat dikembalikan',
+                        inputAttributes: {
+                            autocapitalize: 'off'
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: 'Ok',
+                        cancelButtonText: 'Batal',
+                        closeOnConfirm: false,
+                        closeOnCancel: false,
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.value) {
+                            $.ajax({
+                                url: `{{url("$url/temuan/$data->jadw_id/delete")}}/${lksID}`,
+                                type: 'POST',
+                                method: 'POST',
+                                dataType: 'json',
+                                success: function (response) {
+                                    toastCenter({type: 'success', 'title': response.message})
+                                    location.reload()
+                                },
+                                error: function (xhr) {
+                                    if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                    else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                                }
+                            });
                         }
                     });
                 },
