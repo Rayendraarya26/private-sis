@@ -594,10 +594,45 @@
                     }
                 },
                 saveDraft() {
+                    let isKritisExist = false;
+                    this.update_kategori.map(e => {
+                        if (e.data == "kritis") {
+                            isKritisExist = true
+                        }
+                    })
+
+                    if (isKritisExist) {
+                        this.processPromiseAllWithPrompt();
+                    } else {
+                        this.processPromiseAll(false);
+                    }
+                },
+                async processPromiseAllWithPrompt() {
+                    const swalWithBootstrapButtons = swal.mixin({
+                        confirmButtonClass: 'btn btn-danger mb-2',
+                        cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                        buttonsStyling: false,
+                    });
+
+                    swalWithBootstrapButtons({
+                        title: `Temuan Kritis ?`,
+                        text: `Anda yakin untuk menambahkan temuan kritis ?, ini akan membuat proses audit otomatis berakhir (diajukan ke komite).`,
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ok',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.value) {
+                            this.processPromiseAll(true)
+                        }
+                    });
+                },
+                processPromiseAll(withReload) {
                     let self      = this;
                     // Saving draft
                     let dtPromise = [];
-                    tinymce.editors.forEach(async function (editor) {
+                    tinymce.editors.forEach(function (editor) {
                         let data    = tinyMCE.get(editor.settings.id).getContent()
                         let lksArr  = editor.settings.id.split("_")
                         const lksID = lksArr[lksArr.length - 1];
@@ -635,10 +670,15 @@
                                 type: 'success',
                                 title: "Simpan berhasil"
                             })
+
+                            if (withReload) {
+                                location.reload()
+                            }
                         })
                         .catch(() => {
                             this.loading_submit = false;
                         })
+
                 },
                 async saveToDatabase(lksID, key, value) {
                     return new Promise((resolve, reject) => {

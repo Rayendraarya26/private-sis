@@ -6,8 +6,7 @@ use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SisAuditLksRevisi;
 use App\Models\BbkkpSis\SisJadwal;
-use App\Models\BbkkpSis\SisJadwalLog;
-use App\Models\BbkkpSis\SisJadwalTim;
+use App\Models\BbkkpSis\SisJadwalAudit;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -110,6 +109,10 @@ class AuLksController extends Controller
             $value      = $request['value'];
             $data->$key = $value;
             $data->save();
+
+            if ($key == "lks_kategori_ketidaksesuaian" && $value == "kritis") {
+                SisJadwalAudit::where('jadw_id', $data->jadw_id)->update(['jadw_audit_status_komite' => 'submited']);
+            }
 
             DB::commit();
             return responseJSON(200, [], "LKS berhasil disimpan");
