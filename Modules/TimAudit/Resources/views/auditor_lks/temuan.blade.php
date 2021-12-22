@@ -173,12 +173,22 @@
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div style="padding-bottom: 10px">
-                                                                    <b style="font-size: 12px">Uraian Ketidaksesuaian: </b>
+                                                                    <b style="font-size: 12px">No LKS: </b>
+                                                                    <input type="text" id="lks_nomor_{{$lks->lks_id}}"
+                                                                           class="form-control"
+                                                                           @keyup="changeNoLks({{$lks->lks_id}})"
+                                                                           aria-label="nomor lks"
+                                                                           value="{!! $lks->lks_nomor !!}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <div style="padding-bottom: 10px">
+                                                                    <b style="font-size: 12px">Uraian
+                                                                        Ketidaksesuaian: </b>
                                                                     <textarea class="form-control editor_uraian"
                                                                               placeholder="Masukkaan deskripsi..."
                                                                               name="editor_uraian_{{$lks->lks_id}}"
                                                                               id="editor_uraian_{{$lks->lks_id}}"
-                                                                              @change="saveAnalisa({{$lks->lks_id}})"
                                                                               aria-label="editor revisi analisis">{!! $lks->lks_uraian_ketidaksesuaian !!}</textarea>
                                                                 </div>
                                                             </div>
@@ -189,7 +199,6 @@
                                                                               placeholder="Masukkaan deskripsi..."
                                                                               name="editor_klausul_{{$lks->lks_id}}"
                                                                               id="editor_klausul_{{$lks->lks_id}}"
-                                                                              @change="saveAnalisa({{$lks->lks_id}})"
                                                                               aria-label="editor revisi analisis">{!! $lks->lks_klausul_ketidaksesuaian !!}</textarea>
                                                                 </div>
                                                             </div>
@@ -237,6 +246,8 @@
                                                             </div>
                                                         </div>
                                                     @else
+                                                        No LKS: {!! $lks->lks_nomor !!}
+                                                        <br><br>
                                                         {!! $lks->lks_uraian_ketidaksesuaian !!}
                                                         <br>
                                                         Kategori
@@ -344,6 +355,7 @@
                 loading_submit: false,
                 update_kategori: [],
                 update_date_revisi: [],
+                update_nomer_lks: [],
                 total_lks: {{$data->sis_audit_lks->count()}}
             },
             mounted() {
@@ -495,6 +507,28 @@
                         }
                     });
                 },
+                changeNoLks(lksID) {
+                    let available    = false;
+                    let availableIdx = 0;
+                    if (this.update_nomer_lks.length == 0) {
+                        available = false;
+                    } else {
+                        this.update_nomer_lks.map((e, idx) => {
+                            if (e.lks_id == lksID) {
+                                available    = true;
+                                availableIdx = idx
+                            }
+                        });
+                    }
+
+                    let newNomor = $(`#lks_nomor_${lksID}`).val()
+                    let data     = {lks_id: lksID, data: newNomor}
+                    if (available) {
+                        this.update_nomer_lks[availableIdx] = data
+                    } else {
+                        this.update_nomer_lks.push(data)
+                    }
+                },
                 changeKategori(lksID) {
                     let available    = false;
                     let availableIdx = 0;
@@ -586,6 +620,10 @@
 
                     this.update_date_revisi.map(e => {
                         dtPromise.push(this.saveToDatabase(e.lks_id, 'lks_expired_date_perbaikan', e.data))
+                    })
+
+                    this.update_nomer_lks.map(e => {
+                        dtPromise.push(this.saveToDatabase(e.lks_id, 'lks_nomor', e.data))
                     })
 
                     this.loading_submit = true;

@@ -98,7 +98,7 @@ class AuLksController extends Controller
     {
         $request->validate([
             'lks_id' => 'required',
-            'key'    => ['required', Rule::in(['lks_uraian_ketidaksesuaian', 'lks_kategori_ketidaksesuaian', 'lks_klausul_ketidaksesuaian', 'lks_expired_date_perbaikan'])],
+            'key'    => ['required', Rule::in(['lks_uraian_ketidaksesuaian', 'lks_kategori_ketidaksesuaian', 'lks_klausul_ketidaksesuaian', 'lks_expired_date_perbaikan', 'lks_nomor'])],
             'value'  => 'required'
         ]);
 
