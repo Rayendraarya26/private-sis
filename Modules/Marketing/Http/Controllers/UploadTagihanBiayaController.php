@@ -218,7 +218,7 @@ class UploadTagihanBiayaController extends Controller
             'cust_id' => 'required',
             'mohon_cust_nama' => 'required',
             'mohon_cust_email' => 'required',
-            'mohon_det_harga_permohonan' => 'required|array|min:1',
+            'mohon_det_harga_permohonan' => 'required',
             'mohon_tagihan_biaya_file_lama' => 'nullable|string',
             'mohon_tagihan_biaya_file' => 'required|mimes:pdf'
         ]);
@@ -239,9 +239,7 @@ class UploadTagihanBiayaController extends Controller
             $dataInsert['mohon_tagihan_biaya_file'] = $path . '/' . $namaFile;
 
             DB::transaction(function () use ($request, $dataInsert) {
-               
-				
-				$total_biaya = 0;
+				/* $total_biaya = 0;
 				if (!empty($dataInsert['mohon_det_harga_permohonan'])) {
                     foreach ($dataInsert['mohon_det_harga_permohonan'] as $key => $val) {
                         DB::table('sis_permohonan_detail')
@@ -252,10 +250,11 @@ class UploadTagihanBiayaController extends Controller
 						$total_biaya = $total_biaya +  $val;
                     }
                 }
+				*/
 				
 				 SisPermohonan::findOrFail($request['mohon_id'])->update([
                     'mohon_tagihan_biaya_file'  => $dataInsert['mohon_tagihan_biaya_file'],
-                    'mohon_harga_permohonan'  => $total_biaya,
+                    'mohon_harga_permohonan'  => $dataInsert['mohon_det_harga_permohonan'],
                 ]);
             });
 			
@@ -263,7 +262,7 @@ class UploadTagihanBiayaController extends Controller
 			$notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
 			$notifCust->message   = sprintf("Silahkan lakukan persetujuan Biaya untuk permohonan nomor #%s untuk %s yang telah ditentukan.", $request['mohon_id'], $request['mohon_cust_nama']);
 			$notifCust->user_id   =  $request['user_id'];
-			$notifCust->click_url = url('/marpelanggan/sertifikasi/permohonan');
+			$notifCust->click_url = url('/pelanggan/sertifikasi/permohonan');
 			sendNotification($notifCust);
 			
 			// Send Email

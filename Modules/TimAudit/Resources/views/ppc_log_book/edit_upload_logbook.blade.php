@@ -29,7 +29,12 @@
 										<table class="table mb-0">
 											<tbody>
 												<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
-												<tr><td>Alamat Perusahaan</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
+												<tr><td>Alamat Perusahaan</td><td>: {{$dataJadwal->cust_alamat}}, {{$dataJadwal->kec_nama}}, {{$dataJadwal->kab_nama}}, {{$dataJadwal->prov_nama}}</td></tr><tr><td></td><td>
+												<tr><td></td><td>
+													Telp : {{$dataJadwal->cust_nomor_telp}}
+													<br/>Hp : {{$dataJadwal->cust_nomor_hp}}
+													<br/>Fax : {{$dataJadwal->cust_nomor_fax}}
+												</td></tr>
 											</tbody>
 										</table>
 										<table class="table mb-0">
@@ -49,7 +54,7 @@
 												<tr>
 												  <td>{{$dpp->pabrik_nama}} {{$dpp->pabrik_alamat}}, {{$dpp->kec_nama}}, {{$dpp->kab_nama}}, {{$dpp->prov_nama}}</td>
 												  <td>{{$dpp->pabrik_kode_pos}}</td>
-												  <td>Fax : {{$dpp->pabrik_nomor_fax}}; Telp : {{$dpp->pabrik_nomor_telp}}; Hp : {{$dpp->pabrik_nomor_hp}}</td>
+												  <td>Fax : {{$dpp->pabrik_nomor_fax}};<br/>Telp : {{$dpp->pabrik_nomor_telp}};<br/>Hp : {{$dpp->pabrik_nomor_hp}}</td>
 												  <td>{{$dpp->pabrik_kegiatan_utama}}</td>
 												  <td>{{$dpp->pabrik_jumlah_karyawan}} Orang</td>
 												  <td>{{$dpp->pabrik_luas_tanah}}</td>

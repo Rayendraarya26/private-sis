@@ -81,9 +81,17 @@
 										formData.append("bill_due_date", currentaData.value.bill_due_date)
 									}
 									// Step 2
-									const dataItems = window.vueStepTwo.bill_items;
+									//const dataItems = window.vueStepTwo.bill_items;
+									const dataItems = [{
+											bil_tipe : $('input[name=itms_bil_tipe]:checked', '#myForm').val(),
+											mohon_id : window.vueStepTwo.mohon_id,
+											mohon_det_id : window.vueStepTwo.mohon_det_id,
+											bil_desc : $.trim($("#itms_bil_desc").val()),
+											bil_total : $.trim($("#itms_bil_total").val()),
+											bil_lunas : 'ya',
+									}];
 									formData.append("data_billing_item", JSON.stringify(dataItems))
-
+					
 									// Step 3
 									const dataInvoiceFile = document.querySelector("#bill_invoice_file").files[0];
 									formData.append("bill_invoice_file", dataInvoiceFile)

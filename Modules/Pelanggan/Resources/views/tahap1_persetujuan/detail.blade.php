@@ -45,6 +45,26 @@
                                             </td>
                                         </tr>
                                     @endif
+									@if(!empty($data->aud_thp1_file_notulen))
+                                        <tr>
+                                            <td>File Notulen</td>
+                                            <td>:
+                                                <a href="{{$data->aud_thp1_file_notulen}}">
+                                                    <i class="fad fa-download"></i> Unduh
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endif
+									@if(!empty($data->aud_thp1_file_daftar_hadir))
+                                        <tr>
+                                            <td>File Daftar Hadir</td>
+                                            <td>:
+                                                <a href="{{$data->aud_thp1_file_daftar_hadir}}">
+                                                    <i class="fad fa-download"></i> Unduh
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endif
                                 </table>
                             </div>
                             <div class="col-md-12">

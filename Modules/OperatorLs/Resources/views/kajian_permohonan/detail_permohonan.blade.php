@@ -233,7 +233,7 @@
 									@endforeach
 									</td>
 								</tr>
-								<tr><th scope="row"></th><td></td><td></td><td><a href="{{url($dataPermohon->mohon_pertanyaan_filepath)}}" target="_blank" class="btn btn-primary">Download Informasi Tambahan</a></td></tr>
+								<tr><th scope="row">13</th><td>Formulir Kelengkapan Permohonan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link"><a href="{{url($dataPermohon->mohon_pertanyaan_filepath)}}" target="_blank" class="btn btn-xs btn-primary">Download</a></a></td></tr>
 							</tbody>
 						  </table>
 						</div>

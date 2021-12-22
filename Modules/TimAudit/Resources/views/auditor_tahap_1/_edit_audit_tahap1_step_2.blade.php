@@ -54,7 +54,7 @@
 				</div>
 				<div class="form-group row">
 					<label class="col-form-label col-sm-3" for="aud_thp1_file_notulen">
-						Kehadiran*
+						Notulen Rapat*
 						<br>
 						<small>(pdf/excel)</small>
 					</label>

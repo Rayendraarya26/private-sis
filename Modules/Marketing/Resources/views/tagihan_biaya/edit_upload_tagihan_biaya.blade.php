@@ -45,10 +45,18 @@
 											<small id="" class="form-text">Note: file format berupa *.pdf</small>
 											@if($dataPermohon->mohon_tagihan_biaya_file != '')
 												<hr/>
+												<input type="hidden" name="mohon_tagihan_biaya_file_lama" value="{{$dataPermohon->mohon_tagihan_biaya_file_lama}}">
 												<a target="_blank" href="{{url($dataPermohon->mohon_tagihan_biaya_file)}}"><span class="fad fa-download"></span> File Surat Tagihan Biaya lama</a>
 											@endif
 										</div>
 									</div>
+									<div class="form-group row">
+										<label class="col-form-label col-sm-3" for="mohon_det_harga_permohonan">Total Biaya(Rp.) *</label>
+										<div class="col-sm-8">
+											<input class="form-control" type="number" name="mohon_det_harga_permohonan" value="{{$dataPermohon->mohon_harga_permohonan}}">
+										</div>
+									</div>
+									<!--
 									<div class="form-group row">
 										<div class="col-sm-12">
 											<table class="table table-bordered  mb-0">
@@ -72,7 +80,8 @@
 												</tbody>
 											</table>
 										</div>
-									</div>									
+									</div>
+									-->									
                                     <div class="form-buttons-w">
                                         <button class="btn btn-success" type="submit">
                                             <i class="fas fa-save"></i> Simpan

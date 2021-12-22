@@ -169,16 +169,19 @@ class BillingController extends Controller
             ->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')
             ->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya')
             ->where('mohon_tagihan_biaya_status', '=', 'setuju')
-            ->whereNotNull('mohon_pernyataan_persetujuan_file')
-            ->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
-                /* $query->select('mohon_det_id')->from('sis_jadwal_audit')
-					->join('sis_jadwal', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")
-					->whereNotNull('mohon_det_id')
-					->where('cust_id', '=', $request->cust_id)
-					->groupBy('mohon_det_id')->union(
-						DB::table('sis_audit_tahap1')->select(['mohon_det_id'])->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_audit_tahap1.bill_id')->where('cust_id', '=', $request->cust_id)
-					); */
-					
+            ->whereNotNull('mohon_pernyataan_persetujuan_file');
+		if (empty($request->mohon_id)) {
+            
+			$data->whereNotIn('sis_permohonan_detail.mohon_id', function ($query) use ($request) {
+				$query->selectRaw("mohon_id FROM sis_billing_items 
+										JOIN sis_billing ON sis_billing.bill_id = sis_billing_items.bill_id 
+										WHERE cust_id = '". $request->cust_id ."'");
+			});
+        }
+		else{
+			$data->where('sis_permohonan.mohon_id', $request->mohon_id);
+		}
+           /*  ->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
 				$query->selectRaw("mohon_det_id AS id
 								FROM
 								  sis_jadwal_audit
@@ -195,29 +198,29 @@ class BillingController extends Controller
 								  INNER JOIN sis_billing
 									ON sis_billing.bill_id = sis_audit_tahap1.bill_id
 								WHERE cust_id = '". $request->cust_id ."'");
-            })
-            ->where('cust_id', '=', $request->cust_id);
-
+            }) */
+        $data->where('cust_id', '=', $request->cust_id);
+		/* 
         if ($request->jenis_status == 're-sertifikasi') {
             $data->where('mohon_det_jenis_status', '=', 'lama');
         } else if ($request->jenis_status == 'sertifikasi') {
             $data->where('mohon_det_jenis_status', '=', 'baru');
         }
-
+		*/
         if (!empty($request->q)) {
             $data->where('sert_nama', 'LIKE', '%' . $request->q . '%');
         }
         // Total
-        $total = $data->select(DB::raw('COUNT(DISTINCT sis_permohonan_detail.mohon_det_id) as total'))->first()->total;
+        $total = $data->select(DB::raw('COUNT(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
+        $data->select("*", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ', ') as nama_sert"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
+		$data->groupBy('sis_permohonan.mohon_id');
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['deskripsi']                = "Permohonan nomor #" . $d->mohon_id . " " . $d->sert_nama;
+            $x['deskripsi']                = "Permohonan nomor #" . $d->mohon_id . " " . $d->nama_sert;
             $x['id']                       = $d->mohon_id;
-            $x['nama']                     = $d->sert_nama;
+            $x['nama']                     = $d->nama_sert;
             $x['cust_sert_id']             = $d->cust_sert_id;
             $x['mohon_id']                 = $d->mohon_id;
             $x['mohon_det_id']             = $d->mohon_det_id;
@@ -225,7 +228,7 @@ class BillingController extends Controller
             $x['user_id']                  = $d->user_id;
             $x['sert_id']                  = $d->sert_id;
             $x['sert_nama']                = $d->sert_nama;
-            $x['mohon_harga_permohonan']   = $d->mohon_det_harga_permohonan;
+            $x['mohon_harga_permohonan']   = $d->mohon_harga_permohonan;
             $x['mohon_harus_lunas_status'] = $d->mohon_harus_lunas_status;
             $x['mohon_cust_nama']          = $d->mohon_cust_nama;
             $x['mohon_jenis_status']       = $d->mohon_det_jenis_status;
@@ -312,7 +315,8 @@ class BillingController extends Controller
             "data_billing_item"  => 'required',
             "bill_invoice_file"  => 'required',
         ]);
-
+	
+	//print_r(json_decode($request['data_billing_item']));
         // Set data uploaded file path (digunakan untuk delete file yang diupload ketika catch error)
         $uploadedPath = [];
         try {
@@ -361,7 +365,7 @@ class BillingController extends Controller
 
                 $newSisBillingItems                 = new SisBillingItems();
                 $newSisBillingItems->bill_id        = $newSisBilling->bill_id;
-                $newSisBillingItems->itms_bil_tipe  = $itm->bil_tipe;
+                $newSisBillingItems->itms_bil_tipe  = $itm->bil_tipe == 'surveilans' ? 'surveilans' : 'lain-lain';
                 $newSisBillingItems->mohon_id       = $mohon_id;
                 $newSisBillingItems->mohon_det_id   = $mohon_det_id;
                 $newSisBillingItems->cust_sert_id   = $cust_sert_id;
@@ -542,7 +546,7 @@ class BillingController extends Controller
             $cust_sert_id = null;
             $mohon_id     = null;
 
-            if ($request->itms_bil_tipe == 'sertifikasi' || $request->itms_bil_tipe == 're-sertifikasi') {
+            if ($request->itms_bil_tipe != 'surveilans') {
                 $mohon_id = $request->mohon_id;
             } else if ($request->itms_bil_tipe == 'surveilans') {
                 $cust_sert_id = $request->cust_sert_id;

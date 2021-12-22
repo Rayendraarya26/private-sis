@@ -121,6 +121,9 @@ class PpcLogBookController extends Controller
 
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+        $dataJadwal->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_pelanggan.kab_id');
+        $dataJadwal->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_pelanggan.kec_id');
+        $dataJadwal->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_pelanggan.prov_id');
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");

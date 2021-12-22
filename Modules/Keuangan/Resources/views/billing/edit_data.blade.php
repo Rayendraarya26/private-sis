@@ -81,6 +81,7 @@
 									
 									<div class="form-group form-row">
 										<div id="ttData" style="width:100%; min-width: 310px"></div>
+										<!-- 
 										<div id="toolbar" style="padding: 10px 0 10px 20px">
 											<div class="row">
 												@if(authorized("{$module}@edit"))
@@ -102,6 +103,7 @@
 												@endif
 											</div>
 										</div>
+										-->
 									</div>
 									
                                     <div class="form-buttons-w">
@@ -165,7 +167,7 @@
                 remoteFilter: true,
                 multiSort: true,
                 // fitColumns: true,
-                toolbar: '#toolbar',
+                // toolbar: '#toolbar',
                 saveUrl: '{{url("$url/update")}}',
                 updateUrl: '{{url("$url/update")}}',
                 destroyUrl: '{{url("$url/update")}}',
@@ -211,7 +213,6 @@
 				},
 				onBeginEdit:function(index,row){
 					var editors = $(this).datagrid('getEditors', index);
-					console.log(editors);
 					var ed_itms_bil_tipe = $(editors[0].target);
 					var ed_mohon_id  = $(editors[1].target);
 					var ed_cust_sert_id  = $(editors[2].target);
@@ -225,10 +226,10 @@
 					}
 					
 					ed_itms_bil_tipe.combobox('options').onSelect = function(row_tipe){
-						if(row_tipe.id === 'sertifikasi' || row_tipe.id === 're-sertifikasi'){
+						if(row_tipe.id != 'surveilans'){
 							if (ed_mohon_id){
 								$(ed_mohon_id).combogrid({
-									url:`{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id={{$data_billing->cust_id}}&jenis_status=${row_tipe.id}`,
+									url:`{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id={{$data_billing->cust_id}}&id=${row_tipe.id}&mohon_id=${row.mohon_id}`,
 									required: true,
 									value: row.mohon_id,
 								})
@@ -312,18 +313,18 @@
 					{field: 'is_new', hidden: true},
 					{field: 'bill_id', hidden: true},
 					{field: 'itms_bil_id', hidden: true},
-                    {field: 'ck', checkbox: true, sortable: false},
+                    // {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
-                        title: "Aksi",
-                        width: 110,
+                        title: "",
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
 							if (row.editing) {
 								@if(authorized("{$module}@edit"))
-								var s = '<a onclick="saverow(this)" href="javascript:void(0)" class="btn btn-xs btn-success">Simpan</a>';
-								var c = `<a onclick="cancelrow(this)" href="javascript:void(0)" class="btn btn-xs btn-danger">Batal</a>`;
-								return '<div class="btn-group">' + s + c + '</div>';
+								var s = '<a onclick="saverow(this)" href="javascript:void(0)" class="btn btn-xs btn-block btn-success">Simpan</a>';
+								var c = `<a onclick="cancelrow(this)" href="javascript:void(0)" class="btn btn-xs btn-block btn-danger">Batal</a>`;
+								return s +'<br/>'+ c 
 								@endif
 							} else {
 								@if(authorized("{$module}@edit"))
@@ -356,7 +357,7 @@
 								pagination: true,
 								idField: 'id',
 								nowrap: false,
-								textField: 'id',
+								textField: 'nama',
 								editable: true,
 								method: 'get',
 								mode: 'remote',
@@ -379,7 +380,7 @@
 								pagination: true,
 								idField: 'id',
 								nowrap: false,
-								textField: 'id',
+								textField: 'nama',
 								editable: true,
 								method: 'get',
 								mode: 'remote',

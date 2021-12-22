@@ -136,7 +136,7 @@
 							parser:myparser,
 							value:this.bill_due_date,
 							onSelect: async function(date){
-								self.setBillingDate(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
+								self.setDueDate(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
 								
 								const currentaData = await idb.bill_data.where({name: "billing"}).first();
                                 let dbData = {name: "billing", value: { cust_id:currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: currentaData.value.bill_billing_date, bill_due_date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(),}}
@@ -155,10 +155,15 @@
 							parser:myparser,
 							value:this.bill_billing_date,
 							onSelect: async function(date){
-								self.setDueDate(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
+								var dates = new Date();
+								dates.setDate(date.getDate() + 7);
+								self.setBillingDate(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
+								self.setDueDate(dates.getFullYear()+"-"+(dates.getMonth()+1)+"-"+dates.getDate());
+								
+								$('#bill_due_date').datebox('setValue', dates.getFullYear()+"-"+(dates.getMonth()+1)+"-"+dates.getDate());
 								
 								const currentaData = await idb.bill_data.where({name: "billing"}).first();
-                                let dbData = {name: "billing", value: { cust_id:currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), bill_due_date: currentaData.value.bill_due_date,}}
+                                let dbData = {name: "billing", value: { cust_id:currentaData.value.cust_id, cust_nama: currentaData.value.cust_nama, bill_nomor_billing: currentaData.value.bill_nomor_billing, bill_billing_date: date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate(), bill_due_date: dates.getFullYear()+"-"+(dates.getMonth()+1)+"-"+dates.getDate()}}
                                 if (currentaData == null) {
                                     await idb.bill_data.put(dbData);
                                 } else {
