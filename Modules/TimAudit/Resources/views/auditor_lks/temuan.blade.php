@@ -176,6 +176,7 @@
                                                                     <b style="font-size: 12px">No LKS: </b>
                                                                     <input type="text" id="lks_nomor_{{$lks->lks_id}}"
                                                                            class="form-control"
+                                                                           placeholder="Tuliskan nomor LKS..."
                                                                            @keyup="changeNoLks({{$lks->lks_id}})"
                                                                            aria-label="nomor lks"
                                                                            value="{!! $lks->lks_nomor !!}">
