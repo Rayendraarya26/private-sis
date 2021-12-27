@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $lap_ringkas_kesimpulan
  * @property string|null $lap_ringkas_rekomendasi
  * @property string|null $lap_ringkas_filepath
+ * @property string|null $lap_ringkas_ttd_nama
+ * @property string|null $lap_ringkas_ttd_jabatan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -37,7 +39,9 @@ class SisAuditLapRingkas extends Model
 		'jadw_id',
 		'lap_ringkas_kesimpulan',
 		'lap_ringkas_rekomendasi',
-		'lap_ringkas_filepath'
+		'lap_ringkas_filepath',
+		'lap_ringkas_ttd_nama',
+		'lap_ringkas_ttd_jabatan'
 	];
 
 	public function sis_jadwal()
