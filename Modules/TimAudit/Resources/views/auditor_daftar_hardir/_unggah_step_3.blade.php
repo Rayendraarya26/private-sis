@@ -13,7 +13,7 @@
 				<input type="hidden" id="jadw_id" name="jadw_id" value="{{$data->jadw_id}}">
 			</div>
 		</div>
-		
+		<!--
 		<div class="form-group row">
 			<label class="col-form-label col-sm-3" for="jadw_file_laporan_ringkas">
 				File Laporan Ringkas *
@@ -49,7 +49,7 @@
 				@endif
 			</div>
 		</div>
-		
+		-->
 		<div class="form-group row">
 			<label class="col-form-label col-sm-3" for="jadw_file_kehadiran">
 				File Kehadiran *
@@ -87,6 +87,9 @@
 				<input class="form-check-input" type="radio" name="jadw_setujui_temuan" id="draft2" value="none" @click="setPengajuan('none')" @if(isset($data->jadw_setujui_temuan)) @if($data->jadw_setujui_temuan != 'none') checked @endif @endif>
 				<label class="form-check-label" for="draft2">Ya</label>
 			  </div>
+				<br>
+				<small>Jika diisi ya, maka masih bisa diedit, jika tidak maka akan diajukan ke pelanggan untuk disetujui atau direvisi.
+				</small>
 			</div>
 		</div>
 		
@@ -144,8 +147,8 @@
 								let status_from = true;
 								const jadw_notulen_rapat = tinyMCE.get('jadw_notulen_rapat').getContent();
 								const jadw_tanggal_rapat_akhir =  $('#jadw_tanggal_rapat_akhir').datebox('getValue');
-								const jadw_file_laporan_ringkas = document.querySelector("#jadw_file_laporan_ringkas").files[0];
-								const jadw_file_lks = document.querySelector("#jadw_file_lks").files[0];
+								// const jadw_file_laporan_ringkas = document.querySelector("#jadw_file_laporan_ringkas").files[0];
+								// const jadw_file_lks = document.querySelector("#jadw_file_lks").files[0];
 								const jadw_file_kehadiran = document.querySelector("#jadw_file_kehadiran").files[0];
 								if (jadw_file_kehadiran == '') {
 									toastCenter({
@@ -165,7 +168,7 @@
 												title: "Isikan Tanggal Rapat"
 											})
 								}
-								else if (jadw_file_laporan_ringkas == '') {
+								/* else if (jadw_file_laporan_ringkas == '') {
 									toastCenter({
 												type: 'warning',
 												title: "Silahkan Unggah File Lap. Ringkas"
@@ -176,13 +179,12 @@
 												type: 'warning',
 												title: "Silahkan Unggah File LKS"
 											})
-								}
+								} */
 								else{
-									let formData = new FormData();
-									// formData.append("cust_id", currentaData.cust_id)
-									
-									formData.append("jadw_file_laporan_ringkas", jadw_file_laporan_ringkas)
-									formData.append("jadw_file_lks", jadw_file_lks)
+									let formData = new FormData();									
+									// formData.append("jadw_file_laporan_ringkas", jadw_file_laporan_ringkas)
+									// formData.append("jadw_file_lks", jadw_file_lks)
+									formData.append("jadw_file_kehadiran", jadw_file_kehadiran);
 									formData.append("jadw_notulen_rapat", jadw_notulen_rapat);
 									formData.append("jadw_tanggal_rapat_akhir", jadw_tanggal_rapat_akhir)
 									formData.append("cust_nama", $('#cust_nama').val())
@@ -193,7 +195,7 @@
 									formData.append("jadw_setujui_temuan", this.simpan_draft)
 									
 									// Submit Permohonan
-									//this.loading_submit = true;
+									this.loading_submit = true;
 									let self = this;
 									$.ajax({
 										url: `{{action("$module@storeUnggah", $data->jadw_id)}}`,
@@ -206,10 +208,10 @@
 												type: 'success',
 												title: res.message
 											})
-											//setTimeout(() => location.href = "{{url("$url")}}", 1000)
+											setTimeout(() => location.href = "{{url("$url")}}", 1000)
 										},
 										error: function (xhr) {
-											//self.loading_submit = false;
+											self.loading_submit = false;
 											if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
 											else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
 										}
@@ -258,19 +260,28 @@
 						});
 						
 						$('textarea#jadw_notulen_rapat').tinymce({
-							height: 200,
-							plugins: 'autosave link image code lists',
+							invalid_elements: "script",
+							plugins: 'autosave link image lists',
 							relative_urls: false,
+							height: 300,
 							placeholder: '',
 							images_reuse_filename: true,
 							automatic_uploads: true,
 							images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
 							images_upload_credentials: true,
-							toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+							toolbar: [
+								{name: 'history', items: ['undo', 'redo']},
+								{name: 'styles', items: ['styleselect']},
+								{name: 'formatting', items: ['bold', 'italic']},
+								{name: 'alignment', items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']},
+								{name: 'list', items: ['bullist', 'numlist']},
+								{name: 'indentation', items: ['outdent', 'indent']},
+								{name: 'link', items: ['link', 'image']},
+								{name: 'restore', items: ['restoredraft']},
 							],
 						});
+						
                         setTimeout(async () => {
-								
 								$(".tab-content").height("100%");
 							}, 1000);					
                     },

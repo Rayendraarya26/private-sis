@@ -164,6 +164,8 @@ class AuDaftarHadirController extends Controller
             'cust_id' => 'required',
             'jadw_id' => 'required',
             'jadw_tanggal_rapat_akhir' => 'required|string',
+            'jadw_notulen_rapat' => 'required|string',
+            'jadw_setujui_temuan' => 'required|string',
         ]);
 		
         $newFilePath = [];
@@ -171,8 +173,6 @@ class AuDaftarHadirController extends Controller
         try {
             $dataJadwal = $this->isKepalaAudit($jadwalID);
             if (!empty($dataJadwal->jadw_file_kehadiran)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran);
-            if (!empty($dataJadwal->jadw_file_laporan_ringkas)) array_push($oldFilePath, $dataJadwal->jadw_file_laporan_ringkas);
-            if (!empty($dataJadwal->jadw_file_lks)) array_push($oldFilePath, $dataJadwal->jadw_file_lks);
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
             if ($request->hasFile('jadw_file_kehadiran')) {
@@ -185,7 +185,8 @@ class AuDaftarHadirController extends Controller
                 array_push($newFilePath, public_path($fileKehadiranPath));
             }
 			
-			$dataJadwal->jadw_setujui_temuan = 'diajukan';
+			$dataJadwal->jadw_setujui_temuan = $request['jadw_setujui_temuan'];
+			$dataJadwal->jadw_notulen_rapat = $request['jadw_notulen_rapat'];
 			$dataJadwal->jadw_tanggal_rapat_akhir = $request['jadw_tanggal_rapat_akhir'];
 			
             $dataJadwal->save();
@@ -212,12 +213,12 @@ class AuDaftarHadirController extends Controller
 			$structEmail->to      = $request['cust_email'];
 			sendEmail($structEmail);
 			
-            return redirect(url($this->url))->with('message', "Unggah berhasil");
+            return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             foreach ($newFilePath as $path) { // remove new file uploaded
                 @unlink($path);
             }
-            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+            return responseJSON(500, [], $e->getMessage());
         }
     }
 
@@ -270,7 +271,8 @@ class AuDaftarHadirController extends Controller
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', ['diajukan', 'revisi', 'none']);
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']); 
+		// 'diajukan',
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
 
         if (!empty($request->filterRules)) {

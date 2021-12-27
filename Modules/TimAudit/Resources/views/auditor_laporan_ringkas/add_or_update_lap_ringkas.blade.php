@@ -157,27 +157,27 @@
                                 @csrf
 								
 								<div class="form-group row">
-                                    <label class="col-form-label col-sm-3" for="lap_ringkas_ttd_nama">
+                                    <label class="col-form-label col-sm-3" for="jadw_setujui_nama">
                                         Tanda Tangan Nama*
-                                        @error('lap_ringkas_ttd_nama')
+                                        @error('jadw_setujui_nama')
                                         <br><span style="color: red">{{$message}}</span>
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" name="lap_ringkas_ttd_nama" id="lap_ringkas_ttd_nama" value="{{old('lap_ringkas_ttd_nama') ?? $data->sis_audit_lap_ringkas?->lap_ringkas_ttd_nama}}"/>
+                                        <input type="text" class="form-control" name="jadw_setujui_nama" id="jadw_setujui_nama" value="{{old('jadw_setujui_nama') ?? $data->jadw_setujui_nama}}"/>
 										<span><small>Pengesahan untuk client/pelanggan</small></span>
                                     </div>
                                 </div>
 								
 								<div class="form-group row">
-                                    <label class="col-form-label col-sm-3" for="lap_ringkas_ttd_jabatan">
+                                    <label class="col-form-label col-sm-3" for="jadw_setujui_jabatan">
                                         Tanda Tangan Jabatan*
-                                        @error('lap_ringkas_ttd_jabatan')
+                                        @error('jadw_setujui_jabatan')
                                         <br><span style="color: red">{{$message}}</span>
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" name="lap_ringkas_ttd_jabatan" id="lap_ringkas_ttd_jabatan" value="{{old('lap_ringkas_ttd_jabatan') ?? $data->sis_audit_lap_ringkas?->lap_ringkas_ttd_jabatan}}"/>
+                                        <input type="text" class="form-control" name="jadw_setujui_jabatan" id="jadw_setujui_jabatan" value="{{old('jadw_setujui_jabatan') ?? $data->jadw_setujui_jabatan}}"/>
 										<span><small>Pengesahan untuk client/pelanggan</small></span>
                                     </div>
                                 </div>

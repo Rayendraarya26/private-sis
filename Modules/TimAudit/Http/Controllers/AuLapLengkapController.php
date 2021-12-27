@@ -159,6 +159,7 @@ class AuLapLengkapController extends Controller
         $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'setuju']); 
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
         // tambah jika not null file jadwal
