@@ -53,30 +53,73 @@ class AuDaftarHadirController extends Controller
 			];
 
             $dataLKS = [
-                'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+                'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+                'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+                'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+                'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
             ];
-            foreach ($dataJadwal as $ja) {
-				if(!empty($ja->sis_audit_lks)){foreach ($ja->sis_audit_lks as $lks) {
-						switch ($lks->lks_kategori_ketidaksesuaian) {
-							case 'kritis':
-								// jumlah
-								$dataLKS['jumlah']['kritis'] += 1;
-								$dataLKS['jumlah']['total']  += 1;
-								break;
-							case 'mayor':
-								// jumlah
-								$dataLKS['jumlah']['mayor'] += 1;
-								$dataLKS['jumlah']['total'] += 1;
-								break;
-							case 'minor':
-							case 'observasi':
-								// jumlah
-								$dataLKS['jumlah']['minor'] += 1;
-								$dataLKS['jumlah']['total'] += 1;
-								break;
-						}
-					}
-				}
+            foreach ($dataJadwal->sis_audit_lks as $lks) {
+                switch ($lks->lks_kategori_ketidaksesuaian) {
+                    case 'kritis':
+                        // jumlah
+                        $dataLKS['jumlah']['kritis'] += 1;
+                        $dataLKS['jumlah']['total']  += 1;
+                        // klausul
+                        $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                        // no lks
+                        $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
+                        // tgl penyelesaian
+                        if (!empty($lks->lks_expired_date_perbaikan)) {
+                            if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
+                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                            } else {
+                                if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
+                                    $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                }
+                            }
+                        }
+                        break;
+                    case 'mayor':
+                        // jumlah
+                        $dataLKS['jumlah']['mayor'] += 1;
+                        $dataLKS['jumlah']['total'] += 1;
+                        // klausul
+                        $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                        // no lks
+                        $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
+                        // tgl penyelesaian
+                        if (!empty($lks->lks_expired_date_perbaikan)) {
+                            if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
+                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                            } else {
+                                if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
+                                    $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                }
+                            }
+                        }
+                        break;
+                    case 'minor':
+                    case 'observasi':
+                        // jumlah
+                        $dataLKS['jumlah']['minor'] += 1;
+                        $dataLKS['jumlah']['total'] += 1;
+                        // klausul
+                        $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                        // no lks
+                        $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
+                        // tgl penyelesaian
+                        if (!empty($lks->lks_expired_date_perbaikan)) {
+                            if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
+                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                            } else {
+                                if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
+                                    $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                }
+                            }
+                        }
+                        break;
+
+                }
             }
 			
 			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
@@ -97,6 +140,7 @@ class AuDaftarHadirController extends Controller
             $parser = [
 				'module' => $this->module, 
 				'url' => $this->url, 
+				'view' => $this->view, 
 				'breadcrumbs' => $breadcrumbs, 
 				'data' => $dataJadwal, 
 				'dataLKS' => $dataLKS,
@@ -127,6 +171,8 @@ class AuDaftarHadirController extends Controller
         try {
             $dataJadwal = $this->isKepalaAudit($jadwalID);
             if (!empty($dataJadwal->jadw_file_kehadiran)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran);
+            if (!empty($dataJadwal->jadw_file_laporan_ringkas)) array_push($oldFilePath, $dataJadwal->jadw_file_laporan_ringkas);
+            if (!empty($dataJadwal->jadw_file_lks)) array_push($oldFilePath, $dataJadwal->jadw_file_lks);
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
             if ($request->hasFile('jadw_file_kehadiran')) {
@@ -180,8 +226,27 @@ class AuDaftarHadirController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit' => $this->ajax_datagrid_jadwal_audit($request),
+            'tinymce-uploadimage'   => $this->ajax_tinymce_uploadimage($request),
             default                 => null,
         };
+    }
+	
+	private function ajax_tinymce_uploadimage(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
+            ]);
+
+            $img     = $request->file('file');
+            $imgName = $img->hashName();
+            $img->move(public_path(config('app.path_file_tinymce')), $imgName);
+            $publicUrl = asset(config('app.path_file_tinymce') . '/' . $imgName);
+
+            return response()->json(["location" => $publicUrl]);
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
     }
 
     private function ajax_datagrid_jadwal_audit(Request $request)

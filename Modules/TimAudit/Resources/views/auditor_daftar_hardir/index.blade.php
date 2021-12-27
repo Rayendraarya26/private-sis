@@ -56,8 +56,8 @@
                         width: 130,
                         align: 'center',
                         formatter: function (val, row) {
-                            if (row.is_uploaded) {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Isi Kelengkapan</a>`
+                            if (row.jadw_setujui_temuan == 'revisi') {
+                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Revisi Kelengkapan</a>`
                             } else {
                                 return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Isi Kelengkapan</a>`
                             }
