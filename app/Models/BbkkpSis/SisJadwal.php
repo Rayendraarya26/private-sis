@@ -19,10 +19,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $jadw_tanggal_mulai
  * @property Carbon|null $jadw_tanggal_selesai
  * @property string $jadw_team_status
+ * @property string|null $jadw_setujui_nama
+ * @property string|null $jadw_setujui_jabatan
  * @property string|null $jadw_setujui_temuan
  * @property Carbon|null $jadw_tanggal_rapat_akhir
+ * @property string|null $jadw_notulen_rapat
+ * @property string|null $jadw_file_laporan_ringkas
+ * @property string|null $jadw_file_lks
  * @property string|null $jadw_file_kehadiran
- * @property string|null $jadw_file_notulen_rapat
  * @property string|null $jadw_file_kehadiran_komite
  * @property string|null $jadw_jenis
  * @property string|null $jadw_is_khusus_komite
@@ -74,10 +78,14 @@ class SisJadwal extends Model
 		'jadw_tanggal_mulai',
 		'jadw_tanggal_selesai',
 		'jadw_team_status',
+		'jadw_setujui_nama',
+		'jadw_setujui_jabatan',
 		'jadw_setujui_temuan',
 		'jadw_tanggal_rapat_akhir',
+		'jadw_notulen_rapat',
+		'jadw_file_laporan_ringkas',
+		'jadw_file_lks',
 		'jadw_file_kehadiran',
-		'jadw_file_notulen_rapat',
 		'jadw_file_kehadiran_komite',
 		'jadw_jenis',
 		'jadw_is_khusus_komite',
