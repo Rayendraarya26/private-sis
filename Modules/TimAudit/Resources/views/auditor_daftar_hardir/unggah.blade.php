@@ -150,6 +150,14 @@
 										<div class="dt-card__body">
 											<div class="form-group row">
 												<label class="col-form-label col-sm-2">
+													Laporan Observasi
+												</label>
+												<div class="col-sm-10">
+													<a href="{{ url("$url/detail?tipe=lap-observasi&jadw_id=$data->jadw_id") }}" target="_blank">Lihat laporan observasi</a>
+												</div>
+											</div>
+											<div class="form-group row">
+												<label class="col-form-label col-sm-2">
 													Laporan Ringkas
 												</label>
 												<div class="col-sm-10">
@@ -321,21 +329,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group row">
-                                            <label class="col-form-label col-sm-3" for="jadw_file_notulen_rapat">
+                                            <label class="col-form-label col-sm-3" for="">
                                                 Notulen Rapat*
                                                 <br>
                                                 <small>(pdf/excel)</small>
                                             </label>
                                             <div class="col-sm-8">
-                                                    <input type="file" name="jadw_file_notulen_rapat" id="jadw_file_notulen_rapat" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                                @if(!empty($data->jadw_file_notulen_rapat))
-                                                    <small>
-                                                        <a href="{{asset($data->jadw_file_notulen_rapat)}}"
-                                                           target="_blank">
-                                                            <i class="fad fa-download"></i> Download Notulen
-                                                        </a>
-                                                    </small>
-                                                @endif
+                                                   
                                             </div>
                                         </div>
 										
@@ -398,7 +398,7 @@
 							editable: false,
 							formatter:myformatter,
 							parser:myparser,
-							value:`@if(!empty($data->jadw_file_notulen_rapat)) {{$data->jadw_file_notulen_rapat}} @endif`,
+							value:`@if(!empty($data->jadw_tanggal_rapat_akhir)) {{$data->jadw_tanggal_rapat_akhir}} @endif`,
 							onSelect: async function(date){
 								var data_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
 							}

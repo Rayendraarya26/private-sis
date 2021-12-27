@@ -98,10 +98,10 @@
 											<br/><span class="badge badge-danger mb-3">*Daftar Hadir Belum Diupload</span>
 										@endif
 										
-										@if($data->jadw_file_notulen_rapat != '')
-											<br/><a href="{{ url($data->jadw_file_notulen_rapat) }}" target="_blank">Download Notulen</a>
+										@if($data->jadw_notulen_rapat != '')
+											<br/>{! ucwords($data->jadw_notulen_rapat) !}
 										@else
-											<span class="badge badge-danger mb-3">*Notulen Belum Diupload</span>
+											<span class="badge badge-danger mb-3">*Notulen belum diisi</span>
 										@endif
                                     </ol>
                                 </div>

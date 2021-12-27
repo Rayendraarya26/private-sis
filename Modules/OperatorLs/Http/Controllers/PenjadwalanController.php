@@ -229,11 +229,23 @@ class PenjadwalanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['cust_id']            = $d->cust_id;
-			$x['cust_nama']          = $d->cust_nama;
-			$x['bill_nomor_billing'] = $d->bill_nomor_billing;
-			$x['bill_id'] = $d->bill_id;
-			array_push($result, $x);
+			if($d->bill_harus_lunas == 'tidak'){
+				$x['cust_id']            = $d->cust_id;
+				$x['cust_nama']          = $d->cust_nama;
+				$x['bill_nomor_billing'] = $d->bill_nomor_billing;
+				$x['bill_id'] = $d->bill_id;
+				array_push($result, $x);
+			}
+			else{
+				if($d->bill_payment_status == 'lunas'){
+					$x['cust_id']            = $d->cust_id;
+					$x['cust_nama']          = $d->cust_nama;
+					$x['bill_nomor_billing'] = $d->bill_nomor_billing;
+					$x['bill_id'] = $d->bill_id;
+					array_push($result, $x);
+				}
+			}
+           
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

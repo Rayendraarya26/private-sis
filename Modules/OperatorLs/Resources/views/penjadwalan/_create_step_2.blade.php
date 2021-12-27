@@ -62,7 +62,6 @@
 								<input type="hidden" id="komodt_id" value="">
 								<input type="hidden" id="komodt_nama" value="">
 								<input type="hidden" id="tipe" value="">
-								<input type="hidden" id="merk" value="">
 								<input type="hidden" id="sni" value="">
 								<input type="hidden" id="ukuran" value="">
 								<input type="hidden" id="satuan" value="">
@@ -73,6 +72,24 @@
 							</div>
 						</div>
 						
+						
+						<div id="field_merk" style="display:none;">
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" >Merk</label>
+								<div class="col-xl-8">
+									<input type="text" class="form-control" id="merk" name="merk">
+								</div>
+							</div>
+							
+							
+							<div class="form-group form-row">
+								<label class="col-xl-3 col-form-label text-sm-left" >Ruang Lingkup</label>
+								<div class="col-xl-8">
+									<textarea class="form-control" id="ruang_lingkup"></textarea>
+								</div>
+							</div>
+						</div>
+						
 						<div class="form-group form-row">
 							<label class="col-xl-3 col-form-label text-sm-left" >Standart Acuan</label>
 							<div class="col-xl-8">
@@ -80,12 +97,6 @@
 							</div>
 						</div>
 						
-						<div class="form-group form-row" style="display:none;">
-							<label class="col-xl-3 col-form-label text-sm-left" >Ruang Lingkup</label>
-							<div class="col-xl-8">
-								<textarea class="form-control" id="ruang_lingkup"></textarea>
-							</div>
-						</div>
 						
 						<div class="form-group form-row">
 							<label class="col-xl-3 col-form-label text-sm-left" >Kegiatan Audit</label>
@@ -313,6 +324,7 @@
 							this.form_edited_id = null;
 							$('#form_id').trigger("reset");
 							$("#form-tambah").hide();
+							$("#field_merk").hide();
 							$(".tab-content").height("100%");
 						}, 500);	
 						return false;
@@ -329,6 +341,7 @@
 						}, 500);						
 					},
 					async setJenisAudit(dt_jenis){
+						$("#field_merk").hide();
 						$("#mohon_id").val("");
 						$("#mohon_det_id").val("");
 						$("#cust_sert_id").val("");
@@ -471,6 +484,8 @@
 								});
 							}
 							else if(dt_jenis === 'surveilans'){
+								
+								$("#field_merk").show();
 								urlCombo = `{{ url("$url/ajax?action=combogrid-sertifikat") }}&cust_id=${currentaData.cust_id}`;
 								$('#cb_data_id').combogrid({
 									pageSize: '50', panelWidth: 650, pagination: true, idField: 'id', nowrap: false, textField: 'nama', editable: true, url: urlCombo, method: 'get', mode: 'remote', value: '', multiSort: true, fitColumns: false, required: false,

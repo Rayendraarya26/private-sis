@@ -125,7 +125,8 @@ class AuLapRingkasController extends Controller
     public function processLaporan(Request $request, $jadwalID)
     {
         $request->validate([
-            'lap_ringkas_filepath'    => 'nullable|max:5000|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
+            'lap_ringkas_ttd_jabatan'  => 'required',
+            'lap_ringkas_ttd_nama'  => 'required',
             'lap_ringkas_kesimpulan'  => 'required',
             'lap_ringkas_rekomendasi' => 'required',
         ]);
@@ -134,25 +135,12 @@ class AuLapRingkasController extends Controller
         $oldFilePath = [];
         try {
             $dataJadwal = $this->isKepalaAudit($jadwalID);
-            if (!empty($dataJadwal->sis_audit_lap_ringkas?->lap_ringkas_filepath)) array_push($oldFilePath, $dataJadwal->sis_audit_lap_ringkas?->lap_ringkas_filepath);
-
-
             $where          = ['jadw_id' => $dataJadwal->jadw_id];
             $updateOrCreate = [];
-
-            $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
-            if ($request->hasFile('lap_ringkas_filepath')) {
-                $fileKehadiran     = $request->file('lap_ringkas_filepath');
-                $fileKehadiranName = Str::slug('file-laporan-ringkas' . $request['jadw_tim_id'] . '-' . $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
-                $fileKehadiranPath = sprintf("%s/%s", $baseFileUpload, $fileKehadiranName);
-                $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
-
-                $updateOrCreate['lap_ringkas_filepath'] = $fileKehadiranPath;
-                array_push($newFilePath, public_path($fileKehadiranPath));
-            }
-
             $updateOrCreate['lap_ringkas_kesimpulan']  = $request['lap_ringkas_kesimpulan'];
             $updateOrCreate['lap_ringkas_rekomendasi'] = $request['lap_ringkas_rekomendasi'];
+            $updateOrCreate['lap_ringkas_ttd_jabatan'] = $request['lap_ringkas_ttd_jabatan'];
+            $updateOrCreate['lap_ringkas_ttd_nama'] = $request['lap_ringkas_ttd_nama'];
 
             SisAuditLapRingkas::updateOrCreate($where, $updateOrCreate);
 

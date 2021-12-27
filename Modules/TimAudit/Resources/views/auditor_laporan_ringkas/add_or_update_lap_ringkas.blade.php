@@ -155,37 +155,33 @@
                                 <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
                                   enctype="multipart/form-data">
                                 @csrf
-
-                                <div class="form-group row" style="display:none;">
-                                    <label class="col-form-label col-sm-3" for="lap_ringkas_filepath">
-                                        Berkas
-                                        <br>
-                                        <small>(pdf/excel)</small>
-                                        <br>
-                                        @error('lap_ringkas_filepath')
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3" for="lap_ringkas_ttd_nama">
+                                        Tanda Tangan Nama*
+                                        @error('lap_ringkas_ttd_nama')
                                         <br><span style="color: red">{{$message}}</span>
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <div class="custom-file">
-                                            <input type="file" name="lap_ringkas_filepath"
-                                                   class="custom-file-input"
-                                                   id="lap_ringkas_filepath"
-                                                   accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-                                            <label class="custom-file-label" for="lap_ringkas_filepath">
-                                                Unggah file...</label>
-                                        </div>
-                                        @if(!empty($data->sis_audit_lap_ringkas->lap_ringkas_filepath))
-                                            <small>
-                                                <a href="{{asset($data->sis_audit_lap_ringkas->lap_ringkas_filepath)}}"
-                                                   target="_blank">
-                                                    <i class="fad fa-download"></i> Download berkas
-                                                </a>
-                                            </small>
-                                        @endif
+                                        <input type="text" class="form-control" name="lap_ringkas_ttd_nama" id="lap_ringkas_ttd_nama" value="{{old('lap_ringkas_ttd_nama') ?? $data->sis_audit_lap_ringkas?->lap_ringkas_ttd_nama}}"/>
+										<span><small>Pengesahan untuk client/pelanggan</small></span>
                                     </div>
                                 </div>
-
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3" for="lap_ringkas_ttd_jabatan">
+                                        Tanda Tangan Jabatan*
+                                        @error('lap_ringkas_ttd_jabatan')
+                                        <br><span style="color: red">{{$message}}</span>
+                                        @enderror
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="lap_ringkas_ttd_jabatan" id="lap_ringkas_ttd_jabatan" value="{{old('lap_ringkas_ttd_jabatan') ?? $data->sis_audit_lap_ringkas?->lap_ringkas_ttd_jabatan}}"/>
+										<span><small>Pengesahan untuk client/pelanggan</small></span>
+                                    </div>
+                                </div>
+								
                                 <div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="lap_ringkas_kesimpulan">
                                         Ringkasan Hasil / Kesimpulan*

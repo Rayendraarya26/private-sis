@@ -713,11 +713,11 @@
         </div>
     </div>
     <div class="col-md-12" style="padding-top: 20px">
-        <h3>Petanyaan Tambahan</h3>
+        <h3>Formulir Kelengkapan Permohonan</h3>
         <div>
             <ol :start="is_indonesia ? 23 : 20">
-                <li>Lengkapi kuesioner berikut dan upload kembali dibawah
-                    <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh kuesioner)</a></li>
+                <li>Lengkapi formulir berikut dan upload kembali dibawah
+                    <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh formulir)</a></li>
                 <br>
                 <input type="file" class="form-control" aria-label="Pertanyaan Tambahan"
                        @change="validateUploadPertanyaanTambahan"

@@ -127,7 +127,6 @@ class AuDaftarHadirController extends Controller
         try {
             $dataJadwal = $this->isKepalaAudit($jadwalID);
             if (!empty($dataJadwal->jadw_file_kehadiran)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran);
-            if (!empty($dataJadwal->jadw_file_notulen_rapat)) array_push($oldFilePath, $dataJadwal->jadw_file_notulen_rapat);
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
             if ($request->hasFile('jadw_file_kehadiran')) {
@@ -138,15 +137,6 @@ class AuDaftarHadirController extends Controller
 
                 $dataJadwal->jadw_file_kehadiran = $fileKehadiranPath;
                 array_push($newFilePath, public_path($fileKehadiranPath));
-            }
-            if ($request->hasFile('jadw_file_notulen_rapat')) {
-                $fileNotulen     = $request->file('jadw_file_notulen_rapat');
-                $fileNotulenName = Str::slug('file-notulen-rapat-' . $request['jadw_tim_id'] . '-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
-                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
-                $fileNotulen->move($baseFileUpload, $fileNotulenName);
-
-                $dataJadwal->jadw_file_notulen_rapat = $fileNotulenPath;
-                array_push($newFilePath, public_path($fileNotulenPath));
             }
 			
 			$dataJadwal->jadw_setujui_temuan = 'diajukan';
@@ -250,7 +240,7 @@ class AuDaftarHadirController extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
-            $isUploaded = !empty($d->jadw_file_kehadiran) && !empty($d->jadw_file_notulen_rapat);
+            $isUploaded = !empty($d->jadw_file_kehadiran);
 
             $x['is_uploaded']          = $isUploaded;
             $x['jadw_id']              = $d->jadw_id;
@@ -307,13 +297,18 @@ class AuDaftarHadirController extends Controller
 			$dataLks->selectRaw("MAX(lks_expired_date_perbaikan) as lks_expired_date_perbaikan");
 			$dataLks->selectRaw("COUNT(DISTINCT lks_id) as lks_jumlah");
 			
-			$parser = [
-				'module' => $this->module, 
-				'url' => $this->url,
-				'dataJadwal' => $dataJadwal->get()[0],
-				'dataLks' => $dataLks->get(),
-			];
-            return view("$this->view.detail.lap_ringkas")->with($parser);
+			if(!isset($dataJadwal->get()[0])){
+				 return redirect()->back()->withErrors(['message' => 'Laporan belum diisi.']);
+			}
+			else{
+				$parser = [
+					'module' => $this->module, 
+					'url' => $this->url,
+					'dataJadwal' => $dataJadwal->get()[0],
+					'dataLks' => $dataLks->get(),
+				];
+				return view("$this->view.detail.lap_ringkas")->with($parser);
+			}
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
@@ -372,16 +367,23 @@ class AuDaftarHadirController extends Controller
 						break;
 				}
             }
-		
-			$parser = [
-				'module' => $this->module, 
-				'url' => $this->url,
-				'dataJadwal' => $dataJadwal->get()[0],
-				'dataLks' => $dataLks->get(),
-				'sumLKS' => $sumLKS,
-			];
 			
-            return view("$this->view.detail.lap_lengkap")->with($parser);
+			if(!isset($dataJadwal->get()[0])){
+				 return redirect()->back()->withErrors(['message' => 'Laporan belum diisi.']);
+			}
+			else{
+				$parser = [
+					'module' => $this->module, 
+					'url' => $this->url,
+					'dataJadwal' => $dataJadwal->get()[0],
+					'dataLks' => $dataLks->get(),
+					'sumLKS' => $sumLKS,
+				];
+				
+				return view("$this->view.detail.lap_lengkap")->with($parser);
+				}
+			
+			
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }

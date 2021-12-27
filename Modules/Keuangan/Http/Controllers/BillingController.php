@@ -314,6 +314,7 @@ class BillingController extends Controller
             "bill_due_date"      => 'required',
             "data_billing_item"  => 'required',
             "bill_invoice_file"  => 'required',
+            "bill_harus_lunas"  => 'required',
         ]);
 	
 	//print_r(json_decode($request['data_billing_item']));
@@ -329,6 +330,7 @@ class BillingController extends Controller
             $newSisBilling->bill_nomor_billing = $request['bill_nomor_billing'];
             $newSisBilling->bill_billing_date  = $request['bill_billing_date'];
             $newSisBilling->bill_due_date      = $request['bill_due_date'];
+            $newSisBilling->bill_harus_lunas      = $request['bill_harus_lunas'];
             $newSisBilling->created_at         = Carbon::now();
             $newSisBilling->updated_at         = Carbon::now();
             $newSisBilling->save();
@@ -345,7 +347,6 @@ class BillingController extends Controller
             array_push($uploadedPath, $fileInvoicePath);
             // add billing items
             $dataItems   = json_decode($request['data_billing_item']);
-            $harus_lunas = 'ya';
             $bil_total   = 0;
             $mohon_data  = [];
             foreach ($dataItems as $itm) {
@@ -392,7 +393,7 @@ class BillingController extends Controller
             }
 
 
-            $newSisBilling->bill_harus_lunas = $harus_lunas;
+            // $newSisBilling->bill_harus_lunas = $harus_lunas;
             $newSisBilling->save();
 
             DB::commit();

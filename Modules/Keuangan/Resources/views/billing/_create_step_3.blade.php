@@ -1,15 +1,23 @@
 <div class="row" id="vueStepTree">
     <div class="col-md-12">
-         <h3>File Invoice <small aria-label="Silahkan inputkan file invoice" class="custom-cooltipz" data-cooltipz-size="large" data-cooltipz-dir="right"><i class="fal fa-folder"></i></small></h3>
+         <h3>Berkas Invoice <small aria-label="Silahkan inputkan file invoice" class="custom-cooltipz" data-cooltipz-size="large" data-cooltipz-dir="right"><i class="fal fa-folder"></i></small></h3>
     </div>
 	<div class="col-md-12">
-			<div class="form-group form-row" id="data_permohonan">
+			<div class="form-group form-row">
 				<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >File Invoice</label>
 				<div class="col-xl-8">
 					<input type="file" class="form-control" aria-label="File Invoice"
 				   @change="validateUploadFileInvoice" accept="application/pdf"
 				   name="bill_invoice_file" id="bill_invoice_file">
 			<small><span>Upload file harus berjenis PDF</span></small>
+				</div>
+			</div>
+			<div class="form-group form-row">
+				<label class="col-xl-3 col-form-label text-sm-left" for="bill_harus_lunas" >Harus Lunas?</label>
+				<div class="col-xl-8">
+					<input type="checkbox" name="bill_harus_lunas" id="bill_harus_lunas" aria-label="Ya"
+                   v-model="bill_harus_lunas" value="ya" checked> Ya
+				   <br/><small><span>Jika tidak di-centang maka bisa lanjut ke penjadwalan.</span></small>
 				</div>
 			</div>
 			<div class="col-md-12">
@@ -94,8 +102,13 @@
 					
 									// Step 3
 									const dataInvoiceFile = document.querySelector("#bill_invoice_file").files[0];
-									formData.append("bill_invoice_file", dataInvoiceFile)
-
+									formData.append("bill_invoice_file", dataInvoiceFile);
+									if ($('#bill_harus_lunas').is(":checked")) {
+										formData.append("bill_harus_lunas", 'ya');
+									}
+									else{
+										formData.append("bill_harus_lunas", 'tidak');
+									}
 									
 									// Submit Permohonan
 									this.loading_submit = true;
