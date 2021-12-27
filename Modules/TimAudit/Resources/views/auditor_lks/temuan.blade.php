@@ -292,7 +292,7 @@
                                         <template v-else>
                                             <button class="btn btn-primary" @click="saveDraft()" type="button"
                                                     id="btnSaveDraft">
-                                                <i class="fas fa-save"></i> Simpan Draft
+                                                <i class="fas fa-save"></i> Simpan
                                         </button>
                                     </template>
                                 </div>
