@@ -129,13 +129,13 @@
                     <div class="dt-card__body">
                         <div class="row">
                             <div style="width: 100%">
-                                <div class="col-md-12">
+                                <div class="col-md-12" style="padding-bottom: 10px">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <select aria-label="filter auditor" class="form-control" id="fil_auditor"
                                                     @change="doFilterAuditor">
                                                 <option value="all" selected>-- Semua Auditor --</option>
-                                                @foreach($data->sis_jadwal_tims as $tim)
+                                                @foreach($data->sis_jadwal_tims->where('jadw_tim_posisi', '!=', 'ppc') as $tim)
                                                     <option value="{{$tim->jadw_tim_kode}}">
                                                         {{$tim->master_pegawai->peg_nama}} | {{$tim->jadw_tim_kode}}
                                                         ({{ucwords($tim->jadw_tim_posisi)}})
@@ -171,7 +171,7 @@
                                                 <td>
                                                     @if(auth()->user()->master_pegawai->peg_id == $lks->sis_jadwal_tim->master_pegawai->peg_id)
                                                         <div class="row">
-                                                            <div class="col-md-12">
+                                                            <div class="col-md-6">
                                                                 <div style="padding-bottom: 10px">
                                                                     <b style="font-size: 12px">No LKS: </b>
                                                                     <input type="text" id="lks_nomor_{{$lks->lks_id}}"
@@ -180,6 +180,18 @@
                                                                            @keyup="changeNoLks({{$lks->lks_id}})"
                                                                            aria-label="nomor lks"
                                                                            value="{!! $lks->lks_nomor !!}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div style="padding-bottom: 10px">
+                                                                    <b style="font-size: 12px">Pendamping LKS: </b>
+                                                                    <input type="text"
+                                                                           id="lks_pendamping_{{$lks->lks_id}}"
+                                                                           class="form-control"
+                                                                           placeholder="Tuliskan Pendamping..."
+                                                                           @keyup="changePendampingLks({{$lks->lks_id}})"
+                                                                           aria-label="pendamping lks"
+                                                                           value="{!! $lks->lks_bagian_pendamping !!}">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-12">
@@ -357,6 +369,7 @@
                 update_kategori: [],
                 update_date_revisi: [],
                 update_nomer_lks: [],
+                update_pendamping_lks: [],
                 total_lks: {{$data->sis_audit_lks->count()}}
             },
             mounted() {
@@ -530,6 +543,28 @@
                         this.update_nomer_lks.push(data)
                     }
                 },
+                changePendampingLks(lksID) {
+                    let available    = false;
+                    let availableIdx = 0;
+                    if (this.update_pendamping_lks.length == 0) {
+                        available = false;
+                    } else {
+                        this.update_pendamping_lks.map((e, idx) => {
+                            if (e.lks_id == lksID) {
+                                available    = true;
+                                availableIdx = idx
+                            }
+                        });
+                    }
+
+                    let newNomor = $(`#lks_pendamping_${lksID}`).val()
+                    let data     = {lks_id: lksID, data: newNomor}
+                    if (available) {
+                        this.update_pendamping_lks[availableIdx] = data
+                    } else {
+                        this.update_pendamping_lks.push(data)
+                    }
+                },
                 changeKategori(lksID) {
                     let available    = false;
                     let availableIdx = 0;
@@ -660,6 +695,10 @@
 
                     this.update_nomer_lks.map(e => {
                         dtPromise.push(this.saveToDatabase(e.lks_id, 'lks_nomor', e.data))
+                    })
+
+                    this.update_pendamping_lks.map(e => {
+                        dtPromise.push(this.saveToDatabase(e.lks_id, 'lks_bagian_pendamping', e.data))
                     })
 
                     this.loading_submit = true;
