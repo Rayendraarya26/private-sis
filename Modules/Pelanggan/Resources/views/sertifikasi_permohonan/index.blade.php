@@ -85,6 +85,8 @@
 
                             if (row.mohon_tagihan_biaya_status == "proses" && (row.mohon_harga_permohonan == 0 || row.mohon_harga_permohonan == null)) {
                                 btnApproveHarga = "";
+                            } else if (row.mohon_tagihan_biaya_status != "proses") {
+                                btnApproveHarga = "";
                             }
 
                             return `

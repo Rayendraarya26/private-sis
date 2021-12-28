@@ -33,6 +33,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <form method="post"
+                                      onsubmit="$('#btnSubmit').attr('disabled', true)"
                                       action="{{action("$module@processUpload", $data->bill_id)}}"
                                       enctype="multipart/form-data">
                                     @csrf
@@ -91,7 +92,7 @@
                                     </div>
 
                                     <div class="form-buttons-w">
-                                        <button class="btn btn-success" type="submit">
+                                        <button class="btn btn-success" type="submit" id="btnSubmit">
                                             <i class="fas fa-save"></i> Simpan
                                         </button>
                                     </div>
