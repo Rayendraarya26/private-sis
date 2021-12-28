@@ -19,7 +19,7 @@ use Modules\TimAudit\Http\Traits\AuditorTraits;
 class AuPengajuanKomiteController extends Controller
 {
 	use AuditorTraits;
-	
+
     public $module = self::class;
     private $url = 'timaudit/auditor/pengajuan-komite';
     private $view = "timaudit::auditor_pengajuan_komite";
@@ -35,7 +35,7 @@ class AuPengajuanKomiteController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view("$this->view.index")->with($parser);
     }
-	
+
 	public function detail(Request $request)
     {
         $request->validate(['tipe' => 'required']);
@@ -46,7 +46,7 @@ class AuPengajuanKomiteController extends Controller
             default         => null,
         };
     }
-	
+
 	public function detail_lap_ringkas(Request $request)
     {
 		try {
@@ -67,17 +67,17 @@ class AuPengajuanKomiteController extends Controller
 			$dataJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_kegiatan) SEPARATOR ',<br/>') as jadw_audit_kegiatan");
 			$dataJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT(peg_nama) SEPARATOR ', ') as peg_nama");
 			$dataJadwal->groupBy('sis_jadwal.jadw_id');
-			
-			
+
+
 			$dataLks = SisAuditLks::where('sis_audit_lks.jadw_id', $request['jadw_id'])->groupBy('lks_kategori_ketidaksesuaian');
 			$dataLks->selectRaw("lks_kategori_ketidaksesuaian as lks_kategori_ketidaksesuaian");
 			$dataLks->selectRaw("GROUP_CONCAT(DISTINCT lks_klausul_ketidaksesuaian SEPARATOR ',') as lks_klausul_ketidaksesuaian");
 			$dataLks->selectRaw("GROUP_CONCAT(DISTINCT lks_nomor SEPARATOR ',') as lks_nomor");
 			$dataLks->selectRaw("MAX(lks_expired_date_perbaikan) as lks_expired_date_perbaikan");
 			$dataLks->selectRaw("COUNT(DISTINCT lks_id) as lks_jumlah");
-			
+
 			$parser = [
-				'module' => $this->module, 
+				'module' => $this->module,
 				'url' => $this->url,
 				'dataJadwal' => $dataJadwal->get()[0],
 				'dataLks' => $dataLks->get(),
@@ -87,7 +87,7 @@ class AuPengajuanKomiteController extends Controller
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
 	}
-	
+
 	public function detail_lap_lengkap(Request $request)
     {
 		try {
@@ -111,8 +111,8 @@ class AuPengajuanKomiteController extends Controller
 			$dataJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi = 'ketua', CONCAT(peg_nama), '') SEPARATOR ', ') as ketua");
 			$dataJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi != 'ketua', CONCAT(peg_nama, '(', jadw_tim_posisi , ')'), '') SEPARATOR ', ') as anggota");
 			$dataJadwal->groupBy('sis_jadwal.jadw_id');
-			
-			
+
+
 			$dataLks = SisAuditLks::where('sis_audit_lks.jadw_id', $request['jadw_id'])->select("*");
 			$sumLKS = [
                 'kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0
@@ -141,21 +141,21 @@ class AuPengajuanKomiteController extends Controller
 						break;
 				}
             }
-		
+
 			$parser = [
-				'module' => $this->module, 
+				'module' => $this->module,
 				'url' => $this->url,
 				'dataJadwal' => $dataJadwal->get()[0],
 				'dataLks' => $dataLks->get(),
 				'sumLKS' => $sumLKS,
 			];
-			
+
             return view("$this->view.detail.lap_lengkap")->with($parser);
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
 	}
-	
+
 	public function detail_audit(Request $request)
     {
 		try {
@@ -167,51 +167,26 @@ class AuPengajuanKomiteController extends Controller
 				new BreadcrumbsStruct('Detail Audit'),
 			];
 
-            $dataLKS = [
-                'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
-            ];
-            foreach ($dataJadwal as $ja) {
-				if(!empty($ja->sis_audit_lks)){foreach ($ja->sis_audit_lks as $lks) {
-						switch ($lks->lks_kategori_ketidaksesuaian) {
-							case 'kritis':
-								// jumlah
-								$dataLKS['jumlah']['kritis'] += 1;
-								$dataLKS['jumlah']['total']  += 1;
-								break;
-							case 'mayor':
-								// jumlah
-								$dataLKS['jumlah']['mayor'] += 1;
-								$dataLKS['jumlah']['total'] += 1;
-								break;
-							case 'minor':
-							case 'observasi':
-								// jumlah
-								$dataLKS['jumlah']['minor'] += 1;
-								$dataLKS['jumlah']['total'] += 1;
-								break;
-						}
-					}
-				}
-            }
-			
+            $dataLKS = $this->calculateTemuanLKS($dataJadwal);
+
 			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
-			
-			
+
+
 			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
-			
-			
-			
+
+
+
             $parser = [
-				'module' => $this->module, 
-				'url' => $this->url, 
-				'breadcrumbs' => $breadcrumbs, 
-				'data' => $dataJadwal, 
+				'module' => $this->module,
+				'url' => $this->url,
+				'breadcrumbs' => $breadcrumbs,
+				'data' => $dataJadwal,
 				'dataLKS' => $dataLKS,
 				'dataAuditTim' => $dataAuditTim->get(),
 				'dataTimLogbook' => $dataTimLogbook->get(),
@@ -222,7 +197,7 @@ class AuPengajuanKomiteController extends Controller
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	public function edit(Request $request)
     {
 		try {
@@ -234,52 +209,26 @@ class AuPengajuanKomiteController extends Controller
 				new BreadcrumbsStruct('Proses Ajukan'),
 			];
 
-            $dataLKS = [
-                'jumlah' => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
-            ];
-            foreach ($dataJadwal as $ja) {
-				if(!empty($ja->sis_audit_lks)){foreach ($ja->sis_audit_lks as $lks) {
-						switch ($lks->lks_kategori_ketidaksesuaian) {
-							case 'kritis':
-								// jumlah
-								$dataLKS['jumlah']['kritis'] += 1;
-								$dataLKS['jumlah']['total']  += 1;
-								break;
-							case 'mayor':
-								// jumlah
-								$dataLKS['jumlah']['mayor'] += 1;
-								$dataLKS['jumlah']['total'] += 1;
-								break;
-							case 'minor':
-							case 'observasi':
-								// jumlah
-								$dataLKS['jumlah']['minor'] += 1;
-								$dataLKS['jumlah']['total'] += 1;
-								break;
-						}
-					}
-				}
-            }
-			
+            $dataLKS = $this->calculateTemuanLKS($dataJadwal);
 
             $dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
-			
-			
+
+
 			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
-			
-			
-			
+
+
+
             $parser = [
-				'module' => $this->module, 
-				'url' => $this->url, 
-				'breadcrumbs' => $breadcrumbs, 
-				'data' => $dataJadwal, 
+				'module' => $this->module,
+				'url' => $this->url,
+				'breadcrumbs' => $breadcrumbs,
+				'data' => $dataJadwal,
 				'dataLKS' => $dataLKS,
 				'dataAuditTim' => $dataAuditTim->get(),
 				'dataTimLogbook' => $dataTimLogbook->get(),
@@ -291,7 +240,7 @@ class AuPengajuanKomiteController extends Controller
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	public function update(Request $request)
     {
         $request->validate([
@@ -320,7 +269,7 @@ class AuPengajuanKomiteController extends Controller
             return responseJSON(500, [], $e->getMessage());
         }
     }
-	
+
 	public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
@@ -329,7 +278,7 @@ class AuPengajuanKomiteController extends Controller
             default                 => null,
         };
     }
-	
+
     private function ajax_datagrid_jadwal_audit(Request $request)
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");

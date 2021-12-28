@@ -14,9 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Modules\TimAudit\Http\Traits\AuditorTraits;
 
 class Tahap2PersetujuanController extends Controller
 {
+    use AuditorTraits;
+
     public $module = self::class;
     private $url = 'pelanggan/tahap2/persetujuan-temuan';
     private $view = "pelanggan::tahap2_persetujuan";
@@ -36,12 +39,9 @@ class Tahap2PersetujuanController extends Controller
     public function detail(Request $request, $jadwID)
     {
         try {
-            $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])->findOrFail($jadwID);
-            $dataLKS    = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
-                ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
-                ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
-                ->where('sis_jadwal.jadw_id', $jadwID)
-                ->get();
+            $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims.sis_audit_logbook'])->findOrFail($jadwID);
+
+            $dataLKS = $this->calculateTemuanLKS($dataJadwal);
 
             $breadcrumbs = [
                 new BreadcrumbsStruct('Pelanggan'),
@@ -50,7 +50,7 @@ class Tahap2PersetujuanController extends Controller
                 new BreadcrumbsStruct('Detail'),
             ];
 
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS];
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal, 'dataLKS' => $dataLKS];
             return view("$this->view.detail")->with($parser);
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage() . ' | ' . $e->getLine()]);
@@ -156,76 +156,9 @@ class Tahap2PersetujuanController extends Controller
     private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)
     {
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
-        $dataLKS   = [
-            'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
-            'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-            'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-            'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
-        ];
 
-        foreach ($dataJadwal->sis_audit_lks as $lks) {
-            switch ($lks->lks_kategori_ketidaksesuaian) {
-                case 'kritis':
-                    // jumlah
-                    $dataLKS['jumlah']['kritis'] += 1;
-                    $dataLKS['jumlah']['total']  += 1;
-                    // klausul
-                    $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                    // no lks
-                    $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
-                    // tgl penyelesaian
-                    if (!empty($lks->lks_expired_date_perbaikan)) {
-                        if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                        } else {
-                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
-                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                            }
-                        }
-                    }
-                    break;
-                case 'mayor':
-                    // jumlah
-                    $dataLKS['jumlah']['mayor'] += 1;
-                    $dataLKS['jumlah']['total'] += 1;
-                    // klausul
-                    $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                    // no lks
-                    $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
-                    // tgl penyelesaian
-                    if (!empty($lks->lks_expired_date_perbaikan)) {
-                        if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                        } else {
-                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
-                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                            }
-                        }
-                    }
-                    break;
-                case 'minor':
-                case 'observasi':
-                    // jumlah
-                    $dataLKS['jumlah']['minor'] += 1;
-                    $dataLKS['jumlah']['total'] += 1;
-                    // klausul
-                    $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                    // no lks
-                    $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
-                    // tgl penyelesaian
-                    if (!empty($lks->lks_expired_date_perbaikan)) {
-                        if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                        } else {
-                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
-                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                            }
-                        }
-                    }
-                    break;
+        $dataLKS = $this->calculateTemuanLKS($dataJadwal);
 
-            }
-        }
         $parser = ['dataJadwal' => $dataJadwal, 'dataKetua' => $dataKetua, 'dataLKS' => $dataLKS];
         $pdf    = PDF::loadView("$this->view.print.lap-ringkas", $parser)
             ->setPaper('a4', 'portrait');

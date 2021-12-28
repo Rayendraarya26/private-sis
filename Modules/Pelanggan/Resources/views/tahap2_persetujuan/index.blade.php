@@ -154,7 +154,6 @@
                             let btnCetakLks        = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lks')">LKS</div>`;
                             let btnCetakLapRingkas = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lap-ringkas')">Laporan Ringkas</div>`;
                             let btnCetakDafHadir   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/daftar-hadir')">Daftar Hadir</div>`;
-                            let btnCetakLogbook    = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/logbook')">Logbook</div>`;
                             let btnCetakNotulen    = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/notulen')">Notulen</div>`;
 
                             return `
@@ -170,7 +169,6 @@
                             @if(authorized("{$module}@cetak")) ${btnCetakLapRingkas} @endif
                             @if(authorized("{$module}@cetak")) ${btnCetakDafHadir} @endif
                             @if(authorized("{$module}@cetak")) ${btnCetakLks} @endif
-                            @if(authorized("{$module}@cetak")) ${btnCetakLogbook} @endif
                             </div>
                         </div>`;
                         }

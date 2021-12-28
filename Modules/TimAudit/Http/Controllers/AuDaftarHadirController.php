@@ -44,7 +44,7 @@ class AuDaftarHadirController extends Controller
     }
 
     public function unggah(Request $request, $jadwalID)
-    {		
+    {
 		try {
             $dataJadwal  = $this->isKepalaAuditDetail($jadwalID);
             $breadcrumbs = [
@@ -54,97 +54,29 @@ class AuDaftarHadirController extends Controller
 				new BreadcrumbsStruct('Kelengkapan'),
 			];
 
-            $dataLKS = [
-                'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
-                'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-                'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-                'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
-            ];
-            foreach ($dataJadwal->sis_audit_lks as $lks) {
-                switch ($lks->lks_kategori_ketidaksesuaian) {
-                    case 'kritis':
-                        // jumlah
-                        $dataLKS['jumlah']['kritis'] += 1;
-                        $dataLKS['jumlah']['total']  += 1;
-                        // klausul
-                        $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                        // no lks
-                        $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
-                        // tgl penyelesaian
-                        if (!empty($lks->lks_expired_date_perbaikan)) {
-                            if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
-                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
-                            } else {
-                                if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
-                                    $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
-                                }
-                            }
-                        }
-                        break;
-                    case 'mayor':
-                        // jumlah
-                        $dataLKS['jumlah']['mayor'] += 1;
-                        $dataLKS['jumlah']['total'] += 1;
-                        // klausul
-                        $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                        // no lks
-                        $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
-                        // tgl penyelesaian
-                        if (!empty($lks->lks_expired_date_perbaikan)) {
-                            if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
-                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
-                            } else {
-                                if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
-                                    $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
-                                }
-                            }
-                        }
-                        break;
-                    case 'minor':
-                    case 'observasi':
-                        // jumlah
-                        $dataLKS['jumlah']['minor'] += 1;
-                        $dataLKS['jumlah']['total'] += 1;
-                        // klausul
-                        $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                        // no lks
-                        $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
-                        // tgl penyelesaian
-                        if (!empty($lks->lks_expired_date_perbaikan)) {
-                            if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
-                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
-                            } else {
-                                if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
-                                    $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
-                                }
-                            }
-                        }
-                        break;
+            $dataLKS = $this->calculateTemuanLKS($dataJadwal);
 
-                }
-            }
-			
 			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $jadwalID)->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
-			
-			
+
+
 			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $jadwalID)->select('*');
-			
-			
-			
+
+
+
 			$SisJadwalLog = SisJadwalLog::where('jadw_id', $jadwalID)->where('jlog_tipe', 'revisi-temuan')->select('*');
-			
+
             $parser = [
-				'module' => $this->module, 
-				'url' => $this->url, 
-				'view' => $this->view, 
-				'breadcrumbs' => $breadcrumbs, 
-				'data' => $dataJadwal, 
+				'module' => $this->module,
+				'url' => $this->url,
+				'view' => $this->view,
+				'breadcrumbs' => $breadcrumbs,
+				'data' => $dataJadwal,
 				'dataLKS' => $dataLKS,
 				'dataAuditTim' => $dataAuditTim->get(),
 				'dataTimLogbook' => $dataTimLogbook->get(),
@@ -156,7 +88,7 @@ class AuDaftarHadirController extends Controller
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
     public function storeUnggah(Request $request, $jadwalID)
     {
 		$request->validate([
@@ -169,7 +101,7 @@ class AuDaftarHadirController extends Controller
             'jadw_notulen_rapat' => 'required|string',
             'jadw_setujui_temuan' => 'required|string',
         ]);
-		
+
         $newFilePath = [];
         $oldFilePath = [];
         try {
@@ -186,16 +118,16 @@ class AuDaftarHadirController extends Controller
                 $dataJadwal->jadw_file_kehadiran = $fileKehadiranPath;
                 array_push($newFilePath, public_path($fileKehadiranPath));
             }
-			
+
 			$dataJadwal->jadw_setujui_temuan = $request['jadw_setujui_temuan'];
 			$dataJadwal->jadw_notulen_rapat = $request['jadw_notulen_rapat'];
 			$dataJadwal->jadw_tanggal_rapat_akhir = $request['jadw_tanggal_rapat_akhir'];
-			
+
             $dataJadwal->save();
             foreach ($oldFilePath as $path) { // remove old file
                 @unlink($path);
             }
-			
+
 			$notifStruct            = new NotifStruct();
 			$notifStruct->title     = 'Tinjauan Rapat Akhir';
 			$notifStruct->message   = sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']);
@@ -214,7 +146,7 @@ class AuDaftarHadirController extends Controller
 				])->render();
 			$structEmail->to      = $request['cust_email'];
 			sendEmail($structEmail);
-			
+
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             foreach ($newFilePath as $path) { // remove new file uploaded
@@ -233,7 +165,7 @@ class AuDaftarHadirController extends Controller
             default                 => null,
         };
     }
-	
+
 	private function ajax_tinymce_uploadimage(Request $request)
     {
         try {
@@ -273,7 +205,7 @@ class AuDaftarHadirController extends Controller
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']); 
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']);
 		// 'diajukan',
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
 
@@ -326,7 +258,7 @@ class AuDaftarHadirController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-	
+
 	public function detail(Request $request, $jadwalID, $type)
     {
         try {
@@ -343,80 +275,13 @@ class AuDaftarHadirController extends Controller
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)
     {
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
-        $dataLKS   = [
-            'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
-            'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-            'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-            'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
-        ];
 
-        foreach ($dataJadwal->sis_audit_lks as $lks) {
-            switch ($lks->lks_kategori_ketidaksesuaian) {
-                case 'kritis':
-                    // jumlah
-                    $dataLKS['jumlah']['kritis'] += 1;
-                    $dataLKS['jumlah']['total']  += 1;
-                    // klausul
-                    $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                    // no lks
-                    $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
-                    // tgl penyelesaian
-                    if (!empty($lks->lks_expired_date_perbaikan)) {
-                        if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                        } else {
-                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
-                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                            }
-                        }
-                    }
-                    break;
-                case 'mayor':
-                    // jumlah
-                    $dataLKS['jumlah']['mayor'] += 1;
-                    $dataLKS['jumlah']['total'] += 1;
-                    // klausul
-                    $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                    // no lks
-                    $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
-                    // tgl penyelesaian
-                    if (!empty($lks->lks_expired_date_perbaikan)) {
-                        if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                        } else {
-                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
-                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                            }
-                        }
-                    }
-                    break;
-                case 'minor':
-                case 'observasi':
-                    // jumlah
-                    $dataLKS['jumlah']['minor'] += 1;
-                    $dataLKS['jumlah']['total'] += 1;
-                    // klausul
-                    $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
-                    // no lks
-                    $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
-                    // tgl penyelesaian
-                    if (!empty($lks->lks_expired_date_perbaikan)) {
-                        if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                        } else {
-                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
-                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
-                            }
-                        }
-                    }
-                    break;
+        $dataLKS = $this->calculateTemuanLKS($dataJadwal);
 
-            }
-        }
         $parser = ['dataJadwal' => $dataJadwal, 'dataKetua' => $dataKetua, 'dataLKS' => $dataLKS];
         $pdf    = PDF::loadView("$this->view.print.lap-ringkas", $parser)
             ->setPaper('a4', 'portrait');
