@@ -361,98 +361,100 @@ class KomiteBeritaAcaraController extends Controller
         try {
             DB::beginTransaction();
 			$mohon_id = [];
-			if(!empty($request['tanggal_terbit'])){
-				foreach($request['tanggal_terbit'] as $key => $val){
-					$restDataAudit = DB::table('sis_jadwal_audit')
-						->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-						->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
-						->where('jadw_audit_id', $key)
-						->first();
-						
-					if ($restDataAudit !== null) {
-						if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
-							if($restDataAudit->jadw_audit_status == 'berhak-memperoleh'){
-								DB::table('sis_pelanggan_sertifikasi')
-									->insert([
-										'sert_id'  => $restDataAudit->sert_id,
-										'cust_id'  => $restDataAudit->cust_id,
-										'mohon_id'  => $restDataAudit->mohon_id,
-										// digenerate
-										'cust_sert_nomor_sertifikat'  => NULL,
-										'cust_sert_nomor_referensi'  => $restDataAudit->jadw_audit_nomor_referensi,
-										'cust_sert_nomor_sni'  => $restDataAudit->jadw_audit_sni,
-										'cust_sert_lingkup'  => $restDataAudit->jadw_audit_ruang_lingkup,
-										'kode_ea_nama'  => $restDataAudit->jadw_audit_kode_ea,
-										'kode_nace_nama'  => $restDataAudit->jadw_audit_kode_nace,
-										'komodt_id'  => $restDataAudit->komodt_id,
-										'cust_sert_tipe'  => $restDataAudit->jadw_audit_tipe, 
-										'cust_sert_merk' => $restDataAudit->jadw_audit_merk,
-										'cust_sert_ukuran' => $restDataAudit->jadw_audit_ukuran,
-										'cust_sert_produksi_tahunan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan,
-										'cust_sert_produksi_tahunan_satuan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan_satuan,
-										'cust_sert_tgl_sertifikat_awal'  => $val,
-										'cust_sert_tgl_sertifikat_perubahan'  => NULL,
-										'cust_sert_status'  => 'on_going',
-										'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
-										'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
-										'cust_sert_status_survailen'  => 'passed',
-									]);
-							}
-						}
-						elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
-							if($restDataAudit->jadw_audit_status == 'berhak-memperoleh-kembali'){
-								DB::table('sis_pelanggan_sertifikasi')
-									->where('cust_sert_id', $restDataAudit->cust_sert_id)
-									->update([
-										'cust_sert_status'  => 'on_going',
-										'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
-										'cust_sert_status_survailen'  => 'passed',
-										'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
-									]);
-							}
-							else{
-								DB::table('sis_pelanggan_sertifikasi')
-									->where('cust_sert_id', $restDataAudit->cust_sert_id)
-									->update([
-										'cust_sert_status'  => 'dibekukan',
-									]);
-							}
-						}
-						else{
-							if($restDataAudit->jadw_audit_status != 'tidak-berhak-menggunakan'){
-								DB::table('sis_pelanggan_sertifikasi')
-									->where('cust_sert_id', $restDataAudit->cust_sert_id)
-									->update([
-										'cust_sert_status_survailen'  => 'passed',
-										'cust_sert_status'  => 'on_going',
-										'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
-										'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
-									]);
-							}
-							else{
-								DB::table('sis_pelanggan_sertifikasi')
-									->where('cust_sert_id', $restDataAudit->cust_sert_id)
-									->update([
-										'cust_sert_status'  => 'dibekukan',
-									]);
-							}
-						}
+			if($request['jadw_is_tutup'] == 'ya'){
+				if(!empty($request['tanggal_terbit'])){
+					foreach($request['tanggal_terbit'] as $key => $val){
+						$restDataAudit = DB::table('sis_jadwal_audit')
+							->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+							->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
+							->where('jadw_audit_id', $key)
+							->first();
 							
-						if(!in_array($restDataAudit->mohon_id, $mohon_id, true)){
-							array_push($mohon_id, $restDataAudit->mohon_id);
+						if ($restDataAudit !== null) {
+							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
+								if($restDataAudit->jadw_audit_status == 'berhak-memperoleh'){
+									DB::table('sis_pelanggan_sertifikasi')
+										->insert([
+											'sert_id'  => $restDataAudit->sert_id,
+											'cust_id'  => $restDataAudit->cust_id,
+											'mohon_id'  => $restDataAudit->mohon_id,
+											// digenerate
+											'cust_sert_nomor_sertifikat'  => NULL,
+											'cust_sert_nomor_referensi'  => $restDataAudit->jadw_audit_nomor_referensi,
+											'cust_sert_nomor_sni'  => $restDataAudit->jadw_audit_sni,
+											'cust_sert_lingkup'  => $restDataAudit->jadw_audit_ruang_lingkup,
+											'kode_ea_nama'  => $restDataAudit->jadw_audit_kode_ea,
+											'kode_nace_nama'  => $restDataAudit->jadw_audit_kode_nace,
+											'komodt_id'  => $restDataAudit->komodt_id,
+											'cust_sert_tipe'  => $restDataAudit->jadw_audit_tipe, 
+											'cust_sert_merk' => $restDataAudit->jadw_audit_merk,
+											'cust_sert_ukuran' => $restDataAudit->jadw_audit_ukuran,
+											'cust_sert_produksi_tahunan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan,
+											'cust_sert_produksi_tahunan_satuan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan_satuan,
+											'cust_sert_tgl_sertifikat_awal'  => $val,
+											'cust_sert_tgl_sertifikat_perubahan'  => NULL,
+											'cust_sert_status'  => 'on_going',
+											'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+											'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
+											'cust_sert_status_survailen'  => 'passed',
+										]);
+								}
+							}
+							elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
+								if($restDataAudit->jadw_audit_status == 'berhak-memperoleh-kembali'){
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status'  => 'on_going',
+											'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+											'cust_sert_status_survailen'  => 'passed',
+											'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
+										]);
+								}
+								else{
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status'  => 'dibekukan',
+										]);
+								}
+							}
+							else{
+								if($restDataAudit->jadw_audit_status != 'tidak-berhak-menggunakan'){
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status_survailen'  => 'passed',
+											'cust_sert_status'  => 'on_going',
+											'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+											'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
+										]);
+								}
+								else{
+									DB::table('sis_pelanggan_sertifikasi')
+										->where('cust_sert_id', $restDataAudit->cust_sert_id)
+										->update([
+											'cust_sert_status'  => 'dibekukan',
+										]);
+								}
+							}
+								
+							if(!in_array($restDataAudit->mohon_id, $mohon_id, true)){
+								array_push($mohon_id, $restDataAudit->mohon_id);
+							}
 						}
 					}
 				}
-			}
-			
-			if(!empty($mohon_id)){
-				foreach($mohon_id as $val){
-					SisPermohonanStatus::create([
-						'status_mohon_id' => $val,
-						'status_tipe'     => 'informasi',
-						'status_pesan'    => 'Data Permohonan anda telah selesai di-audit, silahkan cek hasil audit anda.',
-						'status_judul'    => 'Closing Pelaksanaan Audit',
-					]);
+				
+				if(!empty($mohon_id)){
+					foreach($mohon_id as $val){
+						SisPermohonanStatus::create([
+							'status_mohon_id' => $val,
+							'status_tipe'     => 'informasi',
+							'status_pesan'    => 'Data Permohonan anda telah selesai di-audit, silahkan cek hasil audit anda.',
+							'status_judul'    => 'Closing Pelaksanaan Audit',
+						]);
+					}
 				}
 			}
 			

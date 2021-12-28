@@ -287,6 +287,7 @@ class AuLapLengkapController extends Controller
             $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
         });
         $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        $data->leftJoin('sis_audit_lks', "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
@@ -326,9 +327,11 @@ class AuLapLengkapController extends Controller
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(DISTINCT jadw_audit_jenis) AS jadw_audit_jenis");
+        $data->selectRaw("SUM(case when lks_sudah_ditutup = 'tidak' then 1 else 0 end) as total_lks_belum_selesai");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
         $data->groupBy('sis_jadwal.jadw_id');
+		$data->havingRaw('total_lks_belum_selesai = 0');
 
         $result = [];
         foreach ($data->get() as $d) {
