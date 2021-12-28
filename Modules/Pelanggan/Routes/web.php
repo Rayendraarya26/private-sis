@@ -84,6 +84,7 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
             Route::any("/ajax", [Tahap2PersetujuanController::class, 'ajax']);
             Route::get("/detail/{jadw_id}", [Tahap2PersetujuanController::class, 'detail']);
             Route::post("/approve/temuan", [Tahap2PersetujuanController::class, 'approveTemuan']);
+            Route::get("/cetak/{jadw_id}/{type}", [Tahap2PersetujuanController::class, 'cetak'])->where('type', 'notulen|lap-ringkas|daftar-hadir|logbook|lks');
         });
 
         Route::prefix("perbaikan-temuan")->group(function () {
@@ -91,11 +92,11 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
             Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
             Route::get('/temuan-lks/{jadwal_id}', [Tahap2PerbaikanController::class, 'temuanLKS']);
             Route::get('/temuan-lks/{jadwal_id}/detail', [Tahap2PerbaikanController::class, 'detailAllLKS']);
+            Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-text/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanText']);
+            Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-file/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanFile']);
             // Route::get('/temuan-lks/{jadwal_id}/detail/{lks_id}', [Tahap2PerbaikanController::class, 'detailLKS']);
             // Route::get('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'perbaikanLKS']);
             // Route::post('/temuan-lks/{jadwal_id}/perbaikan/{lks_id}', [Tahap2PerbaikanController::class, 'processPerbaikanLKS']);
-            Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-text/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanText']);
-            Route::post('/temuan-lks/{jadwal_id}/save-perbaikan-file/{lks_id}', [Tahap2PerbaikanController::class, 'savePerbaikanFile']);
         });
     });
 });

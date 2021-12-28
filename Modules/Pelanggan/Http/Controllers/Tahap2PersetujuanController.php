@@ -8,6 +8,7 @@ use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SysUserGroup;
+use Barryvdh\DomPDF\Facade as PDF;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -66,7 +67,10 @@ class Tahap2PersetujuanController extends Controller
 
         try {
             DB::beginTransaction();
-            $data                      = SisJadwal::with('sis_pelanggan')->findOrFail($request['jadw_id']);
+            $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
+                ->where('sis_pelanggan.user_id', auth()->id())
+                ->with('sis_pelanggan')->findOrFail($request['jadw_id']);
+
             $data->jadw_setujui_temuan = $request['jadw_setujui_temuan'];
             $data->save();
 
@@ -115,6 +119,81 @@ class Tahap2PersetujuanController extends Controller
             DB::rollBack();
             return responseJSON(500, null, $e->getMessage());
         }
+    }
+
+    public function cetak(Request $request, $jadwalID, $type)
+    {
+        try {
+            $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
+                ->where('sis_pelanggan.user_id', auth()->id())
+                ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
+            if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
+
+            return match ($type) {
+                'notulen'      => $this->cetak_notulen($request),
+                'lap-ringkas'  => $this->cetak_lap_ringkas($request),
+                'daftar-hadir' => $this->cetak_daftar_hadir($request),
+                'logbook'      => $this->cetak_logbook($request),
+                'lks'          => $this->cetak_lks($request, $data),
+                default        => throw new Exception("Invalid URL"),
+            };
+        } catch (Exception $e) {
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
+        }
+
+    }
+
+    private function cetak_notulen(Request $request)
+    {
+        $parser = [];
+
+        $pdf = PDF::loadView("$this->view.print.lks", $parser)
+            ->setPaper('a4', 'landscape');
+        return $pdf->stream();
+    }
+
+    private function cetak_lap_ringkas(Request $request)
+    {
+        $parser = [];
+
+        $pdf = PDF::loadView("$this->view.print.lks", $parser)
+            ->setPaper('a4', 'landscape');
+        return $pdf->stream();
+    }
+
+    private function cetak_daftar_hadir(Request $request)
+    {
+        $parser = [];
+
+        $pdf = PDF::loadView("$this->view.print.lks", $parser)
+            ->setPaper('a4', 'landscape');
+        return $pdf->stream();
+    }
+
+    private function cetak_logbook(Request $request)
+    {
+        $parser = [];
+
+        $pdf = PDF::loadView("$this->view.print.lks", $parser)
+            ->setPaper('a4', 'landscape');
+        return $pdf->stream();
+    }
+
+    private function cetak_lks(Request $request, SisJadwal $dataJadwal)
+    {
+        $dataLKS = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
+            ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
+            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+            ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
+            ->get();
+
+        $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
+
+        $parser = ['dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS, 'dataKetua' => $dataKetua];
+
+        $pdf = PDF::loadView("$this->view.print.lks", $parser)
+            ->setPaper('a4', 'landscape');
+        return $pdf->stream();
     }
 
     public function ajax(Request $request)

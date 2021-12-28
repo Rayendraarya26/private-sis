@@ -59,7 +59,7 @@
 
 <div class="headers">
     <div class="headers_one">
-        <img src="{{public_path('/images/logos/sis_logo.png')}}" alt="Logo" style="max-width: 100px; margin-top: -15px">
+        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo" style="max-width: 100px; margin-top: -15px">
     </div>
     <div class="headers_two">
         <div class="text-center">

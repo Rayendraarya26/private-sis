@@ -145,16 +145,34 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 120,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnTemuan  = `<a href="{{url("$url/detail")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs">(${row.total_temuan}) Temuan LKS</a>`;
-                            let btnApprove = `<button onclick="confirmTemuan(${row.jadw_id})" class="btn btn-primary btn-block btn-xs"><i class="fas fa-check-circle"></i> Approval</button>`;
+                            let dom                = `dropdownMenu_${row.jadw_id}`;
+                            let btnDetail          = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.jadw_id}'">Detail</div>`;
+                            let btnApprove         = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTemuan('${row.jadw_id}')">Approve</div>`;
+                            let btnCetakLks        = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lks')">LKS</div>`;
+                            let btnCetakLapRingkas = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lap-ringkas')">Laporan Ringkas</div>`;
+                            let btnCetakDafHadir   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/daftar-hadir')">Daftar Hadir</div>`;
+                            let btnCetakLogbook    = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/logbook')">Logbook</div>`;
+                            let btnCetakNotulen    = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/notulen')">Notulen</div>`;
 
-                            if (row.jadw_setujui_temuan != "diajukan") {
-                                btnApprove = "";
-                            }
-                            return btnTemuan + btnApprove
+                            return `
+                            <div>
+                            <button class="btn-action btn-info" data-index="${row.jadw_id}" title="Aksi">
+                                <i class="fa fa-setting"></i> Aksi
+                            </button>
+                            <div id="${dom}" style="width:150px; display: none;">
+                                @if(authorized("{$module}@detail")) ${btnDetail} @endif
+                            @if(authorized("{$module}@approveTemuan")) ${btnApprove} @endif
+                            <div class="menu-sep"></div>
+                            @if(authorized("{$module}@cetak")) ${btnCetakNotulen} @endif
+                            @if(authorized("{$module}@cetak")) ${btnCetakLapRingkas} @endif
+                            @if(authorized("{$module}@cetak")) ${btnCetakDafHadir} @endif
+                            @if(authorized("{$module}@cetak")) ${btnCetakLks} @endif
+                            @if(authorized("{$module}@cetak")) ${btnCetakLogbook} @endif
+                            </div>
+                        </div>`;
                         }
                     }
                 ]],
@@ -210,6 +228,22 @@
                         }
                     },
                 ]],
+                onBeforeLoad: function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
+                    });
+                },
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
+                        });
+                    });
+                },
             });
             dg.datagrid(
                 'enableFilter', [
