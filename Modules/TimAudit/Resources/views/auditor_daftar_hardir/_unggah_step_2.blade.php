@@ -21,7 +21,7 @@
 									Laporan Ringkas
 								</label>
 								<div class="col-sm-10">
-									<a href="{{ url("$url/detail?tipe=lap-ringkas&jadw_id=$data->jadw_id") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
+									<a href="{{ url("$url/detail/$data->jadw_id/lap-ringkas") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
 								</div>
 							</div>
 							<div class="form-group row">
@@ -29,7 +29,7 @@
 									LKS
 								</label>
 								<div class="col-sm-10">
-									<a href="{{ url("$url/detail?tipe=lks&jadw_id=$data->jadw_id") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
+									<a href="{{ url("$url/detail/$data->jadw_id/lks") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
 								</div>
 							</div>
 							<div class="form-group row">

@@ -41,7 +41,7 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: true,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,

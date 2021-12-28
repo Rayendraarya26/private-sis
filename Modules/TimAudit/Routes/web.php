@@ -121,7 +121,7 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/ajax', [AuDaftarHadirController::class, 'ajax']);
             Route::get('/unggah/{jadw_id}', [AuDaftarHadirController::class, 'unggah']);
             Route::post('/unggah/{jadw_id}', [AuDaftarHadirController::class, 'storeUnggah']);
-            Route::get('/detail', [AuDaftarHadirController::class, 'detail']);
+            Route::get("/detail/{jadw_id}/{type}", [AuDaftarHadirController::class, 'detail'])->where('type', 'lap-ringkas|lks');
         });
 
         Route::prefix("log-book")->group(function () {
