@@ -130,10 +130,10 @@ class Tahap2PersetujuanController extends Controller
             if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
-                'notulen'      => $this->cetak_notulen($request),
-                'lap-ringkas'  => $this->cetak_lap_ringkas($request),
-                'daftar-hadir' => $this->cetak_daftar_hadir($request),
-                'logbook'      => $this->cetak_logbook($request),
+                'notulen'      => $this->cetak_notulen($request, $data),
+                'lap-ringkas'  => $this->cetak_lap_ringkas($request, $data),
+                'daftar-hadir' => $this->cetak_daftar_hadir($request, $data),
+                'logbook'      => $this->cetak_logbook($request, $data),
                 'lks'          => $this->cetak_lks($request, $data),
                 default        => throw new Exception("Invalid URL"),
             };
@@ -143,31 +143,101 @@ class Tahap2PersetujuanController extends Controller
 
     }
 
-    private function cetak_notulen(Request $request)
+    private function cetak_notulen(Request $request, SisJadwal $dataJadwal)
     {
-        $parser = [];
+        $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
 
-        $pdf = PDF::loadView("$this->view.print.lks", $parser)
-            ->setPaper('a4', 'landscape');
+        $parser = ['dataJadwal' => $dataJadwal, 'dataKetua' => $dataKetua];
+        $pdf    = PDF::loadView("$this->view.print.notulen", $parser)
+            ->setPaper('a4', 'portrait');
         return $pdf->stream();
     }
 
-    private function cetak_lap_ringkas(Request $request)
+    private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)
     {
-        $parser = [];
+        $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
+        $dataLKS   = [
+            'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+            'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+            'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+            'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
+        ];
 
-        $pdf = PDF::loadView("$this->view.print.lks", $parser)
-            ->setPaper('a4', 'landscape');
+        foreach ($dataJadwal->sis_audit_lks as $lks) {
+            switch ($lks->lks_kategori_ketidaksesuaian) {
+                case 'kritis':
+                    // jumlah
+                    $dataLKS['jumlah']['kritis'] += 1;
+                    $dataLKS['jumlah']['total']  += 1;
+                    // klausul
+                    $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                    // no lks
+                    $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
+                    // tgl penyelesaian
+                    if (!empty($lks->lks_expired_date_perbaikan)) {
+                        if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
+                            $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+                        } else {
+                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
+                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+                            }
+                        }
+                    }
+                    break;
+                case 'mayor':
+                    // jumlah
+                    $dataLKS['jumlah']['mayor'] += 1;
+                    $dataLKS['jumlah']['total'] += 1;
+                    // klausul
+                    $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                    // no lks
+                    $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
+                    // tgl penyelesaian
+                    if (!empty($lks->lks_expired_date_perbaikan)) {
+                        if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
+                            $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+                        } else {
+                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
+                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+                            }
+                        }
+                    }
+                    break;
+                case 'minor':
+                case 'observasi':
+                    // jumlah
+                    $dataLKS['jumlah']['minor'] += 1;
+                    $dataLKS['jumlah']['total'] += 1;
+                    // klausul
+                    $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                    // no lks
+                    $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
+                    // tgl penyelesaian
+                    if (!empty($lks->lks_expired_date_perbaikan)) {
+                        if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
+                            $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+                        } else {
+                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
+                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+                            }
+                        }
+                    }
+                    break;
+
+            }
+        }
+        $parser = ['dataJadwal' => $dataJadwal, 'dataKetua' => $dataKetua, 'dataLKS' => $dataLKS];
+        $pdf    = PDF::loadView("$this->view.print.lap-ringkas", $parser)
+            ->setPaper('a4', 'portrait');
         return $pdf->stream();
     }
 
-    private function cetak_daftar_hadir(Request $request)
+    private function cetak_daftar_hadir(Request $request, SisJadwal $dataJadwal)
     {
-        $parser = [];
-
-        $pdf = PDF::loadView("$this->view.print.lks", $parser)
-            ->setPaper('a4', 'landscape');
-        return $pdf->stream();
+        if (empty($dataJadwal->jadw_file_kehadiran)) {
+            abort(404);
+        }
+        return response()->download(public_path($dataJadwal->jadw_file_kehadiran));
     }
 
     private function cetak_logbook(Request $request)

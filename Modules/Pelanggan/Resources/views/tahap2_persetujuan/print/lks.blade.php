@@ -145,42 +145,47 @@
         <tr>
             <th style="width: 10%">No. <br>(Inisial Auditor)</th>
             <th>Uraian Ketidaksesuaian</th>
-            <th>Tindakan Perbaikan <br>
-                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
-            </th>
-            <th>Bukti Tindakan Perbaikan</th>
-            <th>Bagian <br>(Pendamping)</th>
-            <th>Hasil dan Tanggal <br> Verifikasi</th>
+{{--            <th>Tindakan Perbaikan <br>--}}
+{{--                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>--}}
+{{--            </th>--}}
+{{--            <th>Bukti Tindakan Perbaikan</th>--}}
+{{--            <th>Bagian <br>(Pendamping)</th>--}}
+{{--            <th>Hasil dan Tanggal <br> Verifikasi</th>--}}
         </tr>
         </thead>
         <tbody>
         @foreach($dataLks as $lks)
             <tr>
                 <td style="text-align: center">{{$loop->iteration}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
-                <td>
-                    {!! $lks->lks_uraian_ketidaksesuaian !!}
+                <td style="padding: 5px">
+{{--                    {!! $lks->lks_uraian_ketidaksesuaian !!}--}}
+                    {{ strip_tags($lks->lks_uraian_ketidaksesuaian) }}
+                    <br>
                     <br>
                     Kategori ketidaksesuaian: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                     <br>
-                    Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}
+                    <br>
+{{--                    Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
+                    Klausul ketidak sesuaian: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
                 </td>
-                <td>
-                    {!! $lks->lks_perbaikan_analisa !!}
-                    {!! $lks->lks_perbaikan_koreksi !!}
-                    {!! $lks->lks_perbaikan_tindakan !!}
-                </td>
-                <td>{!! $lks->lks_bagian_pendamping !!}</td>
-                <td>
-                    {!! $lks->lks_bukti_tindakan_perbaikan !!}
 
-                    @foreach($lks->sis_audit_lks_files as $file)
-                        <br>
-                        <a href="{{asset($file->lks_filepath)}}">
-                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
-                        </a>
-                    @endforeach
-                </td>
-                <td></td>
+{{--                <td>--}}
+{{--                    {!! $lks->lks_perbaikan_analisa !!}--}}
+{{--                    {!! $lks->lks_perbaikan_koreksi !!}--}}
+{{--                    {!! $lks->lks_perbaikan_tindakan !!}--}}
+{{--                </td>--}}
+{{--                <td>{!! $lks->lks_bagian_pendamping !!}</td>--}}
+{{--                <td>--}}
+{{--                    {!! $lks->lks_bukti_tindakan_perbaikan !!}--}}
+
+{{--                    @foreach($lks->sis_audit_lks_files as $file)--}}
+{{--                        <br>--}}
+{{--                        <a href="{{asset($file->lks_filepath)}}">--}}
+{{--                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}--}}
+{{--                        </a>--}}
+{{--                    @endforeach--}}
+{{--                </td>--}}
+{{--                <td></td>--}}
             </tr>
         @endforeach
         </tbody>
@@ -205,12 +210,12 @@
                         </tr>
                         <tr>
                             <td style="font-size: 11pt; text-align: center">
-                                <b><u>Aldino Kemal</u></b>
+                                <b><u>{{$dataJadwal->jadw_setujui_nama}}</u></b>
                             </td>
                         </tr>
                         <tr>
                             <td style="FONT-SIZE: 11pt; text-align: center">
-                                <b>Direktur</b>
+                                <b>{{$dataJadwal->jadw_setujui_jabatan}}</b>
                             </td>
                         </tr>
                         </tbody>
@@ -299,7 +304,7 @@
         // FTM
         $pdf->page_script('
             $x = 60;
-            $y = 560;
+            $y = 570;
             $text = "F-TA-9";
             $font = $fontMetrics->get_font("helvetica", "italic");
             $size = 10;
@@ -313,7 +318,7 @@
         // FTM
         $pdf->page_script('
             $x = 400;
-            $y = 560;
+            $y = 570;
             $text = "Rev. 3";
             $font = $fontMetrics->get_font("helvetica");
             $size = 10;
