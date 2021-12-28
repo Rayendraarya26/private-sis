@@ -16,8 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $jadw_id
  * @property string|null $lap_ringkas_kesimpulan
  * @property string|null $lap_ringkas_rekomendasi
- * @property string|null $lap_ringkas_ttd_nama
- * @property string|null $lap_ringkas_ttd_jabatan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -37,9 +35,7 @@ class SisAuditLapRingkas extends Model
 	protected $fillable = [
 		'jadw_id',
 		'lap_ringkas_kesimpulan',
-		'lap_ringkas_rekomendasi',
-		'lap_ringkas_ttd_nama',
-		'lap_ringkas_ttd_jabatan'
+		'lap_ringkas_rekomendasi'
 	];
 
 	public function sis_jadwal()
