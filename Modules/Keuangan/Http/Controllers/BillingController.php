@@ -84,6 +84,14 @@ class BillingController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+			$x['can_delete'] = 'true';
+			if($d->jdwl_bill_id != ''){
+				$x['can_delete'] = 'false';
+			} 
+			else if($d->bill_payment_status == 'menunggu konfirmasi'){
+				$x['can_delete'] = 'false';
+			}
+			
             $x['jdwl_bill_id'] = ($d->jdwl_bill_id != '') ? 'terjadwalkan' : 'belum';
             $x['bill_status_pembayaran'] = ($d->bill_payment_file != '') ? 'sudah' : 'belum';
             $x['bill_payment_status']    = $d->bill_payment_status;
@@ -96,6 +104,7 @@ class BillingController extends Controller
             $x['bill_payment_date']      = $d->bill_payment_date?->format("Y-m-d");
             $x['bill_due_date']          = $d->bill_due_date?->format("Y-m-d");
             $x['bill_billing_date']      = $d->bill_billing_date?->format("Y-m-d");
+            $x['bill_harus_lunas']        = $d->bill_harus_lunas;
             array_push($result, $x);
         }
 
@@ -438,7 +447,7 @@ class BillingController extends Controller
             new BreadcrumbsStruct('Detail Billing'),
         ];
 
-        $dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+        $dataBilling = SisBilling::where('sis_billing.bill_id', $request['bill_id']);
         $dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
         $dataBilling->select('*');
 
@@ -464,9 +473,10 @@ class BillingController extends Controller
             new BreadcrumbsStruct('Edit Billing'),
         ];
 
-        $dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+        $dataBilling = SisBilling::where('sis_billing.bill_id', $request['bill_id']);
         $dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
-        $dataBilling->select('*');
+        $dataBilling->leftJoin('sis_jadwal', "sis_billing.bill_id", "=", "sis_jadwal.bill_id");
+        $dataBilling->select('*', 'sis_billing.bill_id AS bill_id');
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
         return view("keuangan::billing.edit_data")->with($parser);
@@ -480,9 +490,9 @@ class BillingController extends Controller
             new BreadcrumbsStruct('Set Pelunasan'),
         ];
 
-        $dataBilling = SisBilling::where('bill_id', $request['bill_id']);
+        $dataBilling = SisBilling::where('sis_billing.bill_id', $request['bill_id']);
         $dataBilling->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_billing.cust_id');
-        $dataBilling->select('*');
+        $dataBilling->select('*', 'sis_billing.bill_id AS bill_id');
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_billing' => $dataBilling->get()[0]];
         return view("keuangan::billing.edit_pelunasan")->with($parser);
@@ -507,6 +517,7 @@ class BillingController extends Controller
             "bill_nomor_billing" => 'required',
             "bill_billing_date"  => 'required',
             "bill_due_date"      => 'required',
+            "bill_harus_lunas"      => 'nullable',
             "bill_invoice_file"  => 'nullable',
         ]);
 
@@ -514,6 +525,7 @@ class BillingController extends Controller
             'bill_nomor_billing' => $request->bill_nomor_billing,
             'bill_billing_date'  => $request->bill_billing_date,
             'bill_due_date'      => $request->bill_due_date,
+            'bill_harus_lunas'      => $request->bill_harus_lunas == 'ya' ? 'ya' : 'tidak',
         ];
 
         if ($request->hasFile("bill_invoice_file")) {
@@ -528,7 +540,7 @@ class BillingController extends Controller
 
         SisBilling::findOrFail($request['bil_id'])->update($dataUpdate);
 
-        return redirect($this->url)->with('message', "Upload Billing Berhasil untuk nomor #" . $request->bill_nomor_billing . " sudah berhasil disimpan.");
+        return redirect($this->url)->with('message', "Billing berhasil diubah untuk nomor #" . $request->bill_nomor_billing . " sudah berhasil disimpan.");
     }
 
     private function update_data_billing(Request $request)
@@ -638,20 +650,26 @@ class BillingController extends Controller
     {
         try {
             $status_return = TRUE;
-            foreach ($request->ids as $id) {
-                $data = SisBilling::where("bill_id", $id)->firstOrFail();
-                if ($data->delete()) {
+			if(!empty($request->ids)){
+				foreach ($request->ids as $id) {
+					$data = SisBilling::where("bill_id", $id)->firstOrFail();
+					if ($data->delete()) {
 
-                } else {
-                    $status_return = FALSE;
-                    break;
-                }
-            }
+					} else {
+						$status_return = FALSE;
+						break;
+					}
+				}
+			}
+			else{
+				$status_return = FALSE;
+			}
+            
 
             if ($status_return == TRUE) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
-                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data, data belum dipilih atau kesalahan system, silahkan ulangi lagi.");
             }
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());

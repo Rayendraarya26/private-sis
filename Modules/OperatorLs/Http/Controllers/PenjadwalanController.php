@@ -103,6 +103,8 @@ class PenjadwalanController extends Controller
     {
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
+        $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+        $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
 
         // Filter
         $data->where('jadw_tanggal_status', '!=', 'accepted');
@@ -124,6 +126,8 @@ class PenjadwalanController extends Controller
         $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_id) as total'))->first()->total;
         // Pagination
         $data->select("*");
+        $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
+        $data->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', UPPER(jadw_audit_jenis) ) SEPARATOR ',<br/>') AS jadw_audit_jenis");
 
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
@@ -133,6 +137,8 @@ class PenjadwalanController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['jadw_id']              = $d->jadw_id;
+            $x['sert_nama']              = $d->sert_nama;
+            $x['jadw_audit_jenis']              = $d->jadw_audit_jenis;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['cust_nama']            = $d->cust_nama;
             $x['bill_nomor_billing']            = $d->bill_nomor_billing;

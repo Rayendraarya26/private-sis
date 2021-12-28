@@ -70,6 +70,19 @@
                                         </div>
                                     </div>
 									
+									
+									@if ($data_billing->jadw_id == '')
+									<div class="form-group row">
+                                        <label class="col-form-label col-sm-3" for="bill_due_date">Harus Lunas *</label>
+                                        <div class="col-sm-8">
+											<input type="checkbox" name="bill_harus_lunas" id="bill_harus_lunas" aria-label="Ya" value="ya" @if ($data_billing->bill_harus_lunas == 'ya') checked @endif> Ya
+											<br/><small><span>Jika tidak di-centang maka bisa lanjut ke penjadwalan.</span></small>
+                                        </div>
+                                    </div>
+									@endif
+									
+									
+									
 									<div class="form-group form-row">
 										<label class="col-xl-3 col-form-label text-sm-left" for="bill_invoice_file" >File Invoice</label>
 										<div class="col-xl-8">

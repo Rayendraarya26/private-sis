@@ -100,6 +100,7 @@
                 columns: [[
                     {field: 'jadw_id', title: 'No.<br/>Jadwal', width: 100, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
+                    {field: 'sert_nama', title: 'Sertifikasi', width: 200, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis', width: 100, sortable: true},
                     {field: 'jadw_tanggal_status', title: 'Persetujuan<br/>Tanggal', width: 100, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},

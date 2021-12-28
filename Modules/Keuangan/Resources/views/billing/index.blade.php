@@ -125,6 +125,7 @@
                     {field: 'bill_due_date', title: 'Jatuh<br/>Tempo', width: 100, sortable: true},
                     {field: 'cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                     {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true},
+                    {field: 'bill_harus_lunas', title: 'Harus<br/>Lunas?', width: 80, sortable: true, align:'center'}, 
                 ]],
 				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
@@ -141,6 +142,15 @@
                             menu: '#dropdownMenu_' + data.rows[idx].bill_id
                         });
                     });
+					
+					var opts = $(this).datagrid('options');
+					for(var i=0; i<data.rows.length; i++){
+						if (data.rows[i].can_delete == 'false'){
+							var tr = opts.finder.getTr($(this)[0],i);
+							tr.find('input[type=checkbox]').css('display','none');
+							// $(this).datagrid('getExpander', i).hide();
+						} 
+					}
                 },
             });
             dg.datagrid(
@@ -192,7 +202,28 @@
                             }
                         }
                     },
-					
+					{
+                        field: 'bill_harus_lunas',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            value: '',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'ya', text: 'ya'},
+                                {value: 'tidak', text: 'tidak'},
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'bill_harus_lunas',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
                 ]);
         });
 		
@@ -262,7 +293,10 @@
 						var tr = opts.finder.getTr($('#ttData')[0],i);
 						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
 						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].bill_id);
+							if (data.rows[i].can_delete == 'true'){
+								idData.push(data.rows[i].bill_id);
+							} 
+							
 						}
 					}
                     $.ajax({
