@@ -56,7 +56,7 @@
                         width: 100,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnPreview   = `<a href="{{url("$url/preview")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-eye"></i> Preview</a>`
+                            let btnPreview   = `<a target="blank_" href="{{url("$url/preview")}}/${row.jadw_id}/lap-lengkap" class="btn btn-xs btn-primary btn-block"><i class="fas fa-pdf"></i> Preview</a>`
                             let btnPerbarui = `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block"><i class="fas fa-refresh"></i> Perbarui</a>`
                             let btnBuat     = `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-plus"></i> Buat</a>`
                             if (row.sudah_mengisi) {

@@ -111,7 +111,7 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
         Route::prefix("laporan-lengkap")->group(function () {
             Route::get('/', [AuLapLengkapController::class, 'index']);
             Route::get('/ajax', [AuLapLengkapController::class, 'ajax']);
-            Route::get('/preview/{jadw_id}', [AuLapLengkapController::class, 'preview']);
+            Route::get("/preview/{jadw_id}/{type}", [AuLapLengkapController::class, 'preview'])->where('type', 'lap-lengkap');
             Route::get('/laporan/{jadw_id}', [AuLapLengkapController::class, 'laporan']);
             Route::post('/laporan/{jadw_id}', [AuLapLengkapController::class, 'processLaporan']);
         });

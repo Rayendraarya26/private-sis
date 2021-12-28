@@ -342,7 +342,6 @@ class AuDaftarHadirController extends Controller
         } catch (Exception $e) {
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
-
     }
 	
 	private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)

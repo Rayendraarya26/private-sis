@@ -201,9 +201,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_penilaian"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_penilaian">{{old('lap_lengkp_penilaian') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_penilaian}}</textarea>
                                     </div>
                                 </div>
@@ -216,9 +216,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_penyimpangan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_penyimpangan">{{old('lap_lengkp_penyimpangan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_penyimpangan}}</textarea>
                                     </div>
                                 </div>
@@ -232,9 +232,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_isu_berdampak"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_isu_berdampak">{{old('lap_lengkp_isu_berdampak') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_isu_berdampak}}</textarea>
                                     </div>
                                 </div>
@@ -248,9 +248,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_penyimpangan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_penyimpangan">{{old('lap_lengkp_penyimpangan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_penyimpangan}}</textarea>
                                     </div>
                                 </div>
@@ -264,9 +264,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_isu_tidak_terselesaikan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_isu_tidak_terselesaikan">{{old('lap_lengkp_isu_tidak_terselesaikan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_isu_tidak_terselesaikan}}</textarea>
                                     </div>
                                 </div>
@@ -281,9 +281,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_perubahan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_perubahan">{{old('lap_lengkp_perubahan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_perubahan}}</textarea>
                                     </div>
                                 </div>
@@ -296,9 +296,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_kelemahan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_kelemahan">{{old('lap_lengkp_kelemahan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_kelemahan}}</textarea>
                                     </div>
                                 </div>
@@ -311,9 +311,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_tinjauan_keluhan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_tinjauan_keluhan">{{old('lap_lengkp_tinjauan_keluhan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_tinjauan_keluhan}}</textarea>
                                     </div>
                                 </div>
@@ -326,9 +326,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_pengendalian_penggunaan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_pengendalian_penggunaan">{{old('lap_lengkp_pengendalian_penggunaan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_pengendalian_penggunaan}}</textarea>
                                     </div>
                                 </div>
@@ -342,9 +342,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_kedalaman_audit"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_kedalaman_audit">{{old('lap_lengkp_kedalaman_audit') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_kedalaman_audit}}</textarea>
                                     </div>
                                 </div>
@@ -357,9 +357,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_pernyataan_kesesuaian"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_pernyataan_kesesuaian">{{old('lap_lengkp_pernyataan_kesesuaian') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_pernyataan_kesesuaian}}</textarea>
                                     </div>
                                 </div>
@@ -372,9 +372,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_kesimpulan_ketaatan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_kesimpulan_ketaatan">{{old('lap_lengkp_kesimpulan_ketaatan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_kesimpulan_ketaatan}}</textarea>
                                     </div>
                                 </div>
@@ -387,9 +387,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_konfirmasi_tujuan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_konfirmasi_tujuan">{{old('lap_lengkp_konfirmasi_tujuan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_konfirmasi_tujuan}}</textarea>
                                     </div>
                                 </div>
@@ -402,9 +402,9 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_saran"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_saran">{{old('lap_lengkp_saran') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_saran}}</textarea>
                                     </div>
                                 </div>
@@ -417,12 +417,73 @@
                                         @enderror
                                     </label>
                                     <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="Masukkaan uraian..."
+                                        <textarea class="editor form-control" placeholder="..."
                                                   name="lap_lengkp_kesimpulan"
-                                                  aria-label="Uraian ketidaksesuaian"
+                                                  aria-label=""
                                                   id="lap_lengkp_kesimpulan">{{old('lap_lengkp_kesimpulan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_kesimpulan}}</textarea>
                                     </div>
                                 </div>
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3" for="lap_lengkp_rekomendasi_lks">
+                                        Rekomendasi Untuk LKS
+                                        @error('lap_lengkp_rekomendasi_lks')
+                                        <br><span style="color: red">{{$message}}</span>
+                                        @enderror
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <textarea class="editor form-control" placeholder="..."
+                                                  name="lap_lengkp_rekomendasi_lks"
+                                                  aria-label=""
+                                                  id="lap_lengkp_rekomendasi_lks">{{old('lap_lengkp_rekomendasi_lks') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_rekomendasi_lks}}</textarea>
+                                    </div>
+                                </div>
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3" for="lap_lengkp_verifikasi_oleh">
+                                        Nama Persetujuan
+                                        @error('lap_lengkp_verifikasi_oleh')
+                                        <br><span style="color: red">{{$message}}</span>
+                                        @enderror
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" placeholder="..." name="lap_lengkp_verifikasi_oleh" id="lap_lengkp_verifikasi_oleh" value="{{old('lap_lengkp_verifikasi_oleh') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_verifikasi_oleh}}">
+                                    </div>
+                                </div>
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3" for="lap_lengkp_verifikasi_jabatan">
+                                        Jabatan Persetujuan
+                                        @error('lap_lengkp_verifikasi_jabatan')
+                                        <br><span style="color: red">{{$message}}</span>
+                                        @enderror
+                                    </label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" placeholder="..." name="lap_lengkp_verifikasi_jabatan" id="lap_lengkp_verifikasi_jabatan" value="{{old('lap_lengkp_verifikasi_jabatan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_verifikasi_jabatan}}">
+                                    </div>
+                                </div>
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3" for="lap_lengkp_verifikasi_diajukan">
+                                        Simpan sebagai Draft?
+                                        @error('lap_lengkp_verifikasi_diajukan')
+                                        <br><span style="color: red">{{$message}}</span>
+                                        @enderror
+                                    </label>
+									<div class="col-md-8">
+									  <div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="lap_lengkp_verifikasi_diajukan" value="ya" @if(isset($data->lap_lengkp_verifikasi_diajukan)) @if($data->lap_lengkp_verifikasi_diajukan == 'ya') checked @endif @endif id="draft1">
+										<label class="form-check-label" for="draft1">Tidak</label>
+									  </div>
+									  <div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="lap_lengkp_verifikasi_diajukan" value="tidak" @if(isset($data->lap_lengkp_verifikasi_diajukan)) @if($data->lap_lengkp_verifikasi_diajukan == 'tidak') checked @endif @endif id="draft2">
+										<label class="form-check-label" for="draft2">Ya</label>
+									  </div>
+										<br>
+										<small>Jika diisi tidak, maka akan diajukan ke koordinator sertifikasi untuk disetujui, setelah disetujui maka tidak bisa diedit.
+										</small>
+									</div>
+								</div>
 
                                 <button type="submit" class="btn btn-outline-primary btn-block">
                                     <i class="fas fa-paper-plane"></i> Submit
@@ -448,7 +509,7 @@
                 selector: '.editor',
                 plugins: 'autosave link image lists',
                 relative_urls: false,
-                height: 500,
+                height: 300,
                 placeholder: 'Tuliskan Laporan...',
                 images_reuse_filename: true,
                 automatic_uploads: true,
