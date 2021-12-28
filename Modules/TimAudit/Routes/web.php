@@ -135,8 +135,8 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/', [AuPengajuanKomiteController::class, 'index']);
             Route::get('/ajax', [AuPengajuanKomiteController::class, 'ajax']);
             Route::get('/edit', [AuPengajuanKomiteController::class, 'edit']);
-            Route::post('/update', [AuPengajuanKomiteController::class, 'update']);
-            Route::get('/detail', [AuPengajuanKomiteController::class, 'detail']);
+            Route::post('/update', [AuPengajuanKomiteController::class, 'update']);			
+            Route::get("/detail/{jadw_id}/{type}", [AuPengajuanKomiteController::class, 'detail'])->where('type', 'lap-lengkap|lap-ringkas|lks|detail-audit');
         });
     });
 

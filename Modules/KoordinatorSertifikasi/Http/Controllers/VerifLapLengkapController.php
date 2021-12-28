@@ -39,6 +39,131 @@ class VerifLapLengkapController extends Controller
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view("$this->view.index")->with($parser);
     }
+	
+	public function detail(Request $request, $jadwalID)
+    {
+        try {
+			
+			$breadcrumbs = [
+                new BreadcrumbsStruct('Koorinator Sertifikasi'),
+				new BreadcrumbsStruct('Verifikasi'),
+                new BreadcrumbsStruct('Detail Laporan Lengkap'),
+            ];
+			
+            /* $restJadwal = SisJadwal::where('sis_jadwal.jadw_id', $jadwalID);
+			$restJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+			$restJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$restJadwal->join('sis_audit_lap_lengkap', "sis_jadwal.jadw_id", "=", "sis_audit_lap_lengkap.jadw_id");
+			$restJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+			$restJadwal->join("sis_jadwal_tim", "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
+			$restJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+			$restJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+			$restJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_kegiatan) SEPARATOR ',<br/>' ) AS jadw_audit_kegiatan");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', komodt_nama) SEPARATOR ',<br/>' ) AS komodt_nama");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT(jadw_audit_nomor_referensi) SEPARATOR ',' ) AS jadw_audit_nomor_referensi");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_standart_acuan) SEPARATOR ',<br/>' ) AS jadw_audit_standart_acuan");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_ruang_lingkup) SEPARATOR ',<br/>' ) AS jadw_audit_ruang_lingkup");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_tujuan_audit) SEPARATOR ',<br/>' ) AS jadw_audit_tujuan_audit");
+			
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi = 'ketua', CONCAT(peg_nama), '') SEPARATOR ', ') as ketua");
+			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi != 'ketua', CONCAT(peg_nama, '(', jadw_tim_posisi , ')'), '') SEPARATOR ', ') as anggota");
+			$restJadwal->groupBy('sis_jadwal.jadw_id'); */
+			
+			$dataJadwal = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
+                ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
+			$dataLKS   = [
+				'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
+				'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+				'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
+				'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
+			];
+            foreach ($dataJadwal->sis_audit_lks as $lks) {
+				switch ($lks->lks_kategori_ketidaksesuaian) {
+					case 'kritis':
+						// jumlah
+						$dataLKS['jumlah']['kritis'] += 1;
+						$dataLKS['jumlah']['total']  += 1;
+						// klausul
+						$dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+						// no lks
+						$dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
+						// tgl penyelesaian
+						if (!empty($lks->lks_expired_date_perbaikan)) {
+							if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
+								$dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+							} else {
+								if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
+									$dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+								}
+							}
+						}
+						break;
+					case 'mayor':
+						// jumlah
+						$dataLKS['jumlah']['mayor'] += 1;
+						$dataLKS['jumlah']['total'] += 1;
+						// klausul
+						$dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+						// no lks
+						$dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
+						// tgl penyelesaian
+						if (!empty($lks->lks_expired_date_perbaikan)) {
+							if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
+								$dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+							} else {
+								if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
+									$dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+								}
+							}
+						}
+						break;
+					case 'minor':
+					case 'observasi':
+						// jumlah
+						$dataLKS['jumlah']['minor'] += 1;
+						$dataLKS['jumlah']['total'] += 1;
+						// klausul
+						$dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+						// no lks
+						$dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
+						// tgl penyelesaian
+						if (!empty($lks->lks_expired_date_perbaikan)) {
+							if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
+								$dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+							} else {
+								if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
+									$dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
+								}
+							}
+						}
+						break;
+
+				}
+			}
+			
+			$parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'dataLKS' => $dataLKS];
+			
+			return view("$this->view.detail")->with($parser);
+        } catch (Exception $e) {
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+	
+	public function verifikasi(Request $request, $jadwalID)
+    {
+        try {
+            $where          = ['jadw_id' => $jadwalID];
+            $updateOrCreate = $request->except('_token');
+
+            SisAuditLapLengkap::updateOrCreate($where, $updateOrCreate);
+			return responseJSON(200, [], 'Berhasil menyimpan data');
+        } 
+		catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
 
     public function ajax(Request $request)
     {

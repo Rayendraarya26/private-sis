@@ -31,7 +31,7 @@
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
                             <h3 class="dt-card__title" style="text-align: center">
-                                LAPORAN LENGKAP HASIL AUDIT
+                                HASIL AUDIT
                             </h3>
                         </div>
                     </div>
@@ -183,14 +183,12 @@
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
                             <h3 class="dt-card__title" style="text-align: center">
-                                TULIS LAPORAN LENGKAP
+                                LAPORAN LENGKAP
                             </h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
                         <div class="col-md-12">
-                            <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
-                                  enctype="multipart/form-data">
                                 @csrf
 
                                 <div class="form-group row">
@@ -333,11 +331,33 @@
                                         {!! $data->sis_audit_lap_lengkap?->lap_lengkp_kesimpulan ?? '-' !!}
                                     </div>
                                 </div>
-
-                                <a href="{{url($url)}}" class="btn btn-default">
-                                    <i class="fas fa-arrow-left"></i> Kembali
-                                </a>
-                            </form>
+								
+								<div class="form-group row">
+                                    <label class="col-form-label col-sm-3">
+                                        Rekomendasi LKS
+                                    </label>
+                                    <div class="col-sm-8">
+                                        {!! $data->sis_audit_lap_lengkap?->lap_lengkp_rekomendasi_lks ?? '-' !!}
+                                    </div>
+                                </div>
+								
+								<div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-8" style="text-align: center; justify-content: center">
+										<a href="{{url($url)}}" class="btn btn-default">
+											<i class="fas fa-arrow-left"></i> Kembali
+										</a>
+                                        &nbsp;
+                                        <button class="btn btn-success" onclick="promptAgree({{$data->jadw_id}})"
+                                                id="agreeTemuan">
+                                            <i class="fas fa-check-circle"></i>
+                                            Setujui Laporan
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-2"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -345,3 +365,55 @@
         </div>
     </div>
 @endsection
+
+
+@push('javascript')
+    <script>
+        function promptAgree(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: 'Setujui Laporan ?',
+                html: `Keputusan ini bersifat permanen dan tidak dapat dikembalikan<br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    submitApproval(id, 'ya', null)
+                }
+            });
+        }
+
+        function submitApproval(id, status, message) {
+            $("#agreeTemuan").attr("disabled", true)
+            $("#revisiTemuan").attr("disabled", true)
+            $.ajax({
+                url: `{{url("$url/verifikasi/$data->jadw_id")}}`,
+                type: 'POST',
+                dataType: 'json',
+                data: {jadw_id: id, lap_lengkp_verifikasi_status: status, message},
+                success: function (response) {
+                    toastCenter({
+                        type: 'success',
+                        title: response.message
+                    })
+
+                    location.href = "/{{$url}}"
+                },
+                error: function (xhr) {
+                    if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                    else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                }
+            });
+        }
+    </script>
+@endpush

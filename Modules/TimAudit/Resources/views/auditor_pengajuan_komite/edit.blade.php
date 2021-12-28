@@ -1,310 +1,194 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Pengajuan Komite')
-
-@push('css')
+@section('title', 'Rapat Akhir')
+@push("css")
+    <!-- HTML -->
+    <link rel="stylesheet" href="{{asset("assets/plugins/smartwizard/css/smart_wizard_all.min.css")}}">
     <style>
-        .borderless tr td, .borderless th {
-            border: none;
+        .step1_image {
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 @endpush
 
 @section('content')
-    <div class="dt-content" id="laporanPage">
+    <div class="dt-content">
         <div class="row">
+			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
             <div class="col-md-12">
-                <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
                 <div class="dt-card">
-                    <div class="dt-card__header">
-                        <div class="dt-card__heading">
-                            <h3 class="dt-card__title" style="text-align: center">
-                                Informasi Audit Jadwal No #{{ $data->jadw_id }}
-                            </h3>
-                        </div>
-                    </div>
                     <div class="dt-card__body">
-                        <div class="col-lg-12">
-                            <div class="form-group row">
-                                <table class="table borderless">
-									<tr>
-										<td>Nama Perusahaan</td>
-										<td>: {{$data->sis_pelanggan->cust_nama}}
-										</td>
-									</tr>
-									<tr>
-										<td>Tanggal Pelaksanaan</td>
-										<td>
-											: {{ $data->jadw_tanggal_mulai->isoFormat("LL") }}
-											s/d {{ $data->jadw_tanggal_selesai->isoFormat("LL") }}
-											@if($data->jadw_file_jadwal != '')<br/><a href="{{ url($data->jadw_file_jadwal) }}" target="_blank">Download Jadwal</a>@endif
-										</td>
-									</tr>
-									<tr>
-										<td>Ruang Lingkup <i>(Nace Code)</i></td>
-										<td>:
-											@if($data->sis_jadwal_audits->count() > 1)
-												<ol>
-													@foreach($data->sis_jadwal_audits as $audit)
-														<li>{{$audit->jadw_audit_ruang_lingkup . ' - ' . $audit->jadw_audit_kode_nace . (!$loop->last ? ' ; ' : '.')}}</li>
-													@endforeach
-												</ol>
-											@else
-												@foreach($data->sis_jadwal_audits as $audit)
-													{{$audit->jadw_audit_ruang_lingkup . ' - ' . $audit->jadw_audit_kode_nace . (!$loop->last ? ' ; ' : '.')}}
-												@endforeach
-											@endif
-										</td>
-									</tr>
+                        <!-- SmartWizard html -->
+                        <div id="smartwizard">
 
-									<tr>
-										<td>Komoditas</td>
-										<td>:
-											@foreach($data->sis_jadwal_audits as $audit)
-												@if($audit->master_komoditi->komodt_nama != "")
-													{{$audit->master_komoditi->komodt_nama . (!$loop->last ? ' ; ' : '.')}}
-												@endif
-											@endforeach
-										</td>
-									</tr>
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#step-1">
+                                        <strong>Langkah 1</strong> <br>Informasi Audit
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#step-2">
+                                        <strong>Langkah 2</strong> <br>Detail Pelaksanaan
+                                    </a>
+                                </li>
+								<li class="nav-item">
+                                    <a class="nav-link" href="#step-3">
+                                        <strong>Langkah 3</strong> <br>Rapat Akhir
+                                    </a>
+                                </li>
+                            </ul>
 
-									<tr>
-										<td>Jenis Audit</td>
-										<td>:
-											@foreach($data->sis_jadwal_audits()->groupBy('jadw_audit_jenis')->get() as $audit)
-												Audit {{ucwords($audit->jadw_audit_jenis) . (!$loop->last ? ' ; ' : '.')}}
-											@endforeach
-										</td>
-									</tr>
-								</table>
-                            </div>
-
-
-                            <div class="form-group row">
-                                <label class="col-form-label col-sm-3">
-                                    Susunan TIM Audit
-                                </label>
-                                <div class="col-sm-9">
-                                    <ol>
-                                        @foreach($data->sis_jadwal_tims as $tim)
-                                            <li>
-                                                {{ucwords($tim->jadw_tim_posisi)}}:
-                                                {{$tim->master_pegawai->peg_nama}}
-                                            </li>
-                                        @endforeach
-										@if($data->jadw_file_kehadiran != '')
-											<br/><a href="{{ url($data->jadw_file_kehadiran) }}" target="_blank">Download Daftar Hadir</a>
-										@else
-											<br/><span class="badge badge-danger mb-3">*Daftar Hadir Belum Diupload</span>
-										@endif
-										
-										@if($data->jadw_notulen_rapat != '')
-											<br/>{! ucwords($data->jadw_notulen_rapat) !}
-										@else
-											<span class="badge badge-danger mb-3">*Notulen belum diisi</span>
-										@endif
-                                    </ol>
+                            <div class="tab-content">
+                                <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
+                                    @include("$view._edit_step_1")
                                 </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label class="col-form-label col-sm-3">
-                                    Jumlah Temuan LKS
-                                </label>
-                                <div class="col-sm-9">
-                                    <ul>
-                                        <li>Kritis: {{$dataLKS['jumlah']['kritis']}}</li>
-                                        <li>Mayor: {{$dataLKS['jumlah']['mayor']}}</li>
-                                        <li>Minor: {{$dataLKS['jumlah']['minor']}}</li>
-                                        <br>
-                                        <li>Total: {{$dataLKS['jumlah']['total']}}</li>
-                                    </ul>
+                                <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
+                                    @include("$view._edit_step_2")
+                                </div>
+								<div id="step-3" class="tab-pane" role="tabpanel" aria-labelledby="step-3">
+                                    @include("$view._edit_step_3")
                                 </div>
                             </div>
                         </div>
+
+                        <br/> &nbsp;
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div style="float: right">
+                                    <button class="btn btn-secondary" id="prev-btn" type="button">
+                                        <i class="far fa-arrow-left-from-line"></i> Kembali
+                                    </button>
+                                    <button class="btn btn-secondary" id="next-btn" type="button">
+                                        Lanjut <i class="far fa-arrow-right-from-line"></i>
+                                    </button>
+                                    {{--<button class="btn btn-danger" id="reset-btn" type="button">
+                                        <i class="far fa-arrow-left-rotate"></i>
+                                        Reset
+                                    </button>--}}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
-			<div class="col-xl-12">	
-				<div class="dt-card">
-					<div class="dt-card__header">
-						<div class="dt-card__heading">
-                            <h3 class="dt-card__title" style="text-align: center">Detail Audit</h3>
-						</div>
-					</div>
-					<div class="dt-card__body">
-						<div class="form-group row">
-							<label class="col-form-label col-sm-2">
-								Laporan Ringkas
-							</label>
-							<div class="col-sm-10">
-								<a href="{{ url("$url/detail?tipe=lap-ringkas&jadw_id=$data->jadw_id") }}" target="_blank">Lihat laporan ringkas</a>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-form-label col-sm-2">
-								Laporan Lengkap
-							</label>
-							<div class="col-sm-10">
-								<a href="{{ url("$url/detail?tipe=lap-lengkap&jadw_id=$data->jadw_id") }}" target="_blank">Lihat laporan lengkap</a>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-form-label col-sm-2">
-								Daftar Periksa File Upload Tim
-							</label>
-							<div class="col-sm-10">
-								<table class="table table-bordered mb-0">
-									<tr>
-										<th>Nama</th>
-										<th>Posisi</th>
-										<th>File Daftar Periksa</th>
-									</tr>
-									@foreach($dataAuditTim as $tim)
-									<tr>
-										<td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
-										<td>{{ucwords($tim->jadw_tim_posisi)}}</td>
-										<td>@if($tim->dftr_periksa_file != '')<a href="{{ url($tim->dftr_periksa_file) }}" target="_blank">Download</a>@endif</td>
-									</tr>
-									@endforeach
-								</table>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-form-label col-sm-2">
-								Logbook Tim
-							</label>
-							<div class="col-sm-10">
-								<table class="table table-bordered mb-0">
-									<tr>
-										<th>Nama</th>
-										<th>Posisi</th>
-										<th>File Logbook</th>
-									</tr>
-									@foreach($dataTimLogbook as $tim)
-									<tr>
-										<td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
-										<td>{{ucwords($tim->jadw_tim_posisi)}}</td>
-										<td>@if($tim->logbook_filepath != '')<a href="{{ url($tim->logbook_filepath) }}" target="_blank">Download</a>@endif</td>
-									</tr>
-									@endforeach
-								</table>
-							</div>
-						</div>
-						@if(!empty($data->sis_audit_ppcs))
-						<div class="form-group row">
-							<label class="col-form-label col-sm-2">
-								Laporan PPC
-							</label>
-							<div class="col-sm-10">
-								<table class="table table-bordered mb-0">
-									<tr>
-										<th>Jenis File Laporan</th>
-										<th>Download File</th>
-									</tr>
-									@foreach($data->sis_audit_ppcs as $ppc)
-									<tr>
-										<td>
-										@if($ppc->audit_ppc_jenis_file == '19')
-											19. RENCANA PENGAMBILAN CONTOH
-										@elseif($ppc->audit_ppc_jenis_file == '20')
-											20. BERITA ACARA PENGAMBILAN CONTOH
-										@elseif($ppc->audit_ppc_jenis_file == '21')
-											21. LABEL CONTOH UJI
-										@elseif($ppc->audit_ppc_jenis_file == '22')
-											22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
-										@endif
-										</td>
-										<td>@if($ppc->audit_ppc_filepath != '')<a href="{{ url($ppc->audit_ppc_filepath) }}" target="_blank">Download</a>@endif</td>
-									</tr>
-									@endforeach
-								</table>
-							</div>
-						</div>
-						@endif
-					</div>
-					<div id="vuePengajuan">
-						<div style="padding-top: 20px">
-							<template v-if="loading_submit">
-								<div class="fa-3x" style="text-align: center">
-									<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
-								</div>
-							</template>
-							<template v-else>
-								<button :disabled="!agreement"
-										:class="{'btn': true, 'btn-primary':agreement, 'btn-outline-primary':!agreement,'btn-block':true}"
-										@click="submitPermohonan"
-								>
-									<i class="fas fa-paper-plane"></i> Ajukan ke Komite
-								</button>
-							</template>
-						</div>
-						
-					</div>
-				</div>
-			</div>
-		</div>
+        </div>
     </div>
+
 @endsection
 
-
-
 @push("javascript")
+    <script src="{{asset("assets/plugins/smartwizard/js/jquery.smartWizard.min.js")}}"></script>
+	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js" referrerpolicy="origin"></script>
+
     <script>
-	const swalWithBootstrapButtons = swal.mixin({
+        const swalWithBootstrapButtons = swal.mixin({
             confirmButtonClass: 'btn btn-primary mb-2',
             cancelButtonClass: 'btn btn-warning mr-2 mb-2',
             buttonsStyling: false,
         });
 		
-        $(document).ready(function () {
-            window.vuePengajuan = new Vue({
-                el: "#vuePengajuan",
-                data: {
-                    agreement: true,
-                    loading_submit: false,
-                },
-                methods: {
-                    submitPermohonan() {
-                        swalWithBootstrapButtons({
-                            title: `Ajukan ke Komite ?`,
-                            text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
-                            type: 'info',
-                            showCancelButton: true,
-                            confirmButtonText: 'Kirim',
-                            cancelButtonText: 'Batal',
-                            reverseButtons: true
-                        }).then(async (result) => {
-                            if (result.value) {
-								let formData = new FormData();
-									formData.append("jadw_id", `{{$data->jadw_id}}`);									
-									this.loading_submit = true;
-									let self = this;
-									$.ajax({
-										url: `{{action("$module@update")}}`,
-										type: 'post',
-										processData: false,
-										contentType: false,
-										data: formData,
-										success: async function (res) {
-											toastCenter({
-												type: 'success',
-												title: res.message
-											})
-											setTimeout(() => location.href = "{{url("$url")}}", 500)
-										},
-										error: function (xhr) {
-											self.loading_submit = false;
-											if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-											else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-										}
-									});
-                            }
-                        });
-                    },
+		function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+        }
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+        }
+
+        $(document).ready(function () {	
+            // ============================================ SmartWizard ============================================
+            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
+                $("#prev-btn").removeClass('disabled');
+                $("#next-btn").removeClass('disabled');
+                if (stepPosition === 'first') {
+                    $("#prev-btn").addClass('disabled');
+                } else if (stepPosition === 'last') {
+                    $("#next-btn").addClass('disabled');
+                } else {
+                    $("#prev-btn").removeClass('disabled');
+                    $("#next-btn").removeClass('disabled');
                 }
-            })
+            });
+
+            // Smart Wizard
+            $('#smartwizard').smartWizard({
+                selected: 0,
+                cycleSteps: false,
+                theme: 'arrows', // default, arrows, dots, progress
+                enableURLhash: false,
+                // darkMode: true,
+                transition: {
+                    animation: 'slide-horizontal', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+                },
+                toolbarSettings: {
+                    toolbarPosition: 'bottom', // none, top, bottom, both
+                    toolbarButtonPosition: 'right', // left, right, center
+                    showNextButton: false, // show/hide a Next button
+                    showPreviousButton: false, // show/hide a Previous button
+                    toolbarExtraButtons: [] // Extra buttons to show on toolbar, array of jQuery input/buttons elements
+                },
+                anchorSettings: {
+                    anchorClickable: false, // Enable/Disable anchor navigation
+                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
+                },
+                keyboardSettings: {
+                    keyNavigation: false,
+                },
+            });
+
+            $("#prev-btn").on("click", function () {
+                // Navigate previous
+                $('#smartwizard').smartWizard("prev");
+                return true;
+            });
+
+            $("#next-btn").on("click", function () {
+                try {
+                    const currentStep = $('#smartwizard').smartWizard("getStepIndex");
+                    // Validate STEP
+                    switch (currentStep) {
+                        case 0:
+                            vueStepOne.validate();
+                            vueStepTwo.start();
+                            break;
+						case 1:
+                            vueStepTwo.validate();
+                            vueStepThree.start();
+                            break;
+                    }
+
+                    // Navigate next
+                    $('#smartwizard').smartWizard("next");
+                    return true;
+                } catch (message) {
+                    swalWithBootstrapButtons({
+                        title: `Validasi`,
+                        text: message,
+                        type: 'warning',
+                    })
+                }
+            });
+
         });
     </script>
 @endpush
-

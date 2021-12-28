@@ -111,7 +111,7 @@ class AuDaftarHadirController extends Controller
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
             if ($request->hasFile('jadw_file_kehadiran')) {
                 $fileKehadiran     = $request->file('jadw_file_kehadiran');
-                $fileKehadiranName = Str::slug('file-kehadiran-' . $request['jadw_tim_id'] . '-' . $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
+                $fileKehadiranName = Str::slug('file-kehadiran-' . $request['jadw_id'] . '-' . $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
                 $fileKehadiranPath = sprintf("%s/%s", $baseFileUpload, $fileKehadiranName);
                 $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
 

@@ -1,25 +1,63 @@
-@extends("layouts.layout_blank")
-
-@section('title', 'Laporan Lengkap')
-@push("css")
-    <!-- HTML -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Laporan Lengkap</title>
     <style>
-		body{
-			font-family: helvetica;
-			margin: 10px;
-		}
-		@page { margin: 40px; }
-		body{
-			font-size:14pt;
-		}
+        .text-center {
+            text-align: center;
+            justify-content: center;
+        }
+
+
+        section, span, table, tr, th, td, #rekap-lks {
+            font-size: 12px;
+        }
+
+        #rekap-lks {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #rekap-lks td, #rekap-lks th {
+            border: 1px solid black;
+        }
+
+        #rekap-lks tr:hover {
+            background-color: #ddd;
+        }
+
+        #rekap-lks th {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background-color: #FBD4B4;
+            color: black;
+        }
+
+        #rekap-lks td {
+            padding: 0 10px 0 10px
+        }
+
+        header {
+            /*position: absolute;*/
+            right: 0px;
+            /*background-color: lightblue;*/
+            height: 50px;
+        }
+		
 		table{
+            font-family: Arial, Helvetica, sans-serif;
 			width:100%;
 			border-collapse:collapse; 
-			border:1px solid #000000;
+			border:0.5px solid #000;
 		}
 		thead{
 			vertical-align:middle !important;
-			background:#ECF0F5;
+			// background:#ECF0F5;
 		}
 		th, td{
 			padding:5px !important;
@@ -33,13 +71,20 @@
 		.left{
 			text-align:left; padding:10px;
 		}
-	</style>
-@endpush
+    </style>
+</head>
+<body style="margin-top: 50px">
+<header>
+    <div style="float: left">
+        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
+             style="max-width: 120px;">
+    </div>
+    <div class="text-center">
+        <span style="font-weight: bold; font-size: 16px;font-family: Arial, Helvetica, sans-serif;">LAPORAN LENGKAP HASIL AUDIT</span>
+    </div>
+</header>
 
-@section('content')
-	<div id="content">
-		<h3 class="center" style="margin:0px;">LAPORAN LENGKAP</h3>
-	</div>
+<section>
 	<table>
 		<thead>
 			<tr>
@@ -47,9 +92,18 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr><td>Dibuat Oleh : Ketua Tim Auditor</td><td>Disetujui Oleh : PLT Kepala Bidang Paskal</td></tr>
-			<tr><td><br/><br/><br/><br/></td><td><br/><br/><br/><br/></td></tr>
-			<tr><td>Nama : {!! $dataJadwal->ketua !!}</td><td>Nama : </td></tr>
+			<tr><td>Dibuat Oleh : Ketua Tim Auditor</td><td>Disetujui Oleh : {!! $dataJadwal->lap_lengkp_verifikasi_jabatan !!}</td></tr>
+			<tr>
+				<td>@if(!empty($dataKetua->master_pegawai->peg_ttd_base64))
+						<img src="{{ $dataKetua->master_pegawai->peg_ttd_base64 }}" alt="ttd ketua"
+							 style="max-height: 100px;">
+					@else
+						<img src="{{public_path($dataKetua->master_pegawai->peg_ttd_file)}}" alt="ttd ketua"
+							 style="max-height: 100px;">
+					@endif</td>
+				<td></td>
+			</tr>
+			<tr><td>Nama : {{$dataKetua->master_pegawai->peg_nama}}</td><td>Nama : {!! $dataJadwal->lap_lengkp_verifikasi_oleh !!}</td></tr>
 			<tr><td>Tanggal : <?=date('d M Y', strtotime($dataJadwal->jadw_tanggal_mulai))?> s/d <?=date('d M Y', strtotime($dataJadwal->jadw_tanggal_selesai))?></td><td>Tanggal : <?=date('d M Y', strtotime($dataJadwal->jadw_tanggal_mulai))?> s/d <?=date('d M Y', strtotime($dataJadwal->jadw_tanggal_selesai))?></td></tr>
 		</tbody>
 	</table>
@@ -103,19 +157,19 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td>Kritis : {{$sumLKS['kritis']}}</td>
+				<td>Kritis : {{$dataLKS['jumlah']['kritis']}}</td>
 				<td></td>
-				<td>Total : {{$sumLKS['total']}}</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>Mayor : {{$sumLKS['mayor']}}</td>
-				<td></td>
-				<td></td>
+				<td>Total : {{$dataLKS['jumlah']['total']}}</td>
 				<td></td>
 			</tr>
 			<tr>
-				<td>Minor : {{$sumLKS['minor']}}</td>
+				<td>Mayor : {{$dataLKS['jumlah']['mayor']}}</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>Minor : {{$dataLKS['jumlah']['minor']}}</td>
 				<td></td>
 				<td></td>
 				<td></td>
@@ -305,34 +359,74 @@
 	<table style="border-top:0px;">
 		<thead>
 			<tr>
-				<th class="left">XX. Rincian Ketidaksesuaian</th>
+				<th class="left" colspan="4">XX. Rincian Ketidaksesuaian</th>
+			</tr>
+			<tr>
+				<th class="left" style="border :0.5px solid #000;border-collapse: collapse; ">No. LKS</th>
+				<th class="left" style="border :0.5px solid #000;border-collapse: collapse; ">Rincian Ketidak Sesuaian</th>
+				<th class="left" style="border :0.5px solid #000;border-collapse: collapse; ">Kategori</th>
+				<th class="left" style="border :0.5px solid #000;border-collapse: collapse; ">Keterangan</th>
 			</tr>
 		</thead>
 		<tbody>
+			@foreach($itemLKS as $lks)
 			<tr>
-				<td>
-					<table style="border-top:0px;">
-						<thead>
-						<tr>
-							<th class="left" style="border-top:0px;border :1px solid #000000;border-collapse: collapse; ">No. LKS</th>
-							<th class="left" style="border-top:0px;border :1px solid #000000;border-collapse: collapse; ">Rincian Ketidak Sesuaian</th>
-							<th class="left" style="border-top:0px;border :1px solid #000000;border-collapse: collapse; ">Kategori</th>
-							<th class="left" style="border-top:0px;border :1px solid #000000;border-collapse: collapse; ">Keterangan</th>
-						</tr>
-						</thead>
-						<tbody>
-							@foreach($dataLks as $lks)
-							<tr>
-								<td style="border :1px solid #000000;border-collapse: collapse; ">{{$lks->lks_nomor}}</td>
-								<td style="border :1px solid #000000;border-collapse: collapse; ">{{$lks->lks_uraian_ketidaksesuaian}}</td>
-								<td style="border :1px solid #000000;border-collapse: collapse; ">{{$lks->lks_kategori_ketidaksesuaian}}</td>
-								<td style="border :1px solid #000000;border-collapse: collapse; ">Target Penyelesaian <?=date('d M Y', strtotime($lks->lks_expired_date_perbaikan))?></td>
-							</tr>
-							@endforeach
-						</tbody>
-					</table>
-				</td>
+				<td style="border :0.5px solid #000;border-collapse: collapse; ">{{$lks->lks_nomor}}</td>
+				<td style="border :0.5px solid #000;border-collapse: collapse; ">{!! $lks->lks_uraian_ketidaksesuaian !!}<br/>{!! $lks->lks_klausul_ketidaksesuaian !!}</td>
+				<td style="border :0.5px solid #000;border-collapse: collapse; ">{!! $lks->lks_kategori_ketidaksesuaian !!}</td>
+				<td style="border :0.5px solid #000;border-collapse: collapse; ">Target Penyelesaian <?=date('d M Y', strtotime($lks->lks_expired_date_perbaikan))?></td>
 			</tr>
+			@endforeach
 		</tbody>
 	</table>
-@endsection
+</section>
+
+
+<script type="text/php">
+    if (isset($pdf)) {
+        // FTM
+        $pdf->page_script('
+            $x = 60;
+            $y = 810;
+            $text = "F-TA-13";
+            $font = $fontMetrics->get_font("helvetica", "italic");
+            $size = 10;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        ');
+
+        // FTM
+        $pdf->page_script('
+            $x = 160;
+            $y = 810;
+            $text = "Rev. 4";
+            $font = $fontMetrics->get_font("helvetica");
+            $size = 10;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        ');
+
+        // Halaman (ID)
+        $pdf->page_script('
+            $x = 750;
+            $y = 570;
+            $text = "{$PAGE_NUM} dari {$PAGE_COUNT}";
+            $font = $fontMetrics->get_font("helvetica", "italic");
+            $size = 10;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        ');
+    }
+
+</script>
+</body>
+</html>
