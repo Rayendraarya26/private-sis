@@ -121,6 +121,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <form method="post"
+                                      onsubmit="$('#btnSubmit').attr('disabled',true)"
                                       action="{{action("$module@processApproveTanggal", $data->jadw_id)}}"
                                       enctype="multipart/form-data">
                                     @csrf
@@ -156,7 +157,7 @@
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success" id="btnSubmit">
                                         <i class="fas fa-paper-plane"></i> Kirim
                                     </button>
                                 </form>

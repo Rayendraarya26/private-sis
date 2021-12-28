@@ -153,9 +153,10 @@
                         <div class="dt-card__body">
                             <div class="col-md-12">
                                 <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
-                                  enctype="multipart/form-data">
-                                @csrf
-								
+                                      onsubmit="$('#btnSubmit').attr('disabled',true)"
+                                      enctype="multipart/form-data">
+                                    @csrf
+
 								<div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="jadw_setujui_nama">
                                         Tanda Tangan Nama*
@@ -168,7 +169,7 @@
 										<span><small>Pengesahan untuk client/pelanggan</small></span>
                                     </div>
                                 </div>
-								
+
 								<div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="jadw_setujui_jabatan">
                                         Tanda Tangan Jabatan*
@@ -181,7 +182,7 @@
 										<span><small>Pengesahan untuk client/pelanggan</small></span>
                                     </div>
                                 </div>
-								
+
                                 <div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="lap_ringkas_kesimpulan">
                                         Ringkasan Hasil / Kesimpulan*
@@ -212,13 +213,13 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-outline-primary btn-block">
-                                    <i class="fas fa-paper-plane"></i> Submit
-                                </button>
-                            </form>
+                                    <button type="submit" class="btn btn-outline-primary btn-block" id="btnSubmit">
+                                        <i class="fas fa-paper-plane"></i> Submit
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>

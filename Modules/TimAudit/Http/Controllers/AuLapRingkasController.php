@@ -9,7 +9,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 
 class AuLapRingkasController extends Controller
@@ -125,8 +124,8 @@ class AuLapRingkasController extends Controller
     public function processLaporan(Request $request, $jadwalID)
     {
         $request->validate([
-            'jadw_setujui_jabatan'  => 'required',
-            'jadw_setujui_nama'  => 'required',
+            'jadw_setujui_jabatan'    => 'required',
+            'jadw_setujui_nama'       => 'required',
             'lap_ringkas_kesimpulan'  => 'required',
             'lap_ringkas_rekomendasi' => 'required',
         ]);
@@ -134,20 +133,20 @@ class AuLapRingkasController extends Controller
         $newFilePath = [];
         $oldFilePath = [];
         try {
-            $dataJadwal = $this->isKepalaAudit($jadwalID);
-            $where          = ['jadw_id' => $dataJadwal->jadw_id];
-            $updateOrCreate = [];
+            $dataJadwal                                = $this->isKepalaAudit($jadwalID);
+            $where                                     = ['jadw_id' => $dataJadwal->jadw_id];
+            $updateOrCreate                            = [];
             $updateOrCreate['lap_ringkas_kesimpulan']  = $request['lap_ringkas_kesimpulan'];
             $updateOrCreate['lap_ringkas_rekomendasi'] = $request['lap_ringkas_rekomendasi'];
             SisAuditLapRingkas::updateOrCreate($where, $updateOrCreate);
-			
-			DB::table('sis_jadwal')
+
+            DB::table('sis_jadwal')
                 ->where('jadw_id', $dataJadwal->jadw_id)
                 ->update([
-					'jadw_setujui_jabatan' => $request['jadw_setujui_jabatan'],
-					'jadw_setujui_nama' => $request['jadw_setujui_nama'],
-				]);
-				
+                    'jadw_setujui_jabatan' => $request['jadw_setujui_jabatan'],
+                    'jadw_setujui_nama'    => $request['jadw_setujui_nama'],
+                ]);
+
             foreach ($oldFilePath as $path) { // remove old file
                 @unlink($path);
             }
@@ -184,7 +183,7 @@ class AuLapRingkasController extends Controller
         $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']); 
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', ['revisi', 'none']);
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
         // tambah jika not null file jadwal
