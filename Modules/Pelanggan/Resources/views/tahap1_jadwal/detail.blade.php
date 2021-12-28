@@ -39,7 +39,7 @@
                                         <tr>
                                             <td>File Jadwal</td>
                                             <td>:
-                                                <a href="{{$data->aud_thp1_file_jadwal}}">
+                                                <a href="{{asset($data->aud_thp1_file_jadwal)}}">
                                                     <i class="fad fa-download"></i> Unduh
                                                 </a>
                                             </td>

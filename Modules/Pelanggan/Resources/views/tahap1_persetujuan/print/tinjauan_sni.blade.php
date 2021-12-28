@@ -38,7 +38,7 @@
         }
 
         section, span, table, tr, th, td, #tinjauan {
-            font-size: 8px;
+            font-size: 11px;
         }
 
         .headers {
@@ -59,14 +59,14 @@
 
 <div class="headers">
     <div class="headers_one">
-        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo" style="max-width: 100px; margin-top: -15px">
+        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo" style="max-width: 120px; margin-top: -15px">
     </div>
     <div class="headers_two">
         <div class="text-center">
             <div style="font-weight: bold">
                 HASIL TINJAUAN DOKUMEN SNI ISO 9001:2015
                 <br>
-                PT. {{strtoupper($data->sis_permohonan->mohon_cust_nama)}}
+                {{strtoupper($data->sis_permohonan->mohon_cust_nama)}}
                 <br>
                 @php
                     $komoditi = "";
@@ -85,7 +85,7 @@
 </div>
 
 
-<section style="margin-top: -70px">
+<section>
     <table id="tinjauan">
         <thead>
         <tr>

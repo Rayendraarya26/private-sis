@@ -14,7 +14,7 @@
         }
 
         body {
-            font-size: 14pt;
+            font-size: 11pt;
         }
 
         table {
