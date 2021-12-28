@@ -56,7 +56,7 @@ class AuDaftarPeriksaController extends Controller
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']); 
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']);
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
 
@@ -80,7 +80,7 @@ class AuDaftarPeriksaController extends Controller
         // Pagination
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, jadw_audit_jenis) SEPARATOR ',<br/>') as sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis SEPARATOR ', ') AS jadw_audit_jenis");
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
         $data->skip(($request->page - 1) * $request->rows);
@@ -97,7 +97,7 @@ class AuDaftarPeriksaController extends Controller
             $x['cust_nama']            = $d->cust_nama;
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = $d->jadw_jenis;
-            $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
+            $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
 
             $x['dftr_periksa_file'] = ($d->dftr_periksa_file != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->dftr_periksa_file) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
             array_push($result, $x);
