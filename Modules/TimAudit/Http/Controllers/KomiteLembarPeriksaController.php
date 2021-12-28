@@ -10,6 +10,7 @@ use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
 use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade as PDF;
 use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -215,7 +216,11 @@ class KomiteLembarPeriksaController extends Controller
 			'dataAudit' => $dataAudit->get(),
 			'dataPPC' => $dataPPC->get(),
 		];
-        return view("$this->view.edit_lihat_rekomendasi")->with($parser);
+        return view("$this->view.print.rekomendasi")->with($parser);
+		/* 
+		$pdf    = PDF::loadView("$this->view.print.rekomendasi", $parser)
+            ->setPaper('a4', 'portrait');
+        return $pdf->stream(); */
 	}
 	
     private function edit_lembar_periksa(Request $request)

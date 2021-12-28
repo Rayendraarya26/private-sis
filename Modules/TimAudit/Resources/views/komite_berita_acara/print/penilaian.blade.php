@@ -1,26 +1,63 @@
-@extends("layouts.layout_blank")
-
-@section('title', 'Rekomendasi untuk Persetujuan')
-@push("css")
-    <!-- HTML -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>REKOMENDASI PERSETUJUAN KOMITE</title>
     <style>
-		body{
-			font-family: helvetica;
-			margin: 10px;
-		}
-		@page { margin: 40px; }
-		body{
-			font-size:14pt;
-		}
+        .text-center {
+            text-align: center;
+            justify-content: center;
+        }
 
+
+        section, span, table, tr, th, td, #rekap-lks {
+            font-size: 12px;
+        }
+
+        #rekap-lks {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #rekap-lks td, #rekap-lks th {
+            border: 1px solid black;
+        }
+
+        #rekap-lks tr:hover {
+            background-color: #ddd;
+        }
+
+        #rekap-lks th {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            background-color: #FBD4B4;
+            color: black;
+        }
+
+        #rekap-lks td {
+            padding: 0 10px 0 10px
+        }
+
+        header {
+            /*position: absolute;*/
+            right: 0px;
+            /*background-color: lightblue;*/
+            height: 50px;
+        }
+		
 		table{
+            font-family: Arial, Helvetica, sans-serif;
 			width:100%;
 			border-collapse:collapse; 
-			border:1px solid #000000;
+			border:0.5px solid #000;
 		}
 		thead{
 			vertical-align:middle !important;
-			background:#ECF0F5;
+			// background:#ECF0F5;
 		}
 		th, td{
 			padding:5px !important;
@@ -34,13 +71,19 @@
 		.left{
 			text-align:left; padding:10px;
 		}
-	</style>
-@endpush
+    </style>
+</head>
+<body style="margin-top: 50px">
+<header>
+    <div style="float: left">
+        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo" style="max-width: 120px;">
+    </div>
+    <div class="text-center">
+        <span style="font-weight: bold; font-size: 16px;font-family: Arial, Helvetica, sans-serif;">REKOMENDASI UNTUK PERSETUJUAN</span>
+    </div>
+</header>
 
-@section('content')
-	<div id="content">
-		<h3 class="center" style="margin:0px;">REKOMENDASI UNTUK PERSETUJUAN</h3>
-	</div>
+<section>
 	<table>
 		<thead>
 			<tr><th class="left" colspan="2">1. Diajukan untuk</th></tr>
@@ -102,16 +145,15 @@
 						Tanggal {{ date('d M Y', strtotime($aud->jadw_tanggal_mulai)) }} s/d {{ date('d M Y', strtotime($aud->jadw_tanggal_selesai)) }}
 					</div>
 					<div class="col-md-12">
-					<div class="table-responsive">
-						  <table class="table table-bordered mb-0 p-0 no-margin">
+						  <table class="">
 							<thead>
 							<tr>
-							  <th scope="col">Status LKS :</th>
-							  <th class="text-uppercase" scope="col">Kritis</th>
-							  <th class="text-uppercase" scope="col">Mayor</th>
-							  <th class="text-uppercase" scope="col">Minor</th>
-							  <th class="text-uppercase" scope="col">Observasi</th>
-							  <th class="text-uppercase" scope="col">Total</th>
+							  <th>Status LKS :</th>
+							  <th class="">Kritis</th>
+							  <th class="">Mayor</th>
+							  <th class="">Minor</th>
+							  <th class="">Observasi</th>
+							  <th class="">Total</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -133,7 +175,6 @@
 							</tr>
 							</tbody>
 						  </table>
-						</div>
 				</td>
 			</tr>
 			@endforeach
@@ -148,9 +189,9 @@
 				<td>
 				@foreach($dataPPC as $ppc)
 					Pengambilan Contoh*) untuk SPPT SNI
-					<hr/>
+					<hr style="border:0.1px dotted  #000;" >
 					Petugas Pengambil Contoh : {{$ppc->peg_nama}}
-					<hr/>
+					<hr style="border:0.1px dotted  #000;" >
 					Sertifikat No :
 					<?php
 						$sertifikat_nomor = explode(", ", $ppc->jadw_audit_sertifikat_nomor);
@@ -178,4 +219,54 @@
 			</tr>
 		</tbody>
 	</table>
-@endsection
+</section>
+
+
+<script type="text/php">
+    if (isset($pdf)) {
+        // FTM
+        $pdf->page_script('
+            $x = 60;
+            $y = 810;
+            $text = "F-KEP-2";
+            $font = $fontMetrics->get_font("helvetica", "italic");
+            $size = 10;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        ');
+
+        // FTM
+        $pdf->page_script('
+            $x = 160;
+            $y = 810;
+            $text = "Rev. 00";
+            $font = $fontMetrics->get_font("helvetica");
+            $size = 10;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        ');
+
+        // Halaman (ID)
+        $pdf->page_script('
+            $x = 750;
+            $y = 570;
+            $text = "{$PAGE_NUM} dari {$PAGE_COUNT}";
+            $font = $fontMetrics->get_font("helvetica", "italic");
+            $size = 10;
+            $color = array(0,0,0);
+            $word_space = 0.0;  //  default
+            $char_space = 0.0;  //  default
+            $angle = 0.0;   //  default
+            $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+        ');
+    }
+
+</script>
+</body>
+</html>

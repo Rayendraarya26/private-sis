@@ -120,7 +120,7 @@
 										<input class="form-check-input" type="radio" name="jadw_is_tutup" id="status2" value="ya" checked @click="setTutup('ya')">
 										<label class="form-check-label" for="status2">Tidak</label>
 									  </div>
-										<small class="form-text">Note: Jika "ya" maka akan muncul pada menu penilaian komite, jika "tidak" maka sebaliknya, dan masih bisa diedit.</small>
+										<small class="form-text">Note: Jika "ya" maka akan muncul di daftar berita acara komite dan masih bisa diedit, jika "tidak" maka sebaliknya.</small>
 									</div>
 								</div>
 								
