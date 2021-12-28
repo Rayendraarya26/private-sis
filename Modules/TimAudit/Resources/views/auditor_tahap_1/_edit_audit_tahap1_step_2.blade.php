@@ -56,7 +56,7 @@
 					<label class="col-form-label col-sm-3" for="aud_thp1_file_notulen">
 						Notulen Rapat*
 						<br>
-						<small>(pdf/excel)</small>
+						<small>(pdf)</small>
 					</label>
 					<div class="col-sm-8">
 						<input type="file" name="aud_thp1_file_notulen" id="aud_thp1_file_notulen" @change="validateUploadNotulen" accept="application/pdf">
@@ -75,7 +75,7 @@
 						<small>(pdf/excel)</small>
 					</label>
 					<div class="col-sm-8">
-						<input type="file" name="aud_thp1_file_daftar_hadir" id="aud_thp1_file_daftar_hadir" @change="validateUploadKehadiran" accept="application/pdf">
+						<input type="file" name="aud_thp1_file_daftar_hadir" id="aud_thp1_file_daftar_hadir" @change="validateUploadKehadiran" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
 						@if(!empty($dataAudit->aud_thp1_file_daftar_hadir))
 							<hr/>
 								<a href="{{asset($dataAudit->aud_thp1_file_daftar_hadir)}}" target="_blank">

@@ -58,7 +58,7 @@ class AuLogBookController extends Controller
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']);
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']); 
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
         // tambah jika not null file jadwal
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
@@ -86,15 +86,11 @@ class AuLogBookController extends Controller
 
 
         // Pagination
-        $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
+        $data->select("*", "sis_jadwal.jadw_id AS jadw_id", "logbook_filepath AS logbook_filepath");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis SEPARATOR ', ') AS jadw_audit_jenis");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
-        $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
+        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
         $data->skip(($request->page - 1) * $request->rows);
         $data->take($request->rows);
-        $data->havingRaw('total_submit_komite > ?', [0]);
-        $data->havingRaw('total_proses > ?', [0]);
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];
@@ -148,7 +144,8 @@ class AuLogBookController extends Controller
         });
 
         $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
-
+        $dataJadwal->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
+		
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
