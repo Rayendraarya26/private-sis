@@ -1,0 +1,13 @@
+{
+    "name": "KoordinatorSertifikasi",
+    "alias": "koordinatorsertifikasi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KoordinatorSertifikasi\\Providers\\KoordinatorSertifikasiServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
