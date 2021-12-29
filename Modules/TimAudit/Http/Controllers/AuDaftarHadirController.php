@@ -132,7 +132,7 @@ class AuDaftarHadirController extends Controller
 			$notifStruct->title     = 'Tinjauan Rapat Akhir';
 			$notifStruct->message   = sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']);
 			$notifStruct->user_id   = $request['user_id'];
-			$notifStruct->click_url = url('/pelanggan/audit');
+			$notifStruct->click_url = url('/pelanggan/tahap2/persetujuan-temuan');
 			sendNotification($notifStruct);
 
 			// Send Email
@@ -142,7 +142,7 @@ class AuDaftarHadirController extends Controller
 				->with([
 					'nama'       => $request['cust_nama'],
 					'message'       => sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']),
-					'link_verif'        => url('/pelanggan/audit'),
+					'link_verif'        => url('/pelanggan/tahap2/persetujuan-temuan'),
 				])->render();
 			$structEmail->to      = $request['cust_email'];
 			sendEmail($structEmail);

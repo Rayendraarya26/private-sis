@@ -343,6 +343,7 @@ class AuLapLengkapController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
             $x['sudah_mengisi']        = $d->sis_audit_lap_lengkap?->count() > 0;
+            $x['lap_lengkp_verifikasi_status']        = $d->sis_audit_lap_lengkap?->count() > 0 ? $d->sis_audit_lap_lengkap->lap_lengkp_verifikasi_status : 'none';
             array_push($result, $x);
         }
 

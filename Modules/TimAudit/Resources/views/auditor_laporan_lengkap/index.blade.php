@@ -60,7 +60,12 @@
                             let btnPerbarui = `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block"><i class="fas fa-refresh"></i> Perbarui</a>`
                             let btnBuat     = `<a href="{{url("$url/laporan")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-plus"></i> Buat</a>`
                             if (row.sudah_mengisi) {
-                                return btnPreview + btnPerbarui
+								if(row.lap_lengkp_verifikasi_status !== 'ya'){
+									return btnPreview + btnPerbarui
+								}
+								else{
+									return btnPreview
+								}
                             } else {
                                 return btnBuat
                             }

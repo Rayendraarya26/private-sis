@@ -49,17 +49,22 @@
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
+				rowStyler:function(index,row){
+					if (row.jadw_setujui_temuan == 'revisi'){
+						return 'background-color:#fff4b3;color:red;font-weight:normal;';
+					}
+				},
                 frozenColumns: [[
                     {
                         field: 'action',
                         title: "<br/><br/>",
-                        width: 130,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.jadw_setujui_temuan == 'revisi') {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Revisi Kelengkapan</a>`
+                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-warning"><i class="fas fa-upload"></i> Revisi</a>`
                             } else {
-                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Isi Kelengkapan</a>`
+                                return `<a href="{{url("$url/unggah")}}/${row.jadw_id}" class="btn btn-xs btn-success"><i class="fas fa-upload"></i> Ajukan</a>`
                             }
                         },
                     },
@@ -67,15 +72,8 @@
                 columns: [[
                     {field: 'jadw_id', title: 'No.<br/>Jadwal', width: 120, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_setujui_temuan', title: 'Persetujuan<br/>Temuan?', width: 150, sortable: true},
-                    {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
-                    {
-                        field: 'total_jadwal', title: 'Jadwal', width: 80, sortable: true,
-                        formatter: function (val) {
-                            return val + " Jadwal";
-                        },
-                    },
-                    {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
+                    {field: 'jadw_setujui_temuan', title: 'Persetujuan<br/>Temuan?', width: 100, sortable: true},
+                    {field: 'sert_nama', title: 'Jadwal Detail', width: 300, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
@@ -84,7 +82,27 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'total_jadwal', type: 'label'},
-                    {field: 'jadw_audit_jenis', type: 'label'},
+					{
+                        field: 'jadw_setujui_temuan',
+                        type: 'combobox',
+                        options: {
+                            panelHeight: 'auto',
+                            data: [
+                                {value: '', text: 'Semua'},
+                                {value: 'revisi', text: 'Revisi'},
+                                {value: 'diajukan', text: 'Diajukan'}
+                            ],
+                            onChange: function (value) {
+                                dg.datagrid('addFilterRule', {
+                                    field: 'jadw_setujui_temuan',
+                                    op: 'equal',
+                                    value: value
+                                });
+
+                                dg.datagrid('doFilter');
+                            }
+                        }
+                    },
                 ]);
         });
     </script>
