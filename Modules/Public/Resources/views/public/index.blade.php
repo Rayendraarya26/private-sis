@@ -2,6 +2,15 @@
 
 @section('title', "Home")
 
+@push('css')
+<style>
+	.navbar-collapse.in{
+		background-color: #000000;
+		opacity: 0.7;
+	}
+</style>
+@endpush
+
 @section('content')
 
 	<h1>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</h1>
