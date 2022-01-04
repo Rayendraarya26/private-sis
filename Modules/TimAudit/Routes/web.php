@@ -30,6 +30,7 @@ use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
 use Modules\TimAudit\Http\Controllers\PpcLaporanController;
 use Modules\TimAudit\Http\Controllers\PpcLogBookController;
+use Modules\TimAudit\Http\Controllers\HistoriPenugasanController;
 
 Route::prefix('timaudit')->middleware(['auth'])->group(function () {
     // ============================== Persetujuan TIM ==============================
@@ -40,6 +41,12 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/edit', [PersetujuanTimAuditController::class, 'edit']);
             Route::post('/update', [PersetujuanTimAuditController::class, 'update']);
         });
+    });
+	
+	Route::prefix("histori-audit")->group(function () {
+		Route::get('/', [HistoriPenugasanController::class, 'index']);
+		Route::get('/ajax', [HistoriPenugasanController::class, 'ajax']);
+		Route::get('/detail', [HistoriPenugasanController::class, 'detail']);
     });
 
 
