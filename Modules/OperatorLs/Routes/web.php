@@ -21,10 +21,18 @@ use Modules\OperatorLs\Http\Controllers\TimController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanTahap1Controller;
 use Modules\OperatorLs\Http\Controllers\UploadKajianPermohonanController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanPencabutanController;
+use Modules\OperatorLs\Http\Controllers\RekomPersetujuanController;
 
 Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
-
+	
+	Route::prefix("rekomendasi-persetujuan")->group(function () {
+            Route::get('/', [RekomPersetujuanController::class, 'index']);
+            Route::any('/ajax', [RekomPersetujuanController::class, 'ajax']);
+            Route::get('/edit', [RekomPersetujuanController::class, 'edit']);
+            Route::post('/update', [RekomPersetujuanController::class, 'update']);
+        });
+		
 	Route::prefix("kajian-permohonan")->group(function () {
         Route::get('/', [UploadKajianPermohonanController::class, 'index']);
         Route::any('/ajax', [UploadKajianPermohonanController::class, 'ajax']);

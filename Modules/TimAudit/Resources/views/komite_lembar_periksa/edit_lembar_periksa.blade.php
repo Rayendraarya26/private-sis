@@ -44,197 +44,199 @@
 				</div>
 				
 				<div id="vueLembarPeriksa">
-				<div class="col-xl-12">
-					<div class="dt-card">
-						<div class="dt-card__header"><div class="dt-card__heading"><h3 class="dt-card__title">1. Penilaian</h3></div></div>
-						<div class="dt-card__body">
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.1. Persyaratan Administrasi dan prosedur sertifikasi</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_1" id="komte_priksa_penilaian_1">@if(isset($dataJadwal->komte_priksa_penilaian_1)) {{$dataJadwal->komte_priksa_penilaian_1}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.2. Konfirmasi Hasil Pengkajian Permohonan</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_2" id="komte_priksa_penilaian_2">@if(isset($dataJadwal->komte_priksa_penilaian_2)) {{$dataJadwal->komte_priksa_penilaian_2}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.3. Evaluasi waktu audit yang direncanakan dengan realisasi pelaksanaan</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_3" id="komte_priksa_penilaian_3">@if(isset($dataJadwal->komte_priksa_penilaian_3)) {{$dataJadwal->komte_priksa_penilaian_3}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.4. Evaluasi kedalamam Laporan Audit yang dibuat oleh Auditor</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_4" id="komte_priksa_penilaian_4">@if(isset($dataJadwal->komte_priksa_penilaian_4)) {{$dataJadwal->komte_priksa_penilaian_4}} @endif</textarea>
-								</div>
-							</div>
-
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.5. Komentar terhadap ketidaksesuaian, tindakan koreksi dan tindakan korektif</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_5" id="komte_priksa_penilaian_5">@if(isset($dataJadwal->komte_priksa_penilaian_5)) {{$dataJadwal->komte_priksa_penilaian_5}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.6. Hasil Inspeksi/ Asesmen Sistem Mutu/ Lingkungan*)</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_6" id="komte_priksa_penilaian_6">@if(isset($dataJadwal->komte_priksa_penilaian_6)) {{$dataJadwal->komte_priksa_penilaian_6}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.7. Konfirmasi terhadap ketercapaian tujuan audit</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_7" id="komte_priksa_penilaian_7">@if(isset($dataJadwal->komte_priksa_penilaian_7)) {{$dataJadwal->komte_priksa_penilaian_7}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.8. Rekaman Tahapan Sertifikasi</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_8" id="komte_priksa_penilaian_8">@if(isset($dataJadwal->komte_priksa_penilaian_8)) {{$dataJadwal->komte_priksa_penilaian_8}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.9. Hal-hal negative yang mempengaruhi penerbitan sertifikat</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_9" id="komte_priksa_penilaian_9">@if(isset($dataJadwal->komte_priksa_penilaian_9)) {{$dataJadwal->komte_priksa_penilaian_9}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.10. Hal-hal yang diperbaiki/ditambahkan</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_10" id="komte_priksa_penilaian_10">@if(isset($dataJadwal->komte_priksa_penilaian_10)) {{$dataJadwal->komte_priksa_penilaian_10}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.11. Hasil Perbaikan</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_11" id="komte_priksa_penilaian_11">@if(isset($dataJadwal->komte_priksa_penilaian_11)) {{$dataJadwal->komte_priksa_penilaian_11}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.12. Pelaksanaan Pengambilan contoh (khusus LS Produk)</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_12" id="komte_priksa_penilaian_12">@if(isset($dataJadwal->komte_priksa_penilaian_12)) {{$dataJadwal->komte_priksa_penilaian_12}} @endif</textarea>
-								</div>
-							</div>
-							
-							<div class="form-group form-row">
-								<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.13. Hasil Uji Laboratorium (khusus LS Produk)</label>
-								<div class="col-xl-8">
-									<textarea class="form-control" name="komte_priksa_penilaian_13" id="komte_priksa_penilaian_13">@if(isset($dataJadwal->komte_priksa_penilaian_13)) {{$dataJadwal->komte_priksa_penilaian_13}} @endif</textarea>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				
-				<div class="col-xl-12">
-					<div class="card">
-						<div class="card-header bg-transparent">
-							<h3 class="card-title">2. Keputusan/Rekomendasi</h3>
-						</div>
-						<div class="card-body pt-0">
-							<div class="form-group row">
-								<label class="col-form-label col-sm-3" for="jadw_file_kehadiran_komite">
-									Kehadiran Komite*
-									<br>
-									<small>(pdf/excel)</small>
-								</label>
-								<div class="col-sm-8">
-										<input type="file" class="form-control" aria-label="File Kehadiran Komite" name="jadw_file_kehadiran_komite" id="jadw_file_kehadiran_komite" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
-										<input type="hidden" value="@if(isset($dataJadwal->jadw_file_kehadiran_komite)) {{$dataJadwal->jadw_file_kehadiran_komite}} @endif" id="jadw_file_kehadiran_komite_lama">
-								</div>
-							</div>
-							<div class="table-responsive col-xl-12 col-md-12 col-12">
-								<table class="table table-bordered mb-0">
-									<thead>
-										<tr>
-										  <th scope="col">Status</th>
-										  <th class="text-uppercase" scope="col">Jenis Audit</th>
-										  <th class="text-uppercase" scope="col">Sertifikasi</th>
-										  <th class="text-uppercase" scope="col">SNI</th>
-										  <th class="text-uppercase" scope="col">Komoditas</th>
-										  <th class="text-uppercase" scope="col">Merk</th>
-										  <th class="text-uppercase" scope="col">Tipe</th>
-										</tr>
-									</thead>
-									<tbody>
-									@foreach($dataAudit as $dau)
-										<tr>
-										  <td scope="col">
-										  @if($dau->jadw_audit_jenis == 'pengaktifan')
-											  <div class="form-check mb-2">
-												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="ya" checked>
-												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tetap dapat menggunakan</label>
-											  </div>
-										  @elseif($dau->jadw_audit_jenis == 'pencabutan')
-											  <div class="form-check mb-2">
-												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="tidak" checked>
-												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
-											  </div>
-										  @else
-											  <div class="form-check mb-2">
-												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd1{{$dau->jadw_audit_id}}" value="ya">
-												<label class="form-check-label" for="rd1{{$dau->jadw_audit_id}}">
-												@if($dau->jadw_audit_jenis == 'sertifikasi')
-													berhak memperoleh
-												@elseif($dau->jadw_audit_jenis == 're-sertifikasi')
-													berhak memperoleh kembali
-												@else
-													tetap dapat menggunakan
-												@endif
-												</label>
-											  </div>
-											  <!-- /radio button -->
-
-											  <!-- Radio Button -->
-											  <div class="form-check mb-2">
-												<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="tidak">
-												<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
-											  </div>
-											@endif
-										  </td>
-										  <td>{{$dau->jadw_audit_jenis}}</td>
-										  <td>{{$dau->sert_nama}}</td>
-										  <td>{{$dau->jadw_audit_sni}}</td>
-										  <td>{{$dau->komodt_nama}}</td>
-										  <td>{{$dau->jadw_audit_merk}}</td>
-										  <td>{{$dau->jadw_audit_tipe}}</td>
-										</tr>
-									@endforeach
-									</tbody>
-								</table>
-							</div>
-							
-							<div style="padding-top: 20px">
-								<template v-if="loading_submit">
-									<div class="fa-3x" style="text-align: center">
-										<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+					<div class="col-xl-12">
+						<div class="dt-card">
+							<div class="dt-card__header"><div class="dt-card__heading"><h3 class="dt-card__title">1. Penilaian</h3></div></div>
+							<div class="dt-card__body">
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.1. Persyaratan Administrasi dan prosedur sertifikasi</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_1" id="komte_priksa_penilaian_1">@if(isset($dataJadwal->komte_priksa_penilaian_1)) {{$dataJadwal->komte_priksa_penilaian_1}} @endif</textarea>
 									</div>
-								</template>
-								<template v-else>
-									<button :disabled="!status_submit" :class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}" @click="submitRekomendasi">
-										<i class="fas fa-save"></i> Simpan Lembar Periksa
-									</button>
-								</template>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.2. Konfirmasi Hasil Pengkajian Permohonan</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_2" id="komte_priksa_penilaian_2">@if(isset($dataJadwal->komte_priksa_penilaian_2)) {{$dataJadwal->komte_priksa_penilaian_2}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.3. Evaluasi waktu audit yang direncanakan dengan realisasi pelaksanaan</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_3" id="komte_priksa_penilaian_3">@if(isset($dataJadwal->komte_priksa_penilaian_3)) {{$dataJadwal->komte_priksa_penilaian_3}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.4. Evaluasi kedalamam Laporan Audit yang dibuat oleh Auditor</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_4" id="komte_priksa_penilaian_4">@if(isset($dataJadwal->komte_priksa_penilaian_4)) {{$dataJadwal->komte_priksa_penilaian_4}} @endif</textarea>
+									</div>
+								</div>
+
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.5. Komentar terhadap ketidaksesuaian, tindakan koreksi dan tindakan korektif</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_5" id="komte_priksa_penilaian_5">@if(isset($dataJadwal->komte_priksa_penilaian_5)) {{$dataJadwal->komte_priksa_penilaian_5}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.6. Hasil Inspeksi/ Asesmen Sistem Mutu/ Lingkungan*)</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_6" id="komte_priksa_penilaian_6">@if(isset($dataJadwal->komte_priksa_penilaian_6)) {{$dataJadwal->komte_priksa_penilaian_6}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.7. Konfirmasi terhadap ketercapaian tujuan audit</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_7" id="komte_priksa_penilaian_7">@if(isset($dataJadwal->komte_priksa_penilaian_7)) {{$dataJadwal->komte_priksa_penilaian_7}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.8. Rekaman Tahapan Sertifikasi</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_8" id="komte_priksa_penilaian_8">@if(isset($dataJadwal->komte_priksa_penilaian_8)) {{$dataJadwal->komte_priksa_penilaian_8}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.9. Hal-hal negative yang mempengaruhi penerbitan sertifikat</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_9" id="komte_priksa_penilaian_9">@if(isset($dataJadwal->komte_priksa_penilaian_9)) {{$dataJadwal->komte_priksa_penilaian_9}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.10. Hal-hal yang diperbaiki/ditambahkan</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_10" id="komte_priksa_penilaian_10">@if(isset($dataJadwal->komte_priksa_penilaian_10)) {{$dataJadwal->komte_priksa_penilaian_10}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.11. Hasil Perbaikan</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_11" id="komte_priksa_penilaian_11">@if(isset($dataJadwal->komte_priksa_penilaian_11)) {{$dataJadwal->komte_priksa_penilaian_11}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.12. Pelaksanaan Pengambilan contoh (khusus LS Produk)</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_12" id="komte_priksa_penilaian_12">@if(isset($dataJadwal->komte_priksa_penilaian_12)) {{$dataJadwal->komte_priksa_penilaian_12}} @endif</textarea>
+									</div>
+								</div>
+								
+								<div class="form-group form-row">
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">1.13. Hasil Uji Laboratorium (khusus LS Produk)</label>
+									<div class="col-xl-8">
+										<textarea class="form-control" name="komte_priksa_penilaian_13" id="komte_priksa_penilaian_13">@if(isset($dataJadwal->komte_priksa_penilaian_13)) {{$dataJadwal->komte_priksa_penilaian_13}} @endif</textarea>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+					<input type="hidden" name="posisi" value="@if(isset($dataJadwal->komite_posisi)) {{$dataJadwal->komite_posisi}} @endif">
+					@if(strpos($dataJadwal->komite_posisi, 'ketua') !== false)
+					<div class="col-xl-12">
+						<div class="card">
+							<div class="card-header bg-transparent">
+								<h3 class="card-title">2. Keputusan/Rekomendasi</h3>
+							</div>
+							<div class="card-body pt-0">
+								<div class="form-group row">
+									<label class="col-form-label col-sm-3" for="jadw_file_kehadiran_komite">
+										Kehadiran Komite*
+										<br>
+										<small>(pdf/excel)</small>
+									</label>
+									<div class="col-sm-8">
+											<input type="file" class="form-control" aria-label="File Kehadiran Komite" name="jadw_file_kehadiran_komite" id="jadw_file_kehadiran_komite" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+											<input type="hidden" value="@if(isset($dataJadwal->jadw_file_kehadiran_komite)) {{$dataJadwal->jadw_file_kehadiran_komite}} @endif" id="jadw_file_kehadiran_komite_lama">
+									</div>
+								</div>
+								<div class="table-responsive col-xl-12 col-md-12 col-12">
+									<table class="table table-bordered mb-0">
+										<thead>
+											<tr>
+											  <th scope="col">Status</th>
+											  <th class="text-uppercase" scope="col">Jenis Audit</th>
+											  <th class="text-uppercase" scope="col">Sertifikasi</th>
+											  <th class="text-uppercase" scope="col">SNI</th>
+											  <th class="text-uppercase" scope="col">Komoditas</th>
+											  <th class="text-uppercase" scope="col">Merk</th>
+											  <th class="text-uppercase" scope="col">Tipe</th>
+											</tr>
+										</thead>
+										<tbody>
+										@foreach($dataAudit as $dau)
+											<tr>
+											  <td scope="col">
+											  @if($dau->jadw_audit_jenis == 'pengaktifan')
+												  <div class="form-check mb-2">
+													<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="ya" checked>
+													<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tetap dapat menggunakan</label>
+												  </div>
+											  @elseif($dau->jadw_audit_jenis == 'pencabutan')
+												  <div class="form-check mb-2">
+													<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="tidak" checked>
+													<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
+												  </div>
+											  @else
+												  <div class="form-check mb-2">
+													<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd1{{$dau->jadw_audit_id}}" value="ya">
+													<label class="form-check-label" for="rd1{{$dau->jadw_audit_id}}">
+													@if($dau->jadw_audit_jenis == 'sertifikasi')
+														berhak memperoleh
+													@elseif($dau->jadw_audit_jenis == 're-sertifikasi')
+														berhak memperoleh kembali
+													@else
+														tetap dapat menggunakan
+													@endif
+													</label>
+												  </div>
+												  <!-- /radio button -->
+
+												  <!-- Radio Button -->
+												  <div class="form-check mb-2">
+													<input class="form-check-input" type="radio" name="status[{{$dau->jadw_audit_id}}]" id="rd2{{$dau->jadw_audit_id}}" value="tidak">
+													<label class="form-check-label" for="rd2{{$dau->jadw_audit_id}}">tidak berhak menggunakan</label>
+												  </div>
+												@endif
+											  </td>
+											  <td>{{$dau->jadw_audit_jenis}}</td>
+											  <td>{{$dau->sert_nama}}</td>
+											  <td>{{$dau->jadw_audit_sni}}</td>
+											  <td>{{$dau->komodt_nama}}</td>
+											  <td>{{$dau->jadw_audit_merk}}</td>
+											  <td>{{$dau->jadw_audit_tipe}}</td>
+											</tr>
+										@endforeach
+										</tbody>
+									</table>
+								</div>
+								
+								<div style="padding-top: 20px">
+									<template v-if="loading_submit">
+										<div class="fa-3x" style="text-align: center">
+											<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+										</div>
+									</template>
+									<template v-else>
+										<button :disabled="!status_submit" :class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}" @click="submitRekomendasi">
+											<i class="fas fa-save"></i> Simpan Lembar Periksa
+										</button>
+									</template>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif
 				</div>
 			</div>
 		</div>
@@ -603,17 +605,19 @@
 						else if(tinyMCE.get('komte_priksa_penilaian_13').getContent() === ''){
 							toastCenter({type: 'warning',title: "Silahkan Isi Penilaian 1.12"});
 						}
-						@foreach($dataAudit as $dau)
-						else if (!$("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val()) {
-						   toastCenter({type: 'warning',title: "Silahkan isikan keputusan untuk '{{$dau->sert_nama}}'"});
-						}
-						@endforeach
-						else if ($.trim($("#jadw_file_kehadiran_komite").val()) === "") {
-							toastCenter({
-										type: 'warning',
-										title: "Silahkan Unggah File Kehadiran Komite"
-									})
-						}
+						@if(strpos($dataJadwal->komite_posisi, 'ketua') !== false)
+							@foreach($dataAudit as $dau)
+							else if (!$("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val()) {
+							   toastCenter({type: 'warning',title: "Silahkan isikan keputusan untuk '{{$dau->sert_nama}}'"});
+							}
+							@endforeach
+							else if ($.trim($("#jadw_file_kehadiran_komite").val()) === "") {
+								toastCenter({
+											type: 'warning',
+											title: "Silahkan Unggah File Kehadiran Komite"
+										})
+							}
+						@endif
 						else{
 							swalWithBootstrapButtons({
 								title: `Submit Lembar Periksa ?`,
@@ -642,15 +646,17 @@
 									formData.append("komte_priksa_penilaian_11", tinyMCE.get('komte_priksa_penilaian_11').getContent())
 									formData.append("komte_priksa_penilaian_12", tinyMCE.get('komte_priksa_penilaian_12').getContent())
 									formData.append("komte_priksa_penilaian_13", tinyMCE.get('komte_priksa_penilaian_13').getContent())
-									const file = document.querySelector("#jadw_file_kehadiran_komite").files[0];
-									formData.append("jadw_file_kehadiran_komite", file)
-									formData.append("jadw_file_kehadiran_komite_lama", $("#jadw_file_kehadiran_komite_lama").val())
-									
-									@foreach($dataAudit as $dau)
-									formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());
-									formData.append('tanggal[{{$dau->jadw_audit_id}}]', $("input[name='tanggal[{{$dau->jadw_audit_id}}]']").val());
-									
-									@endforeach
+									@if(strpos($dataJadwal->komite_posisi, 'ketua') !== false)
+										const file = document.querySelector("#jadw_file_kehadiran_komite").files[0];
+										formData.append("jadw_file_kehadiran_komite", file)
+										formData.append("jadw_file_kehadiran_komite_lama", $("#jadw_file_kehadiran_komite_lama").val())
+										
+										@foreach($dataAudit as $dau)
+										formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());
+										formData.append('tanggal[{{$dau->jadw_audit_id}}]', $("input[name='tanggal[{{$dau->jadw_audit_id}}]']").val());
+										
+										@endforeach
+									@endif
 									this.loading_submit = true;
 									let self = this;
 									$.ajax({

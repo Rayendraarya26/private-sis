@@ -80,7 +80,7 @@ class KomiteLembarPeriksaController extends Controller
         $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->whereIn('sis_audit_tim_komite.komite_posisi', ['ketua']);
+        // $data->whereIn('sis_audit_tim_komite.komite_posisi', ['ketua']);
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
         $data->where('sis_audit_komite_rekomendasi.rekmd_komte_status', '=', 'ditutup');
         // $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
@@ -144,6 +144,7 @@ class KomiteLembarPeriksaController extends Controller
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+        $dataJadwal->join('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
@@ -158,6 +159,7 @@ class KomiteLembarPeriksaController extends Controller
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_standart_acuan) AS jadw_audit_standart_acuan");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
+        $dataJadwal->selectRaw("GROUP_CONCAT(distinct komite_posisi) AS komite_posisi");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
         $dataJadwal->selectRaw("MAX(lks_expired_date_perbaikan) AS lks_expired_date_perbaikan");
         $dataJadwal->groupBy('sis_jadwal.jadw_id');

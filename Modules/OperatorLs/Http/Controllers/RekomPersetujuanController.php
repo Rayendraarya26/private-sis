@@ -21,8 +21,8 @@ use Illuminate\Support\Str;
 class KomiteRekomPersetujuanController extends Controller
 {
     public $module = self::class;
-    private $url = 'timaudit/komite/rekomendasi-persetujuan';
-    private $view = "timaudit::komite_rekom_persetujuan";
+    private $url = 'operatorls/rekomendasi-persetujuan';
+    private $view = "operatorls::rekom_persetujuan";
 
     public function index()
     {
