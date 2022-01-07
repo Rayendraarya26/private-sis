@@ -31,9 +31,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $lap_lengkp_kesimpulan
  * @property string|null $lap_lengkp_rekomendasi_lks
  * @property string|null $lap_lengkp_verifikasi_status
+ * @property string|null $lap_lengkp_revisi_note
  * @property string|null $lap_lengkp_verifikasi_diajukan
  * @property Carbon|null $lap_lengkp_verifikasi_tanggal
  * @property string|null $lap_lengkp_verifikasi_oleh
+ * @property string|null $lap_lengkp_verifikasi_jabatan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -73,9 +75,11 @@ class SisAuditLapLengkap extends Model
 		'lap_lengkp_kesimpulan',
 		'lap_lengkp_rekomendasi_lks',
 		'lap_lengkp_verifikasi_status',
+		'lap_lengkp_revisi_note',
 		'lap_lengkp_verifikasi_diajukan',
 		'lap_lengkp_verifikasi_tanggal',
-		'lap_lengkp_verifikasi_oleh'
+		'lap_lengkp_verifikasi_oleh',
+		'lap_lengkp_verifikasi_jabatan'
 	];
 
 	public function sis_jadwal()

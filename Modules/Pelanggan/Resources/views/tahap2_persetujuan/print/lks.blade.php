@@ -56,7 +56,7 @@
 </head>
 <body style="margin-top: 50px">
 <header>
-    <div style="float: left">
+    <div style="float: left; padding-left: 40px">
     <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
          style="max-width: 150px; margin-top: -15px">
     </div>
@@ -68,7 +68,7 @@
     </div>
 </div>
 
-<section style="margin-top: 0px">
+<section style="margin-top: 0px; margin-right: 20px; margin-left: 20px">
     <table>
         <tr>
             <td>1.</td>
@@ -334,7 +334,7 @@
             $x = 750;
             $y = 570;
             $text = "{$PAGE_NUM} dari {$PAGE_COUNT}";
-            $font = $fontMetrics->get_font("helvetica", "italic");
+            $font = $fontMetrics->get_font("helvetica");
             $size = 10;
             $color = array(0,0,0);
             $word_space = 0.0;  //  default

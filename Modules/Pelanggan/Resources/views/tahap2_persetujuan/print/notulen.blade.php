@@ -27,7 +27,7 @@
 </head>
 <body style="margin-top: 50px">
 <header>
-    <div style="float: left">
+    <div style="float: left;margin-left: 60px;">
         <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
              style="max-width: 120px;">
     </div>
@@ -36,7 +36,7 @@
     </div>
 </header>
 
-<section>
+<section style="padding-top: 20px; margin-left: 60px; margin-right: 40px">
     <table>
         <tr>
             <td>Hari, Tanggal</td>
@@ -54,7 +54,7 @@
         </tr>
 
         <tr>
-            <td>Jumlah Peserta</td>
+            <td>Jumlah Peserta <br><i>(Rekaman Kehadiran Terlampir)</i></td>
             <td>:
         </tr>
 
