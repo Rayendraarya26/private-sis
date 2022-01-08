@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 
@@ -104,6 +105,8 @@ class Tahap2PersetujuanController extends Controller
                     'jlog_judul' => 'Revis Temuan LKS',
                     'jlog_pesan' => $request['message'],
                 ]);
+
+                Session::flash("message", "Revisi diajukan ke Tim Audit");
             } else {
                 SisJadwalLog::create([
                     'jadw_id'    => $data->jadw_id,
@@ -111,6 +114,8 @@ class Tahap2PersetujuanController extends Controller
                     'jlog_judul' => 'Approve Temuan LKS',
                     'jlog_pesan' => sprintf("%s menyetujui temuan LKS", $data->sis_pelanggan->cust_nama),
                 ]);
+
+                Session::flash("message", sprintf("Temuan telah disetujui, silakan masuk ke halaman <a href='%s'>Perbaikan Temuan</a>", url("pelanggan/tahap2/perbaikan-temuan")));
             }
 
             DB::commit();

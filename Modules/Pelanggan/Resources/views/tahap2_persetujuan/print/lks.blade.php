@@ -144,13 +144,13 @@
         <thead>
         <tr>
             <th style="width: 10%">No. <br>(Inisial Auditor)</th>
-            <th>Uraian Ketidaksesuaian</th>
-{{--            <th>Tindakan Perbaikan <br>--}}
-{{--                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>--}}
-{{--            </th>--}}
-{{--            <th>Bukti Tindakan Perbaikan</th>--}}
-{{--            <th>Bagian <br>(Pendamping)</th>--}}
-{{--            <th>Hasil dan Tanggal <br> Verifikasi</th>--}}
+            <th style="width: 40%">Uraian Ketidaksesuaian</th>
+            <th style="width: 20%">Tindakan Perbaikan <br>
+                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
+            </th>
+            <th>Bagian <br>(Pendamping)</th>
+            <th>Bukti Tindakan Perbaikan</th>
+            <th>Hasil dan Tanggal <br> Verifikasi</th>
         </tr>
         </thead>
         <tbody>
@@ -158,34 +158,41 @@
             <tr>
                 <td style="text-align: center">{{$loop->iteration}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
                 <td style="padding: 5px">
-{{--                    {!! $lks->lks_uraian_ketidaksesuaian !!}--}}
+                    {{--{!! $lks->lks_uraian_ketidaksesuaian !!}--}}
                     {{ strip_tags($lks->lks_uraian_ketidaksesuaian) }}
                     <br>
                     <br>
-                    Kategori ketidaksesuaian: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
+                    <b>Kategori ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                     <br>
                     <br>
-{{--                    Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
-                    Klausul ketidak sesuaian: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
+                    {{--Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
+                    <b>Klausul ketidak sesuaian</b>: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
                 </td>
 
-{{--                <td>--}}
-{{--                    {!! $lks->lks_perbaikan_analisa !!}--}}
-{{--                    {!! $lks->lks_perbaikan_koreksi !!}--}}
-{{--                    {!! $lks->lks_perbaikan_tindakan !!}--}}
-{{--                </td>--}}
-{{--                <td>{!! $lks->lks_bagian_pendamping !!}</td>--}}
-{{--                <td>--}}
-{{--                    {!! $lks->lks_bukti_tindakan_perbaikan !!}--}}
+                <td>
+                    Analisa Penyebab:
+                    {!! $lks->lks_perbaikan_analisa !!}
+                    <br><br>
+                    Koreksi
+                    {!! $lks->lks_perbaikan_koreksi !!}
+                    <br><br>
+                    Tindakan Korektif
+                    {!! $lks->lks_perbaikan_tindakan !!}
+                </td>
+                <td>{!! $lks->lks_bagian_pendamping !!}</td>
+                <td>
+                    {!! $lks->lks_bukti_tindakan_perbaikan !!}
 
-{{--                    @foreach($lks->sis_audit_lks_files as $file)--}}
-{{--                        <br>--}}
-{{--                        <a href="{{asset($file->lks_filepath)}}">--}}
-{{--                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}--}}
-{{--                        </a>--}}
-{{--                    @endforeach--}}
-{{--                </td>--}}
-{{--                <td></td>--}}
+                    @foreach($lks->sis_audit_lks_files as $file)
+                        <br>
+                        <a href="{{asset($file->lks_filepath)}}">
+                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
+                        </a>
+                    @endforeach
+                </td>
+                <td>
+
+                </td>
             </tr>
         @endforeach
         </tbody>

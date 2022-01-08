@@ -118,6 +118,7 @@
                                     <th>Tindakan Perbaikan <br>
                                         <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
                                     </th>
+                                    <th>Bagian <br>(Pendamping)</th>
                                     <th>Bukti Tindakan Perbaikan</th>
                                 </tr>
                                 </thead>
@@ -129,14 +130,26 @@
                                         <td>
                                             {!! $lks->lks_uraian_ketidaksesuaian !!}
                                             <br>
-                                            Kategori ketidaksesuaian: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
+                                            <b>Kategori ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                                             <br>
-                                            Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}
+                                            <b>Klausul ketidak sesuaian</b>: {!! $lks->lks_klausul_ketidaksesuaian !!}
+                                            <br>
+                                            <b>Tgl Max Revisi</b>:
+                                            {{ $lks->lks_expired_date_perbaikan->isoFormat("LL") }}
                                         </td>
                                         <td>
+                                            <b style="font-size: 12px">Analisis Penyebab: </b>
+                                            <br>
                                             {!! $lks->lks_perbaikan_analisa !!}
+                                            <br><br>
+                                            <b style="font-size: 12px">Koreksi: </b>
                                             {!! $lks->lks_perbaikan_koreksi !!}
+                                            <br><br>
+                                            <b style="font-size: 12px">Tindakan Korektif: </b>
                                             {!! $lks->lks_perbaikan_tindakan !!}
+                                        </td>
+                                        <td>
+                                        {!! $lks->lks_bagian_pendamping !!}
                                         </td>
                                         <td>
                                             {!! $lks->lks_bukti_tindakan_perbaikan !!}

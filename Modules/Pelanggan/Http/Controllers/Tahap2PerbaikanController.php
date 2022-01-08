@@ -5,7 +5,7 @@ namespace Modules\Pelanggan\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SisAuditLksFile;
-use App\Models\BbkkpSis\SisAuditLksRevisi;
+use App\Models\BbkkpSis\SisAuditLksLog;
 use App\Models\BbkkpSis\SisJadwal;
 use Carbon\Carbon;
 use Exception;
@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Modules\Pelanggan\Http\Traits\Tahap2Trait;
 
 class Tahap2PerbaikanController extends Controller
 {
+    use Tahap2Trait;
+
     public $module = self::class;
     private $url = 'pelanggan/tahap2/perbaikan-temuan';
     private $view = "pelanggan::tahap2_perbaikan";
@@ -38,8 +41,9 @@ class Tahap2PerbaikanController extends Controller
     {
         $data = SisJadwal::with(['sis_audit_lks.sis_jadwal_tim'])
             ->where('sis_jadwal.jadw_id', $jadwalID)
+            ->where('jadw_setujui_temuan', 'setuju')
             ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
-            ->first();
+            ->firstOrFail();
 
         $breadcrumbs = [
             new BreadcrumbsStruct('Pelanggan'),
@@ -54,7 +58,7 @@ class Tahap2PerbaikanController extends Controller
     public function detailAllLKS(Request $request, $jadwalID)
     {
         try {
-            $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])->findOrFail($jadwalID);
+            $dataJadwal = $this->lksMustBeApprove($jadwalID);
             $dataLKS    = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
                 ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
                 ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
@@ -72,122 +76,6 @@ class Tahap2PerbaikanController extends Controller
             return view("$this->view.detail_all_lks")->with($parser);
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage() . ' | ' . $e->getLine()]);
-        }
-    }
-
-    public function detailLKS(Request $request, $jadwalID, $lksID)
-    {
-        $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan', 'sis_audit_lks_files'])
-            ->join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
-            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-            ->where('sis_jadwal.jadw_id', $jadwalID)
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
-            ->where('sis_audit_lks.lks_id', $lksID)
-            ->firstOrFail();
-
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Pelanggan'),
-            new BreadcrumbsStruct('Audit', url($this->url)),
-            new BreadcrumbsStruct('Detail LKS'),
-        ];
-
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view("$this->view.detail_lks")->with($parser);
-    }
-
-    public function perbaikanLKS(Request $request, $jadwalID, $lksID)
-    {
-        $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan', 'sis_jadwal_tim'])
-            ->join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
-            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-            ->where('sis_jadwal.jadw_id', $jadwalID)
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
-            ->where('sis_audit_lks.lks_id', $lksID)
-            ->firstOrFail();
-
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Pelanggan'),
-            new BreadcrumbsStruct('Audit', url($this->url)),
-            new BreadcrumbsStruct('Perbaikan LKS'),
-        ];
-
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
-        return view("$this->view.perbaikan")->with($parser);
-    }
-
-    public function processPerbaikanLKS(Request $request, $jadwalID, $lksID)
-    {
-        $request->validate([
-            'perbaikan_text_analisis'           => 'required',
-            'perbaikan_text_koreksi'            => 'required',
-            'perbaikan_text_tindakan'           => 'required',
-            'perbaikan_text_tindakan_perbaikan' => 'required',
-        ]);
-
-        $successDeletedPath = [];
-        $failedDeletedPath  = [];
-        try {
-            $data = SisAuditLks::with(['sis_jadwal_audit.sis_jadwal', 'sis_jadwal_audit.sis_permohonan', 'sis_audit_lks_files'])
-                ->join('sis_jadwal_audit', 'sis_jadwal_audit.jadw_audit_id', '=', 'sis_audit_lks.jadw_audit_id')
-                ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-                ->where('sis_jadwal.jadw_id', $jadwalID)
-                ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
-                ->where('sis_audit_lks.lks_id', $lksID)
-                ->first();
-            if (empty($data)) throw new Exception("Data Audit tidak ditemukan");
-
-            DB::beginTransaction();
-
-            $data->lks_perbaikan_analisa        = $request['perbaikan_text_analisis'];
-            $data->lks_perbaikan_koreksi        = $request['perbaikan_text_koreksi'];
-            $data->lks_perbaikan_tindakan       = $request['perbaikan_text_tindakan'];
-            $data->lks_bukti_tindakan_perbaikan = $request['perbaikan_text_tindakan_perbaikan'];
-            $data->lks_status                   = 'fixed';
-            $data->save();
-
-            if (count($data->sis_audit_lks_files) > 0) {
-                foreach ($data->sis_audit_lks_files as $file) {
-                    $successDeletedPath[] = public_path($file->lks_filepath);
-                    $file->delete();
-                }
-            }
-
-            if ($request->hasFile('berkas')) {
-                $baseFileUpload = sprintf(config("app.path_file_perbaikan_lks"), $data->lks_id);
-                foreach ($request->file('berkas') as $berkas) {
-                    $filePebaikan       = $berkas;
-                    $filePebaikanName   = Str::slug($filePebaikan->getClientOriginalName()) . '-' . time() . '.' . $filePebaikan->getClientOriginalExtension();
-                    $filePebaikanFolder = $baseFileUpload;
-                    if (!File::exists($filePebaikanFolder)) File::makeDirectory($filePebaikanFolder, 0777, true, true);
-                    $filePebaikan->move($filePebaikanFolder, $filePebaikanName);
-
-                    $newSisLksFile = SisAuditLksFile::create([
-                        'lks_id'       => $data->lks_id,
-                        'lks_filepath' => sprintf("%s/%s", $filePebaikanFolder, $filePebaikanName),
-                        'created_at'   => Carbon::now(),
-                    ]);
-
-                    $failedDeletedPath[] = public_path($newSisLksFile->lks_filepath);
-                }
-            }
-
-            SisAuditLksRevisi::create([
-                'lks_id'             => $data->lks_id,
-                'lks_revisi_catatan' => sprintf("%s telah memperbaiki LKS", $data->sis_jadwal_audit->sis_permohonan->mohon_cust_nama),
-                'lks_revisi_oleh'    => "customer",
-            ]);
-
-            DB::commit();
-            foreach ($successDeletedPath as $del) {
-                @unlink($del);
-            }
-            return responseJSON(200, [], "Perbaikan LKS berhasil dikirim");
-        } catch (Exception $e) {
-            DB::rollBack();
-            foreach ($failedDeletedPath as $del) {
-                @unlink($del);
-            }
-            return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
 
@@ -212,7 +100,6 @@ class Tahap2PerbaikanController extends Controller
             $key              = $request['key'];
             $value            = $request['value'];
             $data->$key       = $value;
-            $data->lks_status = 'fixed';
             $data->save();
 
             DB::commit();
@@ -225,7 +112,7 @@ class Tahap2PerbaikanController extends Controller
 
     public function savePerbaikanFile(Request $request, $jadwalID, $lksID)
     {
-        $failedDeletedPath = [];
+        // $failedDeletedPath = [];
         try {
             if (!$request->hasFile("files")) throw new Exception("File tidak dapat kosong");
 
@@ -254,21 +141,56 @@ class Tahap2PerbaikanController extends Controller
                     if (!File::exists($filePebaikanFolder)) File::makeDirectory($filePebaikanFolder, 0777, true, true);
                     $filePebaikan->move($filePebaikanFolder, $filePebaikanName);
 
-                    $newSisLksFile       = SisAuditLksFile::create([
+                    $newSisLksFile = SisAuditLksFile::create([
                         'lks_id'       => $data->lks_id,
                         'lks_filepath' => sprintf("%s/%s", $filePebaikanFolder, $filePebaikanName),
                         'created_at'   => Carbon::now(),
                     ]);
-                    $failedDeletedPath[] = public_path($newSisLksFile->lks_filepath);
+                    // $failedDeletedPath[] = public_path($newSisLksFile->lks_filepath);
                 }
             }
 
             DB::commit();
+
+            return responseJSON(200, [], "Perbaikan LKS berhasil disimpan");
         } catch (Exception $e) {
             DB::rollBack();
-            foreach ($failedDeletedPath as $del) {
-                @unlink($del);
+            // foreach ($failedDeletedPath as $del) {
+            //     @unlink($del);
+            // }
+            return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
+        }
+    }
+
+    public function submitLKS(Request $request, $jadwalID)
+    {
+        try {
+            $submittedIDs = $request->get('ids');
+
+            $dataJadwal = $this->lksMustBeApprove($jadwalID);
+            if (empty($dataJadwal)) throw new Exception("Data Audit tidak ditemukan");
+
+            DB::beginTransaction();
+            foreach ($dataJadwal->sis_audit_lks as $lks) {
+                if (in_array($lks->lks_id, $submittedIDs)) {
+                    $lks->lks_status = 'fixed';
+                    $lks->save();
+
+                    // save to log
+                    SisAuditLksLog::create([
+                        'lks_id'            => $lks->lks_id,
+                        'lkslog_data'       => json_encode($lks),
+                        'lkslog_file'       => json_encode($lks->sis_audit_lks_files),
+                        'lkslog_created_at' => Carbon::now(),
+                        'lkslog_created_id' => auth()->id(),
+                    ]);
+                }
             }
+
+            DB::commit();
+            return responseJSON(200, ['redirect' => url($this->url)], "LKS berhasil diajukan ke Auditor");
+        } catch (Exception $e) {
+            DB::rollBack();
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }

@@ -129,77 +129,123 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
+                                        <th>
+                                            <input type="checkbox" aria-label="check-all" @click="checkAll"
+                                                   v-model="allChecked">Semua
+                                        </th>
                                         <th>Auditor</th>
                                         <th>Uraian Ketidaksesuaian</th>
                                         <th>Tindakan Perbaikan <br>
                                             <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
                                         </th>
+                                        <th>Bagian <br>(Pendamping)</th>
                                         <th>Bukti Tindakan Perbaikan</th>
                                     </tr>
                                     </thead>
                                     <tbody id="tbody-lks">
                                     @foreach($data->sis_audit_lks as $lks)
-                                        @php($lksIDs[] = $lks->lks_id)
+                                        <?php
+                                        $editable = in_array($lks->lks_status, ['proses', 'revisi']);
+                                        if ($editable) {
+                                            $lksIDs[] = $lks->lks_id;
+                                        }
+                                        ?>
                                         <tr>
+                                            <td>
+                                                @if($editable)
+                                                    <input type="checkbox" aria-label="check-{{$lks->lks_id}}"
+                                                           v-model="check"
+                                                           value="{{$lks->lks_id}}"
+                                                           id="check_{{$lks->lks_id}}">
+                                                @else
+                                                    <i style="color: green"><i class="fad fa-paper-plane"></i>
+                                                        Terkirim ke Auditor
+                                                    </i>
+                                                @endif
+                                            </td>
                                             <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
                                             <td>
                                                 {!! $lks->lks_uraian_ketidaksesuaian !!}
                                                 <br>
-                                                Kategori
-                                                ketidaksesuaian: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
+                                                <b>Kategori
+                                                    ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                                                 <br>
-                                                Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}
+                                                <b>Klausul ketidak
+                                                    sesuaian</b>: {!! $lks->lks_klausul_ketidaksesuaian !!}
+                                                <br>
+                                                <b>Tgl Max Revisi</b>:
+                                                {{ $lks->lks_expired_date_perbaikan->isoFormat("LL") }}
                                             </td>
                                             <td>
                                                 <div style="padding: 10px 0 0 0">
                                                     <b style="font-size: 12px">Analisis Penyebab: </b>
-                                                    <textarea class="form-control editor_perbaikan_analisis"
-                                                              placeholder="Masukkaan deskripsi..."
-                                                              name="editor_perbaikan_analisis"
-                                                              id="editor_perbaikan_analisis_{{$lks->lks_id}}"
-                                                              @change="saveAnalisa({{$lks->lks_id}})"
-                                                              aria-label="editor revisi analisis">{!! $lks->lks_perbaikan_analisa !!}</textarea>
+                                                    @if($editable)
+                                                        <textarea class="form-control editor_perbaikan_analisis"
+                                                                  placeholder="Masukkaan deskripsi..."
+                                                                  name="editor_perbaikan_analisis"
+                                                                  id="editor_perbaikan_analisis_{{$lks->lks_id}}"
+                                                                  @change="saveAnalisa({{$lks->lks_id}})"
+                                                                  aria-label="editor revisi analisis">{!! $lks->lks_perbaikan_analisa !!}</textarea>
+                                                    @else
+                                                        <br>
+                                                        {!! $lks->lks_perbaikan_analisa !!}
+                                                    @endif
                                                 </div>
                                                 <div style="padding: 10px 0 0 0">
                                                     <b style="font-size: 12px">Koreksi: </b>
-                                                    <textarea class="form-control editor_perbaikan_tindakan"
-                                                              placeholder="Masukkaan deskripsi..."
-                                                              name="editor_perbaikan_tindakan"
-                                                              id="editor_perbaikan_tindakan_{{$lks->lks_id}}"
-                                                              aria-label="editor revisi tindakan">{!! $lks->lks_perbaikan_koreksi !!}</textarea>
+                                                    @if($editable)
+                                                        <textarea class="form-control editor_perbaikan_tindakan"
+                                                                  placeholder="Masukkaan deskripsi..."
+                                                                  name="editor_perbaikan_tindakan"
+                                                                  id="editor_perbaikan_tindakan_{{$lks->lks_id}}"
+                                                                  aria-label="editor revisi tindakan">{!! $lks->lks_perbaikan_koreksi !!}</textarea>
+                                                    @else
+                                                        <br>
+                                                        {!! $lks->lks_perbaikan_koreksi !!}
+                                                    @endif
                                                 </div>
                                                 <div style="padding: 10px 0 0 0">
                                                     <b style="font-size: 12px">Tindakan Korektif: </b>
-                                                    <textarea class="form-control editor_perbaikan_korektif"
-                                                              placeholder="Masukkaan deskripsi..."
-                                                              name="editor_perbaikan_korektif"
-                                                              id="editor_perbaikan_korektif_{{$lks->lks_id}}"
-                                                              aria-label="editor revisi korektif">{!! $lks->lks_perbaikan_tindakan !!}</textarea>
+                                                    @if($editable)
+                                                        <textarea class="form-control editor_perbaikan_korektif"
+                                                                  placeholder="Masukkaan deskripsi..."
+                                                                  name="editor_perbaikan_korektif"
+                                                                  id="editor_perbaikan_korektif_{{$lks->lks_id}}"
+                                                                  aria-label="editor revisi korektif">{!! $lks->lks_perbaikan_tindakan !!}</textarea>
+                                                    @else
+                                                        <br>
+                                                        {!! $lks->lks_perbaikan_tindakan !!}
+                                                    @endif
                                                 </div>
                                             </td>
                                             <td>
-                                                <div style="padding: 10px 0 0 0">
-                                                    <b style="font-size: 12px">Tindakan Perbaikan: </b>
-                                                    <textarea class="form-control editor_tindakan_perbaikan"
-                                                              placeholder="Masukkaan deskripsi..."
-                                                              name="editor_tindakan_perbaikan"
-                                                              id="editor_tindakan_perbaikan_{{$lks->lks_id}}"
-                                                              aria-label="editor revisi korektif">{{ $lks->lks_bukti_tindakan_perbaikan }}</textarea>
-                                                </div>
+                                                {!! $lks->lks_bagian_pendamping !!}
+                                            </td>
+                                            <td>
+                                                {{--                                                <div style="padding: 10px 0 0 0">--}}
+                                                {{--                                                    <b style="font-size: 12px">Tindakan Perbaikan: </b>--}}
+                                                {{--                                                    <textarea class="form-control editor_tindakan_perbaikan"--}}
+                                                {{--                                                              placeholder="Masukkaan deskripsi..."--}}
+                                                {{--                                                              name="editor_tindakan_perbaikan"--}}
+                                                {{--                                                              id="editor_tindakan_perbaikan_{{$lks->lks_id}}"--}}
+                                                {{--                                                              aria-label="editor revisi korektif">{{ $lks->lks_bukti_tindakan_perbaikan }}</textarea>--}}
+                                                {{--                                                </div>--}}
 
-                                                <div style="padding-top: 20px">
-                                                    <small>(jika ada, unggah file bukti perbaikan)</small>
-                                                    <div class="custom-file">
-                                                        <input type="file" class="custom-file-input"
-                                                               id="file_perbaikan_{{$lks->lks_id}}" multiple
-                                                               @change="uploadFile({{$lks->lks_id}},...arguments)"
-                                                               accept="image/png,image/jpg,application/zip, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/octet-stream, application/vnd.oasis.opendocument.text">
-                                                        <label class="custom-file-label"
-                                                               for="file_perbaikan_{{$lks->lks_id}}">
-                                                            Unggah file perbaikan...</label>
+                                                @if($editable)
+                                                    <div style="padding-top: 20px">
+                                                        <small>(jika ada, unggah file bukti perbaikan)</small>
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input"
+                                                                   id="file_perbaikan_{{$lks->lks_id}}" multiple
+                                                                   @change="uploadFile({{$lks->lks_id}},...arguments)"
+                                                                   accept="image/png,image/jpg,application/zip, application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/octet-stream, application/vnd.oasis.opendocument.text">
+                                                            <label class="custom-file-label"
+                                                                   for="file_perbaikan_{{$lks->lks_id}}">
+                                                                Unggah file perbaikan...</label>
+                                                        </div>
+                                                        <small id="file_info_{{$lks->lks_id}}"></small>
                                                     </div>
-                                                    <small id="file_info_{{$lks->lks_id}}"></small>
-                                                </div>
+                                                @endif
 
                                                 @if(count($lks->sis_audit_lks_files) > 0)
                                                     <br>
@@ -218,6 +264,16 @@
                                     @endforeach
                                     </tbody>
                                 </table>
+
+                                @if(count($lksIDs) == 0)
+                                    <div class="alert alert-info" style="text-align: center">
+                                        SEMUA LKS TELAH TERKIRIM KE AUDITOR. TERIMAKASIH
+                                    </div>
+                                @else
+                                    <div class="alert alert-warning" style="text-align: center">
+                                        {{count($lksIDs)}} LKS BELUM DIKIRIM KE AUDITOR. SEGERA LAKUKAN PERBAIKAN
+                                    </div>
+                                @endif
                             </div>
 
                             <a href="{{url("$url")}}" class="btn btn-outline-info">
@@ -230,10 +286,19 @@
                                     </div>
                                 </template>
                                 <template v-else>
-                                    <button class="btn btn-primary" @click="saveDraft()" type="button"
-                                            id="btnSaveDraft">
-                                        <i class="fas fa-save"></i> Simpan Draft
-                                    </button>
+                                    @if(count($lksIDs) > 0)
+                                        <button class="btn btn-primary" @click="saveDraft()" type="button"
+                                                id="btnSaveDraft">
+                                            <i class="fas fa-save"></i> Simpan Draft
+                                        </button>
+
+                                        <button class="btn btn-success" @click="sendToAuditor()" type="button"
+                                                id="btnSaveDraft">
+                                            <i class="fas fa-paper-plane"></i>
+                                            (@{{ check.length }})
+                                            Kirim Auditor
+                                        </button>
+                                    @endif
                                 </template>
                             </div>
                         </div>
@@ -254,9 +319,16 @@
             new Vue({
                 el: "#lksPage",
                 data: {
+                    allChecked: false,
+                    check: [],
                     perbaikan_berkas: [],
                     loading_submit: false,
                     lksIDs: {{json_encode($lksIDs)}}
+                },
+                watch: {
+                    check() {
+                        this.allChecked = this.check.length == this.lksIDs.length;
+                    }
                 },
                 mounted() {
                     setTimeout(() => {
@@ -267,6 +339,13 @@
                     }, 500)
                 },
                 methods: {
+                    checkAll() {
+                        if (!this.allChecked) {
+                            this.check = this.lksIDs;
+                        } else {
+                            this.check = [];
+                        }
+                    },
                     buildTinyMCEPenyebab() {
                         // this.lksIDs.map(lksID => {
                         //     let targetID = `#editor_perbaikan_analisis_${lksID}`;
@@ -423,57 +502,63 @@
                             ],
                         });
                     },
-                    saveDraft() {
-                        let needReload = false;
-                        let self       = this;
-                        // Saving draft
-                        let dtPromise  = [];
-                        tinymce.editors.forEach(async function (editor) {
-                            let data    = tinyMCE.get(editor.settings.id).getContent()
-                            let lksArr  = editor.settings.id.split("_")
-                            const lksID = lksArr[lksArr.length - 1];
-                            let key     = "";
+                    async saveDraft() {
+                        return new Promise((resolve, reject) => {
+                            let needReload = false;
+                            let self       = this;
+                            // Saving draft
+                            let dtPromise  = [];
+                            for (const editor of tinymce.editors) {
+                                let data    = tinyMCE.get(editor.settings.id).getContent()
+                                let lksArr  = editor.settings.id.split("_")
+                                const lksID = lksArr[lksArr.length - 1];
+                                let key     = "";
 
-                            switch (lksArr[2]) {
-                                case "analisis":
-                                    key = "lks_perbaikan_analisa";
-                                    break;
-                                case "tindakan":
-                                    key = "lks_perbaikan_tindakan"
-                                    break;
-                                case "korektif":
-                                    key = "lks_perbaikan_koreksi"
-                                    break;
-                                case "perbaikan":
-                                    key = "lks_bukti_tindakan_perbaikan"
-                                    break;
-                            }
-                            dtPromise.push(self.saveToDatabase(lksID, key, data))
-                        });
-
-                        if (this.perbaikan_berkas.length > 0) {
-                            needReload = true;
-                            this.perbaikan_berkas.forEach(async function (berkas) {
-                                dtPromise.push(self.saveFileToDatabase(berkas.lks_id, berkas.files))
-                            })
-                        }
-
-                        this.loading_submit = true;
-                        Promise.all(dtPromise)
-                            .then(() => {
-                                this.loading_submit = false;
-                                toastCenter({
-                                    type: 'success',
-                                    title: "Simpan draft berhasil"
-                                })
-
-                                if (needReload) {
-                                    location.reload();
+                                switch (lksArr[2]) {
+                                    case "analisis":
+                                        key = "lks_perbaikan_analisa";
+                                        break;
+                                    case "tindakan":
+                                        key = "lks_perbaikan_tindakan"
+                                        break;
+                                    case "korektif":
+                                        key = "lks_perbaikan_koreksi"
+                                        break;
+                                    case "perbaikan":
+                                        key = "lks_bukti_tindakan_perbaikan"
+                                        break;
                                 }
-                            })
-                            .catch(() => {
-                                this.loading_submit = false;
-                            })
+                                if (data != null && data != "") {
+                                    dtPromise.push(self.saveToDatabase(lksID, key, data))
+                                }
+                            }
+
+                            if (this.perbaikan_berkas.length > 0) {
+                                needReload = true;
+                                for (const berkas of this.perbaikan_berkas) {
+                                    dtPromise.push(self.saveFileToDatabase(berkas.lks_id, berkas.files))
+                                }
+                            }
+
+                            this.loading_submit = true;
+                            Promise.all(dtPromise)
+                                .then(() => {
+                                    this.loading_submit = false;
+                                    toastCenter({
+                                        type: 'success',
+                                        title: "Simpan draft berhasil"
+                                    })
+
+                                    resolve();
+                                    if (needReload) {
+                                        location.reload();
+                                    }
+                                })
+                                .catch(() => {
+                                    reject();
+                                    this.loading_submit = false;
+                                })
+                        })
                     },
                     async uploadFile(lksID, file) {
                         let available    = false;
@@ -540,6 +625,39 @@
                                 }
                             });
                         })
+                    },
+                    async sendToAuditor() {
+                        if (this.check.length == 0) {
+                            return toastCenter({
+                                type: 'error',
+                                title: 'Silakan check sebelum mengirim ke auditor'
+                            })
+                        }
+
+                        await this.saveDraft()
+
+                        this.loading_submit = true;
+                        let self            = this;
+                        $.ajax({
+                            url: `{{url("$url/temuan-lks/$data->jadw_id/send-to-auditor")}}`,
+                            type: 'POST',
+                            method: 'POST',
+                            dataType: 'json',
+                            data: {ids: this.check},
+                            success: function (response) {
+                                toastCenter({
+                                    type: 'success',
+                                    title: response.message
+                                })
+                                location.reload();
+                                self.loading_submit = false;
+                            },
+                            error: function (xhr) {
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                                self.loading_submit = false;
+                            }
+                        });
                     }
                 }
             });
