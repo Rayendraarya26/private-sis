@@ -14,9 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $prod_sert_id
  * @property int $jadw_id
- * @property string|null $prod_sert_nama
+ * @property Carbon|null $prod_sert_tanggal
+ * @property string|null $prod_sert_nomor
  * @property string|null $prod_sert_filepath
- * @property string|null $prod_sert_keterangan
+ * @property string|null $prod_sert_lab_nama
+ * @property string|null $prod_sert_status_hasil
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -33,11 +35,17 @@ class SisAuditSertifikatProduk extends Model
 		'jadw_id' => 'int'
 	];
 
+	protected $dates = [
+		'prod_sert_tanggal'
+	];
+
 	protected $fillable = [
 		'jadw_id',
-		'prod_sert_nama',
+		'prod_sert_tanggal',
+		'prod_sert_nomor',
 		'prod_sert_filepath',
-		'prod_sert_keterangan'
+		'prod_sert_lab_nama',
+		'prod_sert_status_hasil'
 	];
 
 	public function sis_jadwal()

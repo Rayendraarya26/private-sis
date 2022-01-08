@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_notulen_rapat
  * @property string|null $jadw_file_laporan_ringkas
  * @property string|null $jadw_file_lks
+ * @property string|null $jadw_lks_rekomendasi
+ * @property string|null $jadw_file_surat_tugas
  * @property string|null $jadw_file_kehadiran
  * @property string|null $jadw_file_kehadiran_komite
  * @property string|null $jadw_jenis
@@ -85,6 +87,8 @@ class SisJadwal extends Model
 		'jadw_notulen_rapat',
 		'jadw_file_laporan_ringkas',
 		'jadw_file_lks',
+		'jadw_lks_rekomendasi',
+		'jadw_file_surat_tugas',
 		'jadw_file_kehadiran',
 		'jadw_file_kehadiran_komite',
 		'jadw_jenis',

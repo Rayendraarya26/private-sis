@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $jadw_tim_id
  * @property int|null $jadw_id
  * @property int $peg_id
+ * @property string|null $jadw_tim_file_tugas
  * @property string|null $jadw_tim_kode
  * @property string|null $jadw_tim_posisi
  * @property string|null $jadw_tim_kesanggupan
@@ -48,6 +49,7 @@ class SisJadwalTim extends Model
 	protected $fillable = [
 		'jadw_id',
 		'peg_id',
+		'jadw_tim_file_tugas',
 		'jadw_tim_kode',
 		'jadw_tim_posisi',
 		'jadw_tim_kesanggupan',

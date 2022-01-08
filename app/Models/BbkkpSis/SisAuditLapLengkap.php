@@ -29,7 +29,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $lap_lengkp_konfirmasi_tujuan
  * @property string|null $lap_lengkp_saran
  * @property string|null $lap_lengkp_kesimpulan
- * @property string|null $lap_lengkp_rekomendasi_lks
  * @property string|null $lap_lengkp_verifikasi_status
  * @property string|null $lap_lengkp_revisi_note
  * @property string|null $lap_lengkp_verifikasi_diajukan
@@ -73,7 +72,6 @@ class SisAuditLapLengkap extends Model
 		'lap_lengkp_konfirmasi_tujuan',
 		'lap_lengkp_saran',
 		'lap_lengkp_kesimpulan',
-		'lap_lengkp_rekomendasi_lks',
 		'lap_lengkp_verifikasi_status',
 		'lap_lengkp_revisi_note',
 		'lap_lengkp_verifikasi_diajukan',
