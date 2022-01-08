@@ -3,10 +3,14 @@
 namespace Modules\TimAudit\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditLks;
+use App\Models\BbkkpSis\SisAuditLksLog;
 use App\Models\BbkkpSis\SisAuditLksRevisi;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalAudit;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -182,8 +186,8 @@ class AuLksController extends Controller
             $lksID     = $request['lks_id'];
             $pegawaiID = auth()->user()->master_pegawai->peg_id;
 
-            $this->involvedAuditor($jadwalID);
-            $dataLKS = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
+            $dataJadwal = $this->involvedAuditor($jadwalID);
+            $dataLKS    = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
                 ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
             if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
 
@@ -191,11 +195,42 @@ class AuLksController extends Controller
             $dataLKS->lks_sudah_ditutup = 'tidak';
             $dataLKS->save();
 
-            SisAuditLksRevisi::create([
+            $dataRevisi = SisAuditLksRevisi::create([
                 'lks_id'             => $lksID,
                 'lks_revisi_catatan' => $request['catatan'],
                 'lks_revisi_oleh'    => 'auditor',
             ]);
+
+            // save to log
+            SisAuditLksLog::create([
+                'lks_revisi_id'     => $dataRevisi->lks_revisi_id,
+                'lkslog_data'       => json_encode($dataLKS),
+                'lkslog_file'       => json_encode($dataLKS->sis_audit_lks_files),
+                'lkslog_created_at' => Carbon::now(),
+                'lkslog_created_id' => auth()->id(),
+            ]);
+
+            $data_pelanggan = $dataJadwal->sis_pelanggan;
+            // Send Push
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = 'Revisi LKS';
+            $notifStruct->message   = sprintf("Auditor melakukan revisi LKS pada nomor %s. Segera perbaiki dan kirim ulang ke auditor untuk di verifikasi ulang", $dataLKS->lks_nomor);
+            $notifStruct->user_id   = $data_pelanggan?->user_id;
+            $notifStruct->click_url = url('/pelanggan/tahap2/perbaikan-temuan/temuan-lks/' . $dataJadwal->jadw_id);
+            sendNotification($notifStruct);
+
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = "Revisi LKS";
+            $structEmail->body    = view("$this->view.mails.revisi_lks")
+                ->with([
+                    'name'    => $data_pelanggan?->cust_nama,
+                    'message' => sprintf("%s (Auditor) melakukan revisi LKS pada nomor. Segera perbaiki dan kirim ulang ke auditor untuk di verifikasi ulang", auth()->user()->user_fullname, $dataLKS->lks_nomor),
+                    'note'    => $request['catatan'],
+                    'link'    => url('/pelanggan/tahap2/perbaikan-temuan/temuan-lks/' . $dataJadwal->jadw_id),
+                ])->render();
+            $structEmail->to      = $data_pelanggan?->cust_email;
+            sendEmail($structEmail);
 
             DB::commit();
             return responseJSON(200, [], "Revisi berhasil");
@@ -490,7 +525,11 @@ class AuLksController extends Controller
     private function ajax_verif_data_lks(Request $request)
     {
         try {
-            $dataJadwal = $this->involvedAuditorWithFilter($request['jadwal_id'], $request['auditor'] ?? "all");
+            $dataJadwal = $this->involvedAuditorWithFilter(
+                $request['jadwal_id'],
+                $request['auditor'] ?? "all",
+                $request['status'] ?? "all"
+            );
 
             $result = [];
             foreach ($dataJadwal->sis_audit_lks as $lks) {
@@ -504,10 +543,12 @@ class AuLksController extends Controller
                 }
 
                 $allowEdit = false;
-                $pegawaiID = auth()->user()->master_pegawai->peg_id;
-                $dataTim   = $dataJadwal->sis_jadwal_tims()->where("peg_id", $pegawaiID)->firstOrFail();
-                if ($lks->jadw_tim_id == $dataTim->jadw_tim_id) {
-                    $allowEdit = true;
+                if ($lks->lks_status == 'fixed') {
+                    $pegawaiID = auth()->user()->master_pegawai->peg_id;
+                    $dataTim   = $dataJadwal->sis_jadwal_tims()->where("peg_id", $pegawaiID)->firstOrFail();
+                    if ($lks->jadw_tim_id == $dataTim->jadw_tim_id) {
+                        $allowEdit = true;
+                    }
                 }
 
                 $result[] = [
@@ -522,6 +563,7 @@ class AuLksController extends Controller
                     'lks_perbaikan_analisa'        => $lks->lks_perbaikan_analisa,
                     'lks_perbaikan_koreksi'        => $lks->lks_perbaikan_koreksi,
                     'lks_perbaikan_tindakan'       => $lks->lks_perbaikan_tindakan,
+                    'lks_bagian_pendamping'        => $lks->lks_bagian_pendamping,
                     'lks_bukti_tindakan_perbaikan' => $lks->lks_bukti_tindakan_perbaikan,
                     'perbaikan_files'              => $perbaikanFile,
                     'allow_edit'                   => $allowEdit,
@@ -539,6 +581,7 @@ class AuLksController extends Controller
     private function ajax_verif_revisi_by_lks(Request $request)
     {
         $data = SisAuditLksRevisi::where('lks_id', $request['lks_id'])->orderBy('created_at', 'desc')->first();
+
         if (!empty($data)) {
             return responseJSON(200, $data, "data ditemukan");
         } else {

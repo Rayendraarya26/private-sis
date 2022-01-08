@@ -42,7 +42,7 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::post('/update', [PersetujuanTimAuditController::class, 'update']);
         });
     });
-	
+
 	Route::prefix("histori-audit")->group(function () {
 		Route::get('/', [HistoriPenugasanController::class, 'index']);
 		Route::get('/ajax', [HistoriPenugasanController::class, 'ajax']);
@@ -93,11 +93,11 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::post('/temuan/{jadw_id}/save-draft', [AuLksController::class, 'saveDraft']);
             Route::post('/temuan/{jadw_id}/delete/{lks_id}', [AuLksController::class, 'deleteTemuan']);
 
-            Route::get('/temuan/{jadw_id}/tambah', [AuLksController::class, 'addTemuan']);
-            Route::post('/temuan/{jadw_id}/tambah', [AuLksController::class, 'storeTemuan']);
-            Route::get('/temuan/{jadw_id}/edit/{lks_id}', [AuLksController::class, 'editTemuan']);
-            Route::get('/temuan/{jadw_id}/detail/{lks_id}', [AuLksController::class, 'detailTemuan']);
-            Route::post('/temuan/{jadw_id}/verif/{lks_id}', [AuLksController::class, 'verifTemuan']);
+            // Route::get('/temuan/{jadw_id}/tambah', [AuLksController::class, 'addTemuan']);
+            // Route::post('/temuan/{jadw_id}/tambah', [AuLksController::class, 'storeTemuan']);
+            // Route::get('/temuan/{jadw_id}/edit/{lks_id}', [AuLksController::class, 'editTemuan']);
+            // Route::get('/temuan/{jadw_id}/detail/{lks_id}', [AuLksController::class, 'detailTemuan']);
+            // Route::post('/temuan/{jadw_id}/verif/{lks_id}', [AuLksController::class, 'verifTemuan']);
         });
 
         Route::prefix("laporan-ringkas")->group(function () {
@@ -141,7 +141,7 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
             Route::get('/', [AuPengajuanKomiteController::class, 'index']);
             Route::get('/ajax', [AuPengajuanKomiteController::class, 'ajax']);
             Route::get('/edit', [AuPengajuanKomiteController::class, 'edit']);
-            Route::post('/update', [AuPengajuanKomiteController::class, 'update']);			
+            Route::post('/update', [AuPengajuanKomiteController::class, 'update']);
             Route::get("/detail/{jadw_id}/{type}", [AuPengajuanKomiteController::class, 'detail'])->where('type', 'lap-lengkap|lap-ringkas|lks|detail-audit');
         });
     });

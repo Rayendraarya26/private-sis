@@ -143,6 +143,15 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                        <div class="col-md-3">
+                                            <select aria-label="filter auditor" class="form-control" id="fil_status"
+                                                    @change="doFilter">
+                                                <option value="all" selected>-- Semua Status --</option>
+                                                <option value="proses">Proses Perbaikan (PROSES)</option>
+                                                <option value="revisi">Revisi (REVISI)</option>
+                                                <option value="fixed">Telah Diperbaiki (FIXED)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -155,6 +164,7 @@
                                             <th>Tindakan Perbaikan <br>
                                                 <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
                                             </th>
+                                            <th>Bagian <br>(Pendamping)</th>
                                             <th>Bukti Tindakan Perbaikan</th>
                                             <th>Aksi</th>
                                         </tr>
@@ -199,6 +209,9 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                @{{ lks.lks_bagian_pendamping }}
+                                            </td>
+                                            <td>
                                                 <div style="padding: 10px 0 0 0">
                                                     <b style="font-size: 12px">Tindakan Perbaikan: </b>
                                                     <p v-html="lks.lks_bukti_tindakan_perbaikan"></p>
@@ -225,13 +238,13 @@
                                                     <template v-else>
                                                         <button class="btn btn-primary btn-xs btn-block"
                                                                 @click="promptVerifikasi(lks.lks_id, 'memadai')">
-                                                            <i class="fas fa-check"></i> Memadai
+                                                            <i class="fas fa-check"></i> Close
                                                         </button>
 
-                                                        <button class="btn btn-danger btn-xs btn-block"
-                                                                @click="promptVerifikasi(lks.lks_id, 'tidak-memadai')">
-                                                            <i class="fas fa-cancel"></i> Tidak Memadai
-                                                        </button>
+                                                        {{--                                                        <button class="btn btn-danger btn-xs btn-block"--}}
+                                                        {{--                                                                @click="promptVerifikasi(lks.lks_id, 'tidak-memadai')">--}}
+                                                        {{--                                                            <i class="fas fa-cancel"></i> Tidak Memadai--}}
+                                                        {{--                                                        </button>--}}
 
                                                         <button class="btn btn-warning btn-xs btn-block"
                                                                 @click="propmtRevisi(lks.lks_id)">
@@ -240,7 +253,8 @@
                                                     </template>
                                                 </template>
                                                 <template v-else>
-                                                    <i class="fas fa-user-shield"></i> Auditor Lain
+                                                    <i class="fas fa-user-shield"></i> Protected <br>
+                                                    <small>Milik auditor lain atau LKS belum dikirim ke auditor</small>
                                                 </template>
                                             </td>
                                         </tr>
@@ -282,7 +296,9 @@
 
                     <!-- Modal Footer -->
                     <div class="modal-footer">
-                        <button @click="processRevisi" type="button" class="btn btn-primary btn-sm">Simpan</button>
+                        <button @click="processRevisi" id="simpanRevisi" type="button" class="btn btn-primary btn-sm">
+                            Simpan
+                        </button>
                     </div>
                     <!-- /modal footer -->
                 </div>
@@ -303,12 +319,13 @@
                 selectedRevisiLksID: 0,
             },
             mounted() {
-                this.getDataLKS('all')
+                this.getDataLKS('all', 'all')
             },
             methods: {
                 doFilter() {
                     const auditor = $("#fil_auditor").val()
-                    this.getDataLKS(auditor)
+                    const status  = $("#fil_status").val()
+                    this.getDataLKS(auditor, status)
                 },
                 buildTinyMCERevisi() {
                     tinyMCE.init({
@@ -343,6 +360,7 @@
                     }, 300);
                 },
                 processRevisi() {
+                    $("#simpanRevisi").attr('disabled', true);
                     let content = tinymce.get('revisi_ket').getContent();
                     this.revisi(this.selectedRevisiLksID, content)
                 },
@@ -354,7 +372,7 @@
                     });
 
                     swalWithBootstrapButtons({
-                        title: `Set ${status} ?`,
+                        title: `Set ${status == 'memadai' ? "Closed" : ''} ?`,
                         text: "Pastikan keputusan yang anda pilih benar, jika anda yakin silakan klik Ya",
                         type: 'warning',
                         showCancelButton: true,
@@ -367,8 +385,8 @@
                         }
                     });
                 },
-                async getDataLKS(auditor) {
-                    $.get(`{!! url("$url/ajax?action=data-verif-lks&jadwal_id=$data->jadw_id") !!}&auditor=${auditor}`)
+                async getDataLKS(auditor, status) {
+                    $.get(`{!! url("$url/ajax?action=data-verif-lks&jadwal_id=$data->jadw_id") !!}&auditor=${auditor}&status=${status}`)
                         .then(response => {
                             this.dataLKS = response.results
                             console.log(this.dataLKS);
@@ -405,6 +423,7 @@
                             })
                             this.doFilter()
                             $("#modalRevisi").modal('hide')
+                            $("#simpanRevisi").removeAttr('disabled')
                         })
                 },
                 async showRevisi(lksID) {

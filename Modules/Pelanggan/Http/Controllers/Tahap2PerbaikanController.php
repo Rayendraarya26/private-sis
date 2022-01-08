@@ -3,9 +3,10 @@
 namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SisAuditLksFile;
-use App\Models\BbkkpSis\SisAuditLksLog;
+use App\Models\BbkkpSis\SisAuditLksRevisi;
 use App\Models\BbkkpSis\SisJadwal;
 use Carbon\Carbon;
 use Exception;
@@ -176,14 +177,15 @@ class Tahap2PerbaikanController extends Controller
                     $lks->lks_status = 'fixed';
                     $lks->save();
 
-                    // save to log
-                    SisAuditLksLog::create([
-                        'lks_id'            => $lks->lks_id,
-                        'lkslog_data'       => json_encode($lks),
-                        'lkslog_file'       => json_encode($lks->sis_audit_lks_files),
-                        'lkslog_created_at' => Carbon::now(),
-                        'lkslog_created_id' => auth()->id(),
-                    ]);
+                    // Send Notification to Auditor terkait
+                    $dataPegawai            = $lks->sis_jadwal_tim->master_pegawai;
+                    $dataPelanggan          = $dataJadwal->sis_pelanggan;
+                    $notifStruct            = new NotifStruct();
+                    $notifStruct->title     = "Pengajuan verifikasi LKS";
+                    $notifStruct->message   = sprintf("%s mengajukan verifikasi LKS pada uraian %s", $dataPelanggan->cust_nama, Str::limit(strip_tags($lks->lks_uraian_ketidaksesuaian), 50));
+                    $notifStruct->user_id   = $dataPegawai->user_id;
+                    $notifStruct->click_url = url(sprintf('timaudit/auditor/lks/temuan/%d/verifikasi', $dataJadwal->jadw_id));
+                    sendNotification($notifStruct);
                 }
             }
 
@@ -199,10 +201,11 @@ class Tahap2PerbaikanController extends Controller
     {
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
-            'datagrid'            => $this->ajax_datagrid($request),
-            'datagrid_lks'        => $this->ajax_datagrid_lks($request),
-            'tinymce-uploadimage' => $this->ajax_tinymce_uploadimage($request),
-            default               => responseJSON(404, null, "Invalid url"),
+            'datagrid'                 => $this->ajax_datagrid($request),
+            'datagrid_lks'             => $this->ajax_datagrid_lks($request),
+            'data-verif-revisi-by-lks' => $this->ajax_verif_revisi_by_lks($request),
+            'tinymce-uploadimage'      => $this->ajax_tinymce_uploadimage($request),
+            default                    => responseJSON(404, null, "Invalid url"),
         };
     }
 
@@ -318,12 +321,25 @@ class Tahap2PerbaikanController extends Controller
             $x['lks_perbaikan_analisa']        = $d->lks_perbaikan_analisa;
             $x['lks_perbaikan_koreksi']        = $d->lks_perbaikan_koreksi;
             $x['lks_perbaikan_tindakan']       = $d->lks_perbaikan_tindakan;
+            $x['lks_bagian_pendamping']        = $d->lks_bagian_pendamping;
             $x['lks_expired_date_perbaikan']   = $d->lks_expired_date_perbaikan?->format('Y-m-d H:i:s');
 
             $result[] = $x;
         }
-
+    
         return response()->json(["total" => $total, "rows" => $result]);
+    }
+
+    private function ajax_verif_revisi_by_lks(Request $request)
+    {
+        $data = SisAuditLksRevisi::where('lks_id', $request['lks_id'])->orderBy('created_at', 'desc')->first();
+
+        if (!empty($data)) {
+            return responseJSON(200, $data, "data ditemukan");
+        } else {
+            return responseJSON(500, [], "data tidak ditemukan");
+        }
+
     }
 
     private function ajax_tinymce_uploadimage(Request $request)

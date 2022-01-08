@@ -13,14 +13,14 @@ use Illuminate\Database\Eloquent\Model;
  * Class SisAuditLksLog
  * 
  * @property int $lkslog_id
- * @property int|null $lks_id
+ * @property int|null $lks_revisi_id
  * @property string $lkslog_data
  * @property string|null $lkslog_file
  * @property Carbon $lkslog_created_at
  * @property int $lkslog_created_id
  * 
  * @property SysUser $sys_user
- * @property SisAuditLks|null $sis_audit_lks
+ * @property SisAuditLksRevisi|null $sis_audit_lks_revisi
  *
  * @package App\Models\BbkkpSis
  */
@@ -31,7 +31,7 @@ class SisAuditLksLog extends Model
 	public $timestamps = false;
 
 	protected $casts = [
-		'lks_id' => 'int',
+		'lks_revisi_id' => 'int',
 		'lkslog_created_id' => 'int'
 	];
 
@@ -40,7 +40,7 @@ class SisAuditLksLog extends Model
 	];
 
 	protected $fillable = [
-		'lks_id',
+		'lks_revisi_id',
 		'lkslog_data',
 		'lkslog_file',
 		'lkslog_created_at',
@@ -52,8 +52,8 @@ class SisAuditLksLog extends Model
 		return $this->belongsTo(SysUser::class, 'lkslog_created_id');
 	}
 
-	public function sis_audit_lks()
+	public function sis_audit_lks_revisi()
 	{
-		return $this->belongsTo(SisAuditLks::class, 'lks_id');
+		return $this->belongsTo(SisAuditLksRevisi::class, 'lks_revisi_id');
 	}
 }

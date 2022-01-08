@@ -41,7 +41,7 @@ trait AuditorTraits
      * Cek apakah jadwal exist dan merupakan tim member, juga bagaimana status komitenya + filter hanya audit lks dengan kode auditor tertentu
      * @throws Exception
      */
-    public function involvedAuditorWithFilter(int $jadwalID, string $auditorKode)
+    public function involvedAuditorWithFilter(int $jadwalID, string $auditorKode, $status = "all")
     {
         $pegawaiID = auth()->user()->master_pegawai->peg_id;
         $data      = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims.master_pegawai']);
@@ -49,12 +49,15 @@ trait AuditorTraits
 
 
         $data = $data->with([
-            'sis_audit_lks' => function ($query) use ($auditorKode) {
+            'sis_audit_lks' => function ($query) use ($auditorKode, $status) {
                 $data = $query->join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", "sis_audit_lks.jadw_tim_id")
                     ->orderBy(DB::raw("FIELD(sis_jadwal_tim.jadw_tim_posisi, 'ketua', 'auditor', 'ppc', 'observer')"))
                     ->orderBy("sis_jadwal_tim.jadw_tim_id");
                 if ($auditorKode != "all") {
                     $data = $data->where('sis_jadwal_tim.jadw_tim_kode', $auditorKode);
+                }
+                if ($status != 'all'){
+                    $data = $data->where('lks_status', $status);
                 }
                 return $data;
             }

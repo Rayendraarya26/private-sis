@@ -163,7 +163,16 @@
                                                     </i>
                                                 @endif
                                             </td>
-                                            <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
+                                            <td>
+                                                {{$lks->sis_jadwal_tim->jadw_tim_kode}}
+                                                <br>
+                                                <br>
+                                                @if($lks->lks_status == "revisi")
+                                                    <a href="javascript:void(0)" @click="showRevisi({{$lks->lks_id}})">
+                                                        <i class="fad fa-info"></i> REVISI LKS
+                                                    </a>
+                                                @endif
+                                            </td>
                                             <td>
                                                 {!! $lks->lks_uraian_ketidaksesuaian !!}
                                                 <br>
@@ -658,6 +667,27 @@
                                 self.loading_submit = false;
                             }
                         });
+                    },
+                    async showRevisi(lksID) {
+                        const swalWithBootstrapButtons = swal.mixin({
+                            confirmButtonClass: 'btn btn-success mb-2',
+                            buttonsStyling: false,
+                        });
+
+                        $.get(`{!! url("$url/ajax?action=data-verif-revisi-by-lks&jadwal_id=$data->jadw_id") !!}&lks_id=${lksID}`)
+                            .then(response => {
+                                console.log(response)
+                                swalWithBootstrapButtons({
+                                    title: `Detail Revisi`,
+                                    html: response.results.lks_revisi_catatan,
+                                    type: 'info',
+                                })
+                            })
+                            .fail((xhr) => {
+                                console.log(xhr)
+                                if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                                else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                            });
                     }
                 }
             });

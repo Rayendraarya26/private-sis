@@ -35,7 +35,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisJadwalTim|null $sis_jadwal_tim
  * @property SisJadwal $sis_jadwal
  * @property Collection|SisAuditLksFile[] $sis_audit_lks_files
- * @property Collection|SisAuditLksLog[] $sis_audit_lks_logs
  * @property Collection|SisAuditLksRevisi[] $sis_audit_lks_revisis
  *
  * @package App\Models\BbkkpSis
@@ -86,11 +85,6 @@ class SisAuditLks extends Model
 	public function sis_audit_lks_files()
 	{
 		return $this->hasMany(SisAuditLksFile::class, 'lks_id');
-	}
-
-	public function sis_audit_lks_logs()
-	{
-		return $this->hasMany(SisAuditLksLog::class, 'lks_id');
 	}
 
 	public function sis_audit_lks_revisis()
