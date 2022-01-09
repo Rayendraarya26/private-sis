@@ -326,7 +326,7 @@ class Tahap2PerbaikanController extends Controller
 
             $result[] = $x;
         }
-    
+
         return response()->json(["total" => $total, "rows" => $result]);
     }
 

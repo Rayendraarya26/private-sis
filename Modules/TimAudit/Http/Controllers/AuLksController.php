@@ -6,7 +6,7 @@ use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditLks;
-use App\Models\BbkkpSis\SisAuditLksLog;
+use App\Models\BbkkpSis\SisAuditLksHistory;
 use App\Models\BbkkpSis\SisAuditLksRevisi;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalAudit;
@@ -202,12 +202,12 @@ class AuLksController extends Controller
             ]);
 
             // save to log
-            SisAuditLksLog::create([
-                'lks_revisi_id'     => $dataRevisi->lks_revisi_id,
-                'lkslog_data'       => json_encode($dataLKS),
-                'lkslog_file'       => json_encode($dataLKS->sis_audit_lks_files),
-                'lkslog_created_at' => Carbon::now(),
-                'lkslog_created_id' => auth()->id(),
+            SisAuditLksHistory::create([
+                'lks_revisi_id'         => $dataRevisi->lks_revisi_id,
+                'lkshistory_data'       => json_encode($dataLKS),
+                'lkshistory_file'       => json_encode($dataLKS->sis_audit_lks_files),
+                'lkshistory_created_at' => Carbon::now(),
+                'lkshistory_created_id' => auth()->id(),
             ]);
 
             $data_pelanggan = $dataJadwal->sis_pelanggan;

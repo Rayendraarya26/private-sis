@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SisAuditLks $sis_audit_lks
- * @property SisAuditLksLog $sis_audit_lks_log
+ * @property SisAuditLksHistory $sis_audit_lks_history
  *
  * @package App\Models\BbkkpSis
  */
@@ -44,8 +44,8 @@ class SisAuditLksRevisi extends Model
 		return $this->belongsTo(SisAuditLks::class, 'lks_id');
 	}
 
-	public function sis_audit_lks_log()
+	public function sis_audit_lks_history()
 	{
-		return $this->hasOne(SisAuditLksLog::class, 'lks_revisi_id');
+		return $this->hasOne(SisAuditLksHistory::class, 'lks_revisi_id');
 	}
 }
