@@ -63,6 +63,7 @@
                             let dom         = `dropdownMenu_${row.jadw_id}`;
                             let btnTemuan   = `<div data-options="iconCls:'fad fa-warning'" onclick="location.href = '{{url("$url/temuan-lks")}}/${row.jadw_id}'">${row.total_temuan} Temuan LKS</div>`;
                             let btnDetail   = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/temuan-lks")}}/${row.jadw_id}/detail'">Detail</div>`;
+                            let btnUpload   = `<div data-options="iconCls:'fad fa-cloud-upload'" onclick="location.href = '{{url("$url/upload")}}/${row.jadw_id}'">Upload</div>`;
                             let btnCetakLap = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lks', '_blank')">Cetak LKS</div>`;
 
                             return `
@@ -73,6 +74,7 @@
                             <div id="${dom}" style="width:150px; display: none;">
                             @if(authorized("{$module}@detailAllLKS")) ${btnDetail} @endif
                             @if(authorized("{$module}@temuanLKS")) ${btnTemuan} @endif
+                            @if(authorized("{$module}@upload")) ${btnUpload} @endif
                             <div class="menu-sep"></div>
                             @if(authorized("{$module}@temuanLKS")) ${btnCetakLap} @endif
                             </div>`;

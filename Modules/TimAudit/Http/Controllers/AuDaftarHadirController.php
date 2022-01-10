@@ -21,11 +21,12 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 
 class AuDaftarHadirController extends Controller
 {
-    use AuditorTraits;
+    use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'timaudit/auditor/daftar-hadir';

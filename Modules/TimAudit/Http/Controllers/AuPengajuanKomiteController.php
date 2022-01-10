@@ -21,10 +21,11 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 class AuPengajuanKomiteController extends Controller
 {
-	use AuditorTraits;
+	use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'timaudit/auditor/pengajuan-komite';
@@ -60,7 +61,7 @@ class AuPengajuanKomiteController extends Controller
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function detail_audit(Request $request)
     {
 		try {
@@ -84,7 +85,7 @@ class AuPengajuanKomiteController extends Controller
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
-			
+
 			$dataSertifikat = SisJadwal::join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")
 							->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
@@ -106,7 +107,7 @@ class AuPengajuanKomiteController extends Controller
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)
     {
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
@@ -135,10 +136,10 @@ class AuPengajuanKomiteController extends Controller
             ->setPaper('a4', 'landscape');
         return $pdf->stream();
     }
-	
+
 	private function cetak_lap_lengkap(Request $request, SisJadwal $dataJadwal)
     {
-		
+
 		try {
 			$restJadwal = SisJadwal::where('sis_jadwal.jadw_id', $dataJadwal->jadw_id);
 			$restJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
@@ -155,22 +156,22 @@ class AuPengajuanKomiteController extends Controller
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_standart_acuan) SEPARATOR ',<br/>' ) AS jadw_audit_standart_acuan");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_ruang_lingkup) SEPARATOR ',<br/>' ) AS jadw_audit_ruang_lingkup");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_tujuan_audit) SEPARATOR ',<br/>' ) AS jadw_audit_tujuan_audit");
-			
+
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi = 'ketua', CONCAT(peg_nama), '') SEPARATOR ', ') as ketua");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi != 'ketua', CONCAT(peg_nama, '(', jadw_tim_posisi , ')'), '') SEPARATOR ', ') as anggota");
 			$restJadwal->groupBy('sis_jadwal.jadw_id');
-			
+
 			$dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
-			
+
 			$dataLKS = $this->calculateTemuanLKS($dataJadwal);
-			
+
 			$parser = ['dataJadwal' => $restJadwal->get()[0], 'dataLKS' => $dataLKS, 'itemLKS' => $dataJadwal->sis_audit_lks, 'dataKetua' => $dataKetua];
 			$pdf    = PDF::loadView("$this->view.print.lap-lengkap", $parser)->setPaper('a4', 'portrait');
 			return $pdf->stream();
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
-        }        
+        }
     }
 
 	public function edit(Request $request)
@@ -196,7 +197,7 @@ class AuPengajuanKomiteController extends Controller
 							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
-							
+
 			$dataSertifikat = SisJadwal::join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")
 							->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
 							->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
@@ -237,7 +238,7 @@ class AuPengajuanKomiteController extends Controller
         $newFilePath = [];
         $oldFilePath = [];
         $updateData = [];
-		
+
         try {
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
@@ -245,7 +246,7 @@ class AuPengajuanKomiteController extends Controller
             $restJadwal = $dataJadwal->get()[0];
 			if (!empty($restJadwal->jadw_file_laporan_ringkas)) array_push($oldFilePath, $restJadwal->jadw_file_laporan_ringkas);
 			if (!empty($restJadwal->jadw_file_lks)) array_push($oldFilePath, $restJadwal->jadw_file_lks);
-			
+
 			$baseFileUpload = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
             if ($request->hasFile('jadw_file_laporan_ringkas')) {
                 $fileLks     = $request->file('jadw_file_laporan_ringkas');
@@ -256,7 +257,7 @@ class AuPengajuanKomiteController extends Controller
                 $updateData['jadw_file_laporan_ringkas'] = $fileLksPath;
                 array_push($newFilePath, public_path($fileLksPath));
             }
-			
+
 			if ($request->hasFile('jadw_file_lks')) {
                 $fileRingkas     = $request->file('jadw_file_lks');
                 $fileRingkasName = Str::slug('file-lap-ringkas-' . $request['jadw_id'] . '-' . $fileRingkas->getClientOriginalName()) . '-' . time() . '.' . $fileRingkas->getClientOriginalExtension();
@@ -266,13 +267,13 @@ class AuPengajuanKomiteController extends Controller
                 $updateData['jadw_file_lks'] = $fileRingkasPath;
                 array_push($newFilePath, public_path($fileRingkasPath));
             }
-			
+
             DB::beginTransaction();
-			
+
 			DB::table('sis_jadwal')
                 ->where('jadw_id', $request['jadw_id'])
                 ->update($updateData);
-				
+
             DB::table('sis_jadwal_audit')
                 ->where('jadw_id', $request['jadw_id'])
                 ->update(['jadw_audit_status_komite' => 'submited']);

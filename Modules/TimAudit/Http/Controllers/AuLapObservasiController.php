@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 class AuLapObservasiController extends Controller
 {
-    use AuditorTraits;
+    use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'timaudit/auditor/laporan-observasi';
@@ -68,9 +69,9 @@ class AuLapObservasiController extends Controller
             SisAuditObservasi::updateOrCreate($where, $updateOrCreate);
             return redirect(url($this->url))->with('message', "Laporan observasi berhasil ditambahkan");
         } catch (Exception $e) {
-            foreach ($newFilePath as $path) { // remove new file uploaded
-                @unlink($path);
-            }
+            // foreach ($newFilePath as $path) { // remove new file uploaded
+            //     @unlink($path);
+            // }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

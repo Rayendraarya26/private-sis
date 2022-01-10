@@ -18,10 +18,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 class AuLksController extends Controller
 {
-    use AuditorTraits;
+    use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'timaudit/auditor/lks';
@@ -88,6 +89,7 @@ class AuLksController extends Controller
                     ]
                 );
             }
+            $this->syncNomorLKS($jadwalID);
             DB::commit();
 
             return responseJSON(200, [], "Generate berhasil");
@@ -351,6 +353,7 @@ class AuLksController extends Controller
         try {
             if (!$request->ajax()) throw new Exception("Endopoint ini utuk ajax");
 
+            DB::beginTransaction();
             // 1.
             $pegawaiID = auth()->user()->master_pegawai->peg_id;
 
@@ -358,10 +361,13 @@ class AuLksController extends Controller
             $dataLKS = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
                 ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
             if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
-
             $dataLKS->delete();
+
+            $this->syncNomorLKS($jadwalID);
+            DB::commit();
             return responseJSON(200, [], "Delete berhasil");
         } catch (Exception $e) {
+            DB::rollBack();
             return responseJSON(500, [], $e->getMessage());
         }
     }

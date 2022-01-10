@@ -6,13 +6,12 @@ use Modules\Pelanggan\Http\Controllers\ProfilPerusahaanController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiDataController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
 use Modules\Pelanggan\Http\Controllers\Tahap1JadwalController;
-use Modules\Pelanggan\Http\Controllers\Tahap1PerbaikanController;
 use Modules\Pelanggan\Http\Controllers\Tahap1PersetujuanController;
 use Modules\Pelanggan\Http\Controllers\Tahap2JadwalController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PerbaikanController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PersetujuanController;
 
-Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
+Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
     Route::redirect('/', '/dashboard');
 
     Route::get("profil-perusahaan", [ProfilPerusahaanController::class, 'index']);
@@ -90,6 +89,8 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
         Route::prefix("perbaikan-temuan")->group(function () {
             Route::get("/", [Tahap2PerbaikanController::class, 'index']);
             Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
+            Route::get('/upload', [Tahap2PerbaikanController::class, 'upload']);
+            Route::post('/upload', [Tahap2PerbaikanController::class, 'processUpload']);
             Route::get("/cetak/{jadw_id}/{type}", [Tahap2PersetujuanController::class, 'cetak'])->where('type', 'notulen|lap-ringkas|daftar-hadir|logbook|lks');
             Route::get('/temuan-lks/{jadwal_id}', [Tahap2PerbaikanController::class, 'temuanLKS']);
             Route::get('/temuan-lks/{jadwal_id}/detail', [Tahap2PerbaikanController::class, 'detailAllLKS']);

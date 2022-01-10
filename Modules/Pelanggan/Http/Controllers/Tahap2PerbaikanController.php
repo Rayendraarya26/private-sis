@@ -198,6 +198,16 @@ class Tahap2PerbaikanController extends Controller
         }
     }
 
+    public function upload(Request $request)
+    {
+
+    }
+
+    public function processUpload(Request $request)
+    {
+
+    }
+
     public function cetak(Request $request, $jadwalID, $type)
     {
         try {

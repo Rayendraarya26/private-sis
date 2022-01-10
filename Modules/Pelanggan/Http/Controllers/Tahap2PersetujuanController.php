@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 class Tahap2PersetujuanController extends Controller
 {
-    use AuditorTraits;
+    use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'pelanggan/tahap2/persetujuan-temuan';

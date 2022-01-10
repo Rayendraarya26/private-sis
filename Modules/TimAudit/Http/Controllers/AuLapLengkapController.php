@@ -22,10 +22,11 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 class AuLapLengkapController extends Controller
 {
-    use AuditorTraits;
+    use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'timaudit/auditor/laporan-lengkap';
@@ -95,10 +96,10 @@ class AuLapLengkapController extends Controller
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
+
 	private function cetak_lap_lengkap(Request $request, SisJadwal $dataJadwal)
     {
-		
+
 		try {
 			$restJadwal = SisJadwal::where('sis_jadwal.jadw_id', $dataJadwal->jadw_id);
 			$restJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
@@ -115,22 +116,22 @@ class AuLapLengkapController extends Controller
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_standart_acuan) SEPARATOR ',<br/>' ) AS jadw_audit_standart_acuan");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_ruang_lingkup) SEPARATOR ',<br/>' ) AS jadw_audit_ruang_lingkup");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('- ', jadw_audit_tujuan_audit) SEPARATOR ',<br/>' ) AS jadw_audit_tujuan_audit");
-			
+
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi = 'ketua', CONCAT(peg_nama), '') SEPARATOR ', ') as ketua");
 			$restJadwal->selectRaw("GROUP_CONCAT(DISTINCT IF(sis_jadwal_tim.jadw_tim_posisi != 'ketua', CONCAT(peg_nama, '(', jadw_tim_posisi , ')'), '') SEPARATOR ', ') as anggota");
 			$restJadwal->groupBy('sis_jadwal.jadw_id');
 			$dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
-			
+
 			$dataLKS = $this->calculateTemuanLKS($dataJadwal);
-            
+
 			$parser = ['dataJadwal' => $restJadwal->get()[0], 'dataLKS' => $dataLKS, 'itemLKS' => $dataJadwal->sis_audit_lks, 'dataKetua' => $dataKetua];
 			// return view("$this->view.print.lap-lengkap")->with($parser);
 			$pdf    = PDF::loadView("$this->view.print.lap-lengkap", $parser)->setPaper('a4', 'portrait');
 			return $pdf->stream();
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
-        }        
+        }
     }
 
     public function ajax(Request $request)
@@ -158,7 +159,7 @@ class AuLapLengkapController extends Controller
         $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'setuju']); 
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'setuju']);
         $data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
@@ -215,5 +216,5 @@ class AuLapLengkapController extends Controller
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
-	
+
 }
