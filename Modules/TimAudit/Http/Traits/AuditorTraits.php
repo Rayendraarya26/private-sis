@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Traits;
 
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -184,5 +185,30 @@ trait AuditorTraits
         if (!$open) throw new Exception("Proses audit belum diajukan ke Komite");
 
         return $data;
+    }
+
+    public function sendNotifToLeadAuditorIfAllClose(int $jadwalID)
+    {
+        $data     = SisJadwal::with('sis_audit_lks')->find($jadwalID);
+        $dataLead = $data->sis_jadwal_tims()->where('jadw_tim_posisi', 'ketua')->first();
+        if (!empty($data)) {
+            $allClosed = true;
+            foreach ($data->sis_audit_lks as $lks) {
+                if ($lks->lks_sudah_ditutup == "tidak") {
+                    $allClosed = false;
+                }
+            }
+
+            if ($allClosed) {
+                // Send Notif ke Ketua Tim Auditor
+                // Send Push
+                $notifStruct            = new NotifStruct();
+                $notifStruct->title     = 'Isikan Rekomendasi';
+                $notifStruct->message   = sprintf("Semua LKS pada perusahaan %s telah disi dan di tutup, segera isikan rekomendasi", $data->sis_pelanggan->cust_nama);
+                $notifStruct->user_id   = $dataLead->master_pegawai->user_id;
+                $notifStruct->click_url = url('/timaudit/auditor/lks');
+                sendNotification($notifStruct);
+            }
+        }
     }
 }

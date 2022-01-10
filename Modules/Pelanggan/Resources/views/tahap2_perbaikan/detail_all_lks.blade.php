@@ -142,12 +142,13 @@
                                     }
                                     ?>
                                     <tr>
-                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$lks->lks_nomor}}</td>
                                         <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
                                         <td>
                                             {!! $lks->lks_uraian_ketidaksesuaian !!}
                                             <br>
-                                            <b>Kategori ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
+                                            <b>Kategori
+                                                ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                                             <br>
                                             <b>Klausul ketidak sesuaian</b>: {!! $lks->lks_klausul_ketidaksesuaian !!}
                                             <br>

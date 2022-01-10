@@ -173,7 +173,7 @@
             }
             ?>
             <tr>
-                <td style="text-align: center">{{$loop->iteration}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
+                <td style="text-align: center">{{$lks->lks_nomor}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
                 <td style="padding: 5px">
                     {{--{!! $lks->lks_uraian_ketidaksesuaian !!}--}}
                     {{ strip_tags($lks->lks_uraian_ketidaksesuaian) }}
@@ -367,11 +367,6 @@
             $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
         ');
     }
-
-
-
-
-
 </script>
 </body>
 </html>

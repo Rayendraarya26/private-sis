@@ -16,23 +16,23 @@ use Illuminate\Support\Facades\Route;
 use Modules\TimAudit\Http\Controllers\AuDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\AuDaftarPeriksaController;
 use Modules\TimAudit\Http\Controllers\AuLapLengkapController;
-use Modules\TimAudit\Http\Controllers\AuLapRingkasController;
 use Modules\TimAudit\Http\Controllers\AuLapObservasiController;
+use Modules\TimAudit\Http\Controllers\AuLapRingkasController;
 use Modules\TimAudit\Http\Controllers\AuLksController;
 use Modules\TimAudit\Http\Controllers\AuLogBookController;
 use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
 use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
+use Modules\TimAudit\Http\Controllers\HistoriPenugasanController;
 use Modules\TimAudit\Http\Controllers\KomiteBeritaAcaraController;
 use Modules\TimAudit\Http\Controllers\KomiteDaftarHadirController;
 use Modules\TimAudit\Http\Controllers\KomiteLembarPeriksaController;
 use Modules\TimAudit\Http\Controllers\PersetujuanTimAuditController;
 use Modules\TimAudit\Http\Controllers\PpcLaporanController;
 use Modules\TimAudit\Http\Controllers\PpcLogBookController;
-use Modules\TimAudit\Http\Controllers\HistoriPenugasanController;
 
-Route::prefix('timaudit')->middleware(['auth'])->group(function () {
+Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
     // ============================== Persetujuan TIM ==============================
     Route::prefix("persetujuan-tim")->group(function () {
         Route::prefix("auditor")->group(function () {
@@ -85,19 +85,15 @@ Route::prefix('timaudit')->middleware(['auth'])->group(function () {
         Route::prefix("lks")->group(function () {
             Route::get('/', [AuLksController::class, 'index']);
             Route::get('/ajax', [AuLksController::class, 'ajax']);
+            Route::get("/cetak/{jadw_id}/{type}", [AuLksController::class, 'cetak'])->where('type', 'lks');;
             Route::get('/temuan/{jadw_id}', [AuLksController::class, 'temuan']);
+            Route::post('/temuan/{jadw_id}/rekomendasi', [AuLksController::class, 'processRekomendasi']);
             Route::get('/temuan/{jadw_id}/verifikasi', [AuLksController::class, 'verifikasiTemuan']);
             Route::post('/temuan/{jadw_id}/verifikasi', [AuLksController::class, 'processVerifikasiTemuan']);
             Route::post('/temuan/{jadw_id}/revisi', [AuLksController::class, 'processRevisiTemuan']);
             Route::post('/temuan/{jadw_id}/generate', [AuLksController::class, 'generate']);
             Route::post('/temuan/{jadw_id}/save-draft', [AuLksController::class, 'saveDraft']);
             Route::post('/temuan/{jadw_id}/delete/{lks_id}', [AuLksController::class, 'deleteTemuan']);
-
-            // Route::get('/temuan/{jadw_id}/tambah', [AuLksController::class, 'addTemuan']);
-            // Route::post('/temuan/{jadw_id}/tambah', [AuLksController::class, 'storeTemuan']);
-            // Route::get('/temuan/{jadw_id}/edit/{lks_id}', [AuLksController::class, 'editTemuan']);
-            // Route::get('/temuan/{jadw_id}/detail/{lks_id}', [AuLksController::class, 'detailTemuan']);
-            // Route::post('/temuan/{jadw_id}/verif/{lks_id}', [AuLksController::class, 'verifTemuan']);
         });
 
         Route::prefix("laporan-ringkas")->group(function () {

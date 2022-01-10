@@ -10,12 +10,14 @@ use App\Models\BbkkpSis\SisAuditLksHistory;
 use App\Models\BbkkpSis\SisAuditLksRevisi;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalAudit;
+use App\Models\BbkkpSis\SisJadwalLog;
+use App\Models\BbkkpSis\SysUserGroup;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 use Modules\TimAudit\Http\Traits\LksTrait;
@@ -128,6 +130,52 @@ class AuLksController extends Controller
         }
     }
 
+    public function processRekomendasi(Request $request)
+    {
+        try {
+            $request->validate(['jadw_id' => 'required', 'rekomendasi' => 'required']);
+            if (!$request->ajax()) throw new Exception("Endopoint ini utuk ajax");
+
+            DB::beginTransaction();
+            $dataJadwal                       = $this->isKepalaAuditDetail($request['jadw_id']);
+            $dataJadwal->jadw_lks_rekomendasi = $request['rekomendasi'];
+            $dataJadwal->save();
+
+            foreach ($dataJadwal->sis_jadwal_audits as $jadwal_audit) {
+                $jadwal_audit->jadw_audit_status_komite = "submited";
+                $jadwal_audit->save();
+            }
+
+            // Send Notification to Opeartos LS
+            $groupUsers = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
+            if ($groupUsers) {
+                foreach ($groupUsers as $user) {
+                    // Send Push
+                    $notifStruct            = new NotifStruct();
+                    $notifStruct->title     = sprintf("Proses Audit #%d telah selesai", $dataJadwal->jadw_id);
+                    $notifStruct->message   = sprintf("Proses audit pada %s tanggal %s telah selesai, harap segera susun tim komite", $dataJadwal->sis_pelanggan->cust_nama, $dataJadwal->jadw_tanggal_mulai->isoFormat("LL"));
+                    $notifStruct->user_id   = $user?->ug_user_id;
+                    $notifStruct->click_url = url('/operatorls/komite');
+                    sendNotification($notifStruct);
+                }
+            }
+
+            // insert to log jadwal
+            SisJadwalLog::create([
+                'jadw_id'    => $dataJadwal->jadw_id,
+                'jlog_tipe'  => "informasi",
+                'jlog_judul' => "Proses Audit Telah Selesai",
+                'jlog_pesan' => sprintf("%s telah memberikan rekomendasi LS. Sekarang dalam penyusunan tim komite pihak BBKKP", auth()->user()->user_fullname),
+            ]);
+
+            DB::commit();
+            return responseJSON(200, [], "Rekomendasi berhasil ditambahkan");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
+
     public function verifikasiTemuan(Request $request, $jadwalID)
     {
         try {
@@ -172,6 +220,7 @@ class AuLksController extends Controller
             $dataLKS->lks_tanggal_ditutup = Carbon::now();
             $dataLKS->save();
 
+            $this->sendNotifToLeadAuditorIfAllClose($jadwalID);
             return responseJSON(200, [], "Verifikasi berhasil");
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
@@ -245,109 +294,6 @@ class AuLksController extends Controller
         }
     }
 
-    public function addTemuan(Request $request, $jadwalID)
-    {
-        try {
-            // ============================== validation to access this page ==============================
-            // 1.
-            $dataJadwal = $this->involvedAuditor($jadwalID);
-
-            $breadcrumbs = [
-                new BreadcrumbsStruct('Tim Audit'),
-                new BreadcrumbsStruct('Auditor', url($this->url)),
-                new BreadcrumbsStruct('LKS', url($this->url)),
-                new BreadcrumbsStruct('Temuan', url($this->url . '/temuan/' . $jadwalID)),
-                new BreadcrumbsStruct('Tambah'),
-            ];
-
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
-            return view("$this->view.temuan_add")->with($parser);
-        } catch (Exception $e) {
-            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
-        }
-    }
-
-    public function storeTemuan(Request $request, $jadwalID)
-    {
-        $request->validate([
-            'jadw_audit_id'                => 'required|numeric',
-            'lks_kategori_ketidaksesuaian' => ['required', Rule::in(['kritis', 'mayor', 'minor', 'observasi'])],
-            'lks_klausul_ketidaksesuaian'  => 'required',
-            'lks_uraian_ketidaksesuaian'   => 'required',
-            'lks_expired_date_perbaikan'   => 'required'
-        ]);
-
-        try {
-            $pegawaiID  = auth()->user()->master_pegawai->peg_id;
-            $dataJadwal = $this->involvedAuditor($jadwalID);
-
-            $dataTim = $dataJadwal->sis_jadwal_tims()->where("peg_id", $pegawaiID)->firstOrFail();
-
-            SisAuditLks::updateOrCreate(
-                ['lks_id' => $request['lks_id'], 'jadw_id' => $dataJadwal->jadw_id],
-                [
-                    'jadw_tim_id'                  => $dataTim->jadw_tim_id,
-                    'lks_status'                   => 'proses',
-                    'lks_uraian_ketidaksesuaian'   => $request['lks_uraian_ketidaksesuaian'],
-                    'lks_kategori_ketidaksesuaian' => $request['lks_kategori_ketidaksesuaian'],
-                    'lks_klausul_ketidaksesuaian'  => $request['lks_klausul_ketidaksesuaian'],
-                    'lks_expired_date_perbaikan'   => $request['lks_expired_date_perbaikan']
-                ]
-            );
-            return redirect($this->url . '/temuan/' . $dataJadwal->jadw_id)->with("message", "LKS berhasil ditambahkan");
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors(['message' => $e->getMessage()])->withInput($request->except('_token'));
-        }
-    }
-
-    public function editTemuan(Request $request, $jadwalID, $lksID)
-    {
-        try {
-            // ============================== validation to access this page ==============================
-            // 1.
-            $pegawaiID = auth()->user()->master_pegawai->peg_id;
-
-            $dataJadwal = $this->involvedAuditor($jadwalID);
-            $dataLKS    = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
-                ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
-            if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
-
-            $breadcrumbs = [
-                new BreadcrumbsStruct('Tim Audit'),
-                new BreadcrumbsStruct('Auditor', url($this->url)),
-                new BreadcrumbsStruct('LKS', url($this->url)),
-                new BreadcrumbsStruct('Temuan', url($this->url . '/temuan/' . $jadwalID)),
-                new BreadcrumbsStruct('Ubah'),
-            ];
-
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'lks' => $dataLKS];
-            return view("$this->view.temuan_edit")->with($parser);
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
-        }
-    }
-
-    public function detailTemuan(Request $request, $jadwalID, $lksID)
-    {
-        try {
-            $dataJadwal = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims'])->findOrFail($jadwalID);
-            $dataLKS    = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])->findOrFail($lksID);
-
-            $breadcrumbs = [
-                new BreadcrumbsStruct('Tim Audit'),
-                new BreadcrumbsStruct('Auditor', url($this->url)),
-                new BreadcrumbsStruct('LKS', url($this->url)),
-                new BreadcrumbsStruct('Temuan', url($this->url . '/temuan/' . $jadwalID)),
-                new BreadcrumbsStruct('Ubah'),
-            ];
-
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'lks' => $dataLKS];
-            return view("$this->view.temuan_detail")->with($parser);
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
-        }
-    }
-
     public function deleteTemuan(Request $request, $jadwalID, $lksID)
     {
         try {
@@ -372,27 +318,37 @@ class AuLksController extends Controller
         }
     }
 
-    public function verifTemuan(Request $request, $jadwalID, $lksID)
+    public function cetak(Request $request, $jadwalID, $type)
     {
         try {
-            $request->validate(['lks_status' => ['required', Rule::in(['memadai', 'tidak-memadai'])]]);
+            $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
+                ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
+            if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
-            // 1.
-            $pegawaiID = auth()->user()->master_pegawai->peg_id;
-
-            $this->involvedAuditor($jadwalID);
-            $dataLKS = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
-                ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
-            if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
-
-            $dataLKS->lks_status        = $request['lks_status'];
-            $dataLKS->lks_sudah_ditutup = 'ya';
-            $dataLKS->save();
-
-            return redirect()->back()->with('message', "Verifikasi berhasil");
+            return match ($type) {
+                'lks'   => $this->cetak_lks($request, $data),
+                default => throw new Exception("Invalid URL"),
+            };
         } catch (Exception $e) {
-            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
+    }
+
+    private function cetak_lks(Request $request, SisJadwal $dataJadwal)
+    {
+        $dataLKS = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
+            ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
+            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+            ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
+            ->get();
+
+        $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
+
+        $parser = ['dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS, 'dataKetua' => $dataKetua];
+
+        $pdf = PDF::loadView("pelanggan::tahap2_persetujuan.print.lks", $parser)
+            ->setPaper('a4', 'landscape');
+        return $pdf->stream();
     }
 
     public function ajax(Request $request)
@@ -400,9 +356,9 @@ class AuLksController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit'    => $this->ajax_datagrid_jadwal_audit($request),
-            'datagrid-lks'             => $this->ajax_datagrid_lks($request),
             'data-verif-lks'           => $this->ajax_verif_data_lks($request),
             'data-verif-revisi-by-lks' => $this->ajax_verif_revisi_by_lks($request),
+            'tinymce-uploadimage'      => $this->ajax_tinymce_uploadimage($request),
             default                    => null,
         };
     }
@@ -460,6 +416,12 @@ class AuLksController extends Controller
         foreach ($data->get() as $d) {
             $totalTemuanLKS = $d->sis_audit_lks->count();
 
+            $allowRekomendasi = false;
+            if ($d->sis_audit_lks->where('lks_sudah_ditutup', '=', 'tidak')->count() == 0 && $d->jadw_lks_rekomendasi == null) {
+                $allowRekomendasi = true;
+            }
+
+
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_setujui_temuan']  = $d->jadw_setujui_temuan;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
@@ -469,64 +431,10 @@ class AuLksController extends Controller
             $x['jadw_jenis']           = ucwords($d->jadw_jenis);
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
             $x['total_temuan']         = $totalTemuanLKS;
+            $x['allow_rekomendasi']    = $allowRekomendasi;
             $result[]                  = $x;
         }
 
-
-        return response()->json(["total" => $total, "rows" => $result]);
-    }
-
-    private function ajax_datagrid_lks(Request $request)
-    {
-        $request->validate(['jadwal_id' => 'required|numeric']);
-
-        $data = SisAuditLks::join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
-            ->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_tim_id', '=', 'sis_audit_lks.jadw_tim_id')
-            ->where('sis_jadwal.jadw_id', $request['jadwal_id']);
-
-        // Filter
-        if (!empty($request->filterRules)) {
-            foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
-            }
-        }
-        // Sorter
-        if (!empty($request->sort) && !empty($request->order)) {
-            $sort  = explode(",", $request->sort);
-            $order = explode(",", $request->order);
-            for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
-            }
-        }
-        // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
-        // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
-        // Result
-        $result = [];
-
-        $pegawaiID = auth()->user()->master_pegawai->peg_id;
-        foreach ($data->get() as $d) {
-            $allowModify = $d->peg_id == $pegawaiID;
-
-            $x['allow_modify']                 = $allowModify;
-            $x['jadw_tim_kode']                = $d->jadw_tim_kode . ($allowModify ? '<br><i title="Anda sebagai auditor">(<i class="fad fa-user"></i> Anda)</i>' : '');
-            $x['lks_uraian_ketidaksesuaian']   = Str::limit(strip_tags($d->lks_uraian_ketidaksesuaian), 50);
-            $x['lks_kategori_ketidaksesuaian'] = Str::limit(strip_tags($d->lks_kategori_ketidaksesuaian), 50);
-            $x['lks_klausul_ketidaksesuaian']  = Str::limit(strip_tags($d->lks_klausul_ketidaksesuaian), 50);
-            $x['lks_perbaikan_analisa']        = Str::limit(strip_tags($d->lks_perbaikan_analisa), 50);
-            $x['lks_perbaikan_koreksi']        = Str::limit(strip_tags($d->lks_perbaikan_koreksi), 50);
-            $x['lks_perbaikan_tindakan']       = Str::limit(strip_tags($d->lks_perbaikan_tindakan), 50);
-            $x['lks_bagian_pendamping']        = $d->lks_bagian_pendamping;
-            $x['lks_bukti_tindakan_perbaikan'] = $d->lks_bukti_tindakan_perbaikan;
-            $x['lks_expired_date_perbaikan']   = $d->lks_expired_date_perbaikan?->format("Y-m-d H:i:s");
-            $x['lks_input_date_perbaikan']     = $d->lks_input_date_perbaikan?->format("Y-m-d H:i:s");
-            $x['lks_sudah_ditutup']            = $d->lks_sudah_ditutup;
-            $x['lks_status']                   = $d->lks_status;
-            $x['lks_id']                       = $d->lks_id;
-            $result[]                          = $x;
-        }
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
@@ -611,6 +519,25 @@ class AuLksController extends Controller
             return responseJSON(200, $data, "data ditemukan");
         } else {
             return responseJSON(500, [], "data tidak ditemukan");
+        }
+
+    }
+
+    private function ajax_tinymce_uploadimage(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
+            ]);
+
+            $img     = $request->file('file');
+            $imgName = $img->hashName();
+            $img->move(public_path(config('app.path_file_tinymce')), $imgName);
+            $publicUrl = asset(config('app.path_file_tinymce') . '/' . $imgName);
+
+            return response()->json(["location" => $publicUrl]);
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
         }
 
     }

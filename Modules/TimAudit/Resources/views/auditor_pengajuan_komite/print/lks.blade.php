@@ -43,7 +43,8 @@
         }
 
         #rekomen-lks td {
-            padding: 0 10px 0 10px
+            padding: 5px 10px 0 10px;
+            vertical-align: top;
         }
 
         header {
@@ -56,9 +57,9 @@
 </head>
 <body style="margin-top: 50px">
 <header>
-    <div style="float: left">
-    <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
-         style="max-width: 150px; margin-top: -15px">
+    <div style="float: left; padding-left: 40px">
+        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
+             style="max-width: 150px; margin-top: -15px">
     </div>
 </header>
 
@@ -68,7 +69,7 @@
     </div>
 </div>
 
-<section style="margin-top: 0px">
+<section style="margin-top: 0px; margin-right: 20px; margin-left: 20px">
     <table>
         <tr>
             <td>1.</td>
@@ -144,48 +145,71 @@
         <thead>
         <tr>
             <th style="width: 10%">No. <br>(Inisial Auditor)</th>
-            <th>Uraian Ketidaksesuaian</th>
-{{--            <th>Tindakan Perbaikan <br>--}}
-{{--                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>--}}
-{{--            </th>--}}
-{{--            <th>Bukti Tindakan Perbaikan</th>--}}
-{{--            <th>Bagian <br>(Pendamping)</th>--}}
-{{--            <th>Hasil dan Tanggal <br> Verifikasi</th>--}}
+            <th style="width: 25%">Uraian Ketidaksesuaian</th>
+            <th style="width: 25%">Tindakan Perbaikan <br>
+                <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
+            </th>
+            <th style="width: 10%">Bagian <br>(Pendamping)</th>
+            <th style="width: 10%">Bukti Tindakan Perbaikan</th>
+            <th style="width: 20%">Hasil dan Tanggal <br> Verifikasi</th>
         </tr>
         </thead>
         <tbody>
         @foreach($dataLks as $lks)
+            <?php
+            $hasilVerif = "";
+            $verifKe = 1;
+            foreach ($lks->sis_audit_lks_revisis as $revisi) {
+                if ($revisi->lks_revisi_oleh == "auditor") {
+                    $hasilVerif .= sprintf("<div style='text-align: center; vertical-align: top'>Verifikasi %d <br> %s</div>", $verifKe, $revisi->created_at->isoFormat("LL"));
+                    $hasilVerif .= sprintf("<br> %s <br><br>", $revisi->lks_revisi_catatan);
+                    $verifKe++;
+                }
+            }
+
+            if ($lks->lks_sudah_ditutup == "ya") {
+                $hasilVerif .= sprintf("<div style='text-align: center; vertical-align: top'>Verifikasi %d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
+                $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $loop->iteration);
+            }
+            ?>
             <tr>
-                <td style="text-align: center">{{$loop->iteration}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
+                <td style="text-align: center">{{$lks->lks_nomor}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
                 <td style="padding: 5px">
-{{--                    {!! $lks->lks_uraian_ketidaksesuaian !!}--}}
+                    {{--{!! $lks->lks_uraian_ketidaksesuaian !!}--}}
                     {{ strip_tags($lks->lks_uraian_ketidaksesuaian) }}
                     <br>
                     <br>
-                    Kategori ketidaksesuaian: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
+                    <b>Kategori ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                     <br>
                     <br>
-{{--                    Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
-                    Klausul ketidak sesuaian: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
+                    {{--Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
+                    <b>Klausul ketidak sesuaian</b>: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
                 </td>
 
-{{--                <td>--}}
-{{--                    {!! $lks->lks_perbaikan_analisa !!}--}}
-{{--                    {!! $lks->lks_perbaikan_koreksi !!}--}}
-{{--                    {!! $lks->lks_perbaikan_tindakan !!}--}}
-{{--                </td>--}}
-{{--                <td>{!! $lks->lks_bagian_pendamping !!}</td>--}}
-{{--                <td>--}}
-{{--                    {!! $lks->lks_bukti_tindakan_perbaikan !!}--}}
+                <td>
+                    Analisa Penyebab:
+                    {!! strip_tags($lks->lks_perbaikan_analisa) !!}
+                    <br><br>
+                    Koreksi
+                    {!! strip_tags($lks->lks_perbaikan_koreksi) !!}
+                    <br><br>
+                    Tindakan Korektif
+                    {!! strip_tags($lks->lks_perbaikan_tindakan) !!}
+                </td>
+                <td>{!! strip_tags($lks->lks_bagian_pendamping) !!}</td>
+                <td>
+                    {!! strip_tags($lks->lks_bukti_tindakan_perbaikan) !!}
 
-{{--                    @foreach($lks->sis_audit_lks_files as $file)--}}
-{{--                        <br>--}}
-{{--                        <a href="{{asset($file->lks_filepath)}}">--}}
-{{--                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}--}}
-{{--                        </a>--}}
-{{--                    @endforeach--}}
-{{--                </td>--}}
-{{--                <td></td>--}}
+                    @foreach($lks->sis_audit_lks_files as $file)
+                        <br>
+                        <a href="{{asset($file->lks_filepath)}}">
+                            <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
+                        </a>
+                    @endforeach
+                </td>
+                <td>
+                    {!! $hasilVerif !!}
+                </td>
             </tr>
         @endforeach
         </tbody>
@@ -334,7 +358,7 @@
             $x = 750;
             $y = 570;
             $text = "{$PAGE_NUM} dari {$PAGE_COUNT}";
-            $font = $fontMetrics->get_font("helvetica", "italic");
+            $font = $fontMetrics->get_font("helvetica");
             $size = 10;
             $color = array(0,0,0);
             $word_space = 0.0;  //  default
@@ -343,11 +367,6 @@
             $pdf->text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
         ');
     }
-
-
-
-
-
 </script>
 </body>
 </html>
