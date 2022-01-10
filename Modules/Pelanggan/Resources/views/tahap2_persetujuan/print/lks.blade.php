@@ -43,7 +43,8 @@
         }
 
         #rekomen-lks td {
-            padding: 0 10px 0 10px
+            padding: 5px 10px 0 10px;
+            vertical-align: top;
         }
 
         header {
@@ -144,17 +145,33 @@
         <thead>
         <tr>
             <th style="width: 10%">No. <br>(Inisial Auditor)</th>
-            <th style="width: 40%">Uraian Ketidaksesuaian</th>
-            <th style="width: 20%">Tindakan Perbaikan <br>
+            <th style="width: 25%">Uraian Ketidaksesuaian</th>
+            <th style="width: 25%">Tindakan Perbaikan <br>
                 <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
             </th>
-            <th>Bagian <br>(Pendamping)</th>
-            <th>Bukti Tindakan Perbaikan</th>
-            <th>Hasil dan Tanggal <br> Verifikasi</th>
+            <th style="width: 10%">Bagian <br>(Pendamping)</th>
+            <th style="width: 10%">Bukti Tindakan Perbaikan</th>
+            <th style="width: 20%">Hasil dan Tanggal <br> Verifikasi</th>
         </tr>
         </thead>
         <tbody>
         @foreach($dataLks as $lks)
+            <?php
+            $hasilVerif = "";
+            $verifKe = 1;
+            foreach ($lks->sis_audit_lks_revisis as $revisi) {
+                if ($revisi->lks_revisi_oleh == "auditor") {
+                    $hasilVerif .= sprintf("<div style='text-align: center; vertical-align: top'>Verifikasi %d <br> %s</div>", $verifKe, $revisi->created_at->isoFormat("LL"));
+                    $hasilVerif .= sprintf("<br> %s <br><br>", $revisi->lks_revisi_catatan);
+                    $verifKe++;
+                }
+            }
+
+            if ($lks->lks_sudah_ditutup == "ya") {
+                $hasilVerif .= sprintf("<div style='text-align: center; vertical-align: top'>Verifikasi %d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
+                $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $loop->iteration);
+            }
+            ?>
             <tr>
                 <td style="text-align: center">{{$loop->iteration}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
                 <td style="padding: 5px">
@@ -171,17 +188,17 @@
 
                 <td>
                     Analisa Penyebab:
-                    {!! $lks->lks_perbaikan_analisa !!}
+                    {!! strip_tags($lks->lks_perbaikan_analisa) !!}
                     <br><br>
                     Koreksi
-                    {!! $lks->lks_perbaikan_koreksi !!}
+                    {!! strip_tags($lks->lks_perbaikan_koreksi) !!}
                     <br><br>
                     Tindakan Korektif
-                    {!! $lks->lks_perbaikan_tindakan !!}
+                    {!! strip_tags($lks->lks_perbaikan_tindakan) !!}
                 </td>
-                <td>{!! $lks->lks_bagian_pendamping !!}</td>
+                <td>{!! strip_tags($lks->lks_bagian_pendamping) !!}</td>
                 <td>
-                    {!! $lks->lks_bukti_tindakan_perbaikan !!}
+                    {!! strip_tags($lks->lks_bukti_tindakan_perbaikan) !!}
 
                     @foreach($lks->sis_audit_lks_files as $file)
                         <br>
@@ -191,7 +208,7 @@
                     @endforeach
                 </td>
                 <td>
-
+                    {!! $hasilVerif !!}
                 </td>
             </tr>
         @endforeach

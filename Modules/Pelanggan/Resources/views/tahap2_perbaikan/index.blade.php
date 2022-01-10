@@ -57,12 +57,25 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 120,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnTemuan = `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}" class="btn btn-warning btn-block btn-xs">${row.total_temuan} Temuan LKS</a>`;
-                            let btnDetail = `<a href="{{url("$url/temuan-lks")}}/${row.jadw_id}/detail" class="btn btn-primary btn-block btn-xs"><i class="fas fa-info"></i> Detail LKS</a>`;
-                            return btnDetail + btnTemuan
+                            let dom         = `dropdownMenu_${row.jadw_id}`;
+                            let btnTemuan   = `<div data-options="iconCls:'fad fa-warning'" onclick="location.href = '{{url("$url/temuan-lks")}}/${row.jadw_id}'">${row.total_temuan} Temuan LKS</div>`;
+                            let btnDetail   = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/temuan-lks")}}/${row.jadw_id}/detail'">Detail</div>`;
+                            let btnCetakLap = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lks', '_blank')">Cetak LKS</div>`;
+
+                            return `
+                            <div>
+                            <button class="btn-action btn-info" data-index="${row.jadw_id}" title="Aksi">
+                                <i class="fa fa-setting"></i> Aksi
+                            </button>
+                            <div id="${dom}" style="width:150px; display: none;">
+                            @if(authorized("{$module}@detailAllLKS")) ${btnDetail} @endif
+                            @if(authorized("{$module}@temuanLKS")) ${btnTemuan} @endif
+                            <div class="menu-sep"></div>
+                            @if(authorized("{$module}@temuanLKS")) ${btnCetakLap} @endif
+                            </div>`;
                         }
                     }
                 ]],
@@ -118,6 +131,22 @@
                         }
                     },
                 ]],
+                onBeforeLoad: function () {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        try {
+                            $(this).menubutton('destroy');
+                        } catch (e) {
+                            console.log('failed destroy');
+                        }
+                    });
+                },
+                onLoadSuccess: function (data) {
+                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
+                        $(this).menubutton({
+                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
+                        });
+                    });
+                },
             });
             dg.datagrid(
                 'enableFilter', [
