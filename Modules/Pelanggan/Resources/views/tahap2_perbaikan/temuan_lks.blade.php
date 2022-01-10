@@ -129,17 +129,18 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th>
+                                        <th style="text-align: center;">
                                             <input type="checkbox" aria-label="check-all" @click="checkAll"
                                                    v-model="allChecked">Semua
                                         </th>
-                                        <th>Auditor</th>
-                                        <th>Uraian Ketidaksesuaian</th>
-                                        <th>Tindakan Perbaikan <br>
+                                        <th style="text-align: center;">Auditor</th>
+                                        <th style="text-align: center;">Uraian Ketidaksesuaian</th>
+                                        <th style="text-align: center;">Tindakan Perbaikan <br>
                                             <i>(Disertai analisis penyebab, Koreksi, dan Tindakan Koreksi)</i>
                                         </th>
-                                        <th>Bagian <br>(Pendamping)</th>
-                                        <th>Bukti Tindakan Perbaikan</th>
+                                        <th style="text-align: center;">Bagian <br>(Pendamping)</th>
+                                        <th style="text-align: center;">Bukti Tindakan Perbaikan</th>
+                                        <th style="text-align: center;">Hasil dan Tanggal <br>Verifikasi</th>
                                     </tr>
                                     </thead>
                                     <tbody id="tbody-lks">
@@ -148,6 +149,21 @@
                                         $editable = in_array($lks->lks_status, ['proses', 'revisi']);
                                         if ($editable) {
                                             $lksIDs[] = $lks->lks_id;
+                                        }
+
+                                        $hasilVerif = "";
+                                        $verifKe    = 1;
+                                        foreach ($lks->sis_audit_lks_revisis as $revisi) {
+                                            if ($revisi->lks_revisi_oleh == "auditor") {
+                                                $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s</div>", $verifKe, $revisi->created_at->isoFormat("LL"));
+                                                $hasilVerif .= sprintf("<br> %s <br><br>", $revisi->lks_revisi_catatan);
+                                                $verifKe++;
+                                            }
+                                        }
+
+                                        if ($lks->lks_sudah_ditutup == "ya") {
+                                            $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
+                                            $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $verifKe);
                                         }
                                         ?>
                                         <tr>
@@ -268,6 +284,9 @@
                                                         </a>
                                                     @endforeach
                                                 @endif
+                                            </td>
+                                            <td>
+                                                {!! $hasilVerif !!}
                                             </td>
                                         </tr>
                                     @endforeach

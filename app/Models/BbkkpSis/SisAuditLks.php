@@ -28,6 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $lks_expired_date_perbaikan
  * @property Carbon|null $lks_input_date_perbaikan
  * @property string|null $lks_sudah_ditutup
+ * @property Carbon|null $lks_tanggal_ditutup
+ * @property string|null $lks_catatan_ditutup
  * @property string|null $lks_status
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
@@ -51,7 +53,8 @@ class SisAuditLks extends Model
 
 	protected $dates = [
 		'lks_expired_date_perbaikan',
-		'lks_input_date_perbaikan'
+		'lks_input_date_perbaikan',
+		'lks_tanggal_ditutup'
 	];
 
 	protected $fillable = [
@@ -69,6 +72,8 @@ class SisAuditLks extends Model
 		'lks_expired_date_perbaikan',
 		'lks_input_date_perbaikan',
 		'lks_sudah_ditutup',
+		'lks_tanggal_ditutup',
+		'lks_catatan_ditutup',
 		'lks_status'
 	];
 

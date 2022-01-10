@@ -150,8 +150,9 @@ class AuLksController extends Controller
     {
         try {
             $request->validate([
-                'lks_status' => ['required', Rule::in(['memadai', 'tidak-memadai'])],
-                'lks_id'     => 'required'
+                'lks_id'              => 'required',
+                'lks_catatan_ditutup' => "required",
+                // 'lks_status' => ['required', Rule::in(['memadai', 'tidak-memadai'])],
             ]);
 
             // 1.
@@ -163,8 +164,10 @@ class AuLksController extends Controller
                 ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
             if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
 
-            $dataLKS->lks_status        = $request['lks_status'];
-            $dataLKS->lks_sudah_ditutup = 'ya';
+            $dataLKS->lks_status          = 'memadai';
+            $dataLKS->lks_sudah_ditutup   = 'ya';
+            $dataLKS->lks_catatan_ditutup = $request->get('lks_catatan_ditutup');
+            $dataLKS->lks_tanggal_ditutup = Carbon::now();
             $dataLKS->save();
 
             return responseJSON(200, [], "Verifikasi berhasil");
@@ -551,6 +554,21 @@ class AuLksController extends Controller
                     }
                 }
 
+                $hasilVerif = "";
+                $verifKe    = 1;
+                foreach ($lks->sis_audit_lks_revisis as $revisi) {
+                    if ($revisi->lks_revisi_oleh == "auditor") {
+                        $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s</div>", $verifKe, $revisi->created_at->isoFormat("LL"));
+                        $hasilVerif .= sprintf("<br> %s <br><br>", $revisi->lks_revisi_catatan);
+                        $verifKe++;
+                    }
+                }
+
+                if ($lks->lks_sudah_ditutup == "ya") {
+                    $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
+                    $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $verifKe);
+                }
+
                 $result[] = [
                     'lks_id'                       => $lks->lks_id,
                     'lks_status'                   => $lks->lks_status,
@@ -565,6 +583,7 @@ class AuLksController extends Controller
                     'lks_perbaikan_tindakan'       => $lks->lks_perbaikan_tindakan,
                     'lks_bagian_pendamping'        => $lks->lks_bagian_pendamping,
                     'lks_bukti_tindakan_perbaikan' => $lks->lks_bukti_tindakan_perbaikan,
+                    'hasil_verif'                  => $hasilVerif,
                     'perbaikan_files'              => $perbaikanFile,
                     'allow_edit'                   => $allowEdit,
                 ];
@@ -574,7 +593,7 @@ class AuLksController extends Controller
             return responseJSON(200, $result, "data ditemukan");
 
         } catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
+            return responseJSON(500, [], $e->getMessage() . ' | ' . $e->getLine());
         }
     }
 

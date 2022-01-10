@@ -60,8 +60,7 @@ trait AuditorTraits
                     $data = $data->where('lks_status', $status);
                 }
                 return $data;
-            }
-        ]);
+            }]);
 
         $data = $data->first();
 
