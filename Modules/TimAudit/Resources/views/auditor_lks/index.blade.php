@@ -211,7 +211,7 @@
                                 //
                                 @if(authorized("{$module}@processRekomendasi"))
                                 if (row.allow_rekomendasi) {
-                                    btnRekomendasi = `<a href="javascript:void()" onclick="promptRekomendasi(${row.jadw_id})" class="btn btn-xs btn-success btn-block"><i class="fas fa-plus"></i> Rekomendasi</a>`
+                                    btnRekomendasi = `<a href="javascript:void(0)" onclick="promptRekomendasi(${row.jadw_id})" class="btn btn-xs btn-success btn-block"><i class="fas fa-plus"></i> Rekomendasi</a>`
                                 }
                                 @endif
                             }

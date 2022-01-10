@@ -89,9 +89,7 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::prefix("perbaikan-temuan")->group(function () {
             Route::get("/", [Tahap2PerbaikanController::class, 'index']);
             Route::any("/ajax", [Tahap2PerbaikanController::class, 'ajax']);
-            Route::get('/upload', [Tahap2PerbaikanController::class, 'upload']);
-            Route::post('/upload', [Tahap2PerbaikanController::class, 'processUpload']);
-            Route::get("/cetak/{jadw_id}/{type}", [Tahap2PersetujuanController::class, 'cetak'])->where('type', 'notulen|lap-ringkas|daftar-hadir|logbook|lks');
+            Route::get("/cetak/{jadw_id}/{type}", [Tahap2PerbaikanController::class, 'cetak'])->where('type', 'notulen|lap-ringkas|daftar-hadir|logbook|lks');
             Route::get('/temuan-lks/{jadwal_id}', [Tahap2PerbaikanController::class, 'temuanLKS']);
             Route::get('/temuan-lks/{jadwal_id}/detail', [Tahap2PerbaikanController::class, 'detailAllLKS']);
             Route::post('/temuan-lks/{jadwal_id}/send-to-auditor', [Tahap2PerbaikanController::class, 'submitLKS']);

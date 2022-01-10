@@ -321,8 +321,7 @@ class AuLksController extends Controller
     public function cetak(Request $request, $jadwalID, $type)
     {
         try {
-            $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
-                ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
+            $data = $this->involvedAuditor($jadwalID);
             if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {

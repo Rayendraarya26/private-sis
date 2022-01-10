@@ -2,25 +2,19 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Models\BbkkpSis\SisJadwal;
-use App\Models\BbkkpSis\SisJadwalAudit;
-use App\Models\BbkkpSis\SisJadwalLog;
-use App\Models\BbkkpSis\SisAuditLks;
-use App\Models\BbkkpSis\SysUserGroup;
-use Modules\TimAudit\Http\Traits\AuditorTraits;
-
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
-use Carbon\Carbon;
+use App\Models\BbkkpSis\SisAuditLks;
+use App\Models\BbkkpSis\SisJadwal;
+use App\Models\BbkkpSis\SisJadwalLog;
 use Barryvdh\DomPDF\Facade as PDF;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Modules\TimAudit\Http\Traits\AuditorTraits;
 use Modules\TimAudit\Http\Traits\LksTrait;
 
 
@@ -46,43 +40,42 @@ class AuDaftarHadirController extends Controller
 
     public function unggah(Request $request, $jadwalID)
     {
-		try {
+        try {
             $dataJadwal  = $this->isKepalaAuditDetail($jadwalID);
             $breadcrumbs = [
-				new BreadcrumbsStruct('Tim Audit'),
-				new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
+                new BreadcrumbsStruct('Tim Audit'),
+                new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
                 new BreadcrumbsStruct('Rapat Akhir'),
-				new BreadcrumbsStruct('Kelengkapan'),
-			];
+                new BreadcrumbsStruct('Kelengkapan'),
+            ];
 
             $dataLKS = $this->calculateTemuanLKS($dataJadwal);
 
-			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
-							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
-							->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
-							->where('sis_jadwal.jadw_id', '=', $jadwalID)->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
+            $dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+                ->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+                ->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
+                ->where('sis_jadwal.jadw_id', '=', $jadwalID)->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
 
 
-			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
-							->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
-							->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
-							->where('sis_jadwal.jadw_id', '=', $jadwalID)->select('*');
+            $dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+                ->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+                ->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
+                ->where('sis_jadwal.jadw_id', '=', $jadwalID)->select('*');
 
 
-
-			$SisJadwalLog = SisJadwalLog::where('jadw_id', $jadwalID)->where('jlog_tipe', 'revisi-temuan')->select('*');
+            $SisJadwalLog = SisJadwalLog::where('jadw_id', $jadwalID)->where('jlog_tipe', 'revisi-temuan')->select('*');
 
             $parser = [
-				'module' => $this->module,
-				'url' => $this->url,
-				'view' => $this->view,
-				'breadcrumbs' => $breadcrumbs,
-				'data' => $dataJadwal,
-				'dataLKS' => $dataLKS,
-				'dataAuditTim' => $dataAuditTim->get(),
-				'dataTimLogbook' => $dataTimLogbook->get(),
-				'SisJadwalLog' => $SisJadwalLog->get(),
-			];
+                'module'         => $this->module,
+                'url'            => $this->url,
+                'view'           => $this->view,
+                'breadcrumbs'    => $breadcrumbs,
+                'data'           => $dataJadwal,
+                'dataLKS'        => $dataLKS,
+                'dataAuditTim'   => $dataAuditTim->get(),
+                'dataTimLogbook' => $dataTimLogbook->get(),
+                'SisJadwalLog'   => $SisJadwalLog->get(),
+            ];
 
             return view("$this->view.unggah")->with($parser);
         } catch (Exception $e) {
@@ -92,15 +85,15 @@ class AuDaftarHadirController extends Controller
 
     public function storeUnggah(Request $request, $jadwalID)
     {
-		$request->validate([
-            'cust_nama' => 'required',
-            'cust_email' => 'required',
-            'user_id' => 'required',
-            'cust_id' => 'required',
-            'jadw_id' => 'required',
+        $request->validate([
+            'cust_nama'                => 'required',
+            'cust_email'               => 'required',
+            'user_id'                  => 'required',
+            'cust_id'                  => 'required',
+            'jadw_id'                  => 'required',
             'jadw_tanggal_rapat_akhir' => 'required|string',
-            'jadw_notulen_rapat' => 'required|string',
-            'jadw_setujui_temuan' => 'required|string',
+            'jadw_notulen_rapat'       => 'required|string',
+            'jadw_setujui_temuan'      => 'required|string',
         ]);
 
         $newFilePath = [];
@@ -120,33 +113,33 @@ class AuDaftarHadirController extends Controller
                 array_push($newFilePath, public_path($fileKehadiranPath));
             }
 
-			$dataJadwal->jadw_setujui_temuan = $request['jadw_setujui_temuan'];
-			$dataJadwal->jadw_notulen_rapat = $request['jadw_notulen_rapat'];
-			$dataJadwal->jadw_tanggal_rapat_akhir = $request['jadw_tanggal_rapat_akhir'];
+            $dataJadwal->jadw_setujui_temuan      = $request['jadw_setujui_temuan'];
+            $dataJadwal->jadw_notulen_rapat       = $request['jadw_notulen_rapat'];
+            $dataJadwal->jadw_tanggal_rapat_akhir = $request['jadw_tanggal_rapat_akhir'];
 
             $dataJadwal->save();
             foreach ($oldFilePath as $path) { // remove old file
                 @unlink($path);
             }
 
-			$notifStruct            = new NotifStruct();
-			$notifStruct->title     = 'Tinjauan Rapat Akhir';
-			$notifStruct->message   = sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']);
-			$notifStruct->user_id   = $request['user_id'];
-			$notifStruct->click_url = url('/pelanggan/tahap2/persetujuan-temuan');
-			sendNotification($notifStruct);
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = 'Tinjauan Rapat Akhir';
+            $notifStruct->message   = sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']);
+            $notifStruct->user_id   = $request['user_id'];
+            $notifStruct->click_url = url('/pelanggan/tahap2/persetujuan-temuan');
+            sendNotification($notifStruct);
 
-			// Send Email
-			$structEmail          = new EmailStruct();
-			$structEmail->subject = "Tinjauan rapat Akhir";
-			$structEmail->body    = view($this->view.'.mails.publish')
-				->with([
-					'nama'       => $request['cust_nama'],
-					'message'       => sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']),
-					'link_verif'        => url('/pelanggan/tahap2/persetujuan-temuan'),
-				])->render();
-			$structEmail->to      = $request['cust_email'];
-			sendEmail($structEmail);
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = "Tinjauan rapat Akhir";
+            $structEmail->body    = view($this->view . '.mails.publish')
+                ->with([
+                    'nama'       => $request['cust_nama'],
+                    'message'    => sprintf("Silahkan konfirmasi tinjauan Rapat akhir untuk temuan dari LKS yang sudah ditemukan pada jadwal No #%s.", $request['jadw_id']),
+                    'link_verif' => url('/pelanggan/tahap2/persetujuan-temuan'),
+                ])->render();
+            $structEmail->to      = $request['cust_email'];
+            sendEmail($structEmail);
 
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
@@ -167,7 +160,7 @@ class AuDaftarHadirController extends Controller
         };
     }
 
-	private function ajax_tinymce_uploadimage(Request $request)
+    private function ajax_tinymce_uploadimage(Request $request)
     {
         try {
             $request->validate([
@@ -206,8 +199,8 @@ class AuDaftarHadirController extends Controller
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
         $data->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua']);
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']);
-		// 'diajukan',
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', ['revisi', 'none']);
+        // 'diajukan',
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
 
         if (!empty($request->filterRules)) {
@@ -246,7 +239,7 @@ class AuDaftarHadirController extends Controller
 
             $x['is_uploaded']          = $isUploaded;
             $x['jadw_id']              = $d->jadw_id;
-            $x['jadw_setujui_temuan']              = $d->jadw_setujui_temuan;
+            $x['jadw_setujui_temuan']  = $d->jadw_setujui_temuan;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
             $x['cust_nama']            = $d->cust_nama;
@@ -260,7 +253,7 @@ class AuDaftarHadirController extends Controller
         return response()->json(["total" => $total, "rows" => $result]);
     }
 
-	public function detail(Request $request, $jadwalID, $type)
+    public function detail(Request $request, $jadwalID, $type)
     {
         try {
             $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
@@ -268,16 +261,16 @@ class AuDaftarHadirController extends Controller
             if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
-                'lap-ringkas'      => $this->cetak_lap_ringkas($request, $data),
-                'lks'          => $this->cetak_lks($request, $data),
-                default        => throw new Exception("Invalid URL"),
+                'lap-ringkas' => $this->cetak_lap_ringkas($request, $data),
+                'lks'         => $this->cetak_lks($request, $data),
+                default       => throw new Exception("Invalid URL"),
             };
         } catch (Exception $e) {
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
 
-	private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)
+    private function cetak_lap_ringkas(Request $request, SisJadwal $dataJadwal)
     {
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
 

@@ -248,7 +248,6 @@ class Tahap2PerbaikanController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid'                 => $this->ajax_datagrid($request),
-            'datagrid_lks'             => $this->ajax_datagrid_lks($request),
             'data-verif-revisi-by-lks' => $this->ajax_verif_revisi_by_lks($request),
             'tinymce-uploadimage'      => $this->ajax_tinymce_uploadimage($request),
             default                    => responseJSON(404, null, "Invalid url"),
@@ -304,6 +303,12 @@ class Tahap2PerbaikanController extends Controller
                 ];
             }
 
+            $allowEditLks = false;
+            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+                $allowEditLks = true;
+            }
+
+            $x['allow_edit_lks']   = $allowEditLks;
             $x['tims']             = $timAudit;
             $x['audits']           = $jadwalAudit;
             $x['jadw_id']          = $d->jadw_id;
@@ -315,61 +320,6 @@ class Tahap2PerbaikanController extends Controller
             } else {
                 $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
             }
-            $result[] = $x;
-        }
-
-        return response()->json(["total" => $total, "rows" => $result]);
-    }
-
-    private function ajax_datagrid_lks(Request $request)
-    {
-        $request->validate(['jadwal_id' => 'required|integer']);
-
-        $data = SisAuditLks::with(['sis_audit_lks_revisis', 'sis_audit_lks_files'])
-            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
-            ->where('sis_jadwal.jadw_id', $request['jadwal_id'])
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id);
-        // Filter
-        if (!empty($request->filterRules)) {
-            foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
-            }
-        }
-        // Sorter
-        if (!empty($request->sort) && !empty($request->order)) {
-            $sort  = explode(",", $request->sort);
-            $order = explode(",", $request->order);
-            for ($i = 0; $i < count($sort); $i++) {
-                $data->orderBy($sort[$i], $order[$i]);
-            }
-        }
-        // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
-        // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
-        // Result
-        $result = [];
-        foreach ($data->get() as $d) {
-            $x['jadw_id'] = $d->jadw_id;
-
-            $x['jadw_audit_nomor_referensi'] = $d->jadw_audit_nomor_referensi;
-            $x['jadw_audit_ruang_lingkup']   = $d->jadw_audit_ruang_lingkup;
-            $x['jadw_audit_kegiatan']        = $d->jadw_audit_kegiatan;
-            $x['jadw_audit_nomor_referensi'] = $d->jadw_audit_nomor_referensi;
-            $x['jadw_audit_kode_nace']       = $d->jadw_audit_kode_nace;
-
-            $x['lks_id']                       = $d->lks_id;
-            $x['lks_sudah_ditutup']            = $d->lks_sudah_ditutup;
-            $x['lks_status']                   = $d->lks_status;
-            $x['lks_kategori_ketidaksesuaian'] = $d->lks_kategori_ketidaksesuaian;
-            $x['lks_input_date_perbaikan']     = $d->lks_input_date_perbaikan;
-            $x['lks_perbaikan_analisa']        = $d->lks_perbaikan_analisa;
-            $x['lks_perbaikan_koreksi']        = $d->lks_perbaikan_koreksi;
-            $x['lks_perbaikan_tindakan']       = $d->lks_perbaikan_tindakan;
-            $x['lks_bagian_pendamping']        = $d->lks_bagian_pendamping;
-            $x['lks_expired_date_perbaikan']   = $d->lks_expired_date_perbaikan?->format('Y-m-d H:i:s');
-
             $result[] = $x;
         }
 

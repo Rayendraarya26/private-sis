@@ -262,7 +262,12 @@
                                             Revisi Temuan
                                         </button>
                                         &nbsp;
-                                        <button class="btn btn-success" onclick="promptAgree({{$dataJadwal->jadw_id}})"
+                                        {{--                                        <button class="btn btn-success" onclick="promptAgree({{$dataJadwal->jadw_id}})"--}}
+                                        {{--                                                id="agreeTemuan">--}}
+                                        {{--                                            <i class="fas fa-check-circle"></i>--}}
+                                        {{--                                            Setujui Temuan--}}
+                                        {{--                                        </button>--}}
+                                        <button class="btn btn-success" onclick="showModalBerkas()"
                                                 id="agreeTemuan">
                                             <i class="fas fa-check-circle"></i>
                                             Setujui Temuan
@@ -276,12 +281,76 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modalBerkas" tabindex="-1" role="dialog"
+             aria-labelledby="modalBerkas" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+
+                <!-- Modal Content -->
+                <div class="modal-content">
+
+                @csrf
+                <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalBerkasTitle">
+                            Unggah Berkas Persetujuan
+                        </h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- /modal header -->
+
+                    <!-- Modal Body -->
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-10">
+                                <div class="form-group">
+                                    <label for="berkas_ket">Unggah <b>Scan LKS</b> yang sudah diberi TTD dan cap</label>
+                                    <input type="file" class="form-control" id="file_lks" accept="application/pdf">
+                                </div>
+                                <div class="form-group">
+                                    <label for="berkas_ket">Unggah <b>Scan Laporan Ringkas</b> yang sudah diberi TTD dan
+                                        cap</label>
+                                    <input type="file" class="form-control" id="file_lap_ringkas"
+                                           accept="application/pdf">
+                                </div>
+                                <div class="form-group">
+                                    <label for="berkas_ket">
+                                        Unggah <b>Scan Surat Tugas</b> yang sudah diberi TTD dan cap
+                                    </label>
+                                    <input type="file" class="form-control" id="file_surat_tugas"
+                                           accept="application/pdf">
+                                </div>
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </div>
+                    <!-- /modal body -->
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button id="simpanBerkas" type="button" onclick="promptAgree({{$dataJadwal->jadw_id}})"
+                                class="btn btn-success btn-sm">
+                            Simpan
+                        </button>
+                    </div>
+                    <!-- /modal footer -->
+                </div>
+                <!-- /modal content -->
+            </div>
+        </div>
     </div>
 @endsection
 
 @push('javascript')
     <script>
         @if($dataJadwal->jadw_setujui_temuan == 'diajukan')
+        function showModalBerkas() {
+            $("#modalBerkas").modal('show')
+        }
+
         function promptRevisi(id) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
@@ -333,26 +402,58 @@
         }
 
         function submitApproval(id, status, message) {
-            $("#agreeTemuan").attr("disabled", true)
-            $("#revisiTemuan").attr("disabled", true)
-            $.ajax({
-                url: `{{url("$url/approve/temuan")}}`,
-                type: 'POST',
-                dataType: 'json',
-                data: {jadw_id: id, jadw_setujui_temuan: status, message},
-                success: function (response) {
-                    toastCenter({
-                        type: 'success',
-                        title: response.message
-                    })
+            try {
+                $("#agreeTemuan").attr("disabled", true)
+                $("#revisiTemuan").attr("disabled", true)
 
-                    location.href = "/{{$url}}"
-                },
-                error: function (xhr) {
-                    if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                    else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                let formData = new FormData();
+                formData.append('jadw_id', id)
+                formData.append('jadw_setujui_temuan', status)
+                formData.append('message', message)
+
+                if (status == "setuju") {
+                    let fileLKS = document.querySelector("#file_lks").files[0];
+                    validateBerkas(fileLKS);
+                    formData.append('file_lks', fileLKS)
+
+                    let fileLapRing = document.querySelector("#file_lap_ringkas").files[0];
+                    validateBerkas(fileLapRing);
+                    formData.append('file_lap_ringkas', fileLapRing)
+
+                    let fileSurTug = document.querySelector("#file_surat_tugas").files[0];
+                    validateBerkas(fileSurTug);
+                    formData.append('file_surat_tugas', fileSurTug)
                 }
-            });
+
+                $.ajax({
+                    url: `{{url("$url/approve/temuan")}}`,
+                    type: 'post',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: async function (res) {
+                        toastCenter({
+                            type: 'success',
+                            title: res.message
+                        })
+
+                        location.href = "/{{$url}}"
+                    },
+                    error: function (xhr) {
+                        if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                        else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                    }
+                });
+            } catch (error) {
+                toastCenter({type: 'error', 'title': error})
+            }
+
+        }
+
+        function validateBerkas(berkas) {
+            if (berkas.type != "application/pdf") {
+                throw `File ${berkas.name} harus berformat PDF`
+            }
         }
         @endif
     </script>

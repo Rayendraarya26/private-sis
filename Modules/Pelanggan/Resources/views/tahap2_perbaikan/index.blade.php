@@ -66,6 +66,10 @@
                             let btnUpload   = `<div data-options="iconCls:'fad fa-cloud-upload'" onclick="location.href = '{{url("$url/upload")}}/${row.jadw_id}'">Upload Berkas</div>`;
                             let btnCetakLap = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lks', '_blank')">Cetak LKS</div>`;
 
+                            if (!row.allow_edit_lks) {
+                                btnTemuan = "";
+                            }
+
                             return `
                             <div>
                             <button class="btn-action btn-info" data-index="${row.jadw_id}" title="Aksi">

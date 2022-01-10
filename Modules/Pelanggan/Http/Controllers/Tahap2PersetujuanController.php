@@ -13,7 +13,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 use Modules\TimAudit\Http\Traits\LksTrait;
@@ -64,9 +66,10 @@ class Tahap2PersetujuanController extends Controller
     {
         $request->validate([
             'jadw_id'             => 'required',
-            'jadw_setujui_temuan' => Rule::in(['setuju', 'revisi'])
+            'jadw_setujui_temuan' => Rule::in(['setuju', 'revisi']),
         ]);
 
+        $newUploadedPath = [];
         try {
             DB::beginTransaction();
             $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
@@ -76,8 +79,63 @@ class Tahap2PersetujuanController extends Controller
             $data->jadw_setujui_temuan = $request['jadw_setujui_temuan'];
             $data->save();
 
-            $message = "";
+            if ($request['jadw_setujui_temuan'] == "revisi") {
+                SisJadwalLog::create([
+                    'jadw_id'    => $data->jadw_id,
+                    'jlog_tipe'  => 'revisi-temuan',
+                    'jlog_judul' => 'Revis Temuan LKS',
+                    'jlog_pesan' => $request['message'],
+                ]);
 
+                Session::flash("message", "Revisi diajukan ke Tim Audit");
+            } else {
+                if (!$request->hasFile('file_lks')) throw new Exception("Mohon upload scan LKS yang sudah diberi TTD dan cap");
+                else if (!$request->hasFile('file_lap_ringkas')) throw new Exception("Mohon upload scan laporan ringkas yang sudah diberi TTD dan cap");
+                else if (!$request->hasFile('file_surat_tugas')) throw new Exception("Mohon upload scan surat tugas yang sudah diberi TTD dan cap");
+
+                // process upload scan files
+                $baseFileUpload = sprintf(config("app.path_file_audit"), $data->jadw_id);
+                if (!File::exists($baseFileUpload)) {
+                    File::makeDirectory($baseFileUpload, 0777, true, true);
+                }
+
+                // ======= LKS ======= //
+                $fileLks     = $request->file('file_lks');
+                $fileLksName = Str::slug('file-scan-lks-' . $fileLks->getClientOriginalName()) . '-' . time() . '.' . $fileLks->getClientOriginalExtension();
+                $fileLksPath = sprintf("%s/%s", $baseFileUpload, $fileLksName);
+                $fileLks->move($baseFileUpload, $fileLksName);
+                $newUploadedPath[]   = public_path($fileLksPath);
+                $data->jadw_file_lks = $fileLksPath;
+
+                // ======= LapRingkas ======= //
+                $fileLapRingkas     = $request->file('file_lap_ringkas');
+                $fileLapRingkasName = Str::slug('file-scan-lapringkas-' . $fileLapRingkas->getClientOriginalName()) . '-' . time() . '.' . $fileLapRingkas->getClientOriginalExtension();
+                $fileLapRingkasPath = sprintf("%s/%s", $baseFileUpload, $fileLapRingkasName);
+                $fileLapRingkas->move($baseFileUpload, $fileLapRingkasName);
+                $newUploadedPath[]               = public_path($fileLapRingkasPath);
+                $data->jadw_file_laporan_ringkas = $fileLapRingkasPath;
+
+                // ======= SuratTugas ======= //
+                $fileSuratTugas     = $request->file('file_surat_tugas');
+                $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
+                $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
+                $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
+                $newUploadedPath[]           = public_path($fileSuratTugasPath);
+                $data->jadw_file_surat_tugas = $fileSuratTugasPath;
+
+
+                $data->save();
+                SisJadwalLog::create([
+                    'jadw_id'    => $data->jadw_id,
+                    'jlog_tipe'  => 'informasi',
+                    'jlog_judul' => 'Approve Temuan LKS',
+                    'jlog_pesan' => sprintf("%s menyetujui temuan LKS", $data->sis_pelanggan->cust_nama),
+                ]);
+
+                Session::flash("message", sprintf("Temuan telah disetujui, silakan melakukan <a href='%s'>Perbaikan Temuan</a>", url("pelanggan/tahap2/perbaikan-temuan")));
+            }
+
+            $message = "";
             // Send Notification to Operator LS
             $groupUsers = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
             if ($groupUsers) {
@@ -85,7 +143,7 @@ class Tahap2PersetujuanController extends Controller
                     $notifStruct = new NotifStruct();
                     if ($request['jadw_setujui_temuan'] == "setuju") {
                         $notifStruct->title   = sprintf("#%d temuan LKS disetujui", $data->jadw_id);
-                        $notifStruct->message = sprintf("%s memberikan persetujuan pada temuan LKS", $data->sis_pelanggan->cust_nama);
+                        $notifStruct->message = sprintf("%s memberikan persetujuan pada temuan LKS dan telah mengunggah Scan LKS, Surat Tugas, dan Laporan Ringkas yang telah diberi ttd dan cap", $data->sis_pelanggan->cust_nama);
                     } else {
                         $notifStruct->title   = sprintf("#%d Revisi temuan LKS", $data->jadw_id);
                         $notifStruct->message = sprintf("%s mengajuakan revisi pada temuan LKS", $data->sis_pelanggan->cust_nama);
@@ -99,30 +157,13 @@ class Tahap2PersetujuanController extends Controller
                 }
             }
 
-            if ($request['jadw_setujui_temuan'] == "revisi") {
-                SisJadwalLog::create([
-                    'jadw_id'    => $data->jadw_id,
-                    'jlog_tipe'  => 'revisi-temuan',
-                    'jlog_judul' => 'Revis Temuan LKS',
-                    'jlog_pesan' => $request['message'],
-                ]);
-
-                Session::flash("message", "Revisi diajukan ke Tim Audit");
-            } else {
-                SisJadwalLog::create([
-                    'jadw_id'    => $data->jadw_id,
-                    'jlog_tipe'  => 'informasi',
-                    'jlog_judul' => 'Approve Temuan LKS',
-                    'jlog_pesan' => sprintf("%s menyetujui temuan LKS", $data->sis_pelanggan->cust_nama),
-                ]);
-
-                Session::flash("message", sprintf("Temuan telah disetujui, silakan masuk ke halaman <a href='%s'>Perbaikan Temuan</a>", url("pelanggan/tahap2/perbaikan-temuan")));
-            }
-
             DB::commit();
             return responseJSON(200, [], $message);
         } catch (Exception $e) {
             DB::rollBack();
+            foreach ($newUploadedPath as $path) {
+                @unlink($path);
+            }
             return responseJSON(500, null, $e->getMessage());
         }
     }

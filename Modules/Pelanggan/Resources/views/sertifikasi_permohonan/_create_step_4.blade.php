@@ -64,7 +64,6 @@
                                 const dataPertanyaanTambahan = document.querySelector("#step3_pertanyaan_tambahan").files[0];
                                 formData.append("pertanyaan_tambahan", dataPertanyaanTambahan)
 
-
                                 // Submit Permohonan
                                 this.loading_submit = true;
                                 let self = this;
