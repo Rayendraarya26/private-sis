@@ -140,11 +140,13 @@ class KomiteLembarPeriksaController extends Controller
     private function edit_lihat_rekomendasi(Request $request)
 	{
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+        $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
         $dataJadwal->join('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+        $dataJadwal->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
         $dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
@@ -235,8 +237,11 @@ class KomiteLembarPeriksaController extends Controller
         ];
 
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+        $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+        $dataJadwal->join('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+        $dataJadwal->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
         $dataJadwal->join('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
@@ -246,7 +251,6 @@ class KomiteLembarPeriksaController extends Controller
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_sni) AS jadw_audit_sni");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_merk) AS jadw_audit_merk");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_ea) AS jadw_audit_kode_ea");
@@ -255,7 +259,9 @@ class KomiteLembarPeriksaController extends Controller
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_standart_acuan) AS jadw_audit_standart_acuan");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
+        $dataJadwal->selectRaw("GROUP_CONCAT(distinct komite_posisi) AS komite_posisi");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
+        $dataJadwal->selectRaw("GROUP_CONCAT(distinct komite_posisi) AS komite_posisi");
         $dataJadwal->groupBy('sis_jadwal.jadw_id');
 		
 		$dataAudit = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
@@ -295,6 +301,7 @@ class KomiteLembarPeriksaController extends Controller
             "komte_priksa_penilaian_13" => 'required',
             "status" => 'required',
             'jadw_file_kehadiran_komite' => 'required',
+            'posisi' => 'nullable',
             'jadw_file_kehadiran_komite_lama' => 'nullable'
         ]);
 		
@@ -305,15 +312,18 @@ class KomiteLembarPeriksaController extends Controller
             $dataJadwal->select('*');
 
             $restJadwal = $dataJadwal->get()[0];
-            // DEFINE BASE UPLOAD AND UPDATE jadw_file_kehadiran_komite
-            $baseFileUpload = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
-            $fileData     = $request->file('jadw_file_kehadiran_komite');
-            $fileName = Str::slug('file-kehadiran-komite-' . $fileData->getClientOriginalName()) . '-' . time() . '.' . $fileData->getClientOriginalExtension();
-            $filePath = sprintf("%s/%s", $baseFileUpload, $fileName);
-            $fileData->move($baseFileUpload, $fileName);
-			if ($request['jadw_file_kehadiran_komite_lama'] != '') {
-                @unlink($request['jadw_file_kehadiran_komite_lama']);
-            }
+			
+			if(strpos($request['posisi'], 'ketua') !== false){
+				// DEFINE BASE UPLOAD AND UPDATE jadw_file_kehadiran_komite
+				$baseFileUpload = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
+				$fileData     = $request->file('jadw_file_kehadiran_komite');
+				$fileName = Str::slug('file-kehadiran-komite-' . $fileData->getClientOriginalName()) . '-' . time() . '.' . $fileData->getClientOriginalExtension();
+				$filePath = sprintf("%s/%s", $baseFileUpload, $fileName);
+				$fileData->move($baseFileUpload, $fileName);
+				if ($request['jadw_file_kehadiran_komite_lama'] != '') {
+					@unlink($request['jadw_file_kehadiran_komite_lama']);
+				}
+			}
 			
             $restDataPeriksa = DB::table('sis_audit_komite_periksa')->where('jadw_id', $request['jadw_id'])->first();
             DB::beginTransaction();
@@ -358,72 +368,73 @@ class KomiteLembarPeriksaController extends Controller
                     'komte_priksa_penilaian_13' => $request['komte_priksa_penilaian_13'],
                 ]);
             }
-			
-			$total_survailent = 0;
-			$total_data = 0;
-			$mohon_id = [];
-			if(!empty($request['status'])){
-				foreach($request['status'] as $key => $val){
-					$restDataAudit = DB::table('sis_jadwal_audit')
-						->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-						->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
-						->where('jadw_audit_id', $key)
-						->first();
-						
-					 if ($restDataAudit !== null) {
-							$total_data++;
-							$status = 'on-going';
-							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
-								if($val == 'ya'){
-									$status = 'berhak-memperoleh';
+			if(strpos($request['posisi'], 'ketua') !== false){
+				$total_survailent = 0;
+				$total_data = 0;
+				$mohon_id = [];
+				if(!empty($request['status'])){
+					foreach($request['status'] as $key => $val){
+						$restDataAudit = DB::table('sis_jadwal_audit')
+							->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+							->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id")
+							->where('jadw_audit_id', $key)
+							->first();
+							
+						 if ($restDataAudit !== null) {
+								$total_data++;
+								$status = 'on-going';
+								if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
+									if($val == 'ya'){
+										$status = 'berhak-memperoleh';
+									}
+									else{
+										$status = 'tidak-berhak-menggunakan';
+									}
 								}
-								else{
-									$status = 'tidak-berhak-menggunakan';
+								elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
+									if($val == 'ya'){
+										$status = 'berhak-memperoleh-kembali';
+									}
+									else{
+										$status = 'tidak-berhak-menggunakan';
+									}
 								}
-							}
-							elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
-								if($val == 'ya'){
+								elseif($restDataAudit->jadw_audit_jenis == 'pengaktifan'){
 									$status = 'berhak-memperoleh-kembali';
 								}
-								else{
+								elseif($restDataAudit->jadw_audit_jenis == 'pencabutan'){
 									$status = 'tidak-berhak-menggunakan';
 								}
-							}
-							elseif($restDataAudit->jadw_audit_jenis == 'pengaktifan'){
-								$status = 'berhak-memperoleh-kembali';
-							}
-							elseif($restDataAudit->jadw_audit_jenis == 'pencabutan'){
-								$status = 'tidak-berhak-menggunakan';
-							}
-							elseif($restDataAudit->jadw_audit_jenis == 'surveilans'){
-								$total_survailent++;
-								if($val == 'ya'){
-									$status = 'tetap-dapat-menggunakan';
+								elseif($restDataAudit->jadw_audit_jenis == 'surveilans'){
+									$total_survailent++;
+									if($val == 'ya'){
+										$status = 'tetap-dapat-menggunakan';
+									}
+									else{
+										$status = 'tidak-berhak-menggunakan';
+									}
 								}
-								else{
-									$status = 'tidak-berhak-menggunakan';
-								}
-							}
+								
+							DB::table('sis_jadwal_audit')
+								->where('jadw_audit_id', $key)
+								->update([
+									'jadw_audit_status' => $status,
+								]);
 							
-						DB::table('sis_jadwal_audit')
-							->where('jadw_audit_id', $key)
-							->update([
-								'jadw_audit_status' => $status,
-							]);
-						
-						if(!in_array($restDataAudit->mohon_id, $mohon_id, true)){
-							array_push($mohon_id, $restDataAudit->mohon_id);
+							if(!in_array($restDataAudit->mohon_id, $mohon_id, true)){
+								array_push($mohon_id, $restDataAudit->mohon_id);
+							}
 						}
 					}
 				}
-			}
-			
-			if($total_survailent == $total_data){
-				DB::table('sis_jadwal')
-							->where('jadw_id', $request['jadw_id'])
-							->update([
-								'jadw_is_tutup' => 'ya',
-							]);
+				
+				if($total_survailent == $total_data){
+					DB::table('sis_jadwal')
+								->where('jadw_id', $request['jadw_id'])
+								->update([
+									'jadw_is_tutup' => 'ya',
+								]);
+				}
 			}
 			
 			

@@ -176,6 +176,17 @@
                                     </ol>
                                 </div>
                             </div>
+							
+							@if($data->sis_audit_lap_lengkap?->lap_lengkp_revisi_note !== '')
+							<div class="form-group row" style="color:red;">
+                                <label class="col-form-label col-sm-3">
+                                    V. Revisi Verifikasi Laporan
+                                </label>
+                                <div class="col-sm-8">
+                                    {!! $data->sis_audit_lap_lengkap?->lap_lengkp_revisi_note ?? '-' !!}
+                                </div>
+                            </div>
+							@endif
                         </div>
                     </div>
                 </div>
@@ -332,15 +343,6 @@
                                     </div>
                                 </div>
 								
-								<div class="form-group row">
-                                    <label class="col-form-label col-sm-3">
-                                        Rekomendasi LKS
-                                    </label>
-                                    <div class="col-sm-8">
-                                        {!! $data->sis_audit_lap_lengkap?->lap_lengkp_rekomendasi_lks ?? '-' !!}
-                                    </div>
-                                </div>
-								
 								<div class="col-md-12">
                                 <div class="row">
                                     <div class="col-sm-2"></div>
@@ -348,6 +350,12 @@
 										<a href="{{url($url)}}" class="btn btn-default">
 											<i class="fas fa-arrow-left"></i> Kembali
 										</a>
+										&nbsp;
+                                        <button class="btn btn-warning" onclick="promptRevisi({{$data->jadw_id}})"
+                                                id="agreeTemuan">
+                                            <i class="fas fa-info-circle"></i>
+                                            Revisi Laporan
+                                        </button>
                                         &nbsp;
                                         <button class="btn btn-success" onclick="promptAgree({{$data->jadw_id}})"
                                                 id="agreeTemuan">
@@ -369,6 +377,32 @@
 
 @push('javascript')
     <script>
+		function promptRevisi(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-default mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: 'Keterangan Revisi',
+                input: 'textarea',
+                inputAttributes: {
+                    autocapitalize: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Revisi',
+                cancelButtonText: 'Batal',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    submitApproval(id, 'revisi', result.value)
+                }
+            });
+        }
+		
         function promptAgree(id) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-success mb-2',
@@ -400,7 +434,7 @@
                 url: `{{url("$url/verifikasi/$data->jadw_id")}}`,
                 type: 'POST',
                 dataType: 'json',
-                data: {jadw_id: id, lap_lengkp_verifikasi_status: status, message},
+                data: {jadw_id: id, lap_lengkp_verifikasi_status: status, lap_lengkp_revisi_note : message, ketua_tim : `{{$dataKetua->master_pegawai->user_id}}`},
                 success: function (response) {
                     toastCenter({
                         type: 'success',

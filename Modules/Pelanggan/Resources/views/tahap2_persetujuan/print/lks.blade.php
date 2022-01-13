@@ -49,7 +49,7 @@
 
         header {
             position: fixed;
-            right: 0px;
+            left: 0px;
             /*background-color: lightblue;*/
             height: 110px;
         }
@@ -58,18 +58,18 @@
 <body style="margin-top: 50px">
 <header>
     <div style="float: left; padding-left: 40px">
-    <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
-         style="max-width: 150px; margin-top: -15px">
+        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
+             style="max-width: 150px; margin-top: -50px">
     </div>
 </header>
 
 <div class="text-center" >
-    <div style="font-weight: bold; font-size: 16px">
+    <div style="font-weight: bold; font-size: 16px; margin-top: -40px">
         LAPORAN KETIDAKSESUAIAN dan LAPORAN VERIFIKASI
     </div>
 </div>
 
-<section style="margin-top: 0px; margin-right: 20px; margin-left: 20px">
+<section style="margin-top: 20px; margin-right: 20px; margin-left: 20px">
     <table>
         <tr>
             <td>1.</td>

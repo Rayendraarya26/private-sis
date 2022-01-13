@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
+use Modules\TimAudit\Http\Traits\LksTrait;
 
 class AuLapRingkasController extends Controller
 {
-    use AuditorTraits;
+    use AuditorTraits, LksTrait;
 
     public $module = self::class;
     private $url = 'timaudit/auditor/laporan-ringkas';

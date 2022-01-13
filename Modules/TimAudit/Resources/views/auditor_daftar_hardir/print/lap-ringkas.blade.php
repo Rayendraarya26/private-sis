@@ -12,6 +12,20 @@
             justify-content: center;
         }
 
+        .table-formatter {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
+
+        .table-formatter thead {
+            vertical-align: middle !important;
+        }
+
+        .table-formatter th, .table-formatter td {
+            padding: 5px !important;
+        }
 
         section, span, table, tr, th, td, #rekap-lks {
             font-size: 12px;
@@ -48,11 +62,15 @@
             /*background-color: lightblue;*/
             height: 50px;
         }
+
+        .information {
+            margin-top: -10px;
+        }
     </style>
 </head>
 <body style="margin-top: 50px">
 <header>
-    <div style="float: left">
+    <div style="float: left; margin-left: 40px">
         <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
              style="max-width: 120px;">
     </div>
@@ -62,73 +80,70 @@
     </div>
 </header>
 
-<section>
-    <table>
+<section style="padding-top: 20px; margin-left: 40px; margin-right: 40px">
+    <table class="table-formatter">
+        <tbody>
         <tr>
-            <td>Nama Perusahaan</td>
-            <td>: {{$dataJadwal->sis_pelanggan->cust_nama}}
-            </td>
-        </tr>
-        <tr>
-            <td>No Ref</td>
-            <td>:
-                @foreach($dataJadwal->sis_jadwal_audits as $audit)
-                    @if($audit->jadw_audit_nomor_referensi != "")
-                        {{$audit->jadw_audit_nomor_referensi . (!$loop->last ? ' ; ' : '.')}}
-                    @endif
-                @endforeach
-            </td>
-        </tr>
-        <tr>
-            <td>Komoditas</td>
-            <td>:
-                @foreach($dataJadwal->sis_jadwal_audits as $audit)
-                    @if($audit->master_komoditi->komodt_nama != "")
-                        {{$audit->master_komoditi->komodt_nama . (!$loop->last ? ' ; ' : '.')}}
-                    @endif
-                @endforeach
-            </td>
-        </tr>
-
-        <tr>
-            <td>Alamat</td>
-            <td>: {{$dataJadwal->sis_pelanggan->cust_alamat}}
-        </tr>
-
-        <tr>
-            <td>Kegiatan</td>
-            <td>:
-                @foreach($dataJadwal->sis_jadwal_audits as $audit)
-                    {{$audit->jadw_audit_kegiatan . (!$loop->last ? ' - ' : '.')}}
-                @endforeach
-            </td>
-        </tr>
-
-        <tr>
-            <td>Tanggal Asesmen</td>
             <td>
-                : {{ $dataJadwal->jadw_tanggal_mulai->isoFormat("LL") }}
-                s/d {{ $dataJadwal->jadw_tanggal_selesai->isoFormat("LL") }}</td>
-        </tr>
+                <div>
+                    <p>Nama Perusahaan: {{$dataJadwal->sis_pelanggan->cust_nama}}</p>
+                    <p class="information">
+                        No Ref:
+                        @foreach($dataJadwal->sis_jadwal_audits as $audit)
+                            @if($audit->jadw_audit_nomor_referensi != "")
+                                {{$audit->jadw_audit_nomor_referensi . (!$loop->last ? ' ; ' : '.')}}
+                            @endif
+                        @endforeach
+                    </p>
+                    <p class="information">
+                        Komoditas:
+                        @foreach($dataJadwal->sis_jadwal_audits as $audit)
+                            @if($audit->master_komoditi->komodt_nama != "")
+                                {{$audit->master_komoditi->komodt_nama . (!$loop->last ? ' ; ' : '.')}}
+                            @endif
+                        @endforeach
+                    </p>
+                    <p class="information">
+                        Alamat: {{$dataJadwal->sis_pelanggan->cust_alamat}}
+                    </p>
+                </div>
 
-        <tr>
-            <td>Standar Acuan</td>
-            <td>:
-                @foreach($dataJadwal->sis_jadwal_audits as $audit)
-                    @if($audit->jadw_audit_standart_acuan != "")
-                        {{$audit->jadw_audit_standart_acuan . (!$loop->last ? ' ; ' : '.')}}
-                    @endif
-                @endforeach
+
+            </td>
+            <td>
+                <div>
+                    <p>
+                        Kegiatan:
+
+                        @foreach($dataJadwal->sis_jadwal_audits as $audit)
+                            {{$audit->jadw_audit_kegiatan . (!$loop->last ? ' - ' : '.')}}
+                        @endforeach
+                    </p>
+                    <p class="information">
+                        Tanggal Asesmen:
+
+                        {{ $dataJadwal->jadw_tanggal_mulai->isoFormat("LL") }}
+                        s/d {{ $dataJadwal->jadw_tanggal_selesai->isoFormat("LL") }}
+                    </p>
+                    <p class="information">
+                        Standar Acuan:
+
+                        @foreach($dataJadwal->sis_jadwal_audits as $audit)
+                            @if($audit->jadw_audit_standart_acuan != "")
+                                {{$audit->jadw_audit_standart_acuan . (!$loop->last ? ' ; ' : '.')}}
+                            @endif
+                        @endforeach
+                    </p>
+                    <p class="information">
+                        Ketua TIM:
+                        {{$dataKetua->master_pegawai->peg_nama}}
+                    </p>
+                </div>
             </td>
         </tr>
-        <tr>
-            <td>Ketua TIM</td>
-            <td>:
-                {{$dataKetua->master_pegawai->peg_nama}}
-            </td>
-        </tr>
+        </tbody>
     </table>
-    <div>&nbsp;</div>
+
     <table id="rekap-lks">
         <thead>
         <tr>
@@ -170,76 +185,88 @@
         </tr>
         </tbody>
     </table>
-
-    <div style="padding-top: 20px">
-        <hr>
-        <strong>Ringkasan hasil (Kesimpulan)</strong>
-        {!! $dataJadwal->sis_audit_lap_ringkas->lap_ringkas_kesimpulan !!}
-    </div>
+    <table style="border-top:0px;" class="table-formatter">
+        <thead>
+        <tr>
+            <th class="left">Ringkasan hasil (Kesimpulan)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{!! $dataJadwal->sis_audit_lap_ringkas->lap_ringkas_kesimpulan !!}</td>
+        </tr>
+        </tbody>
+    </table>
 
     @if(!empty($dataJadwal?->sis_audit_lap_ringkas->lap_ringkas_rekomendasi))
-        <hr>
-        <div style="padding-top: 20px">
-            <strong>Rekomendasi</strong>
-            {!! $dataJadwal->sis_audit_lap_ringkas->lap_ringkas_rekomendasi !!}
-        </div>
+        <table style="border-top:0px;" class="table-formatter">
+            <thead>
+            <tr>
+                <th class="left">Rekomendasi</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{!! $dataJadwal->sis_audit_lap_ringkas->lap_ringkas_rekomendasi !!}</td>
+            </tr>
+            </tbody>
+        </table>
     @endif
 
-    <div>
-        <hr>
-        <table>
-            <tr>
-                <td style="padding-left: 100px">
-                    <table style="width: 200px">
-                        <tbody>
-                        <tr>
-                            <td style="font-size: 11pt;" colspan="2">
-                                <strong>Diterbitkan oleh: LS BBKKP</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                @if(!empty($dataKetua->master_pegawai->peg_ttd_base64))
-                                    <img src="{{ $dataKetua->master_pegawai->peg_ttd_base64 }}" alt="ttd ketua"
-                                         style="max-height: 100px;">
-                                @else
-                                    <img src="{{public_path($dataKetua->master_pegawai->peg_ttd_file)}}" alt="ttd ketua"
-                                         style="max-height: 100px;">
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="width: 10%;">Nama</td>
+
+    <table class="table-formatter" style="border-top:0px;">
+        <tr>
+            <td style="padding-left: 100px">
+                <table style="width: 300px">
+                    <tbody>
+                    <tr>
+                        <td style="font-size: 11pt;" colspan="2">
+                            <strong>Diterbitkan oleh: LS BBKKP</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            @if(!empty($dataKetua->master_pegawai->peg_ttd_base64))
+                                <img src="{{ $dataKetua->master_pegawai->peg_ttd_base64 }}" alt="ttd ketua"
+                                     style="max-height: 100px;">
+                            @else
+                                <img src="{{public_path($dataKetua->master_pegawai->peg_ttd_file)}}" alt="ttd ketua"
+                                     style="max-height: 100px;">
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 10%;">Nama</td>
                             <td>
                                 : {{$dataKetua->master_pegawai->peg_nama}}
                             </td>
-                        </tr>
-                        <tr>
-                            <td>Jabatan</td>
-                            <td>
-                                : Ketua Tim
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    </tr>
+                    <tr>
+                        <td>Jabatan</td>
+                        <td>
+                            : Ketua Tim
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
-                </td>
-                <td style="padding-left: 150px"></td>
-                <td>
-                    <table style="width: 200px">
-                        <tbody>
-                        <tr>
-                            <td style="font-size: 11pt;" colspan="2">
-                                <strong>Diketahui oleh:</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="height: 100px"></td>
-                        </tr>
-                        <tr>
-                            <td style="width: 10%;">Nama</td>
-                            <td>
-                                : {{$dataJadwal->jadw_setujui_nama}}
+            </td>
+            <td style="padding-left: 150px"></td>
+            <td>
+                <table style="width: 300px">
+                    <tbody>
+                    <tr>
+                        <td style="font-size: 11pt;" colspan="2">
+                            <strong>Diketahui oleh:</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="height: 100px"></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 10%;">Nama</td>
+                        <td>
+                            : {{$dataJadwal->jadw_setujui_nama}}
                             </td>
                         </tr>
                         <tr>
@@ -248,12 +275,12 @@
                                 : {{$dataJadwal->jadw_setujui_jabatan}}
                             </td>
                         </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </div>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+
 </section>
 
 

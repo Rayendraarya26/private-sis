@@ -176,6 +176,16 @@
                                     </ol>
                                 </div>
                             </div>
+							@if($data->sis_audit_lap_lengkap?->lap_lengkp_revisi_note !== '')
+							<div class="form-group row" style="color:red;">
+                                <label class="col-form-label col-sm-3">
+                                    V. Revisi Verifikasi Laporan
+                                </label>
+                                <div class="col-sm-8">
+                                    {!! $data->sis_audit_lap_lengkap?->lap_lengkp_revisi_note ?? '-' !!}
+                                </div>
+                            </div>
+							@endif
                         </div>
                     </div>
                 </div>
@@ -421,21 +431,6 @@
                                                   name="lap_lengkp_kesimpulan"
                                                   aria-label=""
                                                   id="lap_lengkp_kesimpulan">{{old('lap_lengkp_kesimpulan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_kesimpulan}}</textarea>
-                                    </div>
-                                </div>
-								
-								<div class="form-group row">
-                                    <label class="col-form-label col-sm-3" for="lap_lengkp_rekomendasi_lks">
-                                        Rekomendasi Untuk LKS
-                                        @error('lap_lengkp_rekomendasi_lks')
-                                        <br><span style="color: red">{{$message}}</span>
-                                        @enderror
-                                    </label>
-                                    <div class="col-sm-8">
-                                        <textarea class="editor form-control" placeholder="..."
-                                                  name="lap_lengkp_rekomendasi_lks"
-                                                  aria-label=""
-                                                  id="lap_lengkp_rekomendasi_lks">{{old('lap_lengkp_rekomendasi_lks') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_rekomendasi_lks}}</textarea>
                                     </div>
                                 </div>
 								

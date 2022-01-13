@@ -8,7 +8,7 @@ use App\Models\BbkkpSis\SisJadwalAudit;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SysUserGroup;
-use Modules\TimAudit\Http\Traits\AuditorTraits;
+use App\Models\BbkkpSis\SysUser;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -22,6 +22,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Modules\TimAudit\Http\Traits\AuditorTraits;
 use Modules\TimAudit\Http\Traits\LksTrait;
 
 class AuLapLengkapController extends Controller
@@ -72,7 +73,18 @@ class AuLapLengkapController extends Controller
 
             $where          = ['jadw_id' => $dataJadwal->jadw_id];
             $updateOrCreate = $request->except('_token');
-
+			if($updateOrCreate['lap_lengkp_verifikasi_diajukan'] == 'ya'){
+				$dataUser = SysUser::whereIn('ug_group_id', ['11'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+				foreach ($dataUser->get() as $us) {
+					$notifUsr            = new NotifStruct();
+					$notifUsr->title     = 'Pengajuan Laporan Lengkap Jadwal #' . $jadwalID;
+					$notifUsr->message   = sprintf("Pengajuan laporan lengkap untuk jadwal nomor #%s telah didelegasikan, silahkan lakukan proses Verifikasi.", $jadwalID);
+					$notifUsr->user_id   = $us->user_id;
+					$notifUsr->click_url = url('/koordinatorsertifikasi/verif');
+					sendNotification($notifUsr);
+				}
+			}
+			
             SisAuditLapLengkap::updateOrCreate($where, $updateOrCreate);
 
             return redirect(url($this->url))->with('message', "Data berhasil ditambahkan/diperbarui");
@@ -210,6 +222,7 @@ class AuLapLengkapController extends Controller
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
             $x['sudah_mengisi']        = $d->sis_audit_lap_lengkap?->count() > 0;
             $x['lap_lengkp_verifikasi_status']        = $d->sis_audit_lap_lengkap?->count() > 0 ? $d->sis_audit_lap_lengkap->lap_lengkp_verifikasi_status : 'none';
+            $x['lap_lengkp_verifikasi_diajukan']        = $d->sis_audit_lap_lengkap?->count() > 0 ? $d->sis_audit_lap_lengkap->lap_lengkp_verifikasi_diajukan : 'tidak';
             array_push($result, $x);
         }
 
