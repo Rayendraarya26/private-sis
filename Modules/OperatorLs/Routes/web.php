@@ -18,6 +18,7 @@ use Modules\OperatorLs\Http\Controllers\OperatorLsController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
 use Modules\OperatorLs\Http\Controllers\SertifikatUjiController;
 use Modules\OperatorLs\Http\Controllers\TimController;
+use Modules\OperatorLs\Http\Controllers\PenjadwalanUlangTimController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanTahap1Controller;
 use Modules\OperatorLs\Http\Controllers\UploadKajianPermohonanController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanPencabutanController;
@@ -81,6 +82,15 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::get('/edit', [TimController::class, 'edit']);
         Route::post('/update', [TimController::class, 'update']);
         Route::delete('/delete', [TimController::class, 'destroy']);
+    });
+	
+	Route::prefix("penjadwalan-ulang-tim")->group(function () {
+        Route::get('/', [PenjadwalanUlangTimController::class, 'index']);
+        Route::get('/detail', [PenjadwalanUlangTimController::class, 'detail']);
+        Route::get('/ajax', [PenjadwalanUlangTimController::class, 'ajax']);
+        Route::get('/edit', [PenjadwalanUlangTimController::class, 'edit']);
+        Route::post('/update', [PenjadwalanUlangTimController::class, 'update']);
+        Route::delete('/delete', [PenjadwalanUlangTimController::class, 'destroy']);
     });
 
 	Route::prefix("komite")->group(function () {
