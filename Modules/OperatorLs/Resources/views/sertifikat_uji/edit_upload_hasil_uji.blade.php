@@ -108,29 +108,57 @@
 				<div class="col-xl-12">
 					<div class="dt-card">
 					  <div class="dt-card__header">
-						<div class="dt-card__heading"><h3 class="dt-card__title">Upload Hasil Uji</h3></div>
+						<div class="dt-card__heading"><h3 class="dt-card__title">Upload Hasil Uji Sertifikat Produk</h3></div>
 					  </div>
 					  <div class="dt-card__body">
 							<div id="frmSertifikat" style="display:none;">
 								<fieldset style="border: 1px #eee solid;padding:20px;">
 								<legend>Form Upload:</legend>
-								<div class="form-group form-row" id="data_permohonan">
+								<div class="form-group form-row" id="">
 									<label class="col-xl-3 col-form-label text-sm-left" for="id" >Sertifikat No.</label>
 									<div class="col-xl-8">
-										<input type="text" class="form-control" v-on:keyup="validateSertifikat" name="jadw_audit_sertifikat_nomor" id="jadw_audit_sertifikat_nomor">
+										<input type="text" class="form-control" v-on:keyup="validateSertifikat" name="prod_sert_nomor" id="prod_sert_nomor">
 									</div>
 								</div>
 								
-								<div class="form-group form-row" id="data_permohonan">
+								<div class="form-group form-row" id="">
+									<label class="col-xl-3 col-form-label text-sm-left" for="id" >Tanggal</label>
+									<div class="col-xl-8">
+										<input type="text" class="form-control" v-on:keyup="validateSertifikat" name="prod_sert_tanggal" id="prod_sert_tanggal">
+									</div>
+								</div>
+								
+								<div class="form-group form-row" id="">
+									<label class="col-xl-3 col-form-label text-sm-left" for="id" >Nama Laboratorium</label>
+									<div class="col-xl-8">
+										<input type="text" class="form-control" v-on:keyup="validateSertifikat" name="prod_sert_lab_nama" id="prod_sert_lab_nama">
+									</div>
+								</div>
+								
+								<div class="form-group form-row" id="">
 									<label class="col-xl-3 col-form-label text-sm-left" for="id" >File Sertifikasi Hasil Uji <span id="labelForm"></span></label>
 									<div class="col-xl-8">
-										<input type="file" class="form-control" aria-label="File Sertifikasi Hasil Uji" @change="validateUpload" accept="application/pdf" name="jadw_audit_sertifikat_filepath" id="jadw_audit_sertifikat_filepath">
-										<input type="hidden" id="jadw_audit_id">
-										<input type="hidden" id="jadw_audit_sertifikat_filepath_lama">
+										<input type="file" class="form-control" aria-label="File Sertifikasi Hasil Uji" @change="validateUpload" accept="application/pdf" name="prod_sert_filepath" id="prod_sert_filepath">
 										<small><span>Upload file harus berjenis PDF</span></small>
 									</div>
-									
 								</div>
+								
+								<div class="form-group form-row" id="">
+									<label class="col-xl-3 col-form-label text-sm-left" for="id" >Status</label>
+									<div class="form-row">
+										<div class="col-md-8 col-sm-8 offset-md-2 offset-sm-3">
+										  <div class="custom-control custom-radio mb-3">
+											<input type="radio" id="prod_sert_status_hasil1" name="prod_sert_status_hasil" class="custom-control-input" value="memenuhi" checked>
+											<label class="custom-control-label" for="prod_sert_status_hasil1">Memenuhi</label>
+										  </div>
+										  <div class="custom-control custom-radio mb-3">
+											<input type="radio" id="prod_sert_status_hasil2" name="prod_sert_status_hasil" value="tidak memenuhi" class="custom-control-input">
+											<label class="custom-control-label" for="prod_sert_status_hasil2">Tidak Memenuhi</label>
+										  </div>
+										</div>
+									</div>
+								</div>
+								
 								<div style="padding-top: 20px">
 									<template v-if="loading_submit">
 										<div class="fa-3x" style="text-align: center">
@@ -154,8 +182,11 @@
 								<div class="row">
 									@if(authorized("{$module}@edit"))
 										<div>
+											<a href="#" class="btn btn-outline-primary btn-xs" @click="uploadItem()">
+												<i class="fas fa-cloud-upload"></i> Upload
+											</a>
 											<a href="#" class="btn btn-outline-danger btn-xs" @click="deleteItem()">
-												<i class="fas fa-trash"></i> Hapus File
+												<i class="fas fa-trash"></i> Hapus
 											</a>
 										</div>
 									@endif
@@ -173,33 +204,47 @@
 
 @push("javascript")
     <script>
-	const swalWithBootstrapButtons = swal.mixin({
+		const swalWithBootstrapButtons = swal.mixin({
             confirmButtonClass: 'btn btn-primary mb-2',
             cancelButtonClass: 'btn btn-warning mr-2 mb-2',
             buttonsStyling: false,
         });
 		
-		function uploadData(id) {
+		function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
+        }
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
+        }
+		
+		function uploadItem() {
 			setTimeout(async () => {
-				$.ajax({
-					url: `{{ url("$url/ajax?action=data-list-uji") }}&jadw_audit_id=${id}`,
-					type: 'get',
-					processData: false,
-					contentType: false,
-					success: async function (res) {
-						setTimeout(() => {
-							$("#jadw_audit_sertifikat_filepath_lama").val(res.jadw_audit_sertifikat_filepath);
-							$("#labelForm").html(res.sert_nama +"("+ res.komodt_nama +")" );
-						}, 400)
-					},
-					error: function (xhr) {
-						if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-						else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+				$('#prod_sert_tanggal').datebox({
+					required:true,
+					editable:false,
+					formatter:myformatter,
+					parser:myparser,
+					value:'',
+					onSelect: async function(date){
+						
 					}
 				});
-				$("#jadw_audit_id").val(id);
-				$("#jadw_audit_sertifikat_nomor").val("");
-				$("#jadw_audit_sertifikat_filepath").val("");
+				
+				$("#prod_sert_nomor").val('');
+				$("#prod_sert_filepath").val('');
+				$("#prod_sert_lab_nama").val('');
 				$("#frmSertifikat").show();
 				$(".tab-content").height("100%");
 			}, 500);						
@@ -209,8 +254,8 @@
             window.vueUpload = new Vue({
                 el: "#vueUpload",
                 data: {
-                    jadw_audit_sertifikat_nomor: null,
-                    jadw_audit_sertifikat_filepath: null,
+                    prod_sert_nomor: null,
+                    prod_sert_filepath: null,
                     agreement: false,
                     loading_submit: false,
                 },
@@ -219,7 +264,7 @@
 						let dg = $('#ttData').datagrid({
 							method: 'get',
 							width: $(".tab-content").width()-20,
-							url: `{{ url("$url/ajax?action=datagrid-hasil-uji") }}&jadw_id={{$dataJadwal->jadw_id}}`,
+							url: `{{ url("$url/ajax?action=datagrid-sertifikat-uji") }}&jadw_id={{$dataJadwal->jadw_id}}`,
 							rownumbers: false,
 							nowrap: false,
 							singleSelect: false,
@@ -230,40 +275,42 @@
 							clientPaging: false,
 							frozenColumns: [[
 								{field: 'ck', checkbox: true, sortable: false},
-								
-								{
-									field: 'action',
-									title: "<br/><br/><br/>",
-									width: 80,
-									align: 'center',
-									formatter: function (val, row) {
-										let dom = `dropdownMenu_${row.jadw_audit_id}`;
-										let btnEdit = ``;	
-										if(row.jadw_audit_sertifikat_filepath !== '')
-											btnEdit += `<a href="#" class="btn btn-outline-warning btn-xs btn-block" onclick="uploadData(${row.jadw_audit_id})"><i class="fas fa-cloud-upload"></i>Upload Ulang</a>`;
-										else
-											btnEdit += `<a href="#" class="btn btn-outline-info btn-xs btn-block" onclick="uploadData(${row.jadw_audit_id})"><i class="fas fa-cloud-upload"></i>Upload</a>`;
-										
-										return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
-									}
-								},
-								{field: 'jadw_audit_sertifikat_nomor', title: 'Sertifikasi<br/>No.<br/>', width: 150, sortable: true},
-								{field: 'jadw_audit_sertifikat_filepath', title: 'File<br>Sertifikat', width: 100, sortable: false},
+								{field: 'prod_sert_id', hidden: true},
+								{field: 'prod_sert_filepath', title: 'File Sertifikat', width: 130, sortable: false, align:'center'},
+								{field: 'prod_sert_nomor', title: 'Nomor Sertifikat Uji', width: 160, sortable: true},
 							]],
 							columns: [[
-								{field: 'jadw_audit_jenis', title: 'Jenis<br/>Pengajuan<br/>', width: 100, sortable: true},
-								{field: 'sert_nama', title: 'Sertifikasi<br/>', width: 400, sortable: true},
-								{field: 'komodt_nama', title: 'Komoditi<br/>Nama', width: 150, sortable: true},
-								{field: 'jadw_audit_sni', title: 'SNI', width: 150, sortable: true},
-								{field: 'jadw_audit_ruang_lingkup', title: 'Ruang<br>Linkup', width: 400, sortable: true},
+								{field: 'prod_sert_tanggal', title: 'Tanggal', width: 100, sortable: true},
+								{field: 'prod_sert_lab_nama', title: 'Nama Laboratorium', width: 350, sortable: true},
+								{field: 'prod_sert_status_hasil', title: 'Status', width: 100, sortable: true, align:'center'},
 							]],
 						});	
 						
 						dg.datagrid(
 							'enableFilter', [
 								{field: 'action', type: 'label'},
-								{field: 'jadw_audit_sertifikat_filepath', type: 'label'},
-								{field: 'jadw_audit_jenis', type: 'label'},
+								{field: 'prod_sert_filepath', type: 'label'},
+								{
+									field: 'prod_sert_status_hasil',
+									type: 'combobox',
+									options: {
+										panelHeight: 'auto',
+										data: [
+											{value: '', text: 'Semua'},
+											{value: 'memenuhi', text: 'memenuhi'},
+											{value: 'tidak memenuhi', text: 'tidak memenuhi'},
+										],
+										onChange: function (value) {
+											dg.datagrid('addFilterRule', {
+												field: 'prod_sert_status_hasil',
+												op: 'equal',
+												value: value
+											});
+
+											dg.datagrid('doFilter');
+										}
+									}
+								},
 							]);
 					})
 				},
@@ -287,7 +334,7 @@
 									var tr = opts.finder.getTr($('#ttData')[0],i);
 									var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
 									if(atLeastOneIsChecked == true){
-										idData.push(data.rows[i].jadw_audit_id);
+										idData.push(data.rows[i].prod_sert_id);
 										fileData.push(data.rows[i].file);
 									}
 								}
@@ -331,23 +378,23 @@
                                 type: 'warning',
                             })
 
-                            $("#jadw_audit_sertifikat_filepath").val("")
+                            $("#prod_sert_filepath").val("")
                         }
 						else{
 							this.agreement = true
 						}
                     },
 					validateSertifikat() {
-                        this.jadw_audit_sertifikat_nomor = $("#jadw_audit_sertifikat_nomor").val();
+                        this.prod_sert_nomor = $("#prod_sert_nomor").val();
                     },
                     submitSertifikat() {
-						if ($.trim($("#jadw_audit_sertifikat_filepath").val()) === "") {
+						if ($.trim($("#prod_sert_filepath").val()) === "") {
 							toastCenter({
 										type: 'warning',
 										title: "Silahkan Unggah File Sertifikat"
 									});
 						}
-						else if($("#jadw_audit_sertifikat_nomor").val() === ''){
+						else if($("#prod_sert_nomor").val() === ''){
 							toastCenter({
 										type: 'warning',
 										title: "Silahkan Isi Sertifikat Nomor"
@@ -367,12 +414,13 @@
 									// Submit Permohonan
 									let formData = new FormData();
 									formData.append("jadw_id", `{{$dataJadwal->jadw_id}}`);
-									formData.append("jadw_audit_id", $("#jadw_audit_id").val());
-									formData.append("jadw_audit_sertifikat_filepath_lama", $("jadw_audit_sertifikat_filepath_lama").val());
 									formData.append("tipe", `upload-hasil-uji`);
-									const file = document.querySelector("#jadw_audit_sertifikat_filepath").files[0];
-									formData.append("jadw_audit_sertifikat_filepath", file)
-									formData.append("jadw_audit_sertifikat_nomor", this.jadw_audit_sertifikat_nomor)
+									const file = document.querySelector("#prod_sert_filepath").files[0];
+									formData.append("prod_sert_filepath", file)
+									formData.append("prod_sert_nomor", this.prod_sert_nomor)
+									formData.append("prod_sert_tanggal", $('#prod_sert_tanggal').datebox('getValue') );
+									formData.append("prod_sert_lab_nama", $("#prod_sert_lab_nama").val());
+									formData.append("prod_sert_status_hasil", document.querySelector('input[name="prod_sert_status_hasil"]:checked').value);
 									
 									this.loading_submit = true;
 									let self = this;

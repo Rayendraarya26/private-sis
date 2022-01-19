@@ -72,6 +72,7 @@
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
+                    {field: 'total_hasil_uji', title: 'Total<br/>File', width: 100, sortable: true, align: 'center'},
                 ]],
 				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
@@ -93,7 +94,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {field: 'total_file', type: 'label'},
+                    {field: 'total_hasil_uji', type: 'label'},
                 ]);
         });
     </script>

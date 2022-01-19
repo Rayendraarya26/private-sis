@@ -145,19 +145,128 @@
 										Pengambilan Contoh*) untuk SPPT SNI
 										<hr/>
 										Petugas Pengambil Contoh : {{$ppc->peg_nama}}
-										<hr/>
-										Sertifikat No :
-										<?php
-											$sertifikat_nomor = explode(", ", $ppc->jadw_audit_sertifikat_nomor);
-											$sertifikat_filepath = explode("; ", $ppc->jadw_audit_sertifikat_filepath);
-											if(!empty($sertifikat_nomor)){
-												foreach($sertifikat_nomor as $key => $val){
-													$path = (isset($sertifikat_filepath[$key])) ? url($sertifikat_filepath[$key]) : '#';
-													echo '<a href="'.$path.'" target="_blank">'. $val .'</a>, ';
-												}
-											}
-										?>
 									@endforeach
+										<hr/>
+									Sertifikat No :
+									<?php
+									foreach($dataSertifikat as $sert){
+										$path = (isset($sert->prod_sert_filepath)) ? url($sert->prod_sert_filepath) : '#';
+										echo '<a href="'.$path.'" target="_blank">'. $sert->prod_sert_nomor .'</a>, ';
+									}
+									?>
+								  </div>
+								</div>
+								
+								<div class="card-header" id="heading4">
+								  <h5 class="mb-0"><button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse-four" aria-expanded="false" aria-controls="collapse-two">4. Data File</button></h5>
+								</div>
+								<div id="collapse-four" class="collapse" aria-labelledby="heading4" data-parent="#accordion-example">
+								  <div class="card-body">
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											Laporan Ringkas
+										</label>
+										<div class="col-sm-10">
+											<a href="{{ url("$dataJadwal->jadw_file_laporan_ringkas") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											LKS
+										</label>
+										<div class="col-sm-10">
+											<a href="{{ url("$dataJadwal->jadw_file_lks") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											Daftar Kehadiran Rapat Akhir
+										</label>
+										<div class="col-sm-10">
+											<a href="{{ url("$dataJadwal->jadw_file_kehadiran") }}" target="_blank"><i class="fad fa-download"></i> Download</a>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											Notulen
+										</label>
+										<div class="col-sm-10">
+										{!! $dataJadwal->jadw_notulen_rapat !!}
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											Daftar Periksa File Upload Tim
+										</label>
+										<div class="col-sm-10">
+											<table class="table table-bordered mb-0">
+												<tr>
+													<th>Nama</th>
+													<th>Posisi</th>
+													<th>File Daftar Periksa</th>
+												</tr>
+												@foreach($dataAuditTim as $tim)
+												<tr>
+													<td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
+													<td>{{ucwords($tim->jadw_tim_posisi)}}</td>
+													<td>@if($tim->dftr_periksa_file != '')<a href="{{ url($tim->dftr_periksa_file) }}" target="_blank"><i class="fad fa-download"></i> Download</a>@endif</td>
+												</tr>
+												@endforeach
+											</table>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											Logbook Tim
+										</label>
+										<div class="col-sm-10">
+											<table class="table table-bordered mb-0">
+												<tr>
+													<th>Nama</th>
+													<th>Posisi</th>
+													<th>File Logbook</th>
+												</tr>
+												@foreach($dataTimLogbook as $tim)
+												<tr>
+													<td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
+													<td>{{ucwords($tim->jadw_tim_posisi)}}</td>
+													<td>@if($tim->logbook_filepath != '')<a href="{{ url($tim->logbook_filepath) }}" target="_blank"><i class="fad fa-download"></i> Download</a>@endif</td>
+												</tr>
+												@endforeach
+											</table>
+										</div>
+									</div>
+									@if(!empty($dataFilePpc))
+									<div class="form-group row">
+										<label class="col-form-label col-sm-2">
+											Laporan PPC
+										</label>
+										<div class="col-sm-10">
+											<table class="table table-bordered mb-0">
+												<tr>
+													<th>Jenis File Laporan</th>
+													<th>Download File</th>
+												</tr>
+												@foreach($dataFilePpc as $ppc)
+												<tr>
+													<td>
+													@if($ppc->audit_ppc_jenis_file == '19')
+														19. RENCANA PENGAMBILAN CONTOH
+													@elseif($ppc->audit_ppc_jenis_file == '20')
+														20. BERITA ACARA PENGAMBILAN CONTOH
+													@elseif($ppc->audit_ppc_jenis_file == '21')
+														21. LABEL CONTOH UJI
+													@elseif($ppc->audit_ppc_jenis_file == '22')
+														22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
+													@endif
+													</td>
+													<td>@if($ppc->audit_ppc_filepath != '')<a href="{{ url($ppc->audit_ppc_filepath) }}" target="_blank"><i class="fad fa-download"></i> Download</a>@endif</td>
+												</tr>
+												@endforeach
+											</table>
+										</div>
+									</div>
+									@endif
 								  </div>
 								</div>
 							</div>

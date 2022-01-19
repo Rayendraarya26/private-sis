@@ -191,7 +191,7 @@ class KomiteLembarPeriksaController extends Controller
 		$dataAudit->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
 		$dataAudit->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
 		$dataAudit->select("*");
-		$dataAudit->selectRaw("CONCAT(upper(jadw_audit_jenis), ' ', sert_nama) AS jenis_jadwal");
+		$dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT(upper(jadw_audit_jenis), ' ', sert_nama)) AS jenis_jadwal");
 		$dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(jadw_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
 		$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'kritis' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_kritis");
 		$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'mayor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_mayor");
@@ -199,17 +199,17 @@ class KomiteLembarPeriksaController extends Controller
 		$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'observasi' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_observasi");
         $dataAudit->selectRaw("COUNT(*) AS total_data");
         $dataAudit->selectRaw("COUNT(distinct lks_id) AS lks_total"); 
-		$dataAudit->groupBy('sis_jadwal_audit.jadw_audit_id');
+		$dataAudit->groupBy('sis_jadwal_audit.jadw_id');
 		
 		$dataPPC = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('jadw_tim_posisi', 'ppc');
         $dataPPC->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-		$dataPPC->join('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
-		$dataPPC->join('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
-		
-		$dataPPC->selectRaw("GROUP_CONCAT(distinct peg_nama SEPARATOR ', ') AS peg_nama");
-		$dataPPC->selectRaw("GROUP_CONCAT(DISTINCT jadw_audit_sertifikat_nomor ORDER BY sis_jadwal_audit.jadw_audit_id ASC SEPARATOR ', ') AS jadw_audit_sertifikat_nomor");
-		$dataPPC->selectRaw("GROUP_CONCAT(DISTINCT jadw_audit_sertifikat_filepath ORDER BY sis_jadwal_audit.jadw_audit_id ASC SEPARATOR '; ') AS jadw_audit_sertifikat_filepath");
+		$dataPPC->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
+		$dataPPC->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
+		$dataPPC->selectRaw("GROUP_CONCAT(DISTINCT peg_nama SEPARATOR ', ') AS peg_nama");
 		$dataPPC->groupBy('sis_jadwal.jadw_id');
+		
+		$dataSertifikat = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('prod_sert_status_hasil', 'memenuhi');
+        $dataSertifikat->join('sis_audit_sertifikat_produk', "sis_jadwal.jadw_id", "=", "sis_audit_sertifikat_produk.jadw_id");
 		
         $parser = [
 			'module' => $this->module,
@@ -219,12 +219,12 @@ class KomiteLembarPeriksaController extends Controller
 			'dataThp1' => $dataThp1->get(),
 			'dataAudit' => $dataAudit->get(),
 			'dataPPC' => $dataPPC->get(),
+			'dataSertifikat' => $dataSertifikat->get(),
 		];
-        return view("$this->view.print.rekomendasi")->with($parser);
-		/* 
+        // return view("$this->view.print.rekomendasi")->with($parser);
 		$pdf    = PDF::loadView("$this->view.print.rekomendasi", $parser)
             ->setPaper('a4', 'portrait');
-        return $pdf->stream(); */
+        return $pdf->stream();
 	}
 	
     private function edit_lembar_periksa(Request $request)
