@@ -141,7 +141,6 @@
 							</div>
 						</div>
 					</div>
-					<input type="hidden" name="posisi" value="@if(isset($dataJadwal->komite_posisi)) {{$dataJadwal->komite_posisi}} @endif">
 					@if(strpos($dataJadwal->komite_posisi, 'ketua') !== false)
 					<div class="col-xl-12">
 						<div class="card">
@@ -220,23 +219,25 @@
 										</tbody>
 									</table>
 								</div>
-								
-								<div style="padding-top: 20px">
-									<template v-if="loading_submit">
-										<div class="fa-3x" style="text-align: center">
-											<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
-										</div>
-									</template>
-									<template v-else>
-										<button :disabled="!status_submit" :class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}" @click="submitRekomendasi">
-											<i class="fas fa-save"></i> Simpan Lembar Periksa
-										</button>
-									</template>
-								</div>
 							</div>
 						</div>
 					</div>
 					@endif
+					
+					<div class="col-xl-12">
+						<div style="padding-top: 20px">
+							<template v-if="loading_submit">
+								<div class="fa-3x" style="text-align: center">
+									<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+								</div>
+							</template>
+							<template v-else>
+								<button :disabled="!status_submit" :class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}" @click="submitRekomendasi">
+									<i class="fas fa-save"></i> Simpan Lembar Periksa
+								</button>
+							</template>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -646,15 +647,14 @@
 									formData.append("komte_priksa_penilaian_11", tinyMCE.get('komte_priksa_penilaian_11').getContent())
 									formData.append("komte_priksa_penilaian_12", tinyMCE.get('komte_priksa_penilaian_12').getContent())
 									formData.append("komte_priksa_penilaian_13", tinyMCE.get('komte_priksa_penilaian_13').getContent())
+									formData.append("posisi", `{{$dataJadwal->komite_posisi}}`)
 									@if(strpos($dataJadwal->komite_posisi, 'ketua') !== false)
 										const file = document.querySelector("#jadw_file_kehadiran_komite").files[0];
 										formData.append("jadw_file_kehadiran_komite", file)
 										formData.append("jadw_file_kehadiran_komite_lama", $("#jadw_file_kehadiran_komite_lama").val())
 										
 										@foreach($dataAudit as $dau)
-										formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());
-										formData.append('tanggal[{{$dau->jadw_audit_id}}]', $("input[name='tanggal[{{$dau->jadw_audit_id}}]']").val());
-										
+										formData.append('status[{{$dau->jadw_audit_id}}]', $("input[name='status[{{$dau->jadw_audit_id}}]']:checked").val());						
 										@endforeach
 									@endif
 									this.loading_submit = true;

@@ -145,18 +145,16 @@
 						Tanggal {{ date('d M Y', strtotime($aud->jadw_tanggal_mulai)) }} s/d {{ date('d M Y', strtotime($aud->jadw_tanggal_selesai)) }}
 					</div>
 					<div class="col-md-12">
-						  <table class="">
-							<thead>
-							<tr>
-							  <th>Status LKS :</th>
-							  <th class="">Kritis</th>
-							  <th class="">Mayor</th>
-							  <th class="">Minor</th>
-							  <th class="">Observasi</th>
-							  <th class="">Total</th>
-							</tr>
-							</thead>
+						  <table class="" style="border:0px;">
 							<tbody>
+							<tr>
+							  <td>Status LKS :</td>
+							  <td class="">Kritis</td>
+							  <td class="">Mayor</td>
+							  <td class="">Minor</td>
+							  <td class="">Observasi</td>
+							  <td class="">Total</td>
+							</tr>
 							<tr>
 							  <td>LKS yang ditutup</td>
 							  <td>{{$aud->total_kritis * $aud->lks_total/ $aud->total_data}}</td>
@@ -192,18 +190,14 @@
 					<hr style="border:0.1px dotted  #000;" >
 					Petugas Pengambil Contoh : {{$ppc->peg_nama}}
 					<hr style="border:0.1px dotted  #000;" >
+				@endforeach
 					Sertifikat No :
 					<?php
-						$sertifikat_nomor = explode(", ", $ppc->jadw_audit_sertifikat_nomor);
-						$sertifikat_filepath = explode("; ", $ppc->jadw_audit_sertifikat_filepath);
-						if(!empty($sertifikat_nomor)){
-							foreach($sertifikat_nomor as $key => $val){
-								$path = (isset($sertifikat_filepath[$key])) ? url($sertifikat_filepath[$key]) : '#';
-								echo '<a href="'.$path.'" target="_blank">'. $val .'</a>, ';
-							}
-						}
+					foreach($dataSertifikat as $sert){
+						$path = (isset($sert->prod_sert_filepath)) ? url($sert->prod_sert_filepath) : '#';
+						echo '<a href="'.$path.'" target="_blank">'. $sert->prod_sert_nomor .'</a>, ';
+					}
 					?>
-				@endforeach
 				</td>
 			</tr>
 		</tbody>

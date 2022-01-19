@@ -52,13 +52,17 @@
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.jadw_id}`;
                             let btnEdit = ``;	
-							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=lembar-periksa&jadw_id=${row.jadw_id}'">Lembar Periksa</div>`;
-                            return `
+							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=lembar-periksa&jadw_id=${row.jadw_id}'">Input Lembar Periksa</div>`;
+                            
+							if(row.komte_priksa_id != ''){
+								btnEdit += `<div data-options="iconCls:'icon icon-tag icon-fw icon-lg'" onclick="location.href = '{{ url("$url/edit") }}?tipe=lihat-lembar-periksa&jadw_id=${row.jadw_id}'">Lihat Lembar Periksa</div>`;
+							}
+							return `
 								<div>
 									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
-									<div id="${dom}" style="width:170px; display: none;">
+									<div id="${dom}" style="width:180px; display: none;">
 										@if(authorized("{$module}@edit")) ${btnEdit} @endif
 								</div>
 							</div>`
