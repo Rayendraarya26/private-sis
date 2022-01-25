@@ -84,8 +84,8 @@ class PersetujuanTimAuditController extends Controller
 			if($d->jadw_id != ''){
 				$x['jadw_status']              = 'tahap-2';
 				$x['jadw_id']                  = $d->jadw_id;
-				$x['jadw_tanggal_mulai']       = $d->jadw_tanggal_mulai;
-				$x['jadw_tanggal_selesai']     = $d->jadw_tanggal_selesai;
+				$x['jadw_tanggal_mulai']       = $d->jadw_tanggal_mulai?->format("Y-m-d");
+				$x['jadw_tanggal_selesai']     = $d->jadw_tanggal_selesai?->format("Y-m-d");
 				$x['cust_nama']                = $d->cust_nama;
 				$x['sert_nama']                = $d->sert_nama;
 				$x['jadw_jenis']               = $d->jadw_jenis;
@@ -147,8 +147,8 @@ class PersetujuanTimAuditController extends Controller
         foreach ($dataTahap1->get() as $d) {
             $x['jadw_status']              = 'tahap-1';
             $x['jadw_id']                  = $d->jadw_id;
-            $x['jadw_tanggal_mulai']       = $d->aud_thp1_tanggal_mulai;
-            $x['jadw_tanggal_selesai']     = $d->aud_thp1_tanggal_selesai;
+            $x['jadw_tanggal_mulai']       = $d->aud_thp1_tanggal_mulai?->format("Y-m-d");
+            $x['jadw_tanggal_selesai']     = $d->aud_thp1_tanggal_selesai?->format("Y-m-d");
             $x['cust_nama']                = $d->cust_nama;
             $x['sert_nama']                = $d->sert_nama;
             $x['jadw_jenis']               = 'tunggal';
@@ -193,8 +193,8 @@ class PersetujuanTimAuditController extends Controller
         foreach ($dataKomite->get() as $k) {
             $x['jadw_status'] = 'komite';
             $x['jadw_id']                  = $k->jadw_id;
-            $x['jadw_tanggal_mulai']       = $k->jadw_tanggal_mulai;
-            $x['jadw_tanggal_selesai']     = $k->jadw_tanggal_selesai;
+            $x['jadw_tanggal_mulai']       = $k->jadw_tanggal_mulai?->format("Y-m-d");
+            $x['jadw_tanggal_selesai']     = $k->jadw_tanggal_selesai?->format("Y-m-d");
             $x['cust_nama']                = $k->cust_nama;
             $x['sert_nama']                = $k->sert_nama;
             $x['jadw_jenis']               = $k->jadw_jenis;

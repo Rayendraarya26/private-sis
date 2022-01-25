@@ -1,80 +1,45 @@
-@extends('layouts.layout_app')
+@extends("layouts.layout_app")
 
-@section('title', 'Persetujuan Audit')
+@section('title', 'Detail Penugasan')
 
 @section('content')
     <div class="dt-content">
-        <div class="row">
-            <div class="col-md-12">
-				@if(session('message'))
-					<div class="alert alert-primary alert-dismissible fade show" role="alert">
-						{!! session('message') !!}
-						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
+		<div class="col-xl-12">
+			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
+			<div class="row">
+				<div class="col-xl-12">
+					<div class="card">
+					  <div class="card-body p-0">									
+						<table class="table">
+							<tbody>
+								<tr><td>Jenis Jadwal</td><td>: {{$dataJadwal->jadw_jenis}}</td></tr>
+								<tr><td>Tanggal Jadwal</td><td>: {{$dataJadwal->jadw_tanggal_mulai?->format("d M Y")}} s/d {{$dataJadwal->jadw_tanggal_selesai?->format("d M Y")}}</td></tr>
+								<tr><td>Nama Perusahaan</td><td>: {{$dataJadwal->cust_nama}}</td></tr>
+								<tr><td>Alamat Perusahaan</td><td>: {{$dataJadwal->cust_alamat}}</td></tr>
+								<tr><td>No. Referensi</td><td>: {{$dataJadwal->jadw_audit_nomor_referensi}}</td></tr>
+								<tr><td>Kode NACE</td><td>: {{$dataJadwal->jadw_audit_kode_nace}}</td></tr>
+								<tr><td>EA Code</td><td>: {{$dataJadwal->jadw_audit_kode_ea}}</td></tr>
+								<tr><td>Komoditas</td><td>: {{$dataJadwal->komodt_nama}}</td></tr><tr><td>Ruang Lingkup</td><td>: {{$dataJadwal->jadw_audit_ruang_lingkup}}</td></tr>
+								<tr><td>Standar Acuan</td><td>: {{$dataJadwal->jadw_audit_standart_acuan}}</td></tr>
+								<tr><td>Kegiatan</td><td>: {{$dataJadwal->jadw_audit_kegiatan}}</td></tr>
+								<tr><td>Tujuan Audit</td><td>: {{$dataJadwal->jadw_audit_tujuan_audit}}</td></tr>
+								<tr><td>Posisi</td><td>: {{$dataJadwal->jadw_tim_posisi}}</td></tr>
+								<tr><td></td><td><a href="{{ url("$dataJadwal->jadw_file_surat_tugas") }}" target="_blank"><i class="fad fa-download"></i> Download Surat Tugas</a></td></tr>
+							</tbody>
+						</table>
+					  </div>
 					</div>
-				@endif
-                <div class="dt-card">
-                    <div class="dt-card__header">
-                        <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal dan Persetujuan Audit</h3>
-                        </div>
-                    </div>
-                    <div class="dt-card__body">
-                        <div id="ttData" style="width:100%; min-width: 310px"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection
 
+
 @push("javascript")
-    <script>
-        $(function () {
-            let dg = $('#ttData').datagrid({
-                method: 'get',
-                height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: false,
-                nowrap: false,
-                singleSelect: false,
-                remoteFilter: true,
-                multiSort: true,
-                pagination: false,
-                pageSize: 50,
-                clientPaging: false,
-                frozenColumns: [[
-                    {
-                        field: 'action',
-                        title: "",
-                        width: 120,
-                        align: 'center',
-                        formatter: function (val, row) {
-                            let btnEdit = ``;			
-							btnEdit += `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-handshake"></i> Persetujuan</a>`;
-							
-                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
-                        }
-                    }
-                ]],
-                columns: [[
-					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
-                    {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
-                    {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
-                    {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
-                    {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
-                ]],
-            });
-            dg.datagrid(
-                'enableFilter', [
-                    {field: 'action', type: 'label'},
-                    {field: 'jadw_audit_jenis', type: 'label'},
-                    {field: 'jadw_tim_kesanggupan', type: 'label'},
-                    {field: 'jadw_tanggal_mulai', type: 'label'},
-                    {field: 'jadw_tanggal_selesai', type: 'label'},
-                ]);
+    <script>		
+        $(document).ready(function () {
+			
         });
     </script>
 @endpush

@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Persetujuan Audit')
+@section('title', 'Histori Penugasan')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal dan Persetujuan Audit</h3>
+                            <h3 class="dt-card__title">Data Histori Penugasan</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -35,31 +35,31 @@
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
+                url: `{{ url("$url/ajax?action=datagrid-penugasan") }}`,
                 rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteFilter: true,
                 multiSort: true,
-                pagination: false,
+                pagination: true,
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
                     {
                         field: 'action',
                         title: "",
-                        width: 120,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
                             let btnEdit = ``;			
-							btnEdit += `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-handshake"></i> Persetujuan</a>`;
+							btnEdit += `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/detail") }}?&jadw_id=${row.jadw_id}">Lihat</a>`;
 							
-                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
+                            return `@if(authorized("{$module}@detail")) ${btnEdit} @endif`
                         }
                     }
                 ]],
                 columns: [[
-					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
+					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 100, sortable: true, align: 'left',},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
