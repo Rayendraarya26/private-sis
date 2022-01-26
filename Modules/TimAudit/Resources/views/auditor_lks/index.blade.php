@@ -206,7 +206,9 @@
 
                                 //
                                 @if(authorized("{$module}@verifikasiTemuan"))
+                                if (!row.allow_rekomendasi) {
                                     btnVerif = `<a href="{{url("$url/temuan")}}/${row.jadw_id}/verifikasi" class="btn btn-xs btn-primary btn-block">(${row.total_temuan}) Verifikasi LKS</a>`
+                                }
                                 @endif
 
                                 //

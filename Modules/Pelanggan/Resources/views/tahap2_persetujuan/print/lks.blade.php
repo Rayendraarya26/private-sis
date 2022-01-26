@@ -59,12 +59,12 @@
 <header>
     <div style="float: left; padding-left: 40px">
         <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
-             style="max-width: 150px; margin-top: -50px">
+             style="max-width: 150px; margin-top: -20px">
     </div>
 </header>
 
 <div class="text-center" >
-    <div style="font-weight: bold; font-size: 16px; margin-top: -40px">
+    <div style="font-weight: bold; font-size: 16px; margin-top: -20px">
         LAPORAN KETIDAKSESUAIAN dan LAPORAN VERIFIKASI
     </div>
 </div>
@@ -202,7 +202,7 @@
 
                     @foreach($lks->sis_audit_lks_files as $file)
                         <br>
-                        <a href="{{asset($file->lks_filepath)}}">
+                        <a href="{{asset($file->lks_filepath)}}" target="_blank">
                             <i class="fad fa-download"></i> Berkas {{$loop->iteration}}
                         </a>
                     @endforeach

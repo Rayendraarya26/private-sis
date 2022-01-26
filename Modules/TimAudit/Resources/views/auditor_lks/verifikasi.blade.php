@@ -269,6 +269,9 @@
                                     </table>
                                 </div>
                             </div>
+
+                            <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px">
+                                <i class="fad fa-arrow-left"></i> Kembali</a>
                         </div>
                     </div>
                 </div><!-- CARD -->
