@@ -99,7 +99,8 @@ class AuDaftarPeriksaController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
 
-            $x['dftr_periksa_file'] = ($d->dftr_periksa_file != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->dftr_periksa_file) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+            $x['dftr_periksa_file'] = ($d->dftr_periksa_file != '') ? '<a target="_blank" href = "' . url($d->dftr_periksa_file) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+            $x['status_upload'] = ($d->dftr_periksa_file != '') ? 're-upload' : 'upload';
             array_push($result, $x);
         }
 

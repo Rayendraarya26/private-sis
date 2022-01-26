@@ -177,7 +177,7 @@
             window.vueLembarPeriksa = new Vue({
                 el: "#vueLembarPeriksa",
                 data: {
-                    tutup_berita: `tidak`,
+                    tutup_berita: `ya`,
                     status_submit: true,
                     loading_submit: false,
                 },

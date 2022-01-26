@@ -95,7 +95,8 @@ class AuUploadJadwalController extends Controller
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
             $x['bill_payment_status']     = $d->bill_payment_status;
 		
-            $x['jadw_file_jadwal'] = ($d->jadw_file_jadwal != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->jadw_file_jadwal) . '"><i class="fas fa-cloud-download"></i> Download</div>' : '';
+            $x['jadw_file_jadwal'] = ($d->jadw_file_jadwal != '') ? '<a target="_blank" href = "' . url($d->jadw_file_jadwal) . '"><i class="fas fa-cloud-download"></i> Download</div>' : '';
+            $x['status_upload'] = ($d->jadw_file_jadwal != '') ? 're-upload' : 'upload';
             array_push($result, $x);
         }
 

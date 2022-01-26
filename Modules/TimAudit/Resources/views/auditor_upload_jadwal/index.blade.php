@@ -48,10 +48,16 @@
                     {
                         field: 'action',
                         title: "",
-                        width: 80,
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-							let btnEdit = `<a href="{{ url("$url/edit") }}?tipe=upload-jadwal&jadw_id=${row.jadw_id}" class="btn btn-primary btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Upload Jadwal</a>`;
+							let btnEdit = '';
+							if(row.status_upload == 're-upload'){
+								btnEdit = `<a href="{{ url("$url/edit") }}?tipe=upload-jadwal&jadw_id=${row.jadw_id}" class="btn btn-warning btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Re-Upload</a>`;
+							}
+							else{
+								btnEdit = `<a href="{{ url("$url/edit") }}?tipe=upload-jadwal&jadw_id=${row.jadw_id}" class="btn btn-primary btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Upload</a>`;
+							}
                             return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`;
                         }
                     }

@@ -103,7 +103,8 @@ class AuLogBookController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
 
-            $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->logbook_filepath) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+            $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a target="_blank" href = "' . url($d->logbook_filepath) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+            $x['status_upload'] = ($d->logbook_filepath != '') ? 're-upload' : 'upload';
             array_push($result, $x);
         }
 
