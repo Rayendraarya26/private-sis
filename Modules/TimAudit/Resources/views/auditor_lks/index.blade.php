@@ -82,6 +82,7 @@
         @if(authorized("{$module}@processRekomendasi"))
         function buildTinyMCERekomendasi() {
             tinyMCE.init({
+                autosave_ask_before_unload: false,
                 invalid_elements: "script",
                 selector: '#rekomendasi_ket',
                 plugins: 'autosave link image lists',

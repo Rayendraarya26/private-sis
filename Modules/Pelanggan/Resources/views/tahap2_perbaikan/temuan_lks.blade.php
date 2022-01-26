@@ -390,6 +390,7 @@
                         // })
 
                         tinyMCE.init({
+                            autosave_ask_before_unload: false,
                             invalid_elements: "script",
                             selector: '.editor_perbaikan_analisis',
                             plugins: 'autosave link image lists',
@@ -429,6 +430,7 @@
                         // })
 
                         tinyMCE.init({
+                            autosave_ask_before_unload: false,
                             invalid_elements: "script",
                             selector: '.editor_perbaikan_tindakan',
                             plugins: 'autosave link image lists',
@@ -468,6 +470,7 @@
                         // })
 
                         tinyMCE.init({
+                            autosave_ask_before_unload: false,
                             invalid_elements: "script",
                             selector: '.editor_perbaikan_korektif',
                             plugins: 'autosave link image lists',
@@ -507,6 +510,7 @@
                         // })
 
                         tinyMCE.init({
+                            autosave_ask_before_unload: false,
                             invalid_elements: "script",
                             selector: '.editor_tindakan_perbaikan',
                             plugins: 'autosave link image lists',

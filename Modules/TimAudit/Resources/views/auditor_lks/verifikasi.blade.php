@@ -376,6 +376,7 @@
                 },
                 buildTinyMCERevisi() {
                     tinyMCE.init({
+                        autosave_ask_before_unload: false,
                         invalid_elements: "script",
                         selector: '#revisi_ket',
                         plugins: 'autosave link image lists',
@@ -400,6 +401,7 @@
                 },
                 buildTinyMCEClose() {
                     tinyMCE.init({
+                        autosave_ask_before_unload: false,
                         invalid_elements: "script",
                         selector: '#close_ket',
                         plugins: 'autosave link image lists',

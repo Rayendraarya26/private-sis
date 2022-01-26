@@ -433,7 +433,7 @@
                                                   id="lap_lengkp_kesimpulan">{{old('lap_lengkp_kesimpulan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_kesimpulan}}</textarea>
                                     </div>
                                 </div>
-								
+
 								<div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="lap_lengkp_verifikasi_oleh">
                                         Nama Persetujuan
@@ -445,8 +445,8 @@
                                         <input type="text" class="form-control" placeholder="..." name="lap_lengkp_verifikasi_oleh" id="lap_lengkp_verifikasi_oleh" value="{{old('lap_lengkp_verifikasi_oleh') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_verifikasi_oleh}}">
                                     </div>
                                 </div>
-								
-								<div class="form-group row">
+
+                                <div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="lap_lengkp_verifikasi_jabatan">
                                         Jabatan Persetujuan
                                         @error('lap_lengkp_verifikasi_jabatan')
@@ -457,8 +457,8 @@
                                         <input type="text" class="form-control" placeholder="..." name="lap_lengkp_verifikasi_jabatan" id="lap_lengkp_verifikasi_jabatan" value="{{old('lap_lengkp_verifikasi_jabatan') ?? $data->sis_audit_lap_lengkap?->lap_lengkp_verifikasi_jabatan}}">
                                     </div>
                                 </div>
-								
-								<div class="form-group row">
+
+                                <div class="form-group row">
                                     <label class="col-form-label col-sm-3" for="lap_lengkp_verifikasi_diajukan">
                                         Simpan sebagai Draft?
                                         @error('lap_lengkp_verifikasi_diajukan')
@@ -500,6 +500,7 @@
     <script>
         function initEditor() {
             tinyMCE.init({
+                autosave_ask_before_unload: false,
                 invalid_elements: "script",
                 selector: '.editor',
                 plugins: 'autosave link image lists',

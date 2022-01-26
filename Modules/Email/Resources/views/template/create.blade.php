@@ -101,6 +101,7 @@
 
     <script>
         tinyMCE.init({
+            autosave_ask_before_unload: false,
             invalid_elements: "script",
             selector: '#template_mail_body',
             plugins: 'autosave link image code lists',

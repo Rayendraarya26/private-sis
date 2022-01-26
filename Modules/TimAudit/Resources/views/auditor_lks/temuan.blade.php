@@ -389,6 +389,7 @@
                 },
                 buildTinyMCEUraian() {
                     tinyMCE.init({
+                        autosave_ask_before_unload: false,
                         invalid_elements: "script",
                         selector: '.editor_uraian',
                         plugins: 'autosave link image lists',
@@ -414,6 +415,7 @@
                 },
                 buildTinyMCEKlausul() {
                     tinyMCE.init({
+                        autosave_ask_before_unload: false,
                         invalid_elements: "script",
                         selector: '.editor_klausul',
                         plugins: 'autosave link image lists',

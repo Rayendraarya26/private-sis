@@ -66,6 +66,7 @@
 
     <script>
         tinyMCE.init({
+            autosave_ask_before_unload: false,
             invalid_elements: "script",
             selector: '#status_pesan',
             plugins: 'autosave link image code lists',

@@ -106,6 +106,7 @@
 
     <script>
         tinyMCE.init({
+            autosave_ask_before_unload: false,
             invalid_elements: "script",
             selector: '#sert_deskripsi',
             plugins: 'autosave link image code lists',

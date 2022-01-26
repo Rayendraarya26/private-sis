@@ -233,6 +233,7 @@
     <script>
         function initRingkasanEditor() {
             tinyMCE.init({
+                autosave_ask_before_unload: false,
                 invalid_elements: "script",
                 selector: '#lap_ringkas_kesimpulan',
                 plugins: 'autosave link image lists',
@@ -258,6 +259,7 @@
 
         function initRekomendasiEditor() {
             tinyMCE.init({
+                autosave_ask_before_unload: false,
                 invalid_elements: "script",
                 selector: '#lap_ringkas_rekomendasi',
                 plugins: 'autosave link image lists',

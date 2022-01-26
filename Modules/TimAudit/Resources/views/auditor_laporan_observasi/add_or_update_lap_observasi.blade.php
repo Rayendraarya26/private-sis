@@ -191,6 +191,7 @@
     <script>
         function initObservasianEditor() {
             tinyMCE.init({
+                autosave_ask_before_unload: false,
                 invalid_elements: "script",
                 selector: '#obsvasi_uraian',
                 plugins: 'autosave link image lists',

@@ -196,6 +196,7 @@
                 methods: {
                     buildTinyMCE() {
                         tinyMCE.init({
+                            autosave_ask_before_unload: false,
                             invalid_elements: "script",
                             selector: '#editor_revisi',
                             plugins: 'autosave link image lists',
