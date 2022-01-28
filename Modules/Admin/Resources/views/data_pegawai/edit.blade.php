@@ -49,7 +49,7 @@
                                         <label class="col-form-label col-sm-3" for="peg_kode">Kode Pegawai*</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan kode pegawai..." type="text"
-                                                   name="peg_kode" id="peg_kode" value="{{$data->peg_kode}}">
+                                                   name="peg_kode" id="peg_kode" value="{{$data->master_pegawai?->peg_kode}}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -85,6 +85,7 @@
                                             <input class="form-control" placeholder="Masukkan kata sandi..."
                                                    type="password" name="password" id="password"
                                                    value="{{old('password')}}">
+                                            <small>kosongkan jika tidak ingin mengubah</small>
                                         </div>
                                     </div>
 
