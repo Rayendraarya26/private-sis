@@ -30,6 +30,7 @@ class ManageMenuActionController extends Controller
             new BreadcrumbsStruct('System'),
             new BreadcrumbsStruct('Manage Menu', url('system/menu')),
             new BreadcrumbsStruct('Menu Action'),
+            new BreadcrumbsStruct($this->dataMenu->menu_name),
         ];
 
         $parse = ['url' => $this->url, 'module' => $this->module, 'menu' => $this->dataMenu, 'breadcrumbs' => $breadcrumbs];
