@@ -27,6 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SysUser $sys_user
+ * @property Collection|PegawaiKompetensiAuditor[] $pegawai_kompetensi_auditors
+ * @property Collection|PegawaiKompetensiKomite[] $pegawai_kompetensi_komites
+ * @property Collection|PegawaiKompetensiPpc[] $pegawai_kompetensi_ppcs
  * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  * @property Collection|SisAuditTimKomite[] $sis_audit_tim_komites
  * @property Collection|SisJadwalTim[] $sis_jadwal_tims
@@ -57,6 +60,21 @@ class MasterPegawai extends Model
 	public function sys_user()
 	{
 		return $this->belongsTo(SysUser::class, 'user_id');
+	}
+
+	public function pegawai_kompetensi_auditors()
+	{
+		return $this->hasMany(PegawaiKompetensiAuditor::class, 'peg_id');
+	}
+
+	public function pegawai_kompetensi_komites()
+	{
+		return $this->hasMany(PegawaiKompetensiKomite::class, 'peg_id');
+	}
+
+	public function pegawai_kompetensi_ppcs()
+	{
+		return $this->hasMany(PegawaiKompetensiPpc::class, 'peg_id');
 	}
 
 	public function sis_audit_tahap1_tims()

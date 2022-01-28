@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
+ * @property Collection|PegawaiKompetensiPpc[] $pegawai_kompetensi_ppcs
  * @property Collection|SisJadwalAudit[] $sis_jadwal_audits
  * @property Collection|SisPelangganSertifikasi[] $sis_pelanggan_sertifikasis
  * @property Collection|SisPermohonanKomoditi[] $sis_permohonan_komoditis
@@ -34,6 +35,11 @@ class MasterKomoditi extends Model
 		'komodt_nama',
 		'komodt_sni'
 	];
+
+	public function pegawai_kompetensi_ppcs()
+	{
+		return $this->hasMany(PegawaiKompetensiPpc::class, 'komodt_id');
+	}
 
 	public function sis_jadwal_audits()
 	{
