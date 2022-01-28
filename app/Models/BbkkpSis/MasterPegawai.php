@@ -23,6 +23,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $peg_ttd_file
  * @property string|null $peg_ttd_base64
  * @property string $peg_status
+ * @property string $is_auditor
+ * @property string|null $is_komite
+ * @property string|null $is_ppc
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -54,7 +57,10 @@ class MasterPegawai extends Model
 		'peg_nip',
 		'peg_ttd_file',
 		'peg_ttd_base64',
-		'peg_status'
+		'peg_status',
+		'is_auditor',
+		'is_komite',
+		'is_ppc'
 	];
 
 	public function sys_user()
