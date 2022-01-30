@@ -11,7 +11,7 @@ use Modules\Pelanggan\Http\Controllers\Tahap2JadwalController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PerbaikanController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PersetujuanController;
 
-Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () {
+Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
     Route::redirect('/', '/dashboard');
 
     Route::get("profil-perusahaan", [ProfilPerusahaanController::class, 'index']);
@@ -19,6 +19,7 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
     Route::prefix("sertifikasi/data")->group(function () {
         Route::get("/", [SertifikasiDataController::class, 'index']);
         Route::get("/ajax", [SertifikasiDataController::class, 'ajax']);
+        Route::get('/preview', [SertifikasiDataController::class, 'preview']);
     });
 
     Route::prefix("sertifikasi/permohonan")->group(function () {
