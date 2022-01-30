@@ -3,6 +3,7 @@
 namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\CertJecaStruct;
 use App\Http\Structs\CertYqStruct;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use Illuminate\Http\Request;
@@ -30,20 +31,37 @@ class SertifikasiDataController extends Controller
 
     public function preview(Request $request)
     {
-        $cert = new CertYqStruct(
-            noReg: 'No. Reg : 00/70',
-            tglSertifikasiAwal: '24 Februari 2022',
-            lembaga: 'YQ 005 032',
-            perusahaanNama: 'PT. HOK TONG',
-            perusahaanAlamat: 'JI. Raden Patah, RT 07, Kel. Sijenjang, Kec. Jambi Timur, Jambi - 36149, Jambi - INDONESIA',
-            sertifikasiTipe: 'SNI ISO 9001:2015',
-            ruangLingkup: 'Proses produksi crumb rubber (SIR 10, SIR 20)',
-            kodeEA: '[14] Karet dan produk plastik',
-            kodeNACE: 'C.22.19 Pembuatan produk karet lainnya',
-            tglTerbit: '21 Desember 2021',
-            tglPerubahan: '-',
-            tglKadaluarsa: '4 Oktober 2024',
-        );
+        if ($request['type'] == 1) {
+            $cert = new CertYqStruct(
+                noReg: 'No. Reg : 00/70',
+                tglSertifikasiAwal: '24 Februari 2022',
+                lembaga: 'YQ 005 032',
+                perusahaanNama: 'PT. HOK TONG',
+                perusahaanAlamat: 'JI. Raden Patah, RT 07, Kel. Sijenjang, Kec. Jambi Timur, Jambi - 36149, Jambi - INDONESIA',
+                sertifikasiTipe: 'SNI ISO 9001:2015',
+                ruangLingkup: 'Proses produksi crumb rubber (SIR 10, SIR 20)',
+                kodeEA: '[14] Karet dan produk plastik',
+                kodeNACE: 'C.22.19 Pembuatan produk karet lainnya',
+                tglTerbit: '21 Desember 2021',
+                tglPerubahan: '-',
+                tglKadaluarsa: '4 Oktober 2024',
+            );
+        } else {
+            $cert = new CertJecaStruct(
+                noReg: 'No. Reg : 00/70',
+                tglSertifikasiAwal: '24 Februari 2022',
+                lembaga: 'JECA 004 032',
+                perusahaanNama: 'PT. ANEKA BUMI PRATAMA',
+                perusahaanAlamat: 'JI. Raden Patah, RT 07, Kel. Sijenjang, Kec. Jambi Timur, Jambi - 36149, Jambi - INDONESIA',
+                sertifikasiTipe: 'SNI ISO 9001:2015',
+                ruangLingkup: 'Proses produksi crumb rubber (SIR 10, SIR 20)',
+                kodeEA: '[14] Karet dan produk plastik',
+                kodeNACE: 'C.22.19 Pembuatan produk karet lainnya',
+                tglTerbit: '21 Desember 2021',
+                tglPerubahan: '-',
+                tglKadaluarsa: '4 Oktober 2024',
+            );
+        }
 
         return $cert->render();
     }
