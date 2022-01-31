@@ -59,7 +59,7 @@ class CertJpaStruct
         $img = Image::make(public_path('images/sertifikasi-asset/cert_jpa.png'));
 
         // Nomer Registrasi
-        $img->text($this->noReg, 140, 930, function ($font) {
+        $img->text("No. Ref : $this->noReg", 140, 930, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(45);

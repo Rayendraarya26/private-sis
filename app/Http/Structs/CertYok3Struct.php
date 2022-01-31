@@ -4,11 +4,11 @@ namespace App\Http\Structs;
 
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-class CertYqStruct
+class CertYok3Struct
 {
     public string $noReg;              // No. Reg : 00/65
-    public string $tglSertifikasiAwal; // Sertifikasi awal:
     public string $lembaga;            // YQ 005 032
     public string $perusahaanNama;     // PT. Hok Tong
     public string $perusahaanAlamat;   // Jalan Raden fatah nomer 20....
@@ -22,7 +22,6 @@ class CertYqStruct
 
     public function __construct(
         $noReg = '',
-        $tglSertifikasiAwal = '',
         $lembaga = '',
         $perusahaanNama = '',
         $perusahaanAlamat = '',
@@ -35,26 +34,25 @@ class CertYqStruct
         $tglKadaluarsa = '',
     )
     {
-        $this->noReg              = $noReg;
-        $this->tglSertifikasiAwal = $tglSertifikasiAwal;
-        $this->lembaga            = $lembaga;
-        $this->perusahaanNama     = $perusahaanNama;
-        $this->perusahaanAlamat   = $perusahaanAlamat;
-        $this->sertifikasiTipe    = $sertifikasiTipe;
-        $this->ruangLingkup       = $ruangLingkup;
-        $this->kodeEA             = $kodeEA;
-        $this->kodeNACE           = $kodeNACE;
-        $this->tglTerbit          = $tglTerbit;
-        $this->tglPerubahan       = $tglPerubahan;
-        $this->tglKadaluarsa      = $tglKadaluarsa;
+        $this->noReg            = $noReg;
+        $this->lembaga          = $lembaga;
+        $this->perusahaanNama   = $perusahaanNama;
+        $this->perusahaanAlamat = $perusahaanAlamat;
+        $this->sertifikasiTipe  = $sertifikasiTipe;
+        $this->ruangLingkup     = $ruangLingkup;
+        $this->kodeEA           = $kodeEA;
+        $this->kodeNACE         = $kodeNACE;
+        $this->tglTerbit        = $tglTerbit;
+        $this->tglPerubahan     = $tglPerubahan;
+        $this->tglKadaluarsa    = $tglKadaluarsa;
     }
 
     public function generate()
     {
-        $img = Image::make(public_path('images/sertifikasi-asset/cert_yq.png'));
+        $img = Image::make(public_path('images/sertifikasi-asset/cert_yok3.png'));
 
         // Nomer Registrasi
-        $img->text("No. Reg : $this->noReg", 130, 885, function ($font) {
+        $img->text("No. Reg : $this->noReg", 300, 830, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(50);
@@ -63,44 +61,34 @@ class CertYqStruct
             $font->valign("middle");
         });
 
-        // Tgl Sert Awal
-        $img->text("Sertifikasi awal :  $this->tglSertifikasiAwal", 2350, 885, function ($font) {
-            $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
-            $font->file($fontType);
-            $font->size(40);
-            $font->color("#000000");
-            $font->align("right");
-            $font->valign("middle");
-        });
-
         // Jenis Cert
-        $img->text("$this->lembaga", 1250, 1120, function ($font) {
+        $img->text("$this->lembaga", 300, 930, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
             $font->size(120);
             $font->color("#000000");
-            $font->align("center");
+            $font->align("left");
             $font->valign("middle");
         });
 
         // Declaration text
-        $img->text("Kami menyatakan bahwa :", 1250, 1260, function ($font) {
+        $img->text("Kami menyatakan bahwa :", 300, 1090, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
-            $font->size(80);
+            $font->size(65);
             $font->color("#000000");
-            $font->align("center");
+            $font->align("left");
             $font->valign("middle");
         });
 
 
         // PT Name
-        $img->text("$this->perusahaanNama", 1250, 1400, function ($font) {
+        $img->text("$this->perusahaanNama", 300, 1210, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
-            $font->size(160);
+            $font->size(150);
             $font->color("#000000");
-            $font->align("center");
+            $font->align("left");
             $font->valign("middle");
         });
 
@@ -109,39 +97,42 @@ class CertYqStruct
         renderMultiline(
             $img,
             [
-                'xAxis'    => 1250,
-                'yAxis'    => 1500,
+                'xAxis'    => 300,
+                'yAxis'    => 1310,
                 'color'    => '#000000',
                 'size'     => 65,
-                'align'    => 'center',
+                'align'    => 'left',
                 'valign'   => 'top',
                 'fontType' => $fontType,
             ],
             $this->perusahaanAlamat,
-            40);
+            50);
 
         // Telah menerapkan
-        $img->text("telah menerapkan Sistem Manajemen Mutu sesuai dengan", 1250, 1850, function ($font) {
+        $img->text("telah menerapkan Sistem Manajemen Mutu sesuai dengan", 300, 1650, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
-            $font->size(80);
+            $font->size(65);
             $font->color("#000000");
-            $font->align("center");
+            $font->align("left");
             $font->valign("middle");
         });
 
         // JENIS SERTIFIKAT
-        $img->text($this->sertifikasiTipe, 1250, 2000, function ($font) {
+        $img->text($this->sertifikasiTipe, 300, 1800, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
-            $font->size(180);
+            $font->size(190);
             $font->color("#000000");
-            $font->align("center");
+            $font->align("left");
             $font->valign("middle");
         });
 
+        // ======================= BOTTOM =================================================
+        $xBot = 300;
+        $yBot = 2000;
         // RUANG LINGKUP
-        $img->text("Ruang lingkup : ", 143, 2230, function ($font) {
+        $img->text("Ruang lingkup : ", 300, $yBot, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
             $font->size(65);
@@ -150,7 +141,7 @@ class CertYqStruct
             $font->valign("middle");
         });
         // RUANG LINGKUP VALUE
-        $img->text($this->ruangLingkup, 730, 2230, function ($font) {
+        $img->text($this->ruangLingkup, 850, $yBot, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -160,7 +151,7 @@ class CertYqStruct
         });
 
         // Kode EA
-        $img->text("Kode EA : ", 143, 2300, function ($font) {
+        $img->text("Kode EA : ", 300, $yBot + 80, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -169,7 +160,7 @@ class CertYqStruct
             $font->valign("middle");
         });
         // Kode EA VALUE
-        $img->text($this->kodeEA, 465, 2300, function ($font) {
+        $img->text($this->kodeEA, 640, $yBot + 80, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -179,7 +170,7 @@ class CertYqStruct
         });
 
         // Kode NACE
-        $img->text("Kode NACE : ", 143, 2380, function ($font) {
+        $img->text("Kode NACE : ", 300, $yBot + 160, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -188,7 +179,7 @@ class CertYqStruct
             $font->valign("middle");
         });
         // Kode NACE VALUE
-        $img->text($this->kodeNACE, 550, 2380, function ($font) {
+        $img->text($this->kodeNACE, 720, $yBot + 160, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -198,7 +189,7 @@ class CertYqStruct
         });
 
         // TGL TERBIT
-        $img->text("Tanggal terbit : ", 143, 2460, function ($font) {
+        $img->text("Tanggal terbit : ", 300, $yBot + 240, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
             $font->size(65);
@@ -207,7 +198,7 @@ class CertYqStruct
             $font->valign("middle");
         });
         // TGL TERBIT VALUE
-        $img->text($this->tglTerbit, 680, 2460, function ($font) {
+        $img->text($this->tglTerbit, 850, $yBot + 240, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -217,7 +208,7 @@ class CertYqStruct
         });
 
         // Change date
-        $img->text("Tanggal perubahan : ", 143, 2540, function ($font) {
+        $img->text("Tanggal perubahan : ", 300, $yBot + 320, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -226,7 +217,7 @@ class CertYqStruct
             $font->valign("middle");
         });
         // Change date VALUE
-        $img->text($this->tglPerubahan, 850, 2540, function ($font) {
+        $img->text($this->tglPerubahan, 970, $yBot + 320, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -236,7 +227,7 @@ class CertYqStruct
         });
 
         // Valid Until
-        $img->text("Berlaku hingga : ", 143, 2620, function ($font) {
+        $img->text("Berlaku hingga : ", 300, $yBot + 400, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
             $font->size(65);
@@ -245,7 +236,7 @@ class CertYqStruct
             $font->valign("middle");
         });
         // Valid Until VALUE
-        $img->text($this->tglKadaluarsa, 740, 2620, function ($font) {
+        $img->text($this->tglKadaluarsa, 870, $yBot + 400, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(65);
@@ -254,9 +245,23 @@ class CertYqStruct
             $font->valign("middle");
         });
 
-        $savePath   = sprintf("YOQA-%s.png", Str::uuid());
+        // Generate QRCODE
+        $qrCodeText = "$this->perusahaanNama
+$this->perusahaanAlamat
+Ruang lingkup: $this->ruangLingkup
+Tanggal terbit: $this->tglTerbit
+Tanggal perubahan: $this->tglPerubahan
+Berlaku hingga: $this->tglKadaluarsa";
+
+        $qrName = sprintf('%s.png', Str::uuid());
+        QrCode::format('png')->size(300)->generate($qrCodeText, public_path($qrName));
+        $img->insert($qrName, "bottom-left", 150, 150);
+
+        $savePath   = sprintf("YOK3-%s.png", Str::uuid());
         $publicPath = public_path($savePath);
         $img->save($publicPath);
+
+        @unlink(public_path($qrName));
         return $publicPath;
     }
 }

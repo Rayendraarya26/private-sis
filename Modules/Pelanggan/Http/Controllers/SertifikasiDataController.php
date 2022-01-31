@@ -5,6 +5,7 @@ namespace Modules\Pelanggan\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\CertJecaStruct;
 use App\Http\Structs\CertJpaStruct;
+use App\Http\Structs\CertYok3Struct;
 use App\Http\Structs\CertYqStruct;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class SertifikasiDataController extends Controller
     {
         if ($request['type'] == 1) {
             $cert = new CertYqStruct(
-                noReg: 'No. Reg : 00/70',
+                noReg: '00/70',
                 tglSertifikasiAwal: '24 Februari 2022',
                 lembaga: 'YQ 005 032',
                 perusahaanNama: 'PT. HOK TONG',
@@ -49,7 +50,7 @@ class SertifikasiDataController extends Controller
             );
         } else if ($request['type'] == 2) {
             $cert = new CertJecaStruct(
-                noReg: 'No. Reg : 00/70',
+                noReg: '00/70',
                 tglSertifikasiAwal: '24 Februari 2022',
                 lembaga: 'JECA 004 032',
                 perusahaanNama: 'PT. ANEKA BUMI PRATAMA',
@@ -62,9 +63,9 @@ class SertifikasiDataController extends Controller
                 tglPerubahan: '-',
                 tglKadaluarsa: '4 Oktober 2024',
             );
-        } else {
+        } else if ($request['type'] == 3) {
             $cert = new CertJpaStruct(
-                noReg: "No. Ref : 11/JPA/06",
+                noReg: "11/JPA/06",
                 tglSertifikasiAwal: '27 April 2021',
                 lembaga: 'JPA 009 010.11',
                 perusahaanNama: 'PT. PENTASARI PRANAKARYA',
@@ -77,6 +78,20 @@ class SertifikasiDataController extends Controller
                 tglTerbit: '11 Januari 2022',
                 tglPerubahan: '-',
                 tglKadaluarsa: '10 Januari 2026',
+            );
+        } else {
+            $cert = new CertYok3Struct(
+                noReg: '003/SMK3/21',
+                lembaga: 'YO K3 009 003',
+                perusahaanNama: 'PT. ABAISIAT RAYA',
+                perusahaanAlamat: 'Jl. Raya Padang - Painan KM. 9, Sei Beremas,Kel. Gates Nan XX, Kec. Lubuk Begalung,Padang - 25227, Sumatera Barat - INDONESIA',
+                sertifikasiTipe: 'SNI ISO 45001:2018',
+                ruangLingkup: 'Proses produksi crumb rubber (SIR 10 & SIR 20)',
+                kodeEA: '[14] Karet dan produk plastik',
+                kodeNACE: 'C.22.19 Pembuatan produk karet lainnya',
+                tglTerbit: '29 Oktober 2021',
+                tglPerubahan: '-',
+                tglKadaluarsa: '28 Oktober 2024',
             );
         }
 

@@ -54,7 +54,7 @@ class CertJecaStruct
         $img = Image::make(public_path('images/sertifikasi-asset/cert_jeca.png'));
 
         // Nomer Registrasi
-        $img->text($this->noReg, 130, 885, function ($font) {
+        $img->text("No. Reg : $this->noReg", 130, 885, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
             $font->file($fontType);
             $font->size(50);
