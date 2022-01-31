@@ -18,7 +18,7 @@
                             @if(authorized("{$module}@create"))
                                 <div>
                                     <a href="{{ url("$url/create") }}" class="btn btn-outline-success btn-xs">
-                                        <i class="fas fa-plus"></i> Create
+                                        <i class="fas fa-plus"></i> Ajukan Permohonan
                                     </a>
                                 </div>
                             @endif

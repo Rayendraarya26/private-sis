@@ -23,9 +23,18 @@ use Modules\OperatorLs\Http\Controllers\PenjadwalanTahap1Controller;
 use Modules\OperatorLs\Http\Controllers\UploadKajianPermohonanController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanPencabutanController;
 use Modules\OperatorLs\Http\Controllers\RekomPersetujuanController;
+use Modules\OperatorLs\Http\Controllers\DataSertifikatController;
 
 Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
+	
+	Route::prefix("data-sertifikat")->group(function () {
+        Route::get("/", [DataSertifikatController::class, 'index']);
+        Route::get("/ajax", [DataSertifikatController::class, 'ajax']);
+        Route::get('/cetak/{sertifikat_id}', [DataSertifikatController::class, 'cetak']);
+        Route::get('/upload/{sertifikat_id}', [DataSertifikatController::class, 'uploadSertifikat']);
+        Route::post('/save', [DataSertifikatController::class, 'saveSertifikat']);
+    });
 	
 	Route::prefix("rekomendasi-persetujuan")->group(function () {
             Route::get('/', [RekomPersetujuanController::class, 'index']);
