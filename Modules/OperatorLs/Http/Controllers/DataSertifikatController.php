@@ -5,6 +5,7 @@ namespace Modules\OperatorLs\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\CertJecaStruct;
 use App\Http\Structs\CertJpaStruct;
+use App\Http\Structs\CertYok3Struct;
 use App\Http\Structs\CertYqStruct;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisPelanggan;
@@ -135,6 +136,21 @@ class DataSertifikatController extends Controller
 				$cert = new CertJpaStruct(
 					noReg: "No. Ref : $dataSertifikat->cust_sert_nomor_referensi",
 					tglSertifikasiAwal: $tglSertifikasiAwal, 
+					lembaga: $dataSertifikat->cust_sert_nomor_referensi,
+					perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
+					perusahaanAlamat: $perusahaanAlamat,
+					sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
+					ruangLingkup: $dataSertifikat->cust_sert_lingkup,
+					kodeEA: $dataSertifikat->kode_ea_nama,
+					kodeNACE: $dataSertifikat->kode_nace_nama,
+					tglTerbit: $tglTerbit,
+					tglPerubahan: $tglPerubahan,
+					tglKadaluarsa: $tglKadaluarsa,
+				);
+			}
+			else {
+				$cert = new CertYok3Struct(
+					noReg: "No. Ref : $dataSertifikat->cust_sert_nomor_referensi",
 					lembaga: $dataSertifikat->cust_sert_nomor_referensi,
 					perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
 					perusahaanAlamat: $perusahaanAlamat,

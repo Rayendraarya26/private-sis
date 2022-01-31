@@ -477,7 +477,9 @@ class AuTahap1Controller extends Controller
 		];
 		
 		if($restAudit['sert_tahap1_jenis'] == 'sni'){
-			return view("$this->view.print_hasil_tinjauan_sni")->with($parser);
+			// return view("$this->view.print_hasil_tinjauan_sni")->with($parser);
+			$pdf    = PDF::loadView("$this->view.print_hasil_tinjauan_sni", $parser)->setPaper('a4', 'portrait');
+			return $pdf->stream();
 		}
 		else{
 			$dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
@@ -487,7 +489,9 @@ class AuTahap1Controller extends Controller
 			$dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
 			
 			$parser['dataTim'] = $dataTim->get();
-			return view("$this->view.print_hasil_tinjauan_pusat")->with($parser);
+			$pdf    = PDF::loadView("$this->view.print_hasil_tinjauan_pusat", $parser)->setPaper('a4', 'portrait');
+			return $pdf->stream();
+			// return view("$this->view.print_hasil_tinjauan_pusat")->with($parser);
 		}
 	}
 	
@@ -545,6 +549,8 @@ class AuTahap1Controller extends Controller
 			'jmlTemuan' => $jmlTemuan,
 		];
 		
-        return view("$this->view.print_audit_tahap1")->with($parser);
+        // return view("$this->view.print_audit_tahap1")->with($parser);
+		$pdf    = PDF::loadView("$this->view.print_audit_tahap1", $parser)->setPaper('a4', 'portrait');
+		return $pdf->stream();
 	}
 }
