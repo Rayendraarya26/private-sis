@@ -4,6 +4,7 @@ namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\CertJecaStruct;
+use App\Http\Structs\CertJpaStruct;
 use App\Http\Structs\CertYqStruct;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use Illuminate\Http\Request;
@@ -46,7 +47,7 @@ class SertifikasiDataController extends Controller
                 tglPerubahan: '-',
                 tglKadaluarsa: '4 Oktober 2024',
             );
-        } else {
+        } else if ($request['type'] == 2) {
             $cert = new CertJecaStruct(
                 noReg: 'No. Reg : 00/70',
                 tglSertifikasiAwal: '24 Februari 2022',
@@ -61,9 +62,26 @@ class SertifikasiDataController extends Controller
                 tglPerubahan: '-',
                 tglKadaluarsa: '4 Oktober 2024',
             );
+        } else {
+            $cert = new CertJpaStruct(
+                noReg: "No. Ref : 11/JPA/06",
+                tglSertifikasiAwal: '27 April 2021',
+                lembaga: 'JPA 009 010.11',
+                perusahaanNama: 'PT. PENTASARI PRANAKARYA',
+                perusahaanAlamat: 'JI. Tambak Aji I No. 1, Kel. Ngaliyan, Kec. Ngaliyan, Semarang - 50185, Jawa Tengah - INDONESIA',
+                produkJenis: 'Ban Dalam',
+                produkTipe: 'Karet Alam',
+                produkMerk: 'DURATUBE',
+                produkStandar: 'SNI 6700:2012',
+                produkSistemSertifikasi: 'Tipe 5',
+                tglTerbit: '11 Januari 2022',
+                tglPerubahan: '-',
+                tglKadaluarsa: '10 Januari 2026',
+            );
         }
 
-        return $cert->render();
+        $path = $cert->generate();
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 
     public function ajax(Request $request)

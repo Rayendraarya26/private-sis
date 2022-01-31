@@ -2,6 +2,7 @@
 
 namespace App\Http\Structs;
 
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class CertYqStruct
@@ -48,7 +49,7 @@ class CertYqStruct
         $this->tglKadaluarsa      = $tglKadaluarsa;
     }
 
-    public function render()
+    public function generate()
     {
         $img = Image::make(public_path('images/sertifikasi-asset/cert_yq.png'));
 
@@ -253,14 +254,9 @@ class CertYqStruct
             $font->valign("middle");
         });
 
-
-        header('Content-Type: ' . $img->mime());
-        header(sprintf('Content-Disposition: attachment; filename="%s.%s"', $img->filename, $img->extension));
-        header('Expires: 0');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-Length: ' . $img->filesize());
-        header('Cache-Control: private, no-transform, no-store, must-revalidate');
-
-        return $img->encode('png');
+        $savePath   = sprintf("YOQA-%s.png", Str::uuid());
+        $publicPath = public_path($savePath);
+        $img->save($publicPath);
+        return $publicPath;
     }
 }
