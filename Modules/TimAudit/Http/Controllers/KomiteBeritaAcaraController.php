@@ -332,8 +332,9 @@ class KomiteBeritaAcaraController extends Controller
             "jadw_berita_acara_nomor" => 'required',
             "jadw_berita_acara_tanggal" => 'required',
             "jadw_is_tutup" => 'required',
-            "tanggal_terbit" => 'required',
-            "tanggal_berakhir" => 'required',
+            "tanggal_terbit" => 'nullable',
+            "tanggal_berakhir" => 'nullable',
+            "tanggal_perubahan" => 'nullable',
         ]);
         try {
             DB::beginTransaction();
@@ -368,10 +369,10 @@ class KomiteBeritaAcaraController extends Controller
 											'cust_sert_ukuran' => $restDataAudit->jadw_audit_ukuran,
 											'cust_sert_produksi_tahunan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan,
 											'cust_sert_produksi_tahunan_satuan'  => $restDataAudit->jadw_audit_kapasitas_produksi_tahunan_satuan,
-											'cust_sert_tgl_sertifikat_awal'  => $val,
-											'cust_sert_tgl_sertifikat_perubahan'  => NULL,
 											'cust_sert_status'  => 'on_going',
+											'cust_sert_tgl_sertifikat_awal'  => $val,
 											'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+											'cust_sert_tgl_sertifikat_perubahan'  => isset($request['tanggal_perubahan'][$key]) ? $request['tanggal_perubahan'][$key] : NULL,
 											'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
 											'cust_sert_status_survailen'  => 'passed',
 										]);
@@ -383,7 +384,9 @@ class KomiteBeritaAcaraController extends Controller
 										->where('cust_sert_id', $restDataAudit->cust_sert_id)
 										->update([
 											'cust_sert_status'  => 'on_going',
+											'cust_sert_tgl_sertifikat_awal'  => $val,
 											'cust_sert_expired_date'  => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+											'cust_sert_tgl_sertifikat_perubahan'  => isset($request['tanggal_perubahan'][$key]) ? $request['tanggal_perubahan'][$key] : NULL,
 											'cust_sert_status_survailen'  => 'passed',
 											'cust_sert_survailen_date'  => date('Y-m-d', strtotime('+1 year')),
 										]);

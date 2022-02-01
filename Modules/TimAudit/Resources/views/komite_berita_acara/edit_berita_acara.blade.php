@@ -87,19 +87,31 @@
 													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
 													Tanggal Berakhir<br/>
 													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;">
-												
+													
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
+													
 												@elseif($dau->jadw_audit_jenis == 're-sertifikasi')
+													Tanggal Terbit<br/>
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													Tanggal Perubahan<br/>
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
 													Tanggal Berakhir<br/>
 													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;">
 													
 												@elseif($dau->jadw_audit_jenis == 'pengaktifan')
+													Tanggal Terbit<br/>
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													Tanggal Perubahan<br/>
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
 													Tanggal Berakhir<br/>
 													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;">
 													
 												@elseif($dau->jadw_audit_jenis == 'pencabutan')
 													Tanggal Berakhir<br/>
 													<?=date('d M Y')?>
-													
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
+													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
 												@endif
 													
 											  </td>
@@ -197,9 +209,15 @@
 							editable: false,
 							formatter:myformatter,
 							parser:myparser,
-							value:`<?php 
-							echo date('Y-m-d');
-							?>`,
+							value:`<?php echo date('Y-m-d'); ?>`,
+						});
+						
+						$('#tanggal_perubahan{{$dau->jadw_audit_id}}').datebox({
+							required:true,
+							editable: false,
+							formatter:myformatter,
+							parser:myparser,
+							value:``,
 						});
 						
 						$('#tanggal_berakhir{{$dau->jadw_audit_id}}').datebox({

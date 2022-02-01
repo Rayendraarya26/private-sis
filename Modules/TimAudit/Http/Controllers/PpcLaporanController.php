@@ -92,6 +92,7 @@ class PpcLaporanController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
             $x['total_file']           = $d->total_file;
+            $x['status_upload']           = $d->total_file > 0 ? 're-upload' : 'upload';
             array_push($result, $x);
         }
 

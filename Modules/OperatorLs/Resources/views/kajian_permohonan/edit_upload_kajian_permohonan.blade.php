@@ -37,9 +37,9 @@
 									<div class="form-group row">
 										<label class="col-form-label col-sm-3" for="mohon_kajian_permohonan_file">Kajian Permohonan *</label>
 										<div class="col-sm-8">
-											<input class="form-control" type="file" name="mohon_kajian_permohonan_file">
+											<input class="form-control" type="file" name="mohon_kajian_permohonan_file" accept="application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 											<input type="hidden" id="mohon_kajian_permohonan_file_lama" name="mohon_kajian_permohonan_file_lama" class="form-control" value="{{$dataPermohon->mohon_kajian_permohonan_paskal_file}}"/>
-											<small id="" class="form-text">Note: Upload file Kajian Permohonan yang sudah ditanda tangani;</small>
+											<small id="" class="form-text">Note: Upload file Kajian Permohonan; boleh berupa *.excel atau *.pdf</small>
 											@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '')
 												<hr/>
 												<a target="_blank" href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}"><span class="fad fa-download"></span> File Kajian Permohonan PJT lama</a>
@@ -53,6 +53,7 @@
 											<table class="table table-bordered  mb-0">
 												<thead>
 													<tr>
+													  <th class="text-uppercase" scope="col">Status</th>
 													  <th class="text-uppercase" scope="col">Sertifikasi</th>
 													  <th class="text-uppercase" scope="col">Komoditi(Merk, Type, Ukuran, Kapasitas Produksi/tahun)</th>
 													  <th class="text-uppercase" scope="col">SNI</th>
@@ -65,6 +66,13 @@
 												<tbody>
 													@foreach($dataPermohonKomoditi as $dpk)
 													<tr>
+													  <td>
+														@if($dpk->mohon_det_jenis_status == 'baru')
+															Pengajuan Baru
+														@else
+															Perpanjangan
+														@endif
+													  </td>
 													  <td>{{$dpk->sert_nama}}</td>
 													  <td>
 														- Komoditi : {{$dpk->komodt_nama}}<br/>
