@@ -106,7 +106,7 @@ class PersetujuanTimAuditController extends Controller
 			->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
 			->where('master_pegawai.user_id', '=', auth()->id())
 			->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'none');
-			
+
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 if ($f->field == 'jadw_id')
@@ -157,7 +157,7 @@ class PersetujuanTimAuditController extends Controller
             $x['jadw_tim_kesanggupan_tgl'] = $d->thp1_tim_kesanggupan_tgl;
             array_push($result, $x);
         }
-		
+
 		$dataKomite = SisAuditTimKomite::join('sis_jadwal', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id")->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $dataKomite->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataKomite->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
@@ -184,7 +184,7 @@ class PersetujuanTimAuditController extends Controller
                     $dataKomite->orderBy($sort[$i], $order[$i]);
             }
         }
-		
+
         $dataKomite->select("*");
         $dataKomite->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama) SEPARATOR ',<br/>') as sert_nama");
         $dataKomite->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', UPPER(jadw_audit_jenis) ) SEPARATOR ',<br/>') AS jadw_audit_jenis");
@@ -193,8 +193,8 @@ class PersetujuanTimAuditController extends Controller
         foreach ($dataKomite->get() as $k) {
             $x['jadw_status'] = 'komite';
             $x['jadw_id']                  = $k->jadw_id;
-            $x['jadw_tanggal_mulai']       = $k->jadw_tanggal_mulai?->format("Y-m-d");
-            $x['jadw_tanggal_selesai']     = $k->jadw_tanggal_selesai?->format("Y-m-d");
+            $x['jadw_tanggal_mulai']       = $k->jadw_tanggal_mulai;
+            $x['jadw_tanggal_selesai']     = $k->jadw_tanggal_selesai;
             $x['cust_nama']                = $k->cust_nama;
             $x['sert_nama']                = $k->sert_nama;
             $x['jadw_jenis']               = $k->jadw_jenis;
@@ -202,7 +202,7 @@ class PersetujuanTimAuditController extends Controller
             $x['jadw_tim_kesanggupan']     = $k->komite_kesanggupan;
             $x['jadw_tim_kesanggupan_tgl'] = $k->komite_tgl_kesanggupan;
             // $x['komite_tgl_surat'] = $d->komite_tgl_surat;
-            array_push($result, $x);
+            $result[] = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -243,7 +243,7 @@ class PersetujuanTimAuditController extends Controller
                 DB::raw('GROUP_CONCAT(distinct sis_audit_tahap1_tim.thp1_tim_posisi) as jadw_tim_posisi'),
                 DB::raw('GROUP_CONCAT(distinct master_pegawai.peg_id) as peg_id')
             );
-			
+
 			$dataJadwal->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
 				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
 				->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
@@ -254,9 +254,9 @@ class PersetujuanTimAuditController extends Controller
 				->join('sis_audit_tahap1_tim', "sis_audit_tahap1_tim.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id")
 				->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
 				->groupBy('sis_audit_tahap1.aud_thp1_id');
-			
+
             $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
-        } 
+        }
 		else if ($request['jenis'] == 'komite') {
             $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])
 				->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
@@ -348,7 +348,7 @@ class PersetujuanTimAuditController extends Controller
                     ->where('peg_id', $request['peg_id'])
                     ->update(['thp1_tim_kesanggupan' => 'ya', 'thp1_tim_kesanggupan_tgl' => Carbon::now()]);
                 DB::commit();
-            } 
+            }
 			else if($request['jenis'] == 'komite') {
                 $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
                 $dataJadwal->select('*');
@@ -361,7 +361,7 @@ class PersetujuanTimAuditController extends Controller
                     ->where('jadw_id', $request['jadw_id'])
                     ->where('peg_id', $request['peg_id'])
                     ->update(['komite_kesanggupan' => 'ya', 'komite_tgl_kesanggupan' => Carbon::now()]);
-				
+
                 DB::commit();
             }
 
@@ -377,7 +377,7 @@ class PersetujuanTimAuditController extends Controller
                     ->where('jadw_id', $request['jadw_id'])
                     ->where('peg_id', $request['peg_id'])
                     ->update(['jadw_tim_kesanggupan' => 'ya', 'jadw_tim_kesanggupan_tgl' => Carbon::now()]);
-				
+
                 DB::commit();
             }
 
