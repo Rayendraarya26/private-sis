@@ -123,6 +123,23 @@ class Tahap2PersetujuanController extends Controller
                 $newUploadedPath[]           = public_path($fileSuratTugasPath);
                 $data->jadw_file_surat_tugas = $fileSuratTugasPath;
 
+                // ======= Notulen ======= //
+                $fileNotulen     = $request->file('file_notulen');
+                $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
+                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
+                $fileNotulen->move($baseFileUpload, $fileNotulenName);
+                $newUploadedPath[]       = public_path($fileNotulenPath);
+                $data->jadw_file_notulen = $fileNotulenPath;
+
+                // ======= Notulen ======= //
+                if ($request->hasFile('file_subkon')) {
+                    $fileSubkon     = $request->file('file_subkon');
+                    $fileSubkonName = Str::slug('file-scan-subkon-' . $fileSubkon->getClientOriginalName()) . '-' . time() . '.' . $fileSubkon->getClientOriginalExtension();
+                    $fileSubkonPath = sprintf("%s/%s", $baseFileUpload, $fileSubkonName);
+                    $fileSubkon->move($baseFileUpload, $fileSubkonName);
+                    $newUploadedPath[]      = public_path($fileSubkonPath);
+                    $data->jadw_file_subkon = $fileSubkonPath;
+                }
 
                 $data->save();
                 SisJadwalLog::create([

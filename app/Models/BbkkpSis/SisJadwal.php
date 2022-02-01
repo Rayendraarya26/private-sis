@@ -30,6 +30,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_file_surat_tugas
  * @property string|null $jadw_file_kehadiran
  * @property string|null $jadw_file_kehadiran_komite
+ * @property string|null $jadw_file_notulen
+ * @property string|null $jadw_file_subkon
  * @property string|null $jadw_jenis
  * @property string|null $jadw_is_khusus_komite
  * @property string|null $jadw_berita_acara_nomor
@@ -91,6 +93,8 @@ class SisJadwal extends Model
 		'jadw_file_surat_tugas',
 		'jadw_file_kehadiran',
 		'jadw_file_kehadiran_komite',
+		'jadw_file_notulen',
+		'jadw_file_subkon',
 		'jadw_jenis',
 		'jadw_is_khusus_komite',
 		'jadw_berita_acara_nomor',

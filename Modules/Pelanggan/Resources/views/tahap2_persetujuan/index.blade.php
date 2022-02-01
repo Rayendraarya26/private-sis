@@ -30,104 +30,6 @@
 
 @push("javascript")
     <script>
-        function promptRevisi(id) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-default mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: 'Keterangan Revisi',
-                input: 'text',
-                inputAttributes: {
-                    autocapitalize: 'off'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Revisi',
-                cancelButtonText: 'Batal',
-                closeOnConfirm: false,
-                closeOnCancel: false,
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-                    submitApproval(id, 'revisi', result.value)
-                }
-            });
-        }
-
-        function promptAgree(id) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-success mb-2',
-                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: 'Setujui Temuan ?',
-                html: `Keputusan ini bersifat permanen dan tidak dapat dikembalikan<br><br> tekan ESC untuk batal`,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal',
-                closeOnConfirm: false,
-                closeOnCancel: false,
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-                    submitApproval(id, 'setuju', null)
-                }
-            });
-        }
-
-        function submitApproval(id, status, message) {
-            $.ajax({
-                url: `{{url("$url/approve/temuan")}}`,
-                type: 'POST',
-                dataType: 'json',
-                data: {jadw_id: id, jadw_setujui_temuan: status, message},
-                success: function (response) {
-                    toastCenter({
-                        type: 'success',
-                        title: response.message
-                    })
-
-                    location.href = "/{{$url}}"
-                },
-                error: function (xhr) {
-                    if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                    else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                }
-            });
-        }
-
-        function confirmTemuan(id) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-success mb-2',
-                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Konfirmasi Temuan 1 ?`,
-                html: `keputusan ini bersifat permanen <br><br> tekan ESC untuk batal`,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Setuju',
-                cancelButtonText: 'Tolak',
-                closeOnConfirm: false,
-                closeOnCancel: false,
-                reverseButtons: true
-            }).then((result) => {
-                let status = null;
-                if (result.value) {
-                    promptAgree(id)
-                } else if (result.dismiss === swal.DismissReason.cancel) {
-                    promptRevisi(id)
-                }
-            });
-        }
-
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -149,8 +51,7 @@
                         align: 'center',
                         formatter: function (val, row) {
                             let dom                = `dropdownMenu_${row.jadw_id}`;
-                            let btnDetail          = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.jadw_id}'">Detail</div>`;
-                            let btnApprove         = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTemuan('${row.jadw_id}')">Approve</div>`;
+                            let btnDetail          = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.jadw_id}'">Detail & Approve</div>`;
                             let btnCetakLks        = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lks')">LKS</div>`;
                             let btnCetakLapRingkas = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/lap-ringkas')">Laporan Ringkas</div>`;
                             let btnCetakDafHadir   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.jadw_id}/daftar-hadir')">Daftar Hadir</div>`;
@@ -163,7 +64,6 @@
                             </button>
                             <div id="${dom}" style="width:150px; display: none;">
                                 @if(authorized("{$module}@detail")) ${btnDetail} @endif
-                            @if(authorized("{$module}@approveTemuan")) ${btnApprove} @endif
                             <div class="menu-sep"></div>
                             @if(authorized("{$module}@cetak")) ${btnCetakNotulen} @endif
                             @if(authorized("{$module}@cetak")) ${btnCetakLapRingkas} @endif
