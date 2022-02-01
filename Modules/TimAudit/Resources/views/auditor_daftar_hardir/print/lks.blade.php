@@ -300,7 +300,7 @@
                                 @if(!empty($dataKetua->master_pegawai->peg_ttd_base64))
                                     <img src="{{ $dataKetua->master_pegawai->peg_ttd_base64 }}" alt="ttd ketua"
                                          style="max-height: 100px;">
-                                @else
+                                @elseif(!empty($dataKetua->master_pegawai->peg_ttd_file))
                                     <img src="{{public_path($dataKetua->master_pegawai->peg_ttd_file)}}" alt="ttd ketua"
                                          style="max-height: 100px;">
                                 @endif

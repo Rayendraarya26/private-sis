@@ -246,7 +246,7 @@ class AuDaftarHadirController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = ucwords($d->jadw_jenis);
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
-            array_push($result, $x);
+            $result[] = $x;
         }
 
 
@@ -286,7 +286,7 @@ class AuDaftarHadirController extends Controller
     {
         $dataLKS = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+            ->where('sis_jadwal.cust_id', $dataJadwal->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
             ->get();
 
