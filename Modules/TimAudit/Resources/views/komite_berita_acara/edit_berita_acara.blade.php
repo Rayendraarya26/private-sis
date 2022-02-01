@@ -162,6 +162,19 @@
 
 @push("javascript")
     <script>
+		$.extend($.fn.textbox.methods, {
+			show: function(jq){
+				return jq.each(function(){
+					$(this).next().show();
+				})
+			},
+			hide: function(jq){
+				return jq.each(function(){
+					$(this).next().hide();
+				})
+			}
+		})
+
 		const swalWithBootstrapButtons = swal.mixin({
             confirmButtonClass: 'btn btn-primary mb-2',
             cancelButtonClass: 'btn btn-warning mr-2 mb-2',
@@ -205,7 +218,7 @@
 						
 						@foreach($dataAudit as $dau)
 						$('#tanggal_terbit{{$dau->jadw_audit_id}}').datebox({
-							required:true,
+							required:false,
 							editable: false,
 							formatter:myformatter,
 							parser:myparser,
@@ -213,7 +226,7 @@
 						});
 						
 						$('#tanggal_perubahan{{$dau->jadw_audit_id}}').datebox({
-							required:true,
+							required:false,
 							editable: false,
 							formatter:myformatter,
 							parser:myparser,
@@ -221,7 +234,7 @@
 						});
 						
 						$('#tanggal_berakhir{{$dau->jadw_audit_id}}').datebox({
-							required:true,
+							required:false,
 							editable: false,
 							formatter:myformatter,
 							parser:myparser,
@@ -232,6 +245,19 @@
 								echo date('Y-m-d');
 							?>`,
 						});
+						
+						@if($dau->jadw_audit_jenis == 'sertifikasi')
+							$('#tanggal_perubahan{{$dau->jadw_audit_id}}').datebox('hide');
+						@elseif($dau->jadw_audit_jenis == 're-sertifikasi')
+							
+						@elseif($dau->jadw_audit_jenis == 'pengaktifan')
+							
+						@elseif($dau->jadw_audit_jenis == 'pencabutan')
+							$('#tanggal_terbit{{$dau->jadw_audit_id}}').datebox('hide');
+							$('#tanggal_perubahan{{$dau->jadw_audit_id}}').datebox('hide');
+							$('#tanggal_berakhir{{$dau->jadw_audit_id}}').datebox('hide');
+						@endif
+						
 						@endforeach
 					})
 				},
