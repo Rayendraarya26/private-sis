@@ -194,7 +194,7 @@ class AuDaftarPeriksaController extends Controller
             $fileDaftarPeriksaName = Str::slug('file-daftar-periksa-auditor-' . $request['jadw_tim_id'] . '-' . $fileDaftarPeriksa->getClientOriginalName()) . '-' . time() . '.' . $fileDaftarPeriksa->getClientOriginalExtension();
             $fileDaftarPeriksaPath = sprintf("%s/%s", $baseFileUpload, $fileDaftarPeriksaName);
             $fileDaftarPeriksa->move($baseFileUpload, $fileDaftarPeriksaName);
-            array_push($uploadedPath, $fileDaftarPeriksaPath);
+            $uploadedPath[] = $fileDaftarPeriksaPath;
             DB::beginTransaction();
             $restData = DB::table('sis_audit_daftar_periksa')->where('jadw_tim_id', $request['jadw_tim_id'])->first();
             if ($restData !== null) {
@@ -220,6 +220,10 @@ class AuDaftarPeriksaController extends Controller
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            DB::rollBack();
+            foreach ($uploadedPath as $path) {
+                @unlink(public_path($path));
+            }
             return responseJSON(500, [], $e->getMessage());
         }
     }

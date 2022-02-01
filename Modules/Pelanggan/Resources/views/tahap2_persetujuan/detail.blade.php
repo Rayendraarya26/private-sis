@@ -175,13 +175,20 @@
                                             <th>File Daftar Periksa</th>
                                         </tr>
                                         @foreach($dataJadwal->sis_jadwal_tims as $tim)
-                                            <tr>
-                                                <td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
-                                                <td>{{ucwords($tim->jadw_tim_posisi)}}</td>
-                                                <td>@if($tim->dftr_periksa_file != '')<a
-                                                        href="{{ url($tim->dftr_periksa_file) }}" target="_blank"><i
-                                                            class="fad fa-download"></i> Download</a>@endif</td>
-                                            </tr>
+                                            @if($tim->sis_audit_daftar_periksas->count() > 0)
+                                                <tr>
+                                                    <td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
+                                                    <td>{{ucwords($tim->jadw_tim_posisi)}}</td>
+                                                    <td>
+                                                        @foreach($tim->sis_audit_daftar_periksas as $periksa)
+                                                            @if($periksa->dftr_periksa_file != '')
+                                                                <a href="{{ url($periksa->dftr_periksa_file) }}"
+                                                                   target="_blank">
+                                                                    <i class="fad fa-download"></i> Download</a>@endif
+                                                        @endforeach
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     </table>
                                 </div>
