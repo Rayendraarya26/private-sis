@@ -48,11 +48,11 @@
             /*background-color: lightblue;*/
             height: 50px;
         }
-		
+
 		table{
             font-family: Arial, Helvetica, sans-serif;
 			width:100%;
-			border-collapse:collapse; 
+			border-collapse:collapse;
 			border:0.5px solid #000;
 		}
 		thead{
@@ -102,29 +102,29 @@
 		</thead>
 		<tbody>
 			<tr><td class="left" style="border:1px solid;"><b>1.1. Persyaratan Administrasi dan prosedur sertifikasi</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_1)) {!! $dataJadwal->komte_priksa_penilaian_1 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.2. Konfirmasi Hasil Pengkajian Permohonan</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_2)) {!! $dataJadwal->komte_priksa_penilaian_2 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.3. Evaluasi waktu audit yang direncanakan dengan realisasi pelaksanaan</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_3)) {!! $dataJadwal->komte_priksa_penilaian_3 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.4. Evaluasi kedalamam Laporan Audit yang dibuat oleh Auditor</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_4)) {!! $dataJadwal->komte_priksa_penilaian_4 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.5. Komentar terhadap ketidaksesuaian, tindakan koreksi dan tindakan korektif</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_5)) {!! $dataJadwal->komte_priksa_penilaian_5 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.6. Hasil Inspeksi/ Asesmen Sistem Mutu/ Lingkungan*)</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_6)) {!! $dataJadwal->komte_priksa_penilaian_6 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.7. Konfirmasi terhadap ketercapaian tujuan audit</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_7)) {!! $dataJadwal->komte_priksa_penilaian_7 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.8. Rekaman Tahapan Sertifikasi</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_8)) {!! $dataJadwal->komte_priksa_penilaian_8 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.9. Hal-hal negative yang mempengaruhi penerbitan sertifikat</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_9)) {!! $dataJadwal->komte_priksa_penilaian_9 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.10. Hal-hal yang diperbaiki/ditambahkan</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_10)) {!! $dataJadwal->komte_priksa_penilaian_10 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.11. Hasil Perbaikan</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_11)) {!! $dataJadwal->komte_priksa_penilaian_11 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.12. Pelaksanaan Pengambilan contoh (khusus LS Produk)</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_12)) {!! $dataJadwal->komte_priksa_penilaian_12 !!} @endif</td></tr>
-			
+
 			<tr><td class="left" style="border:1px solid;"><b>1.13. Hasil Uji Laboratorium (khusus LS Produk)</b><br/>@if(isset($dataJadwal->komte_priksa_penilaian_13)) {!! $dataJadwal->komte_priksa_penilaian_13 !!} @endif</td></tr>
 		</tbody>
 	</table>
@@ -146,42 +146,44 @@
 		<tbody>
 			<tr>
 				<td class="left" style="border:1px solid;border-right:0px;border-top:0px;">
-					Dibuat di : Yogyakarta<br/>
-					Pada tanggal : ......
-				</td>
-				<td class="left" style="border:1px solid;border-left:0px;border-top:0px;">
-					Komite Sertifikasi
-				</td>
-			</tr>
-			<tr>
-				<td class="left" style="border:1px solid;border-right:0px;">	</td>
-				<td class="left" style="border:1px solid;border-right:0px;border-left:0px;">
-				<table style="border:0px;">
-					<tbody>
-						<tr>
-							<td class="left">Nama</td>
-							<td class="left">Tanda Tangan</td>
-						</tr>
-						@foreach($dataTim as $tim)
-							<?php $i = 1;?>
-							<tr>
-								<td class="left"><?=$i;?>. {{$tim->peg_nama}}</td>
-								<td class="center">@if(!empty($tim->peg_ttd_base64))
-								<img src="{{ $tim->peg_ttd_base64 }}" alt="ttd ketua" style="max-height: 50px;">
-								@else
-								<img src="{{public_path($tim->peg_ttd_file)}}" alt="ttd ketua" style="max-height: 50px;">
-								@endif
-								</td>
-							</tr>
-							<?php $i++;?>
-						@endforeach
-					</tbody>
-				</table>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	<i>*) Coret yang tidak perlu</i>
+                    Dibuat di : Yogyakarta<br/>
+                    Pada tanggal : ......
+                </td>
+                <td class="left" style="border:1px solid;border-left:0px;border-top:0px;">
+                    Komite Sertifikasi
+                </td>
+            </tr>
+            <tr>
+                <td class="left" style="border:1px solid;border-right:0px;"></td>
+                <td class="left" style="border:1px solid;border-right:0px;border-left:0px;">
+                    <table style="border:0px;">
+                        <tbody>
+                        <tr>
+                            <td class="left">Nama</td>
+                            <td class="left">Tanda Tangan</td>
+                        </tr>
+                        @foreach($dataTim as $tim)
+                            <?php $i = 1;?>
+                            <tr>
+                                <td class="left"><?=$i;?>. {{$tim->peg_nama}}</td>
+                                <td class="center">
+                                    @if(!empty($tim->peg_ttd_base64))
+                                        <img src="{{ $tim->peg_ttd_base64 }}" alt="ttd ketua" style="max-height: 50px;">
+                                    @elseif(!empty($tim->peg_ttd_file))
+                                        <img src="{{public_path($tim->peg_ttd_file)}}" alt="ttd ketua"
+                                             style="max-height: 50px;">
+                                    @endif
+                                </td>
+                            </tr>
+                            <?php $i++;?>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <i>*) Coret yang tidak perlu</i>
 </section>
 
 
