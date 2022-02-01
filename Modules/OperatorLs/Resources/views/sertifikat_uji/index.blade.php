@@ -50,19 +50,14 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-							let dom = `dropdownMenu_${row.jadw_id}`;
-                            let btnEdit = ``;			
-							btnEdit += `<div data-options="iconCls:'fas fa-cloud-upload'" onclick="location.href = '{{ url("$url/edit") }}?tipe=upload-hasil-uji&jadw_id=${row.jadw_id}'">Upload</div>`;
-							
-                            return `
-								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
-										<i class="fa fa-setting"></i> Aksi
-									</button>
-									<div id="${dom}" style="width:150px; display: none;">
-										@if(authorized("{$module}@detail")) ${btnEdit} @endif
-								</div>
-							</div>`
+							let btnEdit = '';
+							if(row.status_upload == 're-upload'){
+								btnEdit = `<a href="{{ url("$url/edit") }}?tipe=upload-hasil-uji&jadw_id=${row.jadw_id}" class="btn btn-warning btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Re-Upload</a>`;
+							}
+							else{
+								btnEdit = `<a href="{{ url("$url/edit") }}?tipe=upload-hasil-uji&jadw_id=${row.jadw_id}" class="btn btn-primary btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Upload</a>`;
+							}
+                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`;
                         }
                     }
                 ]],
@@ -75,20 +70,10 @@
                     {field: 'total_hasil_uji', title: 'Total<br/>File', width: 100, sortable: true, align: 'center'},
                 ]],
 				onBeforeLoad: function () {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        try {
-                            $(this).menubutton('destroy');
-                        } catch (e) {
-                            console.log('failed destroy');
-                        }
-                    });
+                    
                 },
                 onLoadSuccess: function (data) {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
-                        });
-                    });
+                    
                 },
             });
             dg.datagrid(

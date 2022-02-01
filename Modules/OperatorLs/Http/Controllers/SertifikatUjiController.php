@@ -86,18 +86,18 @@ class SertifikatUjiController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $data->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-        $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        // $data->join('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
+        // $data->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
         $data->join('sis_billing', "sis_jadwal.bill_id", "=", "sis_billing.bill_id");
-        $data->join('sis_audit_sertifikat_produk', "sis_audit_sertifikat_produk.jadw_id", "=", "sis_jadwal.jadw_id");
+        $data->leftJoin('sis_audit_sertifikat_produk', "sis_audit_sertifikat_produk.jadw_id", "=", "sis_jadwal.jadw_id");
 
         // Filter
-        $data->where('master_pegawai.user_id', '=', auth()->id());
+        // $data->where('master_pegawai.user_id', '=', auth()->id());
+        // $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
+        // $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ketua');
+        // $data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
-        $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ketua');
-        $data->where('sis_jadwal_audit.jadw_audit_status', '=', 'on-going');
         $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
 		
         if (!empty($request->filterRules)) {
@@ -121,10 +121,10 @@ class SertifikatUjiController extends Controller
         }
 
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
-        $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_status_komite) AS status_komite");
+        // $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_status_komite) AS status_komite");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $data->selectRaw("COUNT(distinct prod_sert_id) AS total_hasil_uji");
+        $data->selectRaw("COUNT(DISTINCT prod_sert_id) AS total_hasil_uji");
         $data->groupBy('sis_jadwal.jadw_id');
 
         $result = [];
@@ -137,6 +137,7 @@ class SertifikatUjiController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
             $x['total_hasil_uji']     = $d->total_hasil_uji;
+            $x['status_upload']     = $d->total_hasil_uji > 0 ? 're-upload' : 'upload';
             array_push($result, $x);
         }
 
@@ -171,12 +172,14 @@ class SertifikatUjiController extends Controller
         });
 
         $dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
-        $dataJadwal->leftJoin('sis_audit_logbook', function ($join) {
+        /* 
+		$dataJadwal->leftJoin('sis_audit_logbook', function ($join) {
             $join->on("sis_audit_logbook.jadw_tim_id", "=", "sis_jadwal_tim.jadw_tim_id");
             $join->on('logbook_jenis', '=', DB::raw("'ppc'"));
-        });
-
-        $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
+        }); 
+		*/
+		
+        // $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
 
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");

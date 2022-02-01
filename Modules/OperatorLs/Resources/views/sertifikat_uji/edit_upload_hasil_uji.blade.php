@@ -60,7 +60,7 @@
 												<tr>
 												  <td>{{$dpp->pabrik_nama}} {{$dpp->pabrik_alamat}}, {{$dpp->kec_nama}}, {{$dpp->kab_nama}}, {{$dpp->prov_nama}}</td>
 												  <td>{{$dpp->pabrik_kode_pos}}</td>
-												  <td>Fax : {{$dpp->pabrik_nomor_fax}}; Telp : {{$dpp->pabrik_nomor_telp}}; Hp : {{$dpp->pabrik_nomor_hp}}</td>
+												  <td>Fax : {{$dpp->pabrik_nomor_fax}};<br/>Telp : {{$dpp->pabrik_nomor_telp}};<br/>Hp : {{$dpp->pabrik_nomor_hp}}</td>
 												  <td>{{$dpp->pabrik_kegiatan_utama}}</td>
 												  <td>{{$dpp->pabrik_jumlah_karyawan}} Orang</td>
 												  <td>{{$dpp->pabrik_luas_tanah}}</td>
