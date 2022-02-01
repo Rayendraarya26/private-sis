@@ -87,7 +87,7 @@ class UploadKajianPermohonanController extends Controller
         // Pagination
 		$data->groupBy('sis_permohonan.mohon_id');
         $data->select("*", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
-		
+
         // Result
         $result = [];
         foreach ($data->get() as $d) {
@@ -165,12 +165,12 @@ class UploadKajianPermohonanController extends Controller
 						->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id')
 						->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id')
 						->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
-						
-        
+
+
 		$dataPermohonSertifikasi = SisPermohonan::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
 								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
-								
+
         $dataPermohonKomoditi = SisPermohonanKomoditi::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
 								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
 								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
@@ -184,7 +184,7 @@ class UploadKajianPermohonanController extends Controller
 
         $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID)->select('*')
 							->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
-							
+
 
         $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $mohonID)->where('status_tipe', 'revisi')->select('*');
 
@@ -266,7 +266,7 @@ class UploadKajianPermohonanController extends Controller
             'mohon_kajian_permohonan_file_lama' => 'nullable|string',
             'mohon_kajian_permohonan_file'      => 'required|file|mimes:doc,pdf,docx,zip,xls,xlsx'
         ]);
-		
+
         $dataInsert = [
             'mohon_id'                   => $request->mohon_id,
             'mohon_det_id'         => $request->mohon_det_id,
@@ -275,7 +275,7 @@ class UploadKajianPermohonanController extends Controller
             'mohon_kmditi_nace'          => $request->mohon_kmditi_nace,
             'mohon_kmditi_ea'            => $request->mohon_kmditi_ea,
         ];
-		
+
         if ($request->hasFile("mohon_kajian_permohonan_file")) {
             if ($request["mohon_kajian_permohonan_file_lama"] != '')
                 @unlink($request["mohon_kajian_permohonan_file_lama"]);
@@ -303,8 +303,8 @@ class UploadKajianPermohonanController extends Controller
                                 "mohon_kmditi_nace"          => $mohon_kmditi_nace,
                                 "mohon_kmditi_ea"            => $dataInsert['mohon_kmditi_ea'][$key],
                             ]);
-						
-						
+
+
 						if (array_key_exists($key,$data_detail)){
 							if($dataInsert['mohon_det_perlu_tahap1'][$key] == 'ya'){
 								$data_detail[$dataInsert['mohon_det_id'][$key]] = $dataInsert['mohon_det_perlu_tahap1'][$key];
@@ -313,20 +313,20 @@ class UploadKajianPermohonanController extends Controller
 						else{
 							$data_detail[$dataInsert['mohon_det_id'][$key]] = $dataInsert['mohon_det_perlu_tahap1'][$key];
 						}
-						
+
                     }
                 }
-				
+
 				if(!empty($data_detail)){
 					foreach ($data_detail as $key => $val) {
 						$dataPermohon = SisPermohonan::where('sis_permohonan_detail.mohon_det_id', $key)->select('*')->groupBy('sis_permohonan_detail.mohon_id')
 								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")->get()[0];
-						
+
 						$data_update = [];
-						if( $dataPermohon->cust_sert_id == '' ){							
+						if( $dataPermohon->cust_sert_id == '' ){
 							$counterRef = DB::table('sis_pelanggan_sertifikasi')->select(DB::raw("COUNT(`cust_sert_id`)+1 AS counterSert"))->where('sert_id', '=', $dataPermohon->sert_id)->get()[0];
-							
+
 							$sert_format_referensi = explode('/',$dataPermohon->sert_format_referensi);
 							$nomor_ref = '';
 							if(!empty($sert_format_referensi)){
@@ -341,13 +341,13 @@ class UploadKajianPermohonanController extends Controller
 										$nomor_ref .= date("y");
 									else
 										$nomor_ref .= $dat;
-									
+
 									$jt++;
 									if($countDat != $jt)
 										$nomor_ref .= '/';
 								}
 							}
-							
+
 							$data_update = [
 											"mohon_det_no_referensi" => $nomor_ref ,
 											"mohon_det_perlu_tahap1" => $val,
@@ -358,25 +358,26 @@ class UploadKajianPermohonanController extends Controller
                                 "mohon_det_perlu_tahap1" => $val,
                             ];
 						}
-						
+
                         DB::table('sis_permohonan_detail')
                             ->where('mohon_det_id', $key)
                             ->update($data_update);
                     }
 				}
             });
-			
-			
+
+            $dataPemohon = SisPermohonan::find($request['mohon_id']);
+
 			$dataUser = SysUser::whereIn('ug_group_id', ['9'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
 			foreach ($dataUser->get() as $us) {
 				$notifUsr            = new NotifStruct();
 				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
-				$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diupload silahkan verifikasi.", $data['mohon_id'], $data['mohon_cust_nama']);
+				$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diupload silahkan verifikasi.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
 				$notifUsr->user_id   = $us->user_id;
 				$notifUsr->click_url = url('/paskal/verifikasi');
 				sendNotification($notifUsr);
 			}
-			
+
             return redirect($this->url)->with('message', "Upload Kajian Permohonan #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi validasi oleh PJT.");
         } else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
