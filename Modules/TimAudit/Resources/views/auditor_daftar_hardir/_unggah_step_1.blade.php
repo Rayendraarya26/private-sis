@@ -20,8 +20,8 @@
 							<tr>
 								<td>Tanggal Pelaksanaan</td>
 								<td>
-									: {{ $data->jadw_tanggal_mulai->isoFormat("LL") }}
-									s/d {{ $data->jadw_tanggal_selesai->isoFormat("LL") }}
+									: {{ $data->jadw_tanggal_mulai }}
+									s/d {{ $data->jadw_tanggal_selesai }}
 									@if($data->jadw_file_jadwal != '')<br/><a href="{{ url($data->jadw_file_jadwal) }}" target="_blank">Download Jadwal</a>@endif
 								</td>
 							</tr>
@@ -102,12 +102,12 @@
 </div>
 
 @push('javascript')
-    <script>		
+    <script>
         $(document).ready(function () {
             window.vueStepOne = new Vue({
                 el: "#vueStepOne",
                 data: {
-					
+
                 },
                 mounted() {
 					setTimeout(() => {
@@ -119,12 +119,12 @@
                 },
                 methods: {
                     validate() {
-						
+
                     },
 					async start() {
                         setTimeout(async () => {
 								$(".tab-content").height("100%");
-							}, 1000);					
+							}, 1000);
                     },
                 }
             })
