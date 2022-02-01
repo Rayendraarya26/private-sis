@@ -47,7 +47,7 @@
                     {
                         field: 'action',
                         title: "<br/><br/><br/>",
-                        width: 80,
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
 							let btnEdit = '';
