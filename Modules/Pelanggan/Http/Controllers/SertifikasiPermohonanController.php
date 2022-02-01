@@ -1029,7 +1029,7 @@ class SertifikasiPermohonanController extends Controller
     {
         try {
             $dataPelanggan              = auth()->user()?->sis_pelanggan;
-            $dataPelanggan->negara_nama = $dataPelanggan->master_negara->negara_nama;
+            $dataPelanggan->negara_nama = $dataPelanggan->master_negara?->negara_nama;
 
             return responseJSON(200, $dataPelanggan, "Data ditemukan");
         } catch (Exception $e) {
