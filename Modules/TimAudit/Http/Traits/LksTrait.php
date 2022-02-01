@@ -28,10 +28,10 @@ trait LksTrait
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                            $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
                         } else {
                             if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['kritis'])) {
-                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                $dataLKS['tgl_pelyelesaian']['kritis'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
                             }
                         }
                     }
@@ -47,10 +47,10 @@ trait LksTrait
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                            $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
                         } else {
                             if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['mayor'])) {
-                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                $dataLKS['tgl_pelyelesaian']['mayor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
                             }
                         }
                     }
@@ -67,10 +67,10 @@ trait LksTrait
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
-                            $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                            $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
                         } else {
                             if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
-                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LLLL");
+                                $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan->isoFormat("LL");
                             }
                         }
                     }
