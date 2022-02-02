@@ -121,7 +121,7 @@
 
                                         <tr>
                                             <td>Alamat</td>
-                                            <td>: {{$dataPemohon->mohon_cust_alamat}} </td>
+                                            <td>: {{$dataPemohon?->mohon_cust_alamat}} </td>
                                         </tr>
 
                                         <tr>
