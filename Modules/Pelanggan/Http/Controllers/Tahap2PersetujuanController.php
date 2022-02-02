@@ -309,48 +309,50 @@ class Tahap2PersetujuanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $timAudit = [];
-            foreach ($d->sis_jadwal_tims as $tim) {
-                $timAudit[] = [
-                    "tim_nama"   => $tim->master_pegawai->peg_nama,
-                    'tim_kode'   => $tim->jadw_tim_kode,
-                    'tim_posisi' => ucwords($tim->jadw_tim_posisi),
-                ];
-            }
-            $jadwalAudit = [];
-            foreach ($d->sis_jadwal_audits as $jadwal) {
-                $jadwalAudit[] = [
-                    'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
-                    'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
-                    'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
-                ];
-            }
-            $dataRevisi = [];
-            foreach ($d->sis_jadwal_logs as $log) {
-                $dataRevisi[] = [
-                    'title'   => $log->jlog_judul,
-                    'message' => $log->jlog_pesan,
-                    'time'    => $log->created_at?->isoFormat("LLLL")
-                ];
-            }
+            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+                $timAudit = [];
+                foreach ($d->sis_jadwal_tims as $tim) {
+                    $timAudit[] = [
+                        "tim_nama"   => $tim->master_pegawai->peg_nama,
+                        'tim_kode'   => $tim->jadw_tim_kode,
+                        'tim_posisi' => ucwords($tim->jadw_tim_posisi),
+                    ];
+                }
+                $jadwalAudit = [];
+                foreach ($d->sis_jadwal_audits as $jadwal) {
+                    $jadwalAudit[] = [
+                        'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
+                        'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
+                        'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
+                    ];
+                }
+                $dataRevisi = [];
+                foreach ($d->sis_jadwal_logs as $log) {
+                    $dataRevisi[] = [
+                        'title'   => $log->jlog_judul,
+                        'message' => $log->jlog_pesan,
+                        'time'    => $log->created_at?->isoFormat("LLLL")
+                    ];
+                }
 
-            $totalTemuanLKS = $d->sis_audit_lks->count();
+                $totalTemuanLKS = $d->sis_audit_lks->count();
 
-            $x['tims']                = $timAudit;
-            $x['audits']              = $jadwalAudit;
-            $x['revisi']              = $dataRevisi;
-            $x['jadw_id']             = $d->jadw_id;
-            $x['jadw_jenis']          = $d->jadw_jenis;
-            $x['jadw_setujui_temuan'] = $d->jadw_setujui_temuan;
-            $x['jadw_file_jadwal']    = asset($d->jadw_file_jadwal);
-            $x['total_temuan']        = $totalTemuanLKS;
+                $x['tims']                = $timAudit;
+                $x['audits']              = $jadwalAudit;
+                $x['revisi']              = $dataRevisi;
+                $x['jadw_id']             = $d->jadw_id;
+                $x['jadw_jenis']          = $d->jadw_jenis;
+                $x['jadw_setujui_temuan'] = $d->jadw_setujui_temuan;
+                $x['jadw_file_jadwal']    = asset($d->jadw_file_jadwal);
+                $x['total_temuan']        = $totalTemuanLKS;
 
-            if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
-                $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
-            } else {
-                $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
+                if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
+                    $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
+                } else {
+                    $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
+                }
+                $result[] = $x;
             }
-            $result[] = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

@@ -69,27 +69,28 @@ class Tahap2JadwalController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $logs = [];
-            foreach ($d->sis_jadwal_logs as $log) {
-                $logs[] = [
-                    'tipe'    => $log->jlog_tipe,
-                    'judul'   => $log->jlog_judul,
-                    'pesan'   => $log->jlog_pesan,
-                    'tanggal' => $log->created_at->isoFormat('LLLL'),
-                ];
+            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+                $logs = [];
+                foreach ($d->sis_jadwal_logs as $log) {
+                    $logs[] = [
+                        'tipe'    => $log->jlog_tipe,
+                        'judul'   => $log->jlog_judul,
+                        'pesan'   => $log->jlog_pesan,
+                        'tanggal' => $log->created_at->isoFormat('LLLL'),
+                    ];
+                }
+
+                $x['jadw_id']              = $d->jadw_id;
+                $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
+                $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
+                $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
+                $x['jadw_team_status']     = $d->jadw_team_status;
+                $x['jadw_jenis']           = $d->jadw_jenis;
+                $x['jadw_file_jadwal']     = $d->jadw_file_jadwal;
+                $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
+                $x['logs']                 = $logs;
+                $result[]                  = $x;
             }
-
-            $x['jadw_id']              = $d->jadw_id;
-            $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
-            $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
-            $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
-            $x['jadw_team_status']     = $d->jadw_team_status;
-            $x['jadw_jenis']           = $d->jadw_jenis;
-            $x['jadw_file_jadwal']     = $d->jadw_file_jadwal;
-            $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
-            $x['logs']                 = $logs;
-            $result[] = $x;
-
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
