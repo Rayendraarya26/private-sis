@@ -86,7 +86,7 @@ class Tahap1JadwalController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+            // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
                 $team = [];
                 foreach ($d->sis_audit_tahap1_tims as $tim) {
                     $team[] = [
@@ -105,7 +105,7 @@ class Tahap1JadwalController extends Controller
                 $x['tanggal']                    = $d->aud_thp1_tanggal_mulai?->isoFormat("LL") . ' s/d ' . $d->aud_thp1_tanggal_selesai?->isoFormat("LL");
                 $x['tims']                       = $team;
                 $result[]                        = $x;
-            }
+            // }
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

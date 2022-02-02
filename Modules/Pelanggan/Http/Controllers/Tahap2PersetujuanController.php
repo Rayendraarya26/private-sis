@@ -309,7 +309,7 @@ class Tahap2PersetujuanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+            // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
                 $timAudit = [];
                 foreach ($d->sis_jadwal_tims as $tim) {
                     $timAudit[] = [
@@ -352,7 +352,7 @@ class Tahap2PersetujuanController extends Controller
                     $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
                 }
                 $result[] = $x;
-            }
+            // }
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

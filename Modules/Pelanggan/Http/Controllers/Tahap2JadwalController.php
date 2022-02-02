@@ -69,7 +69,7 @@ class Tahap2JadwalController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+            // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
                 $logs = [];
                 foreach ($d->sis_jadwal_logs as $log) {
                     $logs[] = [
@@ -90,7 +90,7 @@ class Tahap2JadwalController extends Controller
                 $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
                 $x['logs']                 = $logs;
                 $result[]                  = $x;
-            }
+            // }
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
