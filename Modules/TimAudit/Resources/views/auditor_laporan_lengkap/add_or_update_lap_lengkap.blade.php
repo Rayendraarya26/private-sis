@@ -80,7 +80,7 @@
                                             <td>Jumlah Karyawan</td>
                                             @php($dataPemohon = $data->sis_jadwal_audits()->groupBy('mohon_id')->first()->sis_permohonan)
                                             <td>
-                                                : {{$dataPemohon->mohon_cust_jumlah_operasional + $dataPemohon->mohon_cust_jumlah_bagian + $dataPemohon->mohon_cust_jumlah_manajemen + $dataPemohon->mohon_cust_jumlah_administrasi + $dataPemohon->mohon_cust_jumlah_part_time + $dataPemohon->mohon_cust_jumlah_non_permanen }}</td>
+                                                : {{($dataPemohon->mohon_cust_jumlah_operasional ?? 0)  + ($dataPemohon->mohon_cust_jumlah_bagian ?? 0) + ($dataPemohon->mohon_cust_jumlah_manajemen ?? 0) + ($dataPemohon->mohon_cust_jumlah_administrasi ?? 0) + ($dataPemohon->mohon_cust_jumlah_part_time ?? 0) + ($dataPemohon->mohon_cust_jumlah_non_permanen ?? 0) }}</td>
                                         </tr>
                                         <tr>
                                             <td>Ruang Lingkup <i>(Nace Code)</i></td>
