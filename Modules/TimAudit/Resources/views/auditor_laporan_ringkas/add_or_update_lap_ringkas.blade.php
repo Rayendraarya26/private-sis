@@ -65,8 +65,8 @@
                                     <td>3</td>
                                     <td>Tanggal Asesmen</td>
                                     <td>
-                                        : {{ $data->jadw_tanggal_mulai->isoFormat("LL") }}
-                                        s/d {{ $data->jadw_tanggal_selesai->isoFormat("LL") }}</td>
+                                        : {{ $data->jadw_tanggal_mulai }}
+                                        s/d {{ $data->jadw_tanggal_selesai }}</td>
                                 </tr>
 
                                 <tr>
