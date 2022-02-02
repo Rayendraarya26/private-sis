@@ -55,8 +55,8 @@
                                         <tr>
                                             <td>Tanggal Pelaksanaan</td>
                                             <td>
-                                                : {{ $data->jadw_tanggal_mulai->isoFormat("LL") }}
-                                                s/d {{ $data->jadw_tanggal_selesai->isoFormat("LL") }}</td>
+                                                : {{ $data->jadw_tanggal_mulai }}
+                                                s/d {{ $data->jadw_tanggal_selesai }}</td>
                                         </tr>
 
                                         <tr>
@@ -176,7 +176,7 @@
                                     </ol>
                                 </div>
                             </div>
-							
+
 							@if($data->sis_audit_lap_lengkap?->lap_lengkp_revisi_note !== '')
 							<div class="form-group row" style="color:red;">
                                 <label class="col-form-label col-sm-3">
@@ -342,7 +342,7 @@
                                         {!! $data->sis_audit_lap_lengkap?->lap_lengkp_kesimpulan ?? '-' !!}
                                     </div>
                                 </div>
-								
+
 								<div class="col-md-12">
                                 <div class="row">
                                     <div class="col-sm-2"></div>
@@ -402,7 +402,7 @@
                 }
             });
         }
-		
+
         function promptAgree(id) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-success mb-2',
