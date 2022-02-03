@@ -363,14 +363,13 @@ class SertifikasiPermohonanController extends Controller
             $totalSubmission = count($dataPengajuan);
             $dataSubmission  = [];
             for ($i = 0; $i < $totalSubmission; $i++) {
-                array_push($dataSubmission, [
+                $dataSubmission[] = [
                     'pengajuan'  => $dataPengajuan[$i],
                     'sertifikat' => $dataSertifikat[$i],
-                ]);
+                ];
             }
 
-            // dd($dataSubmission);
-
+            DB::beginTransaction();
             /* TODO:
              * 1. FIND: data sis_permohonan dengan id mohon_id
              * 2. UPDATE: data komoditas (jika sert_produk = ya)
@@ -430,15 +429,19 @@ class SertifikasiPermohonanController extends Controller
                     "updated_at"      => Carbon::now(),
                 ]);
 
+                $listMohonSertNama = [];
+                foreach ($dataPemohon->sis_permohonan_details as $det) {
+                    $listMohonSertNama[] = $det->master_sertifikasi->sert_nama;
+                }
                 $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
                 if ($groupMarketing) {
                     foreach ($groupMarketing as $marketing) {
                         // Send Push
                         $notifStruct            = new NotifStruct();
                         $notifStruct->title     = sprintf("Perbaikan permohonan no #%d", $dataPemohon->mohon_id);
-                        $notifStruct->message   = sprintf("%s telah memperbarui permohonan sertifikasi", $dataPemohon->mohon_cust_nama);
+                        $notifStruct->message   = sprintf("%s telah memperbarui permohonan sertifikasi %s", $dataPemohon->mohon_cust_nama, implode(", ", $listMohonSertNama));
                         $notifStruct->user_id   = $marketing?->ug_user_id;
-                        $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+                        $notifStruct->click_url = url(sprintf('/marketing/verifikasi-permohonan/detail/%d?action=verifikasi', $dataPemohon->mohon_id));
                         sendNotification($notifStruct);
 
                         // Send Email
@@ -447,7 +450,7 @@ class SertifikasiPermohonanController extends Controller
                         $structEmail->body    = view('pelanggan::sertifikasi_permohonan.mails.marketing_permohonan_fix')
                             ->with([
                                 'pemohonNama'       => $dataPemohon->mohon_cust_nama,
-                                'pemohonSertifNama' => $dataPemohon->master_sertifikasi->sert_nama,
+                                'pemohonSertifNama' => implode(", ", $listMohonSertNama),
                                 'link_verif'        => url('/marketing/verifikasi-permohonan'),
                             ])->render();
                         $structEmail->to      = $marketing?->user?->user_email;

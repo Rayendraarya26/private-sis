@@ -168,7 +168,7 @@
                                                 <span class="message">
                                                     <span class="user-name">{{$n->notif_title}}</span>
                                                     <br>
-                                                    {{$n->notif_content}}
+                                                    {!! $n->notif_content  !!}
                                                 </span>
                                                 <span class="meta-date">{{$n->notif_created_at->diffForHumans()}}</span>
                                             </span>
@@ -677,7 +677,7 @@
                 .then(function (swReg) {
                     // console.log('Service Worker is registered', swReg);
                     // console.log('ServiceWorker registration successful with scope: ', swReg.scope);
-                    FIREBASE_MESSAGING.useServiceWorker(swReg);
+                    // FIREBASE_MESSAGING.useServiceWorker(swReg);
                 })
                 .catch(function (error) {
                     console.error('Service Worker Error', error);
