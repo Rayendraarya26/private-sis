@@ -63,7 +63,10 @@ class Tahap1JadwalController extends Controller
                 'sis_audit_tahap1_revisis' => function ($query) {
                     $query->orderBy('created_at');
                 }
-            ]);
+            ])
+            ->join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
+            ->where('aud_thp1_status_temuan', '!=', 'setuju')
+            ->where('sis_permohonan.user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -86,26 +89,24 @@ class Tahap1JadwalController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
-                $team = [];
-                foreach ($d->sis_audit_tahap1_tims as $tim) {
-                    $team[] = [
-                        'kode'   => $tim->thp1_tim_kode,
-                        'nama'   => $tim->master_pegawai->peg_nama,
-                        'posisi' => $tim->thp1_tim_posisi,
-                    ];
-                }
+            $team = [];
+            foreach ($d->sis_audit_tahap1_tims as $tim) {
+                $team[] = [
+                    'kode'   => $tim->thp1_tim_kode,
+                    'nama'   => $tim->master_pegawai->peg_nama,
+                    'posisi' => $tim->thp1_tim_posisi,
+                ];
+            }
 
-                $x['aud_thp1_id']                = $d->aud_thp1_id;
-                $x['sert_tahap1_jenis']          = strtolower($d->sert_tahap1_jenis);
-                $x['aud_thp1_status_temuan']     = strtolower($d->aud_thp1_status_temuan);
-                $x['aud_thp1_file_notulen']      = $d->aud_thp1_file_notulen;
-                $x['aud_thp1_file_daftar_hadir'] = $d->aud_thp1_file_daftar_hadir;
-                $x['jadw_file_jadwal']           = $d->jadw_file_jadwal;
-                $x['tanggal']                    = $d->aud_thp1_tanggal_mulai?->isoFormat("LL") . ' s/d ' . $d->aud_thp1_tanggal_selesai?->isoFormat("LL");
-                $x['tims']                       = $team;
-                $result[]                        = $x;
-            // }
+            $x['aud_thp1_id']                = $d->aud_thp1_id;
+            $x['sert_tahap1_jenis']          = strtolower($d->sert_tahap1_jenis);
+            $x['aud_thp1_status_temuan']     = strtolower($d->aud_thp1_status_temuan);
+            $x['aud_thp1_file_notulen']      = $d->aud_thp1_file_notulen;
+            $x['aud_thp1_file_daftar_hadir'] = $d->aud_thp1_file_daftar_hadir;
+            $x['jadw_file_jadwal']           = $d->jadw_file_jadwal;
+            $x['tanggal']                    = $d->aud_thp1_tanggal_mulai?->isoFormat("LL") . ' s/d ' . $d->aud_thp1_tanggal_selesai?->isoFormat("LL");
+            $x['tims']                       = $team;
+            $result[]                        = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

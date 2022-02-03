@@ -111,8 +111,8 @@ class SertifikasiPermohonanController extends Controller
             foreach ($dataSubmission as $submission) {
                 $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumens.master_jenis_dok_perusahaan')->findOrFail($submission['sertifikat']->jenis_sertifikasi_id);
                 array_push($sertifikatNama, $dataMasterSertifiaksi->sert_nama);
-                $uploadedDocID         = [];
-                $requiredDocID         = [];
+                $uploadedDocID = [];
+                $requiredDocID = [];
 
                 foreach ($dataSisPelanggan->sis_pelanggan_dokumens as $dokumen) {
                     array_push($uploadedDocID, $dokumen->jenis_dok_perusahaan_id);
@@ -644,7 +644,8 @@ class SertifikasiPermohonanController extends Controller
                 "sis_permohonan_statuses" => function ($query) {
                     $query->where("status_tipe", "revisi");
                 }
-            ]);
+            ])
+            ->where('user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -669,19 +670,19 @@ class SertifikasiPermohonanController extends Controller
         foreach ($data->get() as $d) {
             $dtRevisi = [];
             foreach ($d->sis_permohonan_statuses as $rev) {
-                array_push($dtRevisi, [
+                $dtRevisi[] = [
                     'status_id'    => $rev->status_id,
                     'status_judul' => $rev->status_judul,
                     'status_pesan' => $rev->status_pesan,
                     'created_at'   => $rev->created_at?->isoFormat('LLLL'),
-                ]);
+                ];
             }
             $dtPermohonan = [];
             foreach ($d->sis_permohonan_details as $detail) {
-                array_push($dtPermohonan, [
+                $dtPermohonan[] = [
                     'mohon_det_jenis_status' => $detail->mohon_det_jenis_status == "lama" ? "Re-Sertifikasi" : "Pemohonan Baru",
                     'sert_nama'              => $detail->master_sertifikasi->sert_nama,
-                ]);
+                ];
             }
 
             $x['cust_sert_id']               = $d->cust_sert_id;
@@ -698,7 +699,7 @@ class SertifikasiPermohonanController extends Controller
             $x['update_at']                  = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['revisi']                     = $dtRevisi;
             $x['permohonan']                 = $dtPermohonan;
-            array_push($result, $x);
+            $result[]                        = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

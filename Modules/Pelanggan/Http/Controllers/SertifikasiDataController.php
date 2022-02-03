@@ -110,7 +110,9 @@ class SertifikasiDataController extends Controller
 
     private function ajax_datagrid(Request $request)
     {
-        $data = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi']);
+        $data = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi'])
+            ->join('sis_pelanggan', 'sis_pelanggan.cust_id', 'sis_pelanggan_sertifikasi.cust_id')
+            ->where('sis_pelanggan.user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {

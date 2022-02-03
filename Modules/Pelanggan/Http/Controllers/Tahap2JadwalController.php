@@ -46,7 +46,8 @@ class Tahap2JadwalController extends Controller
                 'sis_jadwal_logs' => function ($query) {
                     $query->orderBy('jlog_tipe')->orderBy('jlog_id', 'desc')->whereIn('jlog_tipe', ['revisi-team', 'revisi-tanggal']);
                 }
-            ]);
+            ])
+            ->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -61,6 +62,11 @@ class Tahap2JadwalController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
+
+        $data->where('sis_pelanggan.user_id', '=', auth()->id());
+        $data->where('jadw_team_status', '!=', 'accepted');
+        $data->where('jadw_setujui_temuan', '!=', 'setuju');
+
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;
         // Pagination
@@ -69,28 +75,28 @@ class Tahap2JadwalController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
-                $logs = [];
-                foreach ($d->sis_jadwal_logs as $log) {
-                    $logs[] = [
-                        'tipe'    => $log->jlog_tipe,
-                        'judul'   => $log->jlog_judul,
-                        'pesan'   => $log->jlog_pesan,
-                        'tanggal' => $log->created_at->isoFormat('LLLL'),
-                    ];
-                }
 
-                $x['jadw_id']              = $d->jadw_id;
-                $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
-                $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
-                $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
-                $x['jadw_team_status']     = $d->jadw_team_status;
-                $x['jadw_jenis']           = $d->jadw_jenis;
-                $x['jadw_file_jadwal']     = $d->jadw_file_jadwal;
-                $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
-                $x['logs']                 = $logs;
-                $result[]                  = $x;
-            // }
+            $logs = [];
+            foreach ($d->sis_jadwal_logs as $log) {
+                $logs[] = [
+                    'tipe'    => $log->jlog_tipe,
+                    'judul'   => $log->jlog_judul,
+                    'pesan'   => $log->jlog_pesan,
+                    'tanggal' => $log->created_at->isoFormat('LLLL'),
+                ];
+            }
+
+            $x['jadw_id']              = $d->jadw_id;
+            $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
+            $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
+            $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
+            $x['jadw_team_status']     = $d->jadw_team_status;
+            $x['jadw_jenis']           = $d->jadw_jenis;
+            $x['jadw_file_jadwal']     = $d->jadw_file_jadwal;
+            $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
+            $x['logs']                 = $logs;
+            $result[]                  = $x;
+
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

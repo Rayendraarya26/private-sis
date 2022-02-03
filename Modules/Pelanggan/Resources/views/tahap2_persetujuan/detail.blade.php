@@ -165,36 +165,6 @@
                             </div>
                             <div class="form-group row">
                                 <label class="col-form-label col-sm-2">
-                                    Daftar Periksa File Upload Tim
-                                </label>
-                                <div class="col-sm-10">
-                                    <table class="table table-bordered mb-0">
-                                        <tr>
-                                            <th>Nama</th>
-                                            <th>Posisi</th>
-                                            <th>File Daftar Periksa</th>
-                                        </tr>
-                                        @foreach($dataJadwal->sis_jadwal_tims as $tim)
-                                            @if($tim->sis_audit_daftar_periksas->count() > 0)
-                                                <tr>
-                                                    <td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
-                                                    <td>{{ucwords($tim->jadw_tim_posisi)}}</td>
-                                                    <td>
-                                                        @foreach($tim->sis_audit_daftar_periksas as $periksa)
-                                                            @if($periksa->dftr_periksa_file != '')
-                                                                <a href="{{ url($periksa->dftr_periksa_file) }}"
-                                                                   target="_blank">
-                                                                    <i class="fad fa-download"></i> Download</a>@endif
-                                                        @endforeach
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-form-label col-sm-2">
                                     Logbook Tim
                                 </label>
                                 <div class="col-sm-10">

@@ -262,8 +262,8 @@ class Tahap2PerbaikanController extends Controller
                     $query->orderBy(DB::raw("FIELD(jadw_tim_posisi, 'ketua', 'auditor', 'ppc', 'observer')"));
                 }
             ])
-            ->where('jadw_setujui_temuan', 'setuju')
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id);
+            ->join('sis_jadwal_audit', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id');
+
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -278,16 +278,30 @@ class Tahap2PerbaikanController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
+
+        $data->select(
+            'sis_jadwal.jadw_id',
+            'sis_jadwal.jadw_jenis',
+            'sis_jadwal.jadw_file_jadwal',
+            'sis_jadwal.jadw_tanggal_mulai',
+            'sis_jadwal.jadw_tanggal_selesai'
+        )->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
+
+        $data->where('jadw_setujui_temuan', 'setuju');
+        $data->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id);
+        $data->groupBy('sis_jadwal.jadw_id');
+        $data->havingRaw('total_proses > ?', [0]);
+
         // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        $total = $data->count();
         // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
         // Result
         $result = [];
         foreach ($data->get() as $d) {
             // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
-                $timAudit = [];
+            $timAudit = [];
                 foreach ($d->sis_jadwal_tims as $tim) {
                     $timAudit[] = [
                         "tim_nama"   => $tim->master_pegawai->peg_nama,
