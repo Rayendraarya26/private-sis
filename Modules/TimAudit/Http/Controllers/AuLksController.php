@@ -394,22 +394,28 @@ class AuLksController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-        // Total
-        $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_id) as total'))->first()->total;
-
 
         // Pagination
-        $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
+        $data->select(
+            "jadw_setujui_temuan",
+            "jadw_tanggal_mulai",
+            "jadw_tanggal_selesai",
+            "jadw_jenis",
+            "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_tim_kesanggupan) AS jadw_tim_kesanggupan");
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status_komite = 'on-going', 1, 0)) as total_submit_komite");
         $data->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
-        $data->skip(($request->page - 1) * $request->rows);
-        $data->take($request->rows);
         $data->havingRaw('total_submit_komite > ?', [0]);
         $data->havingRaw('total_proses > ?', [0]);
         $data->groupBy('sis_jadwal.jadw_id');
+
+        // Total
+        $total = $data->count();
+
+        $data->skip(($request->page - 1) * $request->rows);
+        $data->take($request->rows);
 
         $result = [];
         foreach ($data->get() as $d) {
@@ -462,7 +468,9 @@ class AuLksController extends Controller
                 if ($lks->lks_status == 'fixed') {
                     $pegawaiID = auth()->user()->master_pegawai->peg_id;
                     $dataTim   = $dataJadwal->sis_jadwal_tims()->where("peg_id", $pegawaiID)->firstOrFail();
-                    if ($lks->jadw_tim_id == $dataTim->jadw_tim_id) {
+                    if ($dataTim->jadw_tim_posisi == "ketua") { // Ketua bisa edit semua
+                        $allowEdit = true;
+                    } else if ($lks->jadw_tim_id == $dataTim->jadw_tim_id) {
                         $allowEdit = true;
                     }
                 }
@@ -471,14 +479,14 @@ class AuLksController extends Controller
                 $verifKe    = 1;
                 foreach ($lks->sis_audit_lks_revisis as $revisi) {
                     if ($revisi->lks_revisi_oleh == "auditor") {
-                        $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s</div>", $verifKe, $revisi->created_at->isoFormat("LL"));
+                        $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi Ke-%d <br> %s</div>", $verifKe, $revisi->created_at->isoFormat("LL"));
                         $hasilVerif .= sprintf("<br> %s <br><br>", $revisi->lks_revisi_catatan);
                         $verifKe++;
                     }
                 }
 
                 if ($lks->lks_sudah_ditutup == "ya") {
-                    $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
+                    $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi Ke-%d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
                     $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $verifKe);
                 }
 

@@ -28,7 +28,7 @@
         </h2>
         <div style="color: #636363; font-size: 14px;">
 			<div style="color: red; font-size: 12px;">
-			{{$message}}
+			{!! $message !!}
 			</div>
             <br>
             <div style="color: #636363; font-size: 14px;">

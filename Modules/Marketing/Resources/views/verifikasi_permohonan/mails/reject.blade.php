@@ -27,11 +27,11 @@
             Permohonan Sertifikasi
         </h2>
         <div style="color: #636363; font-size: 14px;">
-            {{ $pemohonNama }} mengajukan permohonan sertifikasi {{ $pemohonSertifNama }} 
-			<br>
-			<div style="color: red; font-size: 12px;">
-				Mohon maaf karena beberapa alasan kami terpaksa menolak permohonan anda.
-			</div>
+            {{ $pemohonNama }} mengajukan permohonan sertifikasi {!! $pemohonSertifNama !!}
+            <br>
+            <div style="color: red; font-size: 12px;">
+                Mohon maaf karena beberapa alasan kami terpaksa menolak permohonan anda.
+            </div>
             <br>
             <div style="color: #636363; font-size: 14px;">
                 <a href="{{$link_verif}}"

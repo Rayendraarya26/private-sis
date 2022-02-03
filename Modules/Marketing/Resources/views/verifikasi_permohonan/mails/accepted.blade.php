@@ -27,10 +27,10 @@
             Permohonan Sertifikasi
         </h2>
         <div style="color: #636363; font-size: 14px;">
-            {{ $pemohonNama }} mengajukan permohonan sertifikasi {{ $pemohonSertifNama }} 
+            {{ $pemohonNama }} mengajukan permohonan sertifikasi {!!  $pemohonSertifNama  !!}
 			<br>
 			<div style="color: blue; font-size: 12px;">
-				Mohon maaf karena beberapa alasan kami telah menerima permintaan anda.
+				Selamat kami telah menerima permohonan anda.
 			</div>
             <br>
             <div style="color: #636363; font-size: 14px;">
