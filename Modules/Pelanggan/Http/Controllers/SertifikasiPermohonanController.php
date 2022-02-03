@@ -553,13 +553,13 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon->mohon_tagihan_biaya_status = $request['status'];
             $dataPemohon->save();
 
-            // Send Notification to Marketing
-            $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 4)->get();
+            // Send Notification to Marketing dan keuangan
+            $groupMarketing = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 7])->get();
             if ($groupMarketing) {
                 foreach ($groupMarketing as $marketing) {
+                    $notifStruct            = new NotifStruct();
                     if ($request['status'] == "setuju") {
                         // Send Push
-                        $notifStruct            = new NotifStruct();
                         $notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $dataPemohon->mohon_id);
                         $notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
                         $notifStruct->user_id   = $marketing?->ug_user_id;
@@ -577,7 +577,6 @@ class SertifikasiPermohonanController extends Controller
                         ]);
                     } else {
                         // Send Push
-                        $notifStruct            = new NotifStruct();
                         $notifStruct->title     = sprintf("#%d Pemohon menolak harga sertifikasi", $dataPemohon->mohon_id);
                         $notifStruct->message   = sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
                         $notifStruct->user_id   = $marketing?->ug_user_id;

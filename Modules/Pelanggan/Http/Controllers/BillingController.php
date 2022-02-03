@@ -3,7 +3,11 @@
 namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisBilling;
+use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUserGroup;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -57,6 +61,11 @@ class BillingController extends Controller
             ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
             ->firstOrFail();
 
+        $totalBilling = 0;
+        foreach ($billing->sis_billing_items as $det) {
+            $totalBilling += $det->itms_bil_total;
+        }
+
         try {
             $oldPath = [];
             $newPath = [];
@@ -74,7 +83,7 @@ class BillingController extends Controller
             $kuitansiName = Str::slug("bukti-pembayaran" . $dataKuitansi->getClientOriginalName()) . '-' . time() . '.' . $dataKuitansi->getClientOriginalExtension();
             $kuitansiPath = sprintf("%s/%s", $filePath, $kuitansiName);
             $dataKuitansi->move($filePath, $kuitansiName);
-            array_push($newPath, $kuitansiPath);
+            $newPath[] = $kuitansiPath;
 
             $billing->bill_payment_status = 'menunggu konfirmasi';
             $billing->bill_payment_note   = $request['bill_payment_note'];
@@ -82,6 +91,32 @@ class BillingController extends Controller
             $billing->bill_payment_tipe   = 'transfer';
             $billing->bill_payment_file   = $kuitansiPath;
             $billing->save();
+
+            // Notif ke finance
+            $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [7])->get();
+            if ($groupUsers) {
+                foreach ($groupUsers as $user) {
+                    $notifStruct = new NotifStruct();
+                    // Send Push
+                    $notifStruct->title     = sprintf("Billing #%d Lunas", $billing->bill_nomor_billing);
+                    $notifStruct->message   = sprintf("%s telah membayar sebesar Rp %s", $billing->sis_pelanggan->cust_nama, moneyFormat($totalBilling));
+                    $notifStruct->user_id   = $user?->ug_user_id;
+                    $notifStruct->click_url = url(sprintf('/keuangan/billing/edit?tipe=pelunasan&bill_id=%d', $billing->bill_id));
+                    sendNotification($notifStruct);
+
+                    // Add Pengajuan Status
+                    foreach ($billing->sis_billing_items as $det) {
+                        SisPermohonanStatus::create([
+                            "status_mohon_id" => $det->mohon_id,
+                            "status_tipe"     => "informasi",
+                            "status_judul"    => "Pemohon melakukan pelunasan pembayaran",
+                            "status_pesan"    => sprintf("%s telah membayar biaya sertifikasi sebesar Rp %s", $billing->sis_pelanggan->cust_nama, moneyFormat($totalBilling)),
+                            "created_at"      => Carbon::now(),
+                            "updated_at"      => Carbon::now(),
+                        ]);
+                    }
+                }
+            }
 
             DB::commit();
             if (count($oldPath) > 0) {
