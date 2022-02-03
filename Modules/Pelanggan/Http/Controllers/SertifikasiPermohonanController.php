@@ -84,10 +84,10 @@ class SertifikasiPermohonanController extends Controller
         $totalSubmission = count($dataPengajuan);
         $dataSubmission  = [];
         for ($i = 0; $i < $totalSubmission; $i++) {
-            array_push($dataSubmission, [
+            $dataSubmission[] = [
                 'pengajuan'  => $dataPengajuan[$i],
                 'sertifikat' => $dataSertifikat[$i],
-            ]);
+            ];
         }
 
         // Set data uploaded file path (digunakan untuk delete file yang diupload ketika catch error)
@@ -110,15 +110,15 @@ class SertifikasiPermohonanController extends Controller
             $sertifikatNama = [];
             foreach ($dataSubmission as $submission) {
                 $dataMasterSertifiaksi = MasterSertifikasi::with('master_sertifikasi_dokumens.master_jenis_dok_perusahaan')->findOrFail($submission['sertifikat']->jenis_sertifikasi_id);
-                array_push($sertifikatNama, $dataMasterSertifiaksi->sert_nama);
-                $uploadedDocID = [];
-                $requiredDocID = [];
+                $sertifikatNama[]      = $dataMasterSertifiaksi->sert_nama;
+                $uploadedDocID         = [];
+                $requiredDocID         = [];
 
                 foreach ($dataSisPelanggan->sis_pelanggan_dokumens as $dokumen) {
-                    array_push($uploadedDocID, $dokumen->jenis_dok_perusahaan_id);
+                    $uploadedDocID[] = $dokumen->jenis_dok_perusahaan_id;
                 }
                 foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumens as $dms) {
-                    array_push($requiredDocID, $dms->jenis_dok_perusahaan_id);
+                    $requiredDocID[] = $dms->jenis_dok_perusahaan_id;
                     if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new Exception(sprintf("Dokumen %s belum di unggah", $dms->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
                 }
 
@@ -183,6 +183,7 @@ class SertifikasiPermohonanController extends Controller
                         $newSisPermohonanKomoditas->mohon_kmditi_merk                              = $komoditi->merk;
                         $newSisPermohonanKomoditas->mohon_kmditi_tipe                              = $komoditi->tipe;
                         $newSisPermohonanKomoditas->mohon_kmditi_ukuran                            = $komoditi->ukuran;
+                        $newSisPermohonanKomoditas->mohon_kmditi_keterangan                        = $komoditi->keterangan;
                         $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditi->produksi_tahunan;
                         $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditi->satuan_produksi;
                         $newSisPermohonanKomoditas->created_at                                     = Carbon::now();
@@ -199,7 +200,7 @@ class SertifikasiPermohonanController extends Controller
             $filePertanyaanName = Str::slug('pertanyaan-tambahan' . $filePertanyaan->getClientOriginalName()) . '-' . time() . '.' . $filePertanyaan->getClientOriginalExtension();
             $filePertanyaanPath = sprintf("%s/%s", $baseFileUpload, $filePertanyaanName);
             $filePertanyaan->move($baseFileUpload, $filePertanyaanName);
-            array_push($uploadedPath, $filePertanyaanPath);
+            $uploadedPath[]                              = $filePertanyaanPath;
             $newSisPermohonan->mohon_pertanyaan_filepath = $filePertanyaanPath;
             $newSisPermohonan->save();
 
@@ -243,7 +244,7 @@ class SertifikasiPermohonanController extends Controller
                             File::makeDirectory($dokumenFolder, 0777, true, true);
                         }
                         copy($pelangganFilePath, $dokumenPath);
-                        array_push($uploadedPath, $dokumenPath);
+                        $uploadedPath[] = $dokumenPath;
 
                         $newSisPermohonanDokumen                          = new SisPermohonanDokumen();
                         $newSisPermohonanDokumen->mohon_id                = $newSisPermohonan->mohon_id;
@@ -396,6 +397,7 @@ class SertifikasiPermohonanController extends Controller
                     $newKomoditi->mohon_kmditi_sni                               = $komoditas->sni;
                     $newKomoditi->mohon_kmditi_merk                              = $komoditas->merk;
                     $newKomoditi->mohon_kmditi_tipe                              = $komoditas->tipe;
+                    $newKomoditi->mohon_kmditi_keterangan                        = $komoditas->keterangan;
                     $newKomoditi->mohon_kmditi_ukuran                            = $komoditas->ukuran;
                     $newKomoditi->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditas->produksi_tahunan;
                     $newKomoditi->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditas->satuan_produksi;
@@ -409,7 +411,7 @@ class SertifikasiPermohonanController extends Controller
                 $filePertanyaanName = Str::slug('pertanyaan-tambahan' . $filePertanyaan->getClientOriginalName()) . '-' . time() . '.' . $filePertanyaan->getClientOriginalExtension();
                 $filePertanyaanPath = sprintf("%s/%s", $baseFileUpload, $filePertanyaanName);
                 $filePertanyaan->move($baseFileUpload, $filePertanyaanName);
-                array_push($uploadedPath, $filePertanyaanPath);
+                $uploadedPath[]                         = $filePertanyaanPath;
                 $dataPemohon->mohon_pertanyaan_filepath = $filePertanyaanPath;
                 $dataPemohon->save();
             }
@@ -557,7 +559,7 @@ class SertifikasiPermohonanController extends Controller
             $groupMarketing = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 7])->get();
             if ($groupMarketing) {
                 foreach ($groupMarketing as $marketing) {
-                    $notifStruct            = new NotifStruct();
+                    $notifStruct = new NotifStruct();
                     if ($request['status'] == "setuju") {
                         // Send Push
                         $notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $dataPemohon->mohon_id);
@@ -756,8 +758,8 @@ class SertifikasiPermohonanController extends Controller
             $x['cust_sert_produksi_tahunan']        = $d->cust_sert_produksi_tahunan;
             $x['cust_sert_produksi_tahunan_satuan'] = $d->cust_sert_produksi_tahunan_satuan;
             $x['komodt_id']                         = $d->komodt_id;
-            $x['komodt_nama']                       = $d->komodt_nama;
-            array_push($result, $x);
+            $x['komodt_nama'] = $d->komodt_nama;
+            $result[] = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -797,7 +799,7 @@ class SertifikasiPermohonanController extends Controller
             $x['sert_is_product']       = $d->sert_is_product;
             $x['created_at']            = $d->created_at?->format("Y-m-d H:i:s");
             $x['updated_at']            = $d->updated_at?->format("Y-m-d H:i:s");
-            array_push($result, $x);
+            $result[]                   = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -834,7 +836,7 @@ class SertifikasiPermohonanController extends Controller
             $x['komodt_id']   = $d->komodt_id;
             $x['komodt_nama'] = $d->komodt_nama;
             $x['komodt_sni']  = $d->komodt_sni;
-            array_push($result, $x);
+            $result[]         = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -868,7 +870,7 @@ class SertifikasiPermohonanController extends Controller
             $x['negara_id']   = $d->negara_id;
             $x['negara_kode'] = $d->negara_kode;
             $x['negara_nama'] = $d->negara_nama;
-            array_push($result, $x);
+            $result[]         = $x;
         }
         return response()->json(["total" => $total, "rows" => $result]);
     }
@@ -900,7 +902,7 @@ class SertifikasiPermohonanController extends Controller
         foreach ($data->get() as $d) {
             $x['prov_id']   = $d->prov_id;
             $x['prov_nama'] = $d->prov_nama;
-            array_push($result, $x);
+            $result[]       = $x;
         }
         return response()->json(["total" => $total, "rows" => $result]);
     }
@@ -935,7 +937,7 @@ class SertifikasiPermohonanController extends Controller
         foreach ($data->get() as $d) {
             $x['kab_nama'] = $d->kab_nama;
             $x['kab_id']   = $d->kab_id;
-            array_push($result, $x);
+            $result[]      = $x;
         }
         return response()->json(["total" => $total, "rows" => $result]);
     }
@@ -970,7 +972,7 @@ class SertifikasiPermohonanController extends Controller
         foreach ($data->get() as $d) {
             $x['kec_id']   = $d->kec_id;
             $x['kec_nama'] = $d->kec_nama;
-            array_push($result, $x);
+            $result[]      = $x;
         }
         return response()->json(["total" => $total, "rows" => $result]);
     }
@@ -1172,12 +1174,12 @@ class SertifikasiPermohonanController extends Controller
             }
             $fileName = Str::slug($dataMasterSertDok?->master_jenis_dok_perusahaan?->jenis_dok_perusahaan_text) . '-' . time() . '.' . $dataFile->getClientOriginalExtension();
             $dataFile->move($filePath, $fileName);
-            $dataDokumen = SisPelangganDokumen::updateOrCreate(
+            $dataDokumen    = SisPelangganDokumen::updateOrCreate(
                 ['cust_id' => auth()->user()->sis_pelanggan->cust_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
                 ['cust_dok_filepath' => $filePath . '/' . $fileName]
             );
-            $source      = public_path($dataDokumen->cust_dok_filepath);
-            array_push($uploadedPath, $source);
+            $source         = public_path($dataDokumen->cust_dok_filepath);
+            $uploadedPath[] = $source;
 
             // Update data pemohon
             # Copy from pelanggan
@@ -1186,8 +1188,8 @@ class SertifikasiPermohonanController extends Controller
             $dokumenFolder  = sprintf("%s/dokumen", $baseFileUpload);
             $destination    = sprintf("%s/%s", $dokumenFolder, $dokumenName);
             copy($source, $destination);
-            array_push($uploadedPath, $destination);
-            $dokumen = SisPermohonanDokumen::updateOrCreate(
+            $uploadedPath[] = $destination;
+            $dokumen        = SisPermohonanDokumen::updateOrCreate(
                 ['mohon_id' => $dataPemohon->mohon_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
                 ['mohon_dok_filepath' => $destination]
             );

@@ -78,6 +78,7 @@
                             'merk': `{{ $komoditi->mohon_kmditi_merk }}`,
                             'tipe': `{{ $komoditi->mohon_kmditi_tipe }}`,
                             'ukuran': `{{ $komoditi->mohon_kmditi_ukuran }}`,
+                            'keterangan': `{{ $komoditi->mohon_kmditi_keterangan }}`,
                             'produksi_tahunan': `{{ $komoditi->mohon_kmditi_kapasitas_produksi_tahunan }}`,
                             'satuan_produksi': `{{ $komoditi->mohon_kmditi_kapasitas_produksi_tahunan_satuan }}`,
                         };

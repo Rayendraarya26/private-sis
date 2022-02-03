@@ -121,6 +121,21 @@
                                                @keyup.enter="addOrUpdateKomoditas(idx)">
                                     </div>
                                 </div>
+                                <div class="col-md-12 komoditi-button">
+                                    <template v-if="data_sertifikat[idx].jenis_komoditas_form_type == 'add'">
+                                        <button class="btn btn-success" @click="addKomoditas(idx)">
+                                            <i class="fas fa-plus"></i> Tambah
+                                        </button>
+                                    </template>
+                                    <template v-else>
+                                        <button class="btn btn-primary" @click="updateKomoditi(idx)">
+                                            <i class="fas fa-save"></i> Simpan
+                                        </button>
+                                        <button class="btn btn-danger" @click="calcelUpdateKomoditi(idx)">
+                                            <i class="fas fa-close"></i> Batal
+                                        </button>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -151,20 +166,14 @@
                                                @keyup.enter="addOrUpdateKomoditas(idx)">
                                     </div>
                                 </div>
-                                <div class="col-md-12 komoditi-button">
-                                    <template v-if="data_sertifikat[idx].jenis_komoditas_form_type == 'add'">
-                                        <button class="btn btn-success" @click="addKomoditas(idx)">
-                                            <i class="fas fa-plus"></i> Tambah
-                                        </button>
-                                    </template>
-                                    <template v-else>
-                                        <button class="btn btn-primary" @click="updateKomoditi(idx)">
-                                            <i class="fas fa-save"></i> Simpan
-                                        </button>
-                                        <button class="btn btn-danger" @click="calcelUpdateKomoditi(idx)">
-                                            <i class="fas fa-close"></i> Batal
-                                        </button>
-                                    </template>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label :for="'step2_komoditi_keterangan' + idx">Keterangan</label>
+                                        <input :id="'step2_komoditi_keterangan' + idx"
+                                               :name="'step2_komoditi_keterangan' + idx"
+                                               class="form-control"
+                                               @keyup.enter="addOrUpdateKomoditas(idx)">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -184,11 +193,12 @@
                                 <th>Ukuran</th>
                                 <th>Produksi Tahunan</th>
                                 <th>Satuan Produksi</th>
+                                <th>Keterangan</th>
                                 <th v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">Aksi</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <template v-for="kom in data_sertifikat[idx].komoditas">
+                            <template v-for="(kom, loop) in data_sertifikat[idx].komoditas">
                                 <tr>
                                     <td>@{{ kom.komoditi_nama }}</td>
                                     <td>@{{ kom.sni }}</td>
@@ -197,14 +207,28 @@
                                     <td>@{{ kom.ukuran }}</td>
                                     <td>@{{ kom.produksi_tahunan }}</td>
                                     <td>@{{ kom.satuan_produksi }}</td>
-                                    <td v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">
-                                        <button class="btn btn-xs btn-warning" @click="editKomoditi(idx, kom.id)">
-                                            <i class="fad fa-pencil"></i> Edit
-                                        </button>
-                                        <button class="btn btn-xs btn-danger" @click="deleteKomoditi(idx, kom.id)"
-                                                :disabled="data_sertifikat[idx].jenis_komoditas_form_type == 'update'">
-                                            <i class="fad fa-trash"></i> Hapus
-                                        </button>
+                                    <td>
+                                        <template
+                                            v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">
+                                            @{{ kom.keterangan }}
+                                        </template>
+                                        <template v-else>
+                                            <input type="text" class="form-control" aria-label="keterangan komoditas"
+                                                   placeholder="Keterangan komoditas...(optional)"
+                                                   v-model="data_sertifikat[idx].komoditas[loop].keterangan">
+                                        </template>
+                                    </td>
+                                    <td>
+                                        <template
+                                            v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">
+                                            <button class="btn btn-xs btn-warning" @click="editKomoditi(idx, kom.id)">
+                                                <i class="fad fa-pencil"></i> Edit
+                                            </button>
+                                            <button class="btn btn-xs btn-danger" @click="deleteKomoditi(idx, kom.id)"
+                                                    :disabled="data_sertifikat[idx].jenis_komoditas_form_type == 'update'">
+                                                <i class="fad fa-trash"></i> Hapus
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                             </template>
@@ -372,6 +396,7 @@
                         $("#step2_komoditi_sni" + pengajuanIndex).val("");
                         $("#step2_komoditi_tipe" + pengajuanIndex).val("");
                         $("#step2_komoditi_ukuran" + pengajuanIndex).val("");
+                        $("#step2_komoditi_keterangan" + pengajuanIndex).val("");
                         $("#step2_produksi_tahunan" + pengajuanIndex).val("");
                         $("#step2_satuan_produksi" + pengajuanIndex).val("");
                         await this.setComboDataKomoditas(pengajuanIndex, null)
@@ -412,11 +437,11 @@
                                 "merk": $.trim($("#step2_komoditi_merk" + pengajuanIndex).val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe" + pengajuanIndex).val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran" + pengajuanIndex).val()),
+                                "keterangan": $.trim($("#step2_komoditi_keterangan" + pengajuanIndex).val()),
                                 "produksi_tahunan": $.trim($("#step2_produksi_tahunan" + pengajuanIndex).val()),
                                 "satuan_produksi": $.trim($("#step2_satuan_produksi" + pengajuanIndex).val()),
                             };
 
-                            // this.komoditas.push(newKomoditas)
                             let dataPermohonanIDB = await idb.pelanggan_permohonan.where({'name': 'jenis_permohonan_' + pengajuanIndex}).first();
                             dataPermohonanIDB.step2.komoditas.push(newKomoditas);
 
@@ -460,6 +485,7 @@
                         $("#step2_komoditi_sni" + pengajuanIndex).val(selectedKomoditas.sni);
                         $("#step2_komoditi_tipe" + pengajuanIndex).val(selectedKomoditas.tipe);
                         $("#step2_komoditi_ukuran" + pengajuanIndex).val(selectedKomoditas.ukuran);
+                        $("#step2_komoditi_keterangan" + pengajuanIndex).val(selectedKomoditas.keterangan);
                         $("#step2_produksi_tahunan" + pengajuanIndex).val(selectedKomoditas.produksi_tahunan);
                         $("#step2_satuan_produksi" + pengajuanIndex).val(selectedKomoditas.satuan_produksi);
                         this.setComboDataKomoditas(pengajuanIndex, selectedKomoditas.komoditi_nama);

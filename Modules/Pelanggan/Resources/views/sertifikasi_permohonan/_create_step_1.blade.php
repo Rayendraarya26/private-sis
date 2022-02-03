@@ -191,6 +191,7 @@
                                         'merk': sertifikatData.cust_sert_merk,
                                         'tipe': sertifikatData.cust_sert_tipe,
                                         'ukuran': sertifikatData.cust_sert_ukuran,
+                                        'keterangan': '',
                                         'produksi_tahunan': sertifikatData.cust_sert_produksi_tahunan,
                                         'satuan_produksi': sertifikatData.cust_sert_produksi_tahunan_satuan,
                                     };
@@ -260,6 +261,7 @@
                                     'merk': row.cust_sert_merk,
                                     'tipe': row.cust_sert_tipe,
                                     'ukuran': row.cust_sert_ukuran,
+                                    'keterangan': '',
                                     'produksi_tahunan': row.cust_sert_produksi_tahunan,
                                     'satuan_produksi': row.cust_sert_produksi_tahunan_satuan,
                                 };
