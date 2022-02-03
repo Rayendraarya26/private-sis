@@ -47,6 +47,9 @@ class CertYok3Struct
         $this->tglKadaluarsa    = $tglKadaluarsa;
     }
 
+    /**
+     * @throws \ImagickException
+     */
     public function generate()
     {
         $img = Image::make(public_path('images/sertifikasi-asset/cert_yok3.png'));
@@ -254,14 +257,18 @@ Tanggal perubahan: $this->tglPerubahan
 Berlaku hingga: $this->tglKadaluarsa";
 
         $qrName = sprintf('%s.png', Str::uuid());
-        QrCode::format('png')->size(300)->generate($qrCodeText, public_path($qrName));
+        $qrPath = public_path($qrName);
+        QrCode::format('png')->size(300)->generate($qrCodeText, $qrPath);
         $img->insert($qrName, "bottom-left", 150, 150);
-
-        $savePath   = sprintf("YOK3-%s.png", Str::uuid());
-        $publicPath = public_path($savePath);
-        $img->save($publicPath);
-
         @unlink(public_path($qrName));
-        return $publicPath;
+
+        // Generate sertifikat
+        $certImageName = sprintf("YOK3-%s.png", Str::uuid());
+        $certImagePath = public_path($certImageName);
+        $img->save($certImagePath);
+
+        // Save AS PDF
+        $listImagePath = [$certImagePath];
+        return certMergeImage(sprintf("YOK3-%s.pdf", $this->perusahaanNama), $listImagePath);
     }
 }

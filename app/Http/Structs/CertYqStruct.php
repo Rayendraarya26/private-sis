@@ -49,6 +49,9 @@ class CertYqStruct
         $this->tglKadaluarsa      = $tglKadaluarsa;
     }
 
+    /**
+     * @throws \ImagickException
+     */
     public function generate()
     {
         $img = Image::make(public_path('images/sertifikasi-asset/cert_yq.png'));
@@ -254,9 +257,12 @@ class CertYqStruct
             $font->valign("middle");
         });
 
-        $savePath   = sprintf("YOQA-%s.png", Str::uuid());
-        $publicPath = public_path($savePath);
-        $img->save($publicPath);
-        return $publicPath;
+        $certImageName = sprintf("YOQA-%s.png", Str::uuid());
+        $certImagePath = public_path($certImageName);
+        $img->save($certImagePath);
+
+        // Save AS PDF
+        $listImagePath = [$certImagePath];
+        return certMergeImage(sprintf("YOQA-%s.pdf", $this->perusahaanNama), $listImagePath);
     }
 }

@@ -54,6 +54,9 @@ class CertJpaStruct
         $this->tglKadaluarsa           = $tglKadaluarsa;
     }
 
+    /**
+     * @throws \ImagickException
+     */
     public function generate()
     {
         $img = Image::make(public_path('images/sertifikasi-asset/cert_jpa.png'));
@@ -228,9 +231,12 @@ class CertJpaStruct
             $font->valign("middle");
         });
 
-        $savePath   = sprintf("JPA-%s.png", Str::uuid());
-        $publicPath = public_path($savePath);
-        $img->save($publicPath);
-        return $publicPath;
+        $certImageName = sprintf("JPA-%s.png", Str::uuid());
+        $certImagePath = public_path($certImageName);
+        $img->save($certImagePath);
+
+        // Save AS PDF
+        $listImagePath = [$certImagePath];
+        return certMergeImage(sprintf("JPA-%s.pdf", $this->perusahaanNama), $listImagePath);
     }
 }

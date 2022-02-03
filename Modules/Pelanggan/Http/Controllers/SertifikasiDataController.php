@@ -31,6 +31,9 @@ class SertifikasiDataController extends Controller
         return view('pelanggan::sertifikasi_data.index')->with($parser);
     }
 
+    /**
+     * @throws \ImagickException
+     */
     public function preview(Request $request)
     {
         if ($request['type'] == 1) {

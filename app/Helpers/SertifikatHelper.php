@@ -61,3 +61,23 @@ if (!function_exists('certRenderMultiline')) {
         }
     }
 }
+
+if (!function_exists('certMergeImage')) {
+    /**
+     * @throws ImagickException
+     */
+    function certMergeImage(string $pdfName, array $imageList, bool $deleteAfterMerge = true): string
+    {
+        $imagic = new Imagick($imageList);
+        $imagic->setImageFormat('pdf');
+        $imagic->writeImages($pdfName, true);
+
+        if ($deleteAfterMerge) {
+            foreach ($imageList as $p) {
+                @unlink($p);
+            }
+        }
+
+        return public_path($pdfName);
+    }
+}
