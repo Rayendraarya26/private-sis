@@ -480,9 +480,9 @@
 									</div>
 								</div>
 
-                                <button type="submit" class="btn btn-outline-primary btn-block">
-                                    <i class="fas fa-paper-plane"></i> Submit
-                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-block" id="btnSubmit">
+                                        <i class="icon icon-feedback icon-fw icon-xl"></i> Simpan
+                                    </button>
                             </form>
                         </div>
                     </div>
@@ -526,6 +526,31 @@
 
         $(document).ready(function () {
             initEditor();
+			
+			$('#btnSubmit').click(function(e) {
+				$('#btnSubmit').attr('disabled',true)
+				
+				let $form = $(this).closest('#addForm');
+				swalWithBootstrapButtons({
+					title: `Simpan Data ?`,
+					text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
+					type: 'info',
+					showCancelButton: true,
+					confirmButtonText: 'Simpan',
+					cancelButtonText: 'Batal',
+					reverseButtons: true
+				}).then(async (result) => {
+					if (result.value) {
+						$form.submit();
+					}
+					else{
+						$('#btnSubmit').attr('disabled',false);
+					}
+					
+				});
+				
+				e.preventDefault();
+			});
         });
     </script>
 @endpush

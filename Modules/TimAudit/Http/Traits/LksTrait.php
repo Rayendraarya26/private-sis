@@ -9,10 +9,10 @@ trait LksTrait
     public function calculateTemuanLKS(SisJadwal $dataJadwal)
     {
         $dataLKS = [
-            'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'total' => 0],
-            'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-            'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'total' => ''],
-            'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'total' => null]
+            'jumlah'           => ['kritis' => 0, 'mayor' => 0, 'minor' => 0, 'observasi' => 0, 'total' => 0],
+            'no_lks'           => ['kritis' => '', 'mayor' => '', 'minor' => '', 'observasi' => '', 'total' => ''],
+            'klausul'          => ['kritis' => '', 'mayor' => '', 'minor' => '', 'observasi' => '', 'total' => ''],
+            'tgl_pelyelesaian' => ['kritis' => null, 'mayor' => null, 'minor' => null, 'observasi' => null, 'total' => null]
         ];
 
         foreach ($dataJadwal->sis_audit_lks as $lks) {
@@ -56,8 +56,7 @@ trait LksTrait
                     }
                     break;
                 case 'minor':
-                case 'observasi':
-                    // jumlah
+					// jumlah
                     $dataLKS['jumlah']['minor'] += 1;
                     $dataLKS['jumlah']['total'] += 1;
                     // klausul
@@ -71,6 +70,25 @@ trait LksTrait
                         } else {
                             if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['minor'])) {
                                 $dataLKS['tgl_pelyelesaian']['minor'] = $lks->lks_expired_date_perbaikan;
+                            }
+                        }
+                    }
+                    break;
+                case 'observasi':
+                    // jumlah
+                    $dataLKS['jumlah']['observasi'] += 1;
+                    $dataLKS['jumlah']['total'] += 1;
+                    // klausul
+                    $dataLKS['klausul']['observasi'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
+                    // no lks
+                    $dataLKS['no_lks']['observasi'] .= $lks->lks_id . '; ';
+                    // tgl penyelesaian
+                    if (!empty($lks->lks_expired_date_perbaikan)) {
+                        if ($dataLKS['tgl_pelyelesaian']['observasi'] == null) {
+                            $dataLKS['tgl_pelyelesaian']['observasi'] = $lks->lks_expired_date_perbaikan;
+                        } else {
+                            if ($lks->lks_expired_date_perbaikan->isAfter($dataLKS['tgl_pelyelesaian']['observasi'])) {
+                                $dataLKS['tgl_pelyelesaian']['observasi'] = $lks->lks_expired_date_perbaikan;
                             }
                         }
                     }

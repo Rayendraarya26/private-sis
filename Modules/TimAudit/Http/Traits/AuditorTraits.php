@@ -115,7 +115,7 @@ trait AuditorTraits
             if ($ja->jadw_audit_status_komite == 'on-going') $open = true;
         }
 
-        if (!$open) throw new Exception("Proses audit sudah diajukan ke Komite");
+        // if (!$open) throw new Exception("Proses audit sudah diajukan ke Komite");
 
         return $data;
     }

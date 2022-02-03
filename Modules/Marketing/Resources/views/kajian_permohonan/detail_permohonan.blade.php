@@ -97,15 +97,17 @@
 						<div class="table-responsive">
 						  <table class="table table-hover mb-0">
 							<thead>
+								<!--
 								<tr>
 								  <th class="text-uppercase" scope="col">File Kajian Permohonan(PASKAL)</th>
 								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-primary">Download File</a> @endif </th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-xs btn-primary">Download</a> @endif </th>
 								</tr>
+								-->
 								<tr>
-								  <th class="text-uppercase" scope="col">File Kajian Permohonan(LS/PJT)</th>
+								  <th class="text-uppercase" scope="col">File Kajian Permohonan</th>
 								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-primary">Download File</a> @endif </th>
+								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-xs btn-primary">Download</a> @endif </th>
 								</tr>
 							</thead>
 						  </table>
@@ -263,7 +265,7 @@
 										<tr>
 										  <td>{{$dpd->jenis_dok_perusahaan_text}}</td>
 										  <td>{{$dpd->mohon_dok_deskripsi}}</td>
-										  <td><a href="{{url($dpd->mohon_dok_filepath)}}" target="_blank" class="btn btn-primary">Download</a></td>
+										  <td><a href="{{url($dpd->mohon_dok_filepath)}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
 										</tr>
 										@endforeach
 									</tbody>

@@ -130,6 +130,13 @@
                                     <td>{{$dataLKS['klausul']['minor'] ?: '-'}}</td>
                                     <td>{{$dataLKS['tgl_pelyelesaian']['minor'] ?: '-'}}</td>
                                 </tr>
+								<tr>
+                                    <td>Observasi</td>
+                                    <td>{{$dataLKS['jumlah']['observasi']}}</td>
+                                    <td>{{$dataLKS['no_lks']['observasi'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['klausul']['observasi'] ?: '-'}}</td>
+                                    <td>{{$dataLKS['tgl_pelyelesaian']['observasi'] ?: '-'}}</td>
+                                </tr>
                                 <tr>
                                     <td>Total</td>
                                     <td>{{$dataLKS['jumlah']['total']}}</td>
@@ -152,9 +159,7 @@
                         </div>
                         <div class="dt-card__body">
                             <div class="col-md-12">
-                                <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
-                                      onsubmit="$('#btnSubmit').attr('disabled',true)"
-                                      enctype="multipart/form-data">
+                                <form id="addForm" action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post" enctype="multipart/form-data">
                                     @csrf
 
 								<div class="form-group row">
@@ -213,8 +218,8 @@
                                     </div>
                                 </div>
 
-                                    <button type="submit" class="btn btn-outline-primary btn-block" id="btnSubmit">
-                                        <i class="fas fa-paper-plane"></i> Submit
+                                    <button type="button" class="btn btn-outline-primary btn-block" id="btnSubmit">
+                                        <i class="icon icon-feedback icon-fw icon-xl"></i> Simpan
                                     </button>
                                 </form>
                             </div>
@@ -231,7 +236,13 @@
     </script>
 
     <script>
-        function initRingkasanEditor() {
+		const swalWithBootstrapButtons = swal.mixin({
+            confirmButtonClass: 'btn btn-primary mb-2',
+            cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+            buttonsStyling: false,
+        });
+		
+		function initRingkasanEditor() {
             tinyMCE.init({
                 autosave_ask_before_unload: false,
                 invalid_elements: "script",
@@ -256,7 +267,7 @@
                 ],
             });
         }
-
+		
         function initRekomendasiEditor() {
             tinyMCE.init({
                 autosave_ask_before_unload: false,
@@ -286,6 +297,31 @@
         $(document).ready(function () {
             initRingkasanEditor();
             initRekomendasiEditor();
+			
+			$('#btnSubmit').click(function(e) {
+				$('#btnSubmit').attr('disabled',true)
+				
+				let $form = $(this).closest('#addForm');
+				swalWithBootstrapButtons({
+					title: `Simpan Data ?`,
+					text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
+					type: 'info',
+					showCancelButton: true,
+					confirmButtonText: 'Simpan',
+					cancelButtonText: 'Batal',
+					reverseButtons: true
+				}).then(async (result) => {
+					if (result.value) {
+						$form.submit();
+					}
+					else{
+						$('#btnSubmit').attr('disabled',false);
+					}
+					
+				});
+				
+				e.preventDefault();
+			});
         });
     </script>
 @endpush

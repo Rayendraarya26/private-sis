@@ -281,15 +281,17 @@ class UploadKajianPermohonanController extends Controller
                 @unlink($request["mohon_kajian_permohonan_file_lama"]);
 
             $file     = $request->file('mohon_kajian_permohonan_file');
-            $namaFile = Str::slug($request->mohon_id) . '_kajian_permohonan_file_pjt_' . time() . '.' . $file->getClientOriginalExtension();
+            $namaFile = Str::slug($request->mohon_id) . '_kajian_permohonan_file_' . time() . '.' . $file->getClientOriginalExtension();
             $path     = sprintf(config("app.path_file_pengajuan"), $request->mohon_id);
             $file->move(public_path($path), $namaFile);
-            $dataInsert['mohon_kajian_permohonan_pjt_file'] = $path . '/' . $namaFile;
+            $dataInsert['mohon_kajian_permohonan_file'] = $path . '/' . $namaFile;
 
             DB::transaction(function () use ($request, $dataInsert) {
                 SisPermohonan::findOrFail($request['mohon_id'])->update([
+                    'mohon_verif_kajian_permohonan_paskal' => 'proses',
+                    'mohon_kajian_permohonan_paskal_file'  => $dataInsert['mohon_kajian_permohonan_file'],
                     'mohon_verif_kajian_permohonan_pjt' => 'proses',
-                    'mohon_kajian_permohonan_pjt_file'  => $dataInsert['mohon_kajian_permohonan_pjt_file'],
+                    'mohon_kajian_permohonan_pjt_file'  => $dataInsert['mohon_kajian_permohonan_file'],
                 ]);
 
 				$data_detail = [];
@@ -368,13 +370,17 @@ class UploadKajianPermohonanController extends Controller
 
             $dataPemohon = SisPermohonan::find($request['mohon_id']);
 
-			$dataUser = SysUser::whereIn('ug_group_id', ['9'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+			$dataUser = SysUser::whereIn('ug_group_id', ['9', '10'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
 			foreach ($dataUser->get() as $us) {
 				$notifUsr            = new NotifStruct();
 				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
 				$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diupload silahkan verifikasi.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
 				$notifUsr->user_id   = $us->user_id;
-				$notifUsr->click_url = url('/paskal/verifikasi');
+				if($us->ug_group_id == '10')
+					$notifUsr->click_url = url('/paskal/verifikasi/detail/'.$request['mohon_id'].'?action=detail-permohonan');
+				else 
+					$notifUsr->click_url = url('/pjt/verifikasi/detail/'.$request['mohon_id'].'?action=detail-permohonan');
+				
 				sendNotification($notifUsr);
 			}
 
