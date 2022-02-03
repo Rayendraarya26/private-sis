@@ -140,6 +140,11 @@
 											<input value="22" aria-describedby="jenis_lapHelp" type="radio" id="jenis_lap4" name="jenis_lap" class="form-check-input" @click="setJenisLaporan('22')">
 											<label class="form-check-label" for="jenis_lap4">22. LAPORAN KEGIATAN PENGAMBILAN CONTOH</label>
 										  </div>
+										  
+										   <div class="form-check mb-2">
+											<input value="pengantar-uji" aria-describedby="jenis_lapHelp" type="radio" id="jenis_lap5" name="jenis_lap" class="form-check-input" @click="setJenisLaporan('pengantar-uji')">
+											<label class="form-check-label" for="jenis_lap5">SURAT PENGANTAR UJI</label>
+										  </div>
 										  <small id="jenis_lapHelp" class="form-text" style="color:red;">Note: Silahkan pilih jenis laporan, jika anda mengupload file dengan jenis laporan yang sama dengan data yang ada di eksisting maka akan menimpa atau merubah data yang ada.</small>
 									</div>
 								</div>
@@ -245,6 +250,8 @@
 											return `21. LABEL CONTOH UJI`
 										else if(row.audit_ppc_jenis_file == '22')
 											return `22. LAPORAN KEGIATAN PENGAMBILAN CONTOH`
+										else if(row.audit_ppc_jenis_file == 'pengantar-uji')
+											return `SURAT PENGANTAR UJI`
 									}
 								},
 								{field: 'created_at', title: 'created at', width: 100, sortable: true},
@@ -269,6 +276,7 @@
 											{value: '20', text: 'BERITA ACARA PENGAMBILAN CONTOH'},
 											{value: '21', text: 'LABEL CONTOH UJI'},
 											{value: '22', text: 'LAPORAN KEGIATAN PENGAMBILAN CONTOH'},
+											{value: 'pengantar-uji', text: 'SURAT PENGANTAR UJI'},
 											{value: '', text: 'Semua'}
 										],
 										onChange: function (value) {
