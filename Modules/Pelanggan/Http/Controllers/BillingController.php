@@ -94,6 +94,7 @@ class BillingController extends Controller
 
             // Notif ke finance
             $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [7])->get();
+            $timeNow    = Carbon::now();
             if ($groupUsers) {
                 foreach ($groupUsers as $user) {
                     $notifStruct = new NotifStruct();
@@ -106,13 +107,14 @@ class BillingController extends Controller
 
                     // Add Pengajuan Status
                     foreach ($billing->sis_billing_items as $det) {
-                        SisPermohonanStatus::create([
+                        SisPermohonanStatus::updateOrCreate([
                             "status_mohon_id" => $det->mohon_id,
                             "status_tipe"     => "informasi",
                             "status_judul"    => "Pemohon melakukan pelunasan pembayaran",
                             "status_pesan"    => sprintf("%s telah membayar biaya sertifikasi sebesar Rp %s", $billing->sis_pelanggan->cust_nama, moneyFormat($totalBilling)),
-                            "created_at"      => Carbon::now(),
-                            "updated_at"      => Carbon::now(),
+                            "created_at"      => $timeNow,
+                        ], [
+                            "updated_at" => $timeNow,
                         ]);
                     }
                 }

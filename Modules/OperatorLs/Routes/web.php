@@ -27,7 +27,7 @@ use Modules\OperatorLs\Http\Controllers\DataSertifikatController;
 
 Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [OperatorLsController::class, 'index']);
-	
+
 	Route::prefix("data-sertifikat")->group(function () {
         Route::get("/", [DataSertifikatController::class, 'index']);
         Route::get("/ajax", [DataSertifikatController::class, 'ajax']);
@@ -35,14 +35,14 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::get('/upload/{sertifikat_id}', [DataSertifikatController::class, 'uploadSertifikat']);
         Route::post('/save', [DataSertifikatController::class, 'saveSertifikat']);
     });
-	
+
 	Route::prefix("rekomendasi-persetujuan")->group(function () {
             Route::get('/', [RekomPersetujuanController::class, 'index']);
             Route::any('/ajax', [RekomPersetujuanController::class, 'ajax']);
             Route::get('/edit', [RekomPersetujuanController::class, 'edit']);
             Route::post('/update', [RekomPersetujuanController::class, 'update']);
         });
-		
+
 	Route::prefix("kajian-permohonan")->group(function () {
         Route::get('/', [UploadKajianPermohonanController::class, 'index']);
         Route::any('/ajax', [UploadKajianPermohonanController::class, 'ajax']);
@@ -92,7 +92,7 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::post('/update', [TimController::class, 'update']);
         Route::delete('/delete', [TimController::class, 'destroy']);
     });
-	
+
 	Route::prefix("penjadwalan-ulang-tim")->group(function () {
         Route::get('/', [PenjadwalanUlangTimController::class, 'index']);
         Route::get('/detail', [PenjadwalanUlangTimController::class, 'detail']);
@@ -120,7 +120,7 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::get('/edit', [SertifikatUjiController::class, 'edit']);
         Route::post('/update', [SertifikatUjiController::class, 'update']);
     });
-	
+
 	Route::prefix("jadwal-pencabutan")->group(function () {
         Route::get('/', [PenjadwalanPencabutanController::class, 'index']);
         Route::get('/detail', [PenjadwalanPencabutanController::class, 'detail']);
@@ -131,5 +131,5 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::post('/update', [PenjadwalanPencabutanController::class, 'update']);
         Route::delete('/delete', [PenjadwalanPencabutanController::class, 'destroy']);
     });
-	
+
 });

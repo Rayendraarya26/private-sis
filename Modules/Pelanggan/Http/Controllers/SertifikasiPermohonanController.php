@@ -557,6 +557,7 @@ class SertifikasiPermohonanController extends Controller
 
             // Send Notification to Marketing dan keuangan
             $groupMarketing = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 7])->get();
+            $timeNow        = Carbon::now();
             if ($groupMarketing) {
                 foreach ($groupMarketing as $marketing) {
                     $notifStruct = new NotifStruct();
@@ -569,13 +570,14 @@ class SertifikasiPermohonanController extends Controller
                         sendNotification($notifStruct);
 
                         // Add Pengajuan Status
-                        SisPermohonanStatus::create([
+                        SisPermohonanStatus::updateOrCreate([
                             "status_mohon_id" => $dataPemohon->mohon_id,
                             "status_tipe"     => "informasi",
                             "status_judul"    => "Pemohon menyetujui harga sertifikasi",
                             "status_pesan"    => sprintf("%s menyetujui sertifikasi dengan harga Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
-                            "created_at"      => Carbon::now(),
-                            "updated_at"      => Carbon::now(),
+                            "created_at"      => $timeNow,
+                        ], [
+                            "updated_at" => $timeNow,
                         ]);
                     } else {
                         // Send Push
@@ -586,13 +588,14 @@ class SertifikasiPermohonanController extends Controller
                         sendNotification($notifStruct);
 
                         // Add Pengajuan Status
-                        SisPermohonanStatus::create([
+                        SisPermohonanStatus::updateOrCreate([
                             "status_mohon_id" => $dataPemohon->mohon_id,
                             "status_tipe"     => "informasi",
                             "status_judul"    => "Pemohon menolak harga sertifikasi",
                             "status_pesan"    => sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
-                            "created_at"      => Carbon::now(),
-                            "updated_at"      => Carbon::now(),
+                            "created_at"      => $timeNow,
+                        ], [
+                            "updated_at" => $timeNow,
                         ]);
                     }
                 }

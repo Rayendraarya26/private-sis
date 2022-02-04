@@ -53,9 +53,9 @@ class TimController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		
+
         $data->leftJoin('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-		
+
 
         // Filter
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
@@ -390,18 +390,16 @@ class TimController extends Controller
             }
 
             DB::commit();
-			
-			$title = '';
-			$message = '';
-			if ($restJadwal->jadw_team_status == 'on-going') {
+
+            if ($restJadwal->jadw_team_status == 'on-going') {
 				$title = 'Penyusunan Tim Audit Tahap II';
 				$message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan , yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])) , date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])) );
-            } 
+            }
 			else {
                 $title = 'Revisi Penyusunan Tim Audit Tahap II';
 				$message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan dan direvisi, yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])) , date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])) );
             }
-			
+
 			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
 			// Send Push
 			$notifStruct            = new NotifStruct();
@@ -422,12 +420,12 @@ class TimController extends Controller
 				])->render();
 			$structEmail->to      = $data_pelanggan?->cust_email;
 			sendEmail($structEmail);
-			
+
 			/* $data_tim = SisJadwalTim::join('sis_jadwal', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id")
 				->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
 				->select('*')
 				->where('sis_jadwal_tim.jadw_id', $request['jadw_id']);
-			
+
 			foreach ($data_tim->get() as $d) {
 				$d->peg_id;
 				// Send Push
@@ -438,7 +436,7 @@ class TimController extends Controller
 				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
 				sendNotification($notifStruct);
 			} */
-			
+
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());

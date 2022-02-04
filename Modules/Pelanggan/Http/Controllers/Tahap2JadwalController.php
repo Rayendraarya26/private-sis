@@ -3,8 +3,10 @@
 namespace Modules\Pelanggan\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalLog;
+use App\Models\BbkkpSis\SysUserGroup;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -164,6 +166,20 @@ class Tahap2JadwalController extends Controller
                     'jlog_judul' => "Jadwal pelaksanaan audit disetujui oleh BBKKP dan Client",
                     'jlog_pesan' => sprintf('%s menyetujui pelaksanaan audit tanggal %s', auth()->user()?->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai->isoFormat('LL')),
                 ]);
+
+                // Notifikasi ke operator LS untuk membuat susunan TIM
+                $groupUsers = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
+                if ($groupUsers) {
+                    foreach ($groupUsers as $user) {
+                        // Send Push
+                        $notifStruct            = new NotifStruct();
+                        $notifStruct->title     = sprintf("#%d Tanggal disetujui", $data->jadw_id);
+                        $notifStruct->message   = sprintf("%s telah menyetujui pelaksanaan audit tanggal %s s/d %s. Segera lakukan penyusunan Tim Audit", $data->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai, $data->jadw_tanggal_selesai);
+                        $notifStruct->user_id   = $user?->ug_user_id;
+                        $notifStruct->click_url = url('/operatorls/tim');
+                        sendNotification($notifStruct);
+                    }
+                }
             }
 
             $data->jadw_tanggal_status = $request['jadw_tanggal_status'];
@@ -210,6 +226,7 @@ class Tahap2JadwalController extends Controller
         try {
             DB::beginTransaction();
             $data = SisJadwal::where('jadw_id', $jadwalID)
+                ->with('sis_jadwal_tims.master_pegawai')
                 ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
                 ->firstOrFail();
 
@@ -229,6 +246,32 @@ class Tahap2JadwalController extends Controller
                     'jlog_judul' => "Tim pelaksanaan audit disetujui oleh BBKKP dan Client",
                     'jlog_pesan' => sprintf('%s menyetujui susunan tim audit', auth()->user()?->sis_pelanggan->cust_nama),
                 ]);
+
+                // Notifikasi ke operator LS
+                $groupUsers = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
+                if ($groupUsers) {
+                    foreach ($groupUsers as $user) {
+                        // Send Push
+                        $notifStruct            = new NotifStruct();
+                        $notifStruct->title     = sprintf("#%d Tim Audit disetujui", $data->jadw_id);
+                        $notifStruct->message   = sprintf("%s telah menyetujui tim audit. Mohon infokan kepada auditor terkait untuk melakukan persetujuan auditor", $data->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai, $data->jadw_tanggal_selesai);
+                        $notifStruct->user_id   = $user?->ug_user_id;
+                        $notifStruct->click_url = url('/operatorls/tim');
+                        sendNotification($notifStruct);
+                    }
+                }
+
+                // Notifikasi ke Auditor terkait Untuk Persetujuan Auditor
+                foreach ($data->sis_jadwal_tims as $tim) {
+                    // Send Push
+                    $notifStruct            = new NotifStruct();
+                    $notifStruct->title     = sprintf("#%d anda ditunjuk sebagai '%s' auditor", $data->jadw_id, strtoupper($tim->jadw_tim_posisi));
+                    $notifStruct->message   = sprintf("Harap segera melakukan persetujuan auditor pada perusahaan % tanggal %s s/d %s", $data->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai, $data->jadw_tanggal_selesai);
+                    $notifStruct->user_id   = $tim->master_pegawai?->user_id;
+                    $notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+                    sendNotification($notifStruct);
+                }
+
             }
 
             $data->jadw_team_status = $request['jadw_team_status'];

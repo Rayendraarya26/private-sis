@@ -49,6 +49,7 @@ class Tahap1PersetujuanController extends Controller
 
             // Send Notification to Operator LS
             $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
+            $timeNow = Carbon::now();
             if ($groupMarketing) {
                 foreach ($groupMarketing as $marketing) {
                     $notifStruct = new NotifStruct();
@@ -61,14 +62,17 @@ class Tahap1PersetujuanController extends Controller
                         sendNotification($notifStruct);
 
                         // Add Pengajuan Status
-                        SisPermohonanStatus::create([
-                            "status_mohon_id" => $dataAudit1->mohon_id,
-                            "status_tipe"     => "informasi",
-                            "status_judul"    => "Temuan tahap 1",
-                            "status_pesan"    => sprintf("%s menyetujui temuan tahap 1", $dataAudit1->mohon_cust_nama),
-                            "created_at"      => Carbon::now(),
-                            "updated_at"      => Carbon::now(),
-                        ]);
+                        SisPermohonanStatus::updateOrCreate(
+                            [
+                                "status_mohon_id" => $dataAudit1->mohon_id,
+                                "status_tipe"     => "informasi",
+                                "status_judul"    => "Temuan tahap 1",
+                                "status_pesan"    => sprintf("%s menyetujui temuan tahap 1", $dataAudit1->mohon_cust_nama),
+                                "created_at"      => $timeNow
+                            ],
+                            [
+                                "updated_at" => $timeNow,
+                            ]);
                     } else {
                         // Send Push
                         $notifStruct->title     = sprintf("#%d Revisi temuan tahap 1", $dataAudit1->mohon_id);
@@ -78,14 +82,18 @@ class Tahap1PersetujuanController extends Controller
                         sendNotification($notifStruct);
 
                         // Add Pengajuan Status
-                        SisPermohonanStatus::create([
-                            "status_mohon_id" => $dataAudit1->mohon_id,
-                            "status_tipe"     => "informasi",
-                            "status_judul"    => "Temuan tahap 1",
-                            "status_pesan"    => sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataAudit1->mohon_cust_nama),
-                            "created_at"      => Carbon::now(),
-                            "updated_at"      => Carbon::now(),
-                        ]);
+                        SisPermohonanStatus::updateOrCreate(
+                            [
+                                "status_mohon_id" => $dataAudit1->mohon_id,
+                                "status_tipe"     => "informasi",
+                                "status_judul"    => "Temuan tahap 1",
+                                "status_pesan"    => sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataAudit1->mohon_cust_nama),
+                                "created_at"      => $timeNow,
+                            ],
+                            [
+                                "updated_at" => $timeNow,
+                            ]
+                        );
                     }
                 }
             }
