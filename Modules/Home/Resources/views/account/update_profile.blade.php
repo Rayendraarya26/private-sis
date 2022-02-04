@@ -76,7 +76,7 @@
                                     Nama Perusahaan<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-7">
-                                    <input type="text" name="company_name" class="form-control" id="company_name" placeholder="Masukkan nama perusahaan..." value="{{$user_data->sis_pelanggan->cust_nama}}" required>
+                                    <input type="text" name="company_name" class="form-control" id="company_name" placeholder="Masukkan nama perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nama}}" required>
                                     @error('company_name')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -88,7 +88,10 @@
                                     Nama Pemilik<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-7">
-                                    <input type="text" name="company_owner_name" class="form-control" id="company_owner_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan->cust_nama_pemilik}}" required>
+                                    <input type="text" name="company_owner_name" class="form-control" id="company_owner_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan?
+
+
+->cust_nama_pemilik}}" required>
                                     @error('company_owner_name')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -100,7 +103,7 @@
                                     Nama Pimpinan<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-7">
-                                    <input type="text" name="company_pimpinan_name" class="form-control" id="company_pimpinan_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan->cust_nama_pimpinan}}" required>
+                                    <input type="text" name="company_pimpinan_name" class="form-control" id="company_pimpinan_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nama_pimpinan}}" required>
                                     @error('company_pimpinan_name')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -112,7 +115,7 @@
                                     Nama Wakil Manajemen<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-7">
-                                    <input type="text" name="company_wakil_name" class="form-control" id="company_wakil_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan->cust_nama_wakil_manajemen}}" required>
+                                    <input type="text" name="company_wakil_name" class="form-control" id="company_wakil_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nama_wakil_manajemen}}" required>
                                     @error('company_wakil_name')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -124,7 +127,7 @@
                                     Alamat<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-7">
-                                    <textarea rows="4" name="company_address" class="form-control" id="company_address" placeholder="Masukkan alamat perusahaan..." required>{{$user_data->sis_pelanggan->cust_alamat}}</textarea>
+                                    <textarea rows="4" name="company_address" class="form-control" id="company_address" placeholder="Masukkan alamat perusahaan..." required>{{$user_data->sis_pelanggan?->cust_alamat}}</textarea>
                                     @error('company_address')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -139,7 +142,7 @@
                                     <select name="company_country" id="company_country" class="form-control" required>
                                         <option disabled selected>--Pilih Negara--</option>
                                         @foreach($master_negara as $negara)
-                                            <option value="{{$negara->negara_id}}" {{$negara->negara_id == $user_data->sis_pelanggan->negara_id ? 'selected' : ''}}>
+                                            <option value="{{$negara->negara_id}}" {{$negara->negara_id == $user_data->sis_pelanggan?->negara_id ? 'selected' : ''}}>
                                                 {{$negara->negara_nama}}
                                             </option>
                                         @endforeach
@@ -197,7 +200,7 @@
                                     No Akta Pendirian<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-6">
-                                    <input type="text" name="company_no_akta" class="form-control" id="company_no_akta" placeholder="Masukkan nomor akta pendirian perusahaan..." value="{{$user_data->sis_pelanggan->cust_nomor_akta_pendirian}}" required>
+                                    <input type="text" name="company_no_akta" class="form-control" id="company_no_akta" placeholder="Masukkan nomor akta pendirian perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nomor_akta_pendirian}}" required>
                                     @error('company_no_akta')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -212,7 +215,7 @@
                                     <select name="company_badan_hukum" id="company_badan_hukum" class="form-control" required>
                                         <option disabled selected>--Pilih Badan Hukum--</option>
                                         @foreach($master_badan_hukum as $row)
-                                            <option value="{{$row->badan_hukum_id}}" {{$row->badan_hukum_id == $user_data->sis_pelanggan->badan_hukum_id ? 'selected' : ''}}>
+                                            <option value="{{$row->badan_hukum_id}}" {{$row->badan_hukum_id == $user_data->sis_pelanggan?->badan_hukum_id ? 'selected' : ''}}>
                                                 {{$row->badan_hukum_nama}}
                                             </option>
                                         @endforeach
@@ -231,7 +234,7 @@
                                     <select name="company_jenis" id="company_jenis" class="form-control" required>
                                         <option disabled selected>--Pilih Jenis Perusahaan--</option>
                                         @foreach($master_jenis_perusahaan as $row)
-                                            <option value="{{$row->jenis_perusahaan_id}}" {{$row->jenis_perusahaan_id == $user_data->sis_pelanggan->jenis_perusahaan_id ? 'selected' : ''}}>
+                                            <option value="{{$row->jenis_perusahaan_id}}" {{$row->jenis_perusahaan_id == $user_data->sis_pelanggan?->jenis_perusahaan_id ? 'selected' : ''}}>
                                                 {{$row->jenis_perusahaan_nama}}
                                             </option>
                                         @endforeach
@@ -247,7 +250,7 @@
                                     Telp (Perusahaan)<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-6">
-                                    <input type="text" name="company_telp" class="form-control" id="company_telp" placeholder="Masukkan telp perusahaan..." value="{{$user_data->sis_pelanggan->cust_nomor_telp}}" required>
+                                    <input type="text" name="company_telp" class="form-control" id="company_telp" placeholder="Masukkan telp perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nomor_telp}}" required>
                                     @error('company_telp')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -259,7 +262,7 @@
                                     Fax<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-6">
-                                    <input type="text" name="company_fax" class="form-control" id="company_fax" placeholder="Masukkan fax perusahaan..." value="{{$user_data->sis_pelanggan->cust_nomor_fax}}" required>
+                                    <input type="text" name="company_fax" class="form-control" id="company_fax" placeholder="Masukkan fax perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nomor_fax}}" required>
                                     @error('company_fax')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -271,7 +274,7 @@
                                     Nomor HP (CP)<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-6">
-                                    <input type="text" name="company_cp" class="form-control" id="company_cp" placeholder="Masukkan nomor hp perusahaan..." value="{{$user_data->sis_pelanggan->cust_nomor_hp}}" required>
+                                    <input type="text" name="company_cp" class="form-control" id="company_cp" placeholder="Masukkan nomor hp perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nomor_hp}}" required>
                                     @error('company_cp')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -328,9 +331,9 @@
                 {
                     data.map((row) =>
                     {
-                        if (row.prov_id == '{{ $user_data->sis_pelanggan->prov_id }}')
+                        if (row.prov_id == '{{ $user_data->sis_pelanggan?->prov_id }}')
                         {
-                            cb_prov.combobox('setValue', '{{ $user_data->sis_pelanggan->prov_id }}');
+                            cb_prov.combobox('setValue', '{{ $user_data->sis_pelanggan?->prov_id }}');
                         }
                     });
                 }
@@ -360,9 +363,9 @@
                 {
                     data.map((row) =>
                     {
-                        if (row.kab_id == '{{ $user_data->sis_pelanggan->kab_id }}')
+                        if (row.kab_id == '{{ $user_data->sis_pelanggan?->kab_id }}')
                         {
-                            cb_kab.combobox('setValue', '{{ $user_data->sis_pelanggan->kab_id }}');
+                            cb_kab.combobox('setValue', '{{ $user_data->sis_pelanggan?->kab_id }}');
                         }
                     });
                 }
@@ -383,14 +386,14 @@
                 {
                     data.map((row) =>
                     {
-                        if (row.kec_id == '{{ $user_data->sis_pelanggan->kec_id }}')
+                        if (row.kec_id == '{{ $user_data->sis_pelanggan?->kec_id }}')
                         {
-                            cb_kec.combobox('setValue', '{{ $user_data->sis_pelanggan->kec_id }}');
+                            cb_kec.combobox('setValue', '{{ $user_data->sis_pelanggan?->kec_id }}');
                         }
                     });
                 }
             }
         });
-        
+
     </script>
 @endpush
