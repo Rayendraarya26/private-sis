@@ -260,7 +260,7 @@ Berlaku hingga: $this->tglKadaluarsa";
         $qrPath = public_path($qrName);
         QrCode::format('png')->size(300)->generate($qrCodeText, $qrPath);
         $img->insert($qrName, "bottom-left", 150, 150);
-        @unlink(public_path($qrName));
+        @unlink($qrPath);
 
         // Generate sertifikat
         $certImageName = sprintf("YOK3-%s.png", Str::uuid());

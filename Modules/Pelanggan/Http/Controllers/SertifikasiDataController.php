@@ -81,6 +81,8 @@ class SertifikasiDataController extends Controller
                 tglTerbit: '11 Januari 2022',
                 tglPerubahan: '-',
                 tglKadaluarsa: '10 Januari 2026',
+                kepalaNama: "Agus Kuntoro",
+                qrURL: "https://sis.bbkkp.kemenperin.go.id/track/certificate"
             );
         } else {
             $cert = new CertYok3Struct(

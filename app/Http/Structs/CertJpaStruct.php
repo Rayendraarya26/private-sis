@@ -4,6 +4,7 @@ namespace App\Http\Structs;
 
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CertJpaStruct
 {
@@ -34,9 +35,11 @@ class CertJpaStruct
         $produkMerk = '',
         $produkStandar = '',
         $produkSistemSertifikasi = '',
-        $tglTerbit = '',
-        $tglPerubahan = '',
-        $tglKadaluarsa = '',
+        $tglTerbit = '-',
+        $tglPerubahan = '-',
+        $tglKadaluarsa = '-',
+        $kepalaNama = '-',
+        $qrURL = 'https://sis.bbkkp.kemenperin.go.id/track/certificate',
     )
     {
         $this->noReg                   = $noReg;
@@ -52,6 +55,8 @@ class CertJpaStruct
         $this->tglTerbit               = $tglTerbit;
         $this->tglPerubahan            = $tglPerubahan;
         $this->tglKadaluarsa           = $tglKadaluarsa;
+        $this->kepalaNama              = $kepalaNama;
+        $this->qrURL                   = $qrURL;
     }
 
     /**
@@ -59,8 +64,8 @@ class CertJpaStruct
      */
     public function generate()
     {
+        // ============================== HALAMAN 1 ==============================
         $img = Image::make(public_path('images/sertifikasi-asset/cert_jpa.png'));
-
         // Nomer Registrasi
         $img->text("No. Ref : $this->noReg", 140, 930, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Regular.ttf');
@@ -231,12 +236,68 @@ class CertJpaStruct
             $font->valign("middle");
         });
 
-        $certImageName = sprintf("JPA-%s.png", Str::uuid());
-        $certImagePath = public_path($certImageName);
-        $img->save($certImagePath);
+        $certImage1Name = sprintf("JPA-%s.png", Str::uuid());
+        $certImage1Path = public_path($certImage1Name);
+        $img->save($certImage1Path);
 
-        // Save AS PDF
-        $listImagePath = [$certImagePath];
+
+        // ============================== HALAMAN 2 ==============================
+        $img2 = Image::make(public_path('images/sertifikasi-asset/cert_jpa2.png'));
+
+        // Lampiran Sertifikat Produk Penggunaan...
+        $img2->text("Lampiran Sertifikat Produk Penggunaan Tanda SNI, No. $this->lembaga", 100, 625, function ($font) {
+            $fontType = public_path('/assets/fonts/arialn/Arialn.ttf');
+            $font->file($fontType);
+            $font->size(50);
+            $font->color("#000000");
+            $font->align("left");
+            $font->valign("middle");
+        });
+
+        // Berlaku sampai
+        $img2->text("Berlaku hingga : $this->tglKadaluarsa", 2380, 625, function ($font) {
+            $fontType = public_path('/assets/fonts/arialn/Arialn.ttf');
+            $font->file($fontType);
+            $font->size(50);
+            $font->color("#000000");
+            $font->align("right");
+            $font->valign("middle");
+        });
+
+        // Kepala Balai
+        $img2->text(strtoupper($this->kepalaNama), 1700, 3090, function ($font) {
+            $fontType = public_path('/assets/fonts/gothica1/GothicA1-Bold.ttf');
+            $font->file($fontType);
+            $font->size(65);
+            $font->color("#000000");
+            $font->align("center");
+            $font->valign("middle");
+        });
+
+        // Tgl TTD
+        $img2->text("Tanggal : $this->tglTerbit", 1300, 3156, function ($font) {
+            $fontType = public_path('/assets/fonts/arialn/Arialn.ttf');
+            $font->file($fontType);
+            $font->size(45);
+            $font->color("#000000");
+            $font->align("left");
+            $font->valign("middle");
+        });
+
+        // Generate QRCODE
+        $qrCodeText = $this->qrURL;
+        $qrName     = sprintf('%s.png', Str::uuid());
+        $qrPath     = public_path($qrName);
+        QrCode::format('png')->size(220)->generate($qrCodeText, $qrPath);
+        $img2->insert($qrName, "bottom-right", 100, 100);
+        @unlink($qrPath);
+
+        $certImage2Name = sprintf("JPA-%s.png", Str::uuid());
+        $certImage2Path = public_path($certImage2Name);
+        $img2->save($certImage2Path);
+
+        // ============================== Save AS PDF ==============================
+        $listImagePath = [$certImage1Path, $certImage2Path];
         return certMergeImage(sprintf("JPA-%s.pdf", $this->perusahaanNama), $listImagePath);
     }
 }
