@@ -88,10 +88,7 @@
                                     Nama Pemilik<span class="text-danger ml-1">*</span>
                                 </label>
                                 <div class="col-md-7">
-                                    <input type="text" name="company_owner_name" class="form-control" id="company_owner_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan?
-
-
-->cust_nama_pemilik}}" required>
+                                    <input type="text" name="company_owner_name" class="form-control" id="company_owner_name" placeholder="Masukkan nama pemilik perusahaan..." value="{{$user_data->sis_pelanggan?->cust_nama_pemilik}}" required>
                                     @error('company_owner_name')
                                     <span class="text-danger">{{$message}}</span>
                                     @enderror
