@@ -7,6 +7,7 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $updated_at
  * 
  * @property SisJadwal $sis_jadwal
+ * @property Collection|SisAuditKomiteRekomendasiFiles[] $sis_audit_komite_rekomendasi_files
  *
  * @package App\Models\BbkkpSis
  */
@@ -43,5 +45,10 @@ class SisAuditKomiteRekomendasi extends Model
 	public function sis_jadwal()
 	{
 		return $this->belongsTo(SisJadwal::class, 'jadw_id');
+	}
+
+	public function sis_audit_komite_rekomendasi_files()
+	{
+		return $this->hasMany(SisAuditKomiteRekomendasiFiles::class, 'rekmd_komte_id');
 	}
 }
