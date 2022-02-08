@@ -555,18 +555,21 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon->mohon_tagihan_biaya_status = $request['status'];
             $dataPemohon->save();
 
-            // Send Notification to Marketing dan keuangan
-            $groupMarketing = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 7])->get();
-            $timeNow        = Carbon::now();
-            if ($groupMarketing) {
-                foreach ($groupMarketing as $marketing) {
+            // Send Notification to Marketing, keuangan, Operator LS
+            $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 6, 7])->get();
+            $timeNow    = Carbon::now();
+            if ($groupUsers) {
+                foreach ($groupUsers as $user) {
                     $notifStruct = new NotifStruct();
                     if ($request['status'] == "setuju") {
                         // Send Push
                         $notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $dataPemohon->mohon_id);
                         $notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
-                        $notifStruct->user_id   = $marketing?->ug_user_id;
+                        $notifStruct->user_id   = $user?->ug_user_id;
                         $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+
+                        if ($user->ug_group_id == 6) $notifStruct->message = $notifStruct->message . 'Operator LS harap segera membuat surat pernyataan persetujuan';
+
                         sendNotification($notifStruct);
 
                         // Add Pengajuan Status
@@ -583,7 +586,7 @@ class SertifikasiPermohonanController extends Controller
                         // Send Push
                         $notifStruct->title     = sprintf("#%d Pemohon menolak harga sertifikasi", $dataPemohon->mohon_id);
                         $notifStruct->message   = sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
-                        $notifStruct->user_id   = $marketing?->ug_user_id;
+                        $notifStruct->user_id   = $user?->ug_user_id;
                         $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
                         sendNotification($notifStruct);
 
