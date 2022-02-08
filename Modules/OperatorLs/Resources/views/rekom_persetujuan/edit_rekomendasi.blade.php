@@ -223,29 +223,81 @@
                                         <div class="card-body">
                                             <div class="form-group row">
                                                 <label class="col-form-label col-sm-2">
-                                                    Laporan Ringkas
+                                                    Upload dari Client
                                                 </label>
                                                 <div class="col-sm-10">
-                                                    <a href="{{ url("$dataJadwal->jadw_file_laporan_ringkas") }}"
-                                                       target="_blank"><i class="fad fa-download"></i> Download</a>
+                                                    <table class="table table-bordered mb-0">
+                                                        <tr>
+                                                            <th>Nama</th>
+                                                            <th>File Daftar Periksa</th>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>Scan LKS</td>
+                                                            <td>
+                                                                <a href="{{ url($dataJadwal->jadw_file_lks) }}"
+                                                                   target="_blank">
+                                                                    <i class="fad fa-download"></i>
+                                                                    Download
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Scan Laporan Ringkas</td>
+                                                            <td>
+                                                                <a href="{{ url($dataJadwal->jadw_file_laporan_ringkas) }}"
+                                                                   target="_blank">
+                                                                    <i class="fad fa-download"></i>
+                                                                    Download
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Scan Surat Tugas</td>
+                                                            <td>
+                                                                <a href="{{ url($dataJadwal->jadw_file_surat_tugas) }}"
+                                                                   target="_blank">
+                                                                    <i class="fad fa-download"></i>
+                                                                    Download
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Scan Notulen</td>
+                                                            <td>
+                                                                <a href="{{ url($dataJadwal->jadw_file_notulen) }}"
+                                                                   target="_blank">
+                                                                    <i class="fad fa-download"></i>
+                                                                    Download
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Scan Subkontrak</td>
+                                                            <td>
+                                                                <a href="{{ url($dataJadwal->jadw_file_subkon) }}"
+                                                                   target="_blank">
+                                                                    <i class="fad fa-download"></i>
+                                                                    Download
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+
+                                                    </table>
                                                 </div>
                                             </div>
-                                            <div class="form-group row">
-                                                <label class="col-form-label col-sm-2">
-                                                    LKS
-                                                </label>
-                                                <div class="col-sm-10">
-                                                    <a href="{{ url("$dataJadwal->jadw_file_lks") }}" target="_blank"><i
-                                                            class="fad fa-download"></i> Download</a>
-                                                </div>
-                                            </div>
+
                                             <div class="form-group row">
                                                 <label class="col-form-label col-sm-2">
                                                     Daftar Kehadiran Rapat Akhir
                                                 </label>
                                                 <div class="col-sm-10">
-                                                    <a href="{{ url("$dataJadwal->jadw_file_kehadiran") }}"
-                                                       target="_blank"><i class="fad fa-download"></i> Download</a>
+                                                    @if(!empty($dataJadwal->jadw_file_kehadiran))
+                                                        <a href="{{ url("$dataJadwal->jadw_file_kehadiran") }}"
+                                                           target="_blank"><i class="fad fa-download"></i> Download</a>
+                                                    @else
+                                                        -
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="form-group row">
