@@ -151,6 +151,7 @@ class RekomPersetujuanController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+        $data->leftJoin('sis_audit_lap_lengkap', "sis_audit_lap_lengkap.jadw_id", "=", "sis_jadwal.jadw_id");
         $data->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
 
         // Filter
@@ -187,6 +188,12 @@ class RekomPersetujuanController extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
+			if($d->lap_lengkp_id != ''){
+				$x['lap_lengkp_id']   = ($d->lap_lengkp_verifikasi_status == 'ya') ? true : false;
+			}
+			else{
+				 $x['lap_lengkp_id']   = false;
+			}
             $x['rekmd_komte_status']   = ($d->rekmd_komte_status != '') ? $d->rekmd_komte_status : 'on-going';
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
@@ -215,200 +222,208 @@ class RekomPersetujuanController extends Controller
 
     private function edit_lihat_rekomendasi(Request $request)
     {
-        $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
-        $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
-        $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-        $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-        $dataJadwal->leftJoin('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataJadwal->leftJoin('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
-        $dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataJadwal->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_sni) AS jadw_audit_sni");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_ea) AS jadw_audit_kode_ea");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_standart_acuan) AS jadw_audit_standart_acuan");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct komite_posisi) AS komite_posisi");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
-        $dataJadwal->selectRaw("MAX(lks_expired_date_perbaikan) AS lks_expired_date_perbaikan");
-        $dataJadwal->groupBy('sis_jadwal.jadw_id');
+		try {
+            $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+			$dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+			$dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+			$dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+			$dataJadwal->leftJoin('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataJadwal->leftJoin('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
+			$dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataJadwal->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_sni) AS jadw_audit_sni");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_ea) AS jadw_audit_kode_ea");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_standart_acuan) AS jadw_audit_standart_acuan");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct komite_posisi) AS komite_posisi");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
+			$dataJadwal->selectRaw("MAX(lks_expired_date_perbaikan) AS lks_expired_date_perbaikan");
+			$dataJadwal->groupBy('sis_jadwal.jadw_id');
 
-        $dataMohon = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
-        $dataMohon->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_jadwal_audit.mohon_id");
-        $dataMohon->groupBy('sis_permohonan.mohon_id');
+			$dataMohon = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
+			$dataMohon->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_jadwal_audit.mohon_id");
+			$dataMohon->groupBy('sis_permohonan.mohon_id');
 
-        $dataThp1 = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
-        $dataThp1->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_jadwal.bill_id');
-        $dataThp1->join('sis_audit_tahap1', 'sis_billing.bill_id', '=', 'sis_audit_tahap1.bill_id');
-        $dataThp1->leftJoin('sis_audit_tahap1_detail', 'sis_audit_tahap1_detail.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
-        $dataThp1->leftJoin('sis_audit_tahap1_tim', 'sis_audit_tahap1_tim.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
-        $dataThp1->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_audit_tahap1_tim.peg_id');
-        $dataThp1->select("sis_audit_tahap1.*");
-        $dataThp1->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(thp1_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
-        $dataThp1->selectRaw("SUM(case when aud_thp1_det_hasil_tinjauan = 'no' then 1 else 0 end) AS total_temuan");
-        $dataThp1->selectRaw("COUNT(*) AS total_data");
-        $dataThp1->selectRaw("COUNT(distinct aud_thp1_det_id) AS total_det");
-        $dataThp1->groupBy('sis_audit_tahap1.aud_thp1_id');
+			$dataThp1 = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+			$dataThp1->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_jadwal.bill_id');
+			$dataThp1->join('sis_audit_tahap1', 'sis_billing.bill_id', '=', 'sis_audit_tahap1.bill_id');
+			$dataThp1->leftJoin('sis_audit_tahap1_detail', 'sis_audit_tahap1_detail.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
+			$dataThp1->leftJoin('sis_audit_tahap1_tim', 'sis_audit_tahap1_tim.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
+			$dataThp1->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_audit_tahap1_tim.peg_id');
+			$dataThp1->select("sis_audit_tahap1.*");
+			$dataThp1->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(thp1_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
+			$dataThp1->selectRaw("SUM(case when aud_thp1_det_hasil_tinjauan = 'no' then 1 else 0 end) AS total_temuan");
+			$dataThp1->selectRaw("COUNT(*) AS total_data");
+			$dataThp1->selectRaw("COUNT(distinct aud_thp1_det_id) AS total_det");
+			$dataThp1->groupBy('sis_audit_tahap1.aud_thp1_id');
 
-        $dataAudit = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
-        $dataAudit->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-        $dataAudit->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $dataAudit->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-        $dataAudit->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataAudit->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
-        $dataAudit->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
-        $dataAudit->select("*");
-        $dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT(upper(jadw_audit_jenis), ' ', sert_nama)) AS jenis_jadwal");
-        $dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(jadw_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'kritis' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_kritis");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'mayor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_mayor");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'minor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_minor");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'observasi' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_observasi");
-        $dataAudit->selectRaw("COUNT(*) AS total_data");
-        $dataAudit->selectRaw("COUNT(distinct lks_id) AS lks_total");
-        $dataAudit->groupBy('sis_jadwal_audit.jadw_id');
+			$dataAudit = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+			$dataAudit->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$dataAudit->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+			$dataAudit->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+			$dataAudit->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataAudit->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
+			$dataAudit->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
+			$dataAudit->select("*");
+			$dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT(upper(jadw_audit_jenis), ' ', sert_nama)) AS jenis_jadwal");
+			$dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(jadw_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'kritis' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_kritis");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'mayor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_mayor");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'minor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_minor");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'observasi' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_observasi");
+			$dataAudit->selectRaw("COUNT(*) AS total_data");
+			$dataAudit->selectRaw("COUNT(distinct lks_id) AS lks_total");
+			$dataAudit->groupBy('sis_jadwal_audit.jadw_id');
 
-        $dataPPC = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('jadw_tim_posisi', 'ppc');
-        $dataPPC->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-        $dataPPC->join('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
-        $dataPPC->join('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
-        $dataPPC->selectRaw("GROUP_CONCAT(distinct peg_nama SEPARATOR ', ') AS peg_nama");
-        $dataPPC->groupBy('sis_jadwal.jadw_id');
+			$dataPPC = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('jadw_tim_posisi', 'ppc');
+			$dataPPC->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$dataPPC->join('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
+			$dataPPC->join('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
+			$dataPPC->selectRaw("GROUP_CONCAT(distinct peg_nama SEPARATOR ', ') AS peg_nama");
+			$dataPPC->groupBy('sis_jadwal.jadw_id');
 
-        $dataSertifikat = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('prod_sert_status_hasil', 'memenuhi');
-        $dataSertifikat->join('sis_audit_sertifikat_produk', "sis_jadwal.jadw_id", "=", "sis_audit_sertifikat_produk.jadw_id");
+			$dataSertifikat = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('prod_sert_status_hasil', 'memenuhi');
+			$dataSertifikat->join('sis_audit_sertifikat_produk', "sis_jadwal.jadw_id", "=", "sis_audit_sertifikat_produk.jadw_id");
 
-        $parser = [
-            'module'         => $this->module,
-            'url'            => $this->url,
-            'dataJadwal'     => $dataJadwal->get()[0],
-            'dataMohon'      => $dataMohon->get(),
-            'dataThp1'       => $dataThp1->get(),
-            'dataAudit'      => $dataAudit->get(),
-            'dataPPC'        => $dataPPC->get(),
-            'dataSertifikat' => $dataSertifikat->get(),
-        ];
-        // return view("$this->view.print.rekomendasi")->with($parser);
+			$parser = [
+				'module'         => $this->module,
+				'url'            => $this->url,
+				'dataJadwal'     => $dataJadwal->get()[0],
+				'dataMohon'      => $dataMohon->get(),
+				'dataThp1'       => $dataThp1->get(),
+				'dataAudit'      => $dataAudit->get(),
+				'dataPPC'        => $dataPPC->get(),
+				'dataSertifikat' => $dataSertifikat->get(),
+			];
+			// return view("$this->view.print.rekomendasi")->with($parser);
 
-        $pdf = PDF::loadView("$this->view.print.rekomendasi", $parser)
-            ->setPaper('a4', 'portrait');
-        return $pdf->stream();
+			$pdf = PDF::loadView("$this->view.print.rekomendasi", $parser)
+				->setPaper('a4', 'portrait');
+			return $pdf->stream();
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     private function edit_rekomendasi(Request $request)
     {
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Komite', url($this->url)),
-            new BreadcrumbsStruct('Rekomendasi Persetujuan', url($this->url)),
-            new BreadcrumbsStruct('Isi Rekomendasi'),
-        ];
+		try {
+            $breadcrumbs = [
+				new BreadcrumbsStruct('Tim Audit'),
+				new BreadcrumbsStruct('Komite', url($this->url)),
+				new BreadcrumbsStruct('Rekomendasi Persetujuan', url($this->url)),
+				new BreadcrumbsStruct('Isi Rekomendasi'),
+			];
 
-        $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
-        $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
-        $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-        $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-        $dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataJadwal->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
+			$dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+			$dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
+			$dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+			$dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+			$dataJadwal->leftJoin('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataJadwal->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
 
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_sni) AS jadw_audit_sni");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_ea) AS jadw_audit_kode_ea");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_standart_acuan) AS jadw_audit_standart_acuan");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
-        $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
-        $dataJadwal->selectRaw("MAX(lks_expired_date_perbaikan) AS lks_expired_date_perbaikan");
-        $dataJadwal->groupBy('sis_jadwal.jadw_id');
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tipe) AS jadw_audit_tipe");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_sni) AS jadw_audit_sni");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_nace) AS jadw_audit_kode_nace");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kode_ea) AS jadw_audit_kode_ea");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct sert_nama) AS sert_nama");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_standart_acuan) AS jadw_audit_standart_acuan");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_ruang_lingkup) AS jadw_audit_ruang_lingkup");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
+			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
+			$dataJadwal->selectRaw("MAX(lks_expired_date_perbaikan) AS lks_expired_date_perbaikan");
+			$dataJadwal->groupBy('sis_jadwal.jadw_id');
 
-        $dataMohon = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
-        $dataMohon->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_jadwal_audit.mohon_id");
-        $dataMohon->groupBy('sis_permohonan.mohon_id');
+			$dataMohon = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
+			$dataMohon->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_jadwal_audit.mohon_id");
+			$dataMohon->groupBy('sis_permohonan.mohon_id');
 
-        $dataThp1 = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
-        $dataThp1->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_jadwal.bill_id');
-        $dataThp1->join('sis_audit_tahap1', 'sis_billing.bill_id', '=', 'sis_audit_tahap1.bill_id');
-        $dataThp1->join('sis_audit_tahap1_detail', 'sis_audit_tahap1_detail.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
-        $dataThp1->join('sis_audit_tahap1_tim', 'sis_audit_tahap1_tim.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
-        $dataThp1->join('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_audit_tahap1_tim.peg_id');
-        $dataThp1->select("sis_audit_tahap1.*");
-        $dataThp1->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(thp1_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
-        $dataThp1->selectRaw("SUM(case when aud_thp1_det_hasil_tinjauan = 'no' then 1 else 0 end) AS total_temuan");
-        $dataThp1->selectRaw("COUNT(*) AS total_data");
-        $dataThp1->selectRaw("COUNT(distinct aud_thp1_det_id) AS total_det");
-        $dataThp1->groupBy('sis_audit_tahap1.aud_thp1_id');
+			$dataThp1 = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+			$dataThp1->join('sis_billing', 'sis_billing.bill_id', '=', 'sis_jadwal.bill_id');
+			$dataThp1->join('sis_audit_tahap1', 'sis_billing.bill_id', '=', 'sis_audit_tahap1.bill_id');
+			$dataThp1->join('sis_audit_tahap1_detail', 'sis_audit_tahap1_detail.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
+			$dataThp1->join('sis_audit_tahap1_tim', 'sis_audit_tahap1_tim.aud_thp1_id', '=', 'sis_audit_tahap1.aud_thp1_id');
+			$dataThp1->join('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_audit_tahap1_tim.peg_id');
+			$dataThp1->select("sis_audit_tahap1.*");
+			$dataThp1->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(thp1_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
+			$dataThp1->selectRaw("SUM(case when aud_thp1_det_hasil_tinjauan = 'no' then 1 else 0 end) AS total_temuan");
+			$dataThp1->selectRaw("COUNT(*) AS total_data");
+			$dataThp1->selectRaw("COUNT(distinct aud_thp1_det_id) AS total_det");
+			$dataThp1->groupBy('sis_audit_tahap1.aud_thp1_id');
 
-        $dataAudit = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
-        $dataAudit->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-        $dataAudit->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-        $dataAudit->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-        $dataAudit->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
-        $dataAudit->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
-        $dataAudit->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
-        $dataAudit->select("*");
-        $dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT(upper(jadw_audit_jenis), ' ', sert_nama)) AS jenis_jadwal");
-        $dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(jadw_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'kritis' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_kritis");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'mayor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_mayor");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'minor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_minor");
-        $dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'observasi' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_observasi");
-        $dataAudit->selectRaw("COUNT(*) AS total_data");
-        $dataAudit->selectRaw("COUNT(distinct lks_id) AS lks_total");
-        $dataAudit->groupBy('sis_jadwal_audit.jadw_id');
+			$dataAudit = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+			$dataAudit->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$dataAudit->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
+			$dataAudit->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
+			$dataAudit->leftJoin('sis_audit_lks', "sis_audit_lks.jadw_id", "=", "sis_jadwal.jadw_id");
+			$dataAudit->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
+			$dataAudit->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
+			$dataAudit->select("*");
+			$dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT(upper(jadw_audit_jenis), ' ', sert_nama)) AS jenis_jadwal");
+			$dataAudit->selectRaw("GROUP_CONCAT(distinct CONCAT('- ', upper(jadw_tim_posisi), ' : ', peg_nama) SEPARATOR '<br/>') AS tim_list");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'kritis' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_kritis");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'mayor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_mayor");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'minor' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_minor");
+			$dataAudit->selectRaw("SUM(case when (lks_kategori_ketidaksesuaian = 'observasi' and lks_sudah_ditutup = 'ya') then 1 else 0 end) AS total_observasi");
+			$dataAudit->selectRaw("COUNT(*) AS total_data");
+			$dataAudit->selectRaw("COUNT(distinct lks_id) AS lks_total");
+			$dataAudit->groupBy('sis_jadwal_audit.jadw_id');
 
-        $dataPPC = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('jadw_tim_posisi', 'ppc');
-        $dataPPC->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
-        $dataPPC->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
-        $dataPPC->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
-        $dataPPC->selectRaw("GROUP_CONCAT(DISTINCT peg_nama SEPARATOR ', ') AS peg_nama");
-        $dataPPC->groupBy('sis_jadwal.jadw_id');
+			$dataPPC = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('jadw_tim_posisi', 'ppc');
+			$dataPPC->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
+			$dataPPC->leftJoin('sis_jadwal_tim', 'sis_jadwal_tim.jadw_id', '=', 'sis_jadwal.jadw_id');
+			$dataPPC->leftJoin('master_pegawai', 'master_pegawai.peg_id', '=', 'sis_jadwal_tim.peg_id');
+			$dataPPC->selectRaw("GROUP_CONCAT(DISTINCT peg_nama SEPARATOR ', ') AS peg_nama");
+			$dataPPC->groupBy('sis_jadwal.jadw_id');
 
-        $dataSertifikat = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('prod_sert_status_hasil', 'memenuhi');
-        $dataSertifikat->join('sis_audit_sertifikat_produk', "sis_jadwal.jadw_id", "=", "sis_audit_sertifikat_produk.jadw_id");
+			$dataSertifikat = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->where('prod_sert_status_hasil', 'memenuhi');
+			$dataSertifikat->join('sis_audit_sertifikat_produk', "sis_jadwal.jadw_id", "=", "sis_audit_sertifikat_produk.jadw_id");
 
-        $dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
-            ->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
-            ->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
-            ->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
+			$dataAuditTim = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+				->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+				->leftJoin('sis_audit_daftar_periksa', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_daftar_periksa.jadw_tim_id")
+				->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->where('sis_jadwal_tim.jadw_tim_posisi', '!=', 'ppc')->select('*');
 
-        $dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
-            ->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
-            ->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
-            ->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
+			$dataTimLogbook = SisJadwal::join('sis_jadwal_tim', "sis_jadwal.jadw_id", "=", "sis_jadwal_tim.jadw_id")
+				->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+				->leftJoin('sis_audit_logbook', "sis_jadwal_tim.jadw_tim_id", "=", "sis_audit_logbook.jadw_tim_id")
+				->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
 
-        $dataFilePpc = SisJadwal::join('sis_audit_ppc', "sis_jadwal.jadw_id", "=", "sis_audit_ppc.jadw_id")
-            ->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
+			$dataFilePpc = SisJadwal::join('sis_audit_ppc', "sis_jadwal.jadw_id", "=", "sis_audit_ppc.jadw_id")
+				->where('sis_jadwal.jadw_id', '=', $request['jadw_id'])->select('*');
 
-        $parser = [
-            'module'         => $this->module,
-            'url'            => $this->url,
-            'breadcrumbs'    => $breadcrumbs,
-            'dataJadwal'     => $dataJadwal->get()[0],
-            'dataMohon'      => $dataMohon->get(),
-            'dataThp1'       => $dataThp1->get(),
-            'dataAudit'      => $dataAudit->get(),
-            'dataPPC'        => $dataPPC->get(),
-            'dataSertifikat' => $dataSertifikat->get(),
-            'dataAuditTim'   => $dataAuditTim->get(),
-            'dataTimLogbook' => $dataTimLogbook->get(),
-            'dataFilePpc'    => $dataFilePpc->get(),
-        ];
-        return view("$this->view.edit_rekomendasi")->with($parser);
+			$parser = [
+				'module'         => $this->module,
+				'url'            => $this->url,
+				'breadcrumbs'    => $breadcrumbs,
+				'dataJadwal'     => $dataJadwal->get()[0],
+				'dataMohon'      => $dataMohon->get(),
+				'dataThp1'       => $dataThp1->get(),
+				'dataAudit'      => $dataAudit->get(),
+				'dataPPC'        => $dataPPC->get(),
+				'dataSertifikat' => $dataSertifikat->get(),
+				'dataAuditTim'   => $dataAuditTim->get(),
+				'dataTimLogbook' => $dataTimLogbook->get(),
+				'dataFilePpc'    => $dataFilePpc->get(),
+			];
+			return view("$this->view.edit_rekomendasi")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function update(Request $request)
