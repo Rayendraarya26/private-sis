@@ -49,7 +49,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisPermohonanDetail $sis_permohonan_detail
  * @property Collection|SisAuditDetailTahap1[] $sis_audit_detail_tahap1s
  * @property Collection|SisAuditTahap1Detail[] $sis_audit_tahap1_details
- * @property Collection|SisAuditTahap1Revisi[] $sis_audit_tahap1_revisis
  * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  *
  * @package App\Models\BbkkpSis
@@ -124,11 +123,6 @@ class SisAuditTahap1 extends Model
 	public function sis_audit_tahap1_details()
 	{
 		return $this->hasMany(SisAuditTahap1Detail::class, 'aud_thp1_id');
-	}
-
-	public function sis_audit_tahap1_revisis()
-	{
-		return $this->hasMany(SisAuditTahap1Revisi::class, 'aud_thp1_id');
 	}
 
 	public function sis_audit_tahap1_tims()
