@@ -47,7 +47,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisBilling|null $sis_billing
  * @property SisPermohonan $sis_permohonan
  * @property SisPermohonanDetail $sis_permohonan_detail
- * @property Collection|SisAuditDetailTahap1[] $sis_audit_detail_tahap1s
  * @property Collection|SisAuditTahap1Detail[] $sis_audit_tahap1_details
  * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  *
@@ -113,11 +112,6 @@ class SisAuditTahap1 extends Model
 	public function sis_permohonan_detail()
 	{
 		return $this->belongsTo(SisPermohonanDetail::class, 'mohon_det_id');
-	}
-
-	public function sis_audit_detail_tahap1s()
-	{
-		return $this->hasMany(SisAuditDetailTahap1::class, 'aud_thp1_id');
 	}
 
 	public function sis_audit_tahap1_details()
