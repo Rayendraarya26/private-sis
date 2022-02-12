@@ -563,46 +563,54 @@ class SertifikasiPermohonanController extends Controller
                     $notifStruct = new NotifStruct();
                     if ($request['status'] == "setuju") {
                         // Send Push
-                        $notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $dataPemohon->mohon_id);
-                        $notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
-                        $notifStruct->user_id   = $user?->ug_user_id;
-                        $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
+						if( $user->ug_group_id == 6 ){
+							$notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $dataPemohon->mohon_id);
+							$notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
+							$notifStruct->user_id   = $user?->ug_user_id;
+							$notifStruct->click_url = url('/operatorls/kelengkapan-permohonan');
 
-                        if ($user->ug_group_id == 6) $notifStruct->message = $notifStruct->message . 'Operator LS harap segera membuat surat pernyataan persetujuan';
+							if ($user->ug_group_id == 6) $notifStruct->message = $notifStruct->message . ' Operator LS harap segera membuat surat pernyataan persetujuan.';
 
-                        sendNotification($notifStruct);
-
-                        // Add Pengajuan Status
-                        SisPermohonanStatus::updateOrCreate([
-                            "status_mohon_id" => $dataPemohon->mohon_id,
-                            "status_tipe"     => "informasi",
-                            "status_judul"    => "Pemohon menyetujui harga sertifikasi",
-                            "status_pesan"    => sprintf("%s menyetujui sertifikasi dengan harga Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
-                            "created_at"      => $timeNow,
-                        ], [
-                            "updated_at" => $timeNow,
-                        ]);
+							sendNotification($notifStruct);
+						}
+                        
                     } else {
-                        // Send Push
-                        $notifStruct->title     = sprintf("#%d Pemohon menolak harga sertifikasi", $dataPemohon->mohon_id);
-                        $notifStruct->message   = sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
-                        $notifStruct->user_id   = $user?->ug_user_id;
-                        $notifStruct->click_url = url('/marketing/verifikasi-permohonan');
-                        sendNotification($notifStruct);
-
-                        // Add Pengajuan Status
-                        SisPermohonanStatus::updateOrCreate([
-                            "status_mohon_id" => $dataPemohon->mohon_id,
-                            "status_tipe"     => "informasi",
-                            "status_judul"    => "Pemohon menolak harga sertifikasi",
-                            "status_pesan"    => sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
-                            "created_at"      => $timeNow,
-                        ], [
-                            "updated_at" => $timeNow,
-                        ]);
+						if( in_array($user->ug_group_id, [4,6]) ){
+							// Send Push
+							$notifStruct->title     = sprintf("#%d Pemohon menolak harga sertifikasi", $dataPemohon->mohon_id);
+							$notifStruct->message   = sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan));
+							$notifStruct->user_id   = $user?->ug_user_id;
+							$notifStruct->click_url = url('/marketing/tagihan-biaya');
+							sendNotification($notifStruct);
+						}
                     }
                 }
             }
+			
+			if ($request['status'] == "setuju") {
+				// Add Pengajuan Status
+				SisPermohonanStatus::updateOrCreate([
+					"status_mohon_id" => $dataPemohon->mohon_id,
+					"status_tipe"     => "informasi",
+					"status_judul"    => "Pemohon menyetujui harga sertifikasi",
+					"status_pesan"    => sprintf("%s menyetujui sertifikasi dengan harga Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
+					"created_at"      => $timeNow,
+				], [
+					"updated_at" => $timeNow,
+				]);
+			}
+			else{
+				// Add Pengajuan Status
+				SisPermohonanStatus::updateOrCreate([
+					"status_mohon_id" => $dataPemohon->mohon_id,
+					"status_tipe"     => "informasi",
+					"status_judul"    => "Pemohon menolak harga sertifikasi",
+					"status_pesan"    => sprintf("%s memberikan penolakan harga sertifikasi Rp %s", $dataPemohon->mohon_cust_nama, moneyFormat($dataPemohon->mohon_harga_permohonan)),
+					"created_at"      => $timeNow,
+				], [
+					"updated_at" => $timeNow,
+				]);
+			}
 
             DB::commit();
             return responseJSON(200, null, "Approval berhasil " . ucwords($request['status']));

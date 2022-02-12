@@ -88,8 +88,12 @@ class BillingController extends Controller
                 $x['can_delete'] = 'false';
             } else if($d->bill_payment_status == 'menunggu konfirmasi'){
                 $x['can_delete'] = 'false';
+            } else if($d->bill_payment_status == 'menunggu pembayaran'){
+                $x['can_delete'] = 'false';
             }
-
+			else if($d->bill_payment_status == 'lunas'){
+                $x['can_delete'] = 'false';
+            }
             $x['jdwl_bill_id']           = ($d->jdwl_bill_id != '') ? 'terjadwalkan' : 'belum';
             $x['bill_status_pembayaran'] = ($d->bill_payment_file != '') ? 'sudah' : 'belum';
             $x['bill_payment_status']    = $d->bill_payment_status;
@@ -631,7 +635,7 @@ class BillingController extends Controller
         $request->validate([
             "bil_id" => 'required',
         ]);
-        SisBilling::findOrFail($request['bil_id'])->update(['bill_payment_status' => 'proses']);
+        SisBilling::findOrFail($request['bil_id'])->update(['bill_payment_status' => 'menunggu konfirmasi']);
         return responseJSON(200, [], "Data berhasil di-set menjadi belum lunas atau proses.");
     }
 

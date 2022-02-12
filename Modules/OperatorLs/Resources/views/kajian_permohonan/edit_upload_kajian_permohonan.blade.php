@@ -80,6 +80,7 @@
 														- Type : {{$dpk->mohon_kmditi_tipe}}<br/>
 														- Ukuran : {{$dpk->mohon_kmditi_ukuran}}<br/>
 														- Kapasitas Produksi/tahun : {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan}} {{$dpk->mohon_kmditi_kapasitas_produksi_tahunan_satuan}}<br/>
+														- Keterangan : {{$dpk->mohon_kmditi_keterangan}}<br/>
 													  </td>
 													  <td>@if($dpk->sert_is_product == 'tidak' && $dpk->mohon_det_jenis_status = 'baru') {{$dpk->sert_sni}} @else {{$dpk->mohon_kmditi_sni}} @endif</td>
 													  <td><input id="mohon_kmditi_ruang_lingkup_{{$dpk->mohon_kmditi_id}}" name="mohon_kmditi_ruang_lingkup[{{$dpk->mohon_kmditi_id}}]"></td>
