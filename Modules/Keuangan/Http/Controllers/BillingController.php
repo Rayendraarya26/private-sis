@@ -186,7 +186,9 @@ class BillingController extends Controller
             $data->whereNotIn('sis_permohonan_detail.mohon_id', function ($query) use ($request) {
                 $query->selectRaw("mohon_id FROM sis_billing_items
 										JOIN sis_billing ON sis_billing.bill_id = sis_billing_items.bill_id
-										WHERE cust_id = '". $request->cust_id ."'");
+										WHERE sis_billing.cust_id = '". $request->cust_id ."'
+										AND sis_billing_items.mohon_id IS NOT NULL
+										");
             });
         } else{
             $data->where('sis_permohonan.mohon_id', $request->mohon_id);
