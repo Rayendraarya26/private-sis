@@ -15,7 +15,9 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $thp1_revisi_id
  * @property int $aud_thp1_det_id
- * @property string|null $thp1_revisi_text
+ * @property string|null $thp1_revisi_catatan
+ * @property string|null $thp1_revisi_status
+ * @property string|null $thp1_revisi_perbaikan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -35,7 +37,9 @@ class SisAuditTahap1Revisi extends Model
 
 	protected $fillable = [
 		'aud_thp1_det_id',
-		'thp1_revisi_text'
+		'thp1_revisi_catatan',
+		'thp1_revisi_status',
+		'thp1_revisi_perbaikan'
 	];
 
 	public function sis_audit_tahap1_detail()
