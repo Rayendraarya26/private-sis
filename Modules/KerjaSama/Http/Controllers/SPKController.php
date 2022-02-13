@@ -54,8 +54,6 @@ class SPKController extends Controller
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
         $data->whereIn('mohon_tagihan_biaya_status', ['setuju']);
-        $data->where('jadw_audit_status_komite', '=','on-going');
-        $data->where('jadw_is_tutup', '=', 'tidak');
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
