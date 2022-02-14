@@ -80,7 +80,7 @@
                     {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action',
-                        title: "Aksi",
+                        title: "",
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {

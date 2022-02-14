@@ -153,6 +153,7 @@
                             break;
                         case 1:
                             vueStepTwo.validate();
+                            vueStepTree.start();
                             break;
                     }
 
