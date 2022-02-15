@@ -4,12 +4,16 @@
     </div>
 	<div class="col-md-12">
 			<div class="form-group form-row">
-				<label class="col-xl-3 col-form-label text-sm-left" for="mohon_id" >File Invoice</label>
+				<label class="col-xl-3 col-form-label text-sm-left" for="" >Total Billing (Rp.)</label>
 				<div class="col-xl-8">
-					<input type="file" class="form-control" aria-label="File Invoice"
-				   @change="validateUploadFileInvoice" accept="application/pdf"
-				   name="bill_invoice_file" id="bill_invoice_file">
-			<small><span>Upload file harus berjenis PDF</span></small>
+					<input type="number" class="form-control" id="bill_total">
+				</div>
+			</div>
+			<div class="form-group form-row">
+				<label class="col-xl-3 col-form-label text-sm-left" for="" >File Invoice</label>
+				<div class="col-xl-8">
+					<input type="file" class="form-control" aria-label="File Invoice" @change="validateUploadFileInvoice" accept="application/pdf" name="bill_invoice_file" id="bill_invoice_file">
+					<small><span>Upload file harus berjenis PDF</span></small>
 				</div>
 			</div>
 			<div class="form-group form-row">
@@ -48,6 +52,16 @@
                     loading_submit: false,
                 },
                 methods: {
+					async start() {
+                        setTimeout(async () => {
+								let bill_items = await window.idb.bill_data_itms.toArray();
+								let total_biaya = bill_items.reduce(function(sum, current) {
+								  return sum + parseInt(current.bil_total);
+								}, 0);
+								$('#bill_total').val(total_biaya);
+								$(".tab-content").height("100%");
+							}, 500);					
+                    },
                     validateUploadFileInvoice(event) {
                         let uploaded = event.target.files[0];
                         if (uploaded.type !== "application/pdf") {
@@ -87,10 +101,12 @@
 										formData.append("bill_nomor_billing", currentaData.value.bill_nomor_billing)
 										formData.append("bill_billing_date", currentaData.value.bill_billing_date)
 										formData.append("bill_due_date", currentaData.value.bill_due_date)
+										
 									}
 									// Step 2
-									//const dataItems = window.vueStepTwo.bill_items;
-									const dataItems = [{
+									const dataItems = window.vueStepTwo.bill_items;
+									
+									/* const dataItems = [{
 											bil_tipe : $('input[name=itms_bil_tipe]:checked', '#myForm').val(),
 											mohon_id : window.vueStepTwo.mohon_id,
 											mohon_det_id : window.vueStepTwo.mohon_det_id,
@@ -98,7 +114,8 @@
 											bil_total : $.trim($("#itms_bil_total").val()),
 											bil_lunas : 'ya',
 									}];
-									formData.append("data_billing_item", JSON.stringify(dataItems))
+									*/
+									formData.append("data_billing_item", JSON.stringify(dataItems)) 
 					
 									// Step 3
 									const dataInvoiceFile = document.querySelector("#bill_invoice_file").files[0];
@@ -110,6 +127,7 @@
 										formData.append("bill_harus_lunas", 'tidak');
 									}
 									
+									formData.append("bill_total", $('#bill_total').val())
 									// Submit Permohonan
 									this.loading_submit = true;
 									let self = this;

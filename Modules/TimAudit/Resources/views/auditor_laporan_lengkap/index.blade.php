@@ -52,7 +52,7 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
+                        title: "",
                         width: 100,
                         align: 'center',
                         formatter: function (val, row) {

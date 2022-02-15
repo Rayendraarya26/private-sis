@@ -266,7 +266,7 @@ class Tahap2JadwalController extends Controller
                     // Send Push
                     $notifStruct            = new NotifStruct();
                     $notifStruct->title     = sprintf("#%d anda ditunjuk sebagai '%s' auditor", $data->jadw_id, strtoupper($tim->jadw_tim_posisi));
-                    $notifStruct->message   = sprintf("Harap segera melakukan persetujuan auditor pada perusahaan % tanggal %s s/d %s", $data->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai, $data->jadw_tanggal_selesai);
+                    $notifStruct->message   = sprintf("Harap segera melakukan persetujuan %s auditor pada perusahaan % tanggal %s s/d %s", strtoupper($tim->jadw_tim_posisi), $data->sis_pelanggan->cust_nama, $data->jadw_tanggal_mulai, $data->jadw_tanggal_selesai);
                     $notifStruct->user_id   = $tim->master_pegawai?->user_id;
                     $notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
                     sendNotification($notifStruct);

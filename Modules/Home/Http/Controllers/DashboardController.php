@@ -15,18 +15,49 @@ class DashboardController extends Controller
 {
     public function index()
     {
-    	$company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
+        switch ((int) session('group_selected'))
+        {
+            case 3: // pelanggan
+                $data = [
+                    'certifications_process' => SisPermohonan::where([
+                        'user_id' => auth()->id(),
+                        'mohon_approved_status' => 'on-progress'
+                    ]),
+                    'certifications_approved' => SisPermohonan::where([
+                        'user_id' => auth()->id(),
+                        'mohon_approved_status' => 'accepted'
+                    ]),
+                    'certifications_rejected' => SisPermohonan::where([
+                        'user_id' => auth()->id(),
+                        'mohon_approved_status' => 'rejected'
+                    ]),
+                    'certifications_revision' => SisPermohonan::where([
+                        'user_id' => auth()->id(),
+                        'mohon_approved_status' => 'revisi'
+                    ]),
+                    'certifications_fix' => SisPermohonan::where([
+                        'user_id' => auth()->id(),
+                        'mohon_approved_status' => 'fix'
+                    ]),
+                    'certifications' => SisPermohonan::where('user_id', auth()->id())
+                ];
+                return view('home::dashboard.pelanggan')->with($data);
+            break;
+            default:
+            	$company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
 
-       	$data = [
-        	'total_pelanggan' => SisPelanggan::count(),
-        	'total_sertifikat' => SisPelangganSertifikasi::count(),
-        	'total_sertifikat_active' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['on_going'])->count(),
-        	'total_sertifikat_expired' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['expired'])->count(),
-        	'total_sertifikat_banned' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['dibekukan'])->count(),
-        	'company_types' => $company_types
-        ];
+               	$data = [
+                	'total_pelanggan' => SisPelanggan::count(),
+                	'total_sertifikat' => SisPelangganSertifikasi::count(),
+                	'total_sertifikat_active' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['on_going'])->count(),
+                	'total_sertifikat_expired' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['expired'])->count(),
+                	'total_sertifikat_banned' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['dibekukan'])->count(),
+                	'company_types' => $company_types
+                ];
 
-        return view('home::dashboard.index')->with($data);
+                return view('home::dashboard.index')->with($data);
+            break;
+        }
     }
 
     public function ajax(Request $request)

@@ -2,6 +2,7 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
@@ -250,7 +251,7 @@ class KelengkapanPermohonanController extends Controller
 			$dataUser = SysUser::whereIn('ug_group_id', ['4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
 			foreach ($dataUser->get() as $us) {
 				$notifUsr            = new NotifStruct();
-				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PASKAL) No #' . $dataPemohon['mohon_id'];
+				$notifUsr->title     = 'Upload SPK Permohonan No #' . $dataPemohon['mohon_id'];
 				$notifUsr->message   = sprintf("Silahkan upload SPK untuk permohonan #%s atas nama pemohon %s.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
 				$notifUsr->user_id   = $us->user_id;
 				$notifUsr->click_url = url('kerjasama/spk/detail?action=detail-permohonan&mohon_id='. $dataPemohon['mohon_id']);

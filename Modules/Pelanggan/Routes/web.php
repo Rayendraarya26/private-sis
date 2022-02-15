@@ -6,6 +6,7 @@ use Modules\Pelanggan\Http\Controllers\ProfilPerusahaanController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiDataController;
 use Modules\Pelanggan\Http\Controllers\SertifikasiPermohonanController;
 use Modules\Pelanggan\Http\Controllers\Tahap1JadwalController;
+use Modules\Pelanggan\Http\Controllers\Tahap1PerbaikanController;
 use Modules\Pelanggan\Http\Controllers\Tahap1PersetujuanController;
 use Modules\Pelanggan\Http\Controllers\Tahap2JadwalController;
 use Modules\Pelanggan\Http\Controllers\Tahap2PerbaikanController;
@@ -66,6 +67,13 @@ Route::prefix('pelanggan')->middleware(['auth'])->group(function () {
             Route::get("/cetak/{aud_thp1_id}/tinjauan", [Tahap1PersetujuanController::class, 'cetakTinjauan']);
             Route::get("/cetak/{aud_thp1_id}/laporan", [Tahap1PersetujuanController::class, 'cetakLaporan']);
             Route::post("/approve-temuan", [Tahap1PersetujuanController::class, 'approveTemuan']);
+        });
+
+        Route::prefix("perbaikan-temuan")->group(function () {
+            Route::get("/", [Tahap1PerbaikanController::class, 'index']);
+            Route::any("/ajax", [Tahap1PerbaikanController::class, 'ajax']);
+            Route::get("/revisi/{enc_aud_thp1_id}", [Tahap1PerbaikanController::class, 'revisi']);
+            Route::post("/revisi/{enc_aud_thp1_id}", [Tahap1PerbaikanController::class, 'processRevisi']);
         });
     });
 

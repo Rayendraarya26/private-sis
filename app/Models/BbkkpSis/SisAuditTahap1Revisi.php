@@ -7,18 +7,22 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class SisAuditTahap1Revisi
  * 
  * @property int $thp1_revisi_id
- * @property int $aud_thp1_id
- * @property string|null $thp1_revisi_text
+ * @property int $aud_thp1_det_id
+ * @property string|null $thp1_revisi_catatan
+ * @property string|null $thp1_revisi_status
+ * @property string|null $thp1_revisi_perbaikan
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
- * @property SisAuditTahap1 $sis_audit_tahap1
+ * @property SisAuditTahap1Detail $sis_audit_tahap1_detail
+ * @property Collection|SisAuditTahap1RevisiFile[] $sis_audit_tahap1_revisi_files
  *
  * @package App\Models\BbkkpSis
  */
@@ -28,16 +32,23 @@ class SisAuditTahap1Revisi extends Model
 	protected $primaryKey = 'thp1_revisi_id';
 
 	protected $casts = [
-		'aud_thp1_id' => 'int'
+		'aud_thp1_det_id' => 'int'
 	];
 
 	protected $fillable = [
-		'aud_thp1_id',
-		'thp1_revisi_text'
+		'aud_thp1_det_id',
+		'thp1_revisi_catatan',
+		'thp1_revisi_status',
+		'thp1_revisi_perbaikan'
 	];
 
-	public function sis_audit_tahap1()
+	public function sis_audit_tahap1_detail()
 	{
-		return $this->belongsTo(SisAuditTahap1::class, 'aud_thp1_id');
+		return $this->belongsTo(SisAuditTahap1Detail::class, 'aud_thp1_det_id');
+	}
+
+	public function sis_audit_tahap1_revisi_files()
+	{
+		return $this->hasMany(SisAuditTahap1RevisiFile::class, 'thp1_revisi_id');
 	}
 }

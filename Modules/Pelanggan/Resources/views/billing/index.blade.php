@@ -122,7 +122,8 @@
                             if (val.length > 0) {
                                 let items = "<ul>";
                                 val.map(e => {
-                                    items += `<li>${e.itms_bil_tipe.toUpperCase()} <br>${e.itms_bil_desc} <br> <i>Rp${e.itms_bil_total.toString().formatUang('.')}</i></li>`
+                                    items += `<li>${e.itms_bil_tipe.toUpperCase()} <br>${e.itms_bil_desc}</li>`
+									/* <br> <i>Rp${e.itms_bil_total.toString().formatUang('.')}</i> */
                                 })
                                 items += "</ul>";
 

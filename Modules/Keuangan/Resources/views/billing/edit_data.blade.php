@@ -70,6 +70,13 @@
                                         </div>
                                     </div>
 									
+									<div class="form-group form-row">
+										<label class="col-form-label col-sm-3" for="bill_due_date">Total(Rp.) *</label>
+                                        <div class="col-sm-8">
+											<input type="number" class="form-control" id="bill_total" name="bill_total" value="{{old('bill_total') ?? $data_billing->itms_bil_total}}">
+											<input type="hidden" id="itms_bil_ids" name="itms_bil_ids" value="{{old('itms_bil_ids') ?? $data_billing->itms_bil_id}}">
+										</div>
+									</div>
 									
 									@if ($data_billing->jadw_id == '')
 									<div class="form-group row">
@@ -410,9 +417,9 @@
 							}
 						}
 					},
-                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 320, sortable: false,editor: {type: 'textbox', options: {required: false}}},
-                    {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: false,editor: {type: 'numberbox', options: {required: false}}, align:'right',},
-					{field: 'mohon_det_id', hidden: true,editor: {type: 'textbox', options: {required: false}}},
+                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 420, sortable: false,editor: {type: 'textbox', options: {required: false}}},
+                    {field: 'itms_bil_total', hidden: true, title: 'Total(Rp.)', width: 100, sortable: false,editor: {type: 'numberbox', options: {required: false}}, align:'right',},
+					{field: 'mohon_det_id', hidden: true,editor: {type: 'textbox', options: {required: false}}, },
                 ]],
             });
             dg.datagrid(

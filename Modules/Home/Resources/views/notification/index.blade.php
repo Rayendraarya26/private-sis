@@ -45,7 +45,7 @@
                                 <a href="{{url('/notification/open/' . $n->notif_id)}}" class="dt-widget__title">
                                     <b>{{$n->notif_title}}</b>
                                     <br>
-                                    {{$n->notif_content}}
+                                    {!! $n->notif_content !!}
                                     <br>
                                     {{$n->notif_created_at->diffForHumans()}}
                                 </a>
