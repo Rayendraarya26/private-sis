@@ -110,8 +110,7 @@ class Tahap1PersetujuanController extends Controller
     {
         $data = SisAuditTahap1::with([
             'sis_permohonan_detail.master_sertifikasi',
-            'sis_audit_tahap1_details',
-            'sis_audit_tahap1_revisis',
+            'sis_audit_tahap1_details.sis_audit_tahap1_revisis',
             'sis_audit_tahap1_tims.master_pegawai',
         ])
             ->findOrFail($ID);
@@ -133,8 +132,7 @@ class Tahap1PersetujuanController extends Controller
             'sis_permohonan',
             'sis_permohonan_detail.master_sertifikasi',
             'sis_permohonan_detail.sis_permohonan_komoditis.master_komoditi',
-            'sis_audit_tahap1_details',
-            'sis_audit_tahap1_revisis',
+            'sis_audit_tahap1_details.sis_audit_tahap1_revisis',
             'sis_audit_tahap1_tims.master_pegawai',
         ])
             ->findOrFail($ID);
@@ -215,13 +213,14 @@ class Tahap1PersetujuanController extends Controller
     {
         $data = SisAuditTahap1::with(['sis_permohonan_detail', 'sis_audit_tahap1_tims.master_pegawai', 'sis_permohonan'])
             ->with([
-                'sis_audit_tahap1_revisis' => function ($query) {
+                'sis_audit_tahap1_details.sis_audit_tahap1_revisis' => function ($query) {
                     $query->orderBy('created_at');
                 }
             ])
             ->join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
-            ->join('sis_jadwal_audit', 'sis_audit_tahap1.mohon_id', '=', 'sis_jadwal_audit.mohon_id')
-            ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+            ->leftJoin('sis_jadwal_audit', 'sis_audit_tahap1.mohon_id', '=', 'sis_jadwal_audit.mohon_id')
+            ->leftJoin('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
+            ->where('aud_thp1_status_temuan', '=','diajukan')
             ->where('sis_permohonan.user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {
@@ -247,10 +246,10 @@ class Tahap1PersetujuanController extends Controller
             'jadw_file_jadwal',
             'aud_thp1_tanggal_mulai',
             'aud_thp1_tanggal_selesai')
-            ->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
+            ->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'submited', 1, 0)) as total_submit");
 
         $data->groupBy('aud_thp1_id');
-        $data->havingRaw('total_proses > ?', [0]);
+        $data->havingRaw('total_submit = ?', [0]);
         // Total
         $total = $data->count();
         // Pagination
@@ -271,6 +270,7 @@ class Tahap1PersetujuanController extends Controller
             }
 
             $x['aud_thp1_id']                = $d->aud_thp1_id;
+            $x['enc_aud_thp1_id']            = encrypt($d->aud_thp1_id);
             $x['sert_tahap1_jenis']          = strtolower($d->sert_tahap1_jenis);
             $x['aud_thp1_status_temuan']     = strtolower($d->aud_thp1_status_temuan);
             $x['aud_thp1_file_notulen']      = $d->aud_thp1_file_notulen;

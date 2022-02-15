@@ -7,6 +7,7 @@
 namespace App\Models\BbkkpSis;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -25,10 +26,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $aud_thp1_det_nilai
  * @property string|null $aud_thp1_det_satuan
  * @property string|null $aud_thp1_det_hasil_tinjauan
+ * @property string|null $aud_thp1_det_status
+ * @property Carbon|null $aud_thp1_det_tanggal_ditutup
+ * @property string|null $aud_thp1_det_keterangan_ditutup
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
  * @property SisAuditTahap1 $sis_audit_tahap1
+ * @property Collection|SisAuditTahap1Revisi[] $sis_audit_tahap1_revisis
  *
  * @package App\Models\BbkkpSis
  */
@@ -40,6 +45,10 @@ class SisAuditTahap1Detail extends Model
 	protected $casts = [
 		'aud_thp1_id' => 'int',
 		'klausul_thp1_id' => 'int'
+	];
+
+	protected $dates = [
+		'aud_thp1_det_tanggal_ditutup'
 	];
 
 	protected $fillable = [
@@ -54,11 +63,19 @@ class SisAuditTahap1Detail extends Model
 		'aud_thp1_det_persyaratan',
 		'aud_thp1_det_nilai',
 		'aud_thp1_det_satuan',
-		'aud_thp1_det_hasil_tinjauan'
+		'aud_thp1_det_hasil_tinjauan',
+		'aud_thp1_det_status',
+		'aud_thp1_det_tanggal_ditutup',
+		'aud_thp1_det_keterangan_ditutup'
 	];
 
 	public function sis_audit_tahap1()
 	{
 		return $this->belongsTo(SisAuditTahap1::class, 'aud_thp1_id');
+	}
+
+	public function sis_audit_tahap1_revisis()
+	{
+		return $this->hasMany(SisAuditTahap1Revisi::class, 'aud_thp1_det_id');
 	}
 }

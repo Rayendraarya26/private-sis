@@ -30,8 +30,7 @@ class Tahap1JadwalController extends Controller
     {
         $data = SisAuditTahap1::with([
             'sis_permohonan_detail.master_sertifikasi',
-            'sis_audit_tahap1_details',
-            'sis_audit_tahap1_revisis',
+            'sis_audit_tahap1_details.sis_audit_tahap1_revisis',
             'sis_audit_tahap1_tims.master_pegawai',
         ])
             ->findOrFail($ID);
@@ -60,7 +59,7 @@ class Tahap1JadwalController extends Controller
     {
         $data = SisAuditTahap1::with(['sis_permohonan_detail', 'sis_audit_tahap1_tims.master_pegawai', 'sis_permohonan'])
             ->with([
-                'sis_audit_tahap1_revisis' => function ($query) {
+                'sis_audit_tahap1_details.sis_audit_tahap1_revisis' => function ($query) {
                     $query->orderBy('created_at');
                 }
             ])

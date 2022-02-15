@@ -384,7 +384,7 @@ class UploadKajianPermohonanController extends Controller
 				sendNotification($notifUsr);
 			}
 
-            return redirect($this->url)->with('message', "Upload Kajian Permohonan #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi validasi oleh PJT.");
+            return redirect($this->url)->with('message', "Upload Kajian Permohonan #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi validasi oleh PJT dan PASKAL.");
         } else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
         }

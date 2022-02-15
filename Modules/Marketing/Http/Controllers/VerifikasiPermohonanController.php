@@ -369,7 +369,7 @@ class VerifikasiPermohonanController extends Controller
             $notifStruct->title     = 'Revisi pengajuan #' . $request->mohon_id;
             $notifStruct->message   = $dataInsert['status_pesan'];
             $notifStruct->user_id   = $request->user_id;
-            $notifStruct->click_url = url('/pelanggan/sertifikasi/permohonan');
+            $notifStruct->click_url = url("/pelanggan/sertifikasi/permohonan/edit/$request->mohon_id");
             sendNotification($notifStruct);
 
             // Send Email
@@ -378,7 +378,7 @@ class VerifikasiPermohonanController extends Controller
             $structEmail->body    = view('marketing::verifikasi_permohonan.mails.revisi')
                 ->with([
                     'message'    => $dataInsert['status_pesan'],
-                    'link_verif' => url('/pelanggan/sertifikasi/permohonan'),
+                    'link_verif' => url("/pelanggan/sertifikasi/permohonan/edit/$request->mohon_id")
                 ])->render();
             $structEmail->to      = $request?->mohon_cust_email;
             sendEmail($structEmail);

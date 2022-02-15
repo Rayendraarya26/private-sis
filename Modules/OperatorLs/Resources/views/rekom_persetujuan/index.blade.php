@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal Audit</h3>
+                            <h3 class="dt-card__title">Input Rekomendasi Jadwal Audit Tahap II</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -30,9 +30,11 @@
 @endsection
 
 @push("javascript")
+    <script src="{{asset('assets/plugins/easyui/datagrid-detailview.js')}}"></script>
     <script>
         $(function () {
             let dg = $('#ttData').datagrid({
+                view: detailview,
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
@@ -43,31 +45,42 @@
                 multiSort: true,
                 pagination: false,
                 clientPaging: false,
+                detailFormatter: function (index, row) {
+                    let status_message          = "-";
+
+                    if (row.lap_lengkp_id){
+						status_message = `-`;
+					} else {
+						
+						status_message = `Belum bisa mengisikan rekomendasi, karena laporang lengkap belum diisi, atau belum diverifikasi!!`;
+					}
+
+                    return `
+                    <div style="padding: 20px 0 20px 0">
+                        <h5>Status :</h5>
+                        <p>${status_message}</p>
+                    </div>`;
+                },
                 frozenColumns: [[
                     {
                         field: 'action',
                         title: "<br/><br/><br/>",
-                        width: 80,
+                        width: 100,
                         align: 'center',
                         formatter: function (val, row) {
-							let dom = `dropdownMenu_${row.jadw_id}`;
-                            let btnEdit = ``;	
-							if(row.rekmd_komte_status == 'ditutup'){
-								btnEdit += `<div data-options="iconCls:'fas fa-clipboard-list-check'" onclick="location.href = '{{ url("$url/edit") }}?tipe=lihat-rekomendasi&jadw_id=${row.jadw_id}'">Lihat Rekomendasi</div>`;
-							} 
-							else{
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=rekomendasi&jadw_id=${row.jadw_id}'">Input Rekomendasi</div>`;
+							let btnPreview   = `<a target="blank_" href="{{ url("$url/edit") }}?tipe=lihat-rekomendasi&jadw_id=${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-pdf"></i> Preview</a>`
+                            let btnBuat     = `<a href="{{ url("$url/edit") }}?tipe=rekomendasi&jadw_id=${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fas fa-plus"></i> Input</a>`;
+							if(row.lap_lengkp_id){
+								if (row.rekmd_komte_status != 'on-going') {
+									return btnPreview
+								} else {
+									return btnBuat
+								}
 							}
-							
-                            return `
-								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
-										<i class="fa fa-setting"></i> Aksi
-									</button>
-									<div id="${dom}" style="width:170px; display: none;">
-										@if(authorized("{$module}@edit")) ${btnEdit} @endif
-								</div>
-							</div>`
+							else {
+								return ``;
+							}
+                            
                         }
                     }
                 ]],
@@ -81,20 +94,10 @@
                     {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
 				onBeforeLoad: function () {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        try {
-                            $(this).menubutton('destroy');
-                        } catch (e) {
-                            console.log('failed destroy');
-                        }
-                    });
+                   
                 },
                 onLoadSuccess: function (data) {
-                    $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
-                        $(this).menubutton({
-                            menu: '#dropdownMenu_' + data.rows[idx].jadw_id
-                        });
-                    });
+                    
                 },
             });
             dg.datagrid(
