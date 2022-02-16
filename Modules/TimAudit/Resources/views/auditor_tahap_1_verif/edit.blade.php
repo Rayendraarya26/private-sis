@@ -1,0 +1,275 @@
+@extends("layouts.layout_app")
+
+@section('title', 'Laporan Audit Tahap 1')
+@push('css')
+    <style>
+        .komoditi-button {
+            padding-top: 15px;
+        }
+		
+		.label-form {
+            font-weight:normal;
+        }
+		
+        @media screen and (max-width: 450px) {
+            .komoditi-button {
+                padding-top: 0;
+            }
+        }
+    </style>
+@endpush
+@section('content')
+    <div class="dt-content">
+        <div class="row">
+			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
+            <div class="col-md-12">
+                <div class="dt-card">
+                    <div class="dt-card__body">
+                        <div class="row" id="vueStepTwo">
+							<div class="col-md-12" style="padding-bottom: 20px">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="form-group">
+											<label class="label-form">V. Audit kecukupan informasi terdokumentasi: *</label>
+											<textarea class="form-control" name="kolom_v" id="kolom_v">@if(isset($dataAudit->aud_thp1_kolom_v)) {{$dataAudit->aud_thp1_kolom_v}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">VI. Kondisi Lapangan</label>
+											<textarea class="form-control" name="kolom_vi" id="kolom_vi">@if(isset($dataAudit->aud_thp1_kolom_vi)) {{$dataAudit->aud_thp1_kolom_vi}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">VII. Status dan pemahaman persyaratan standar</label>
+											<textarea class="form-control" name="kolom_vii" id="kolom_vii">@if(isset($dataAudit->aud_thp1_kolom_vii)) {{$dataAudit->aud_thp1_kolom_vii}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">VIII. Informasi yang diperlukan yang berkenaan dengan (lingkup sistem manajemen K3, proses dan lokasi perusahaan, identifikasi bahaya dan risiko dan perundang-undangan/peraturan K3, dari operasi perusahaan dan risiko) tersedia.</label>
+											<textarea class="form-control" name="kolom_viii" id="kolom_viii">@if(isset($dataAudit->aud_thp1_kolom_viii)) {{$dataAudit->aud_thp1_kolom_viii}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">IX. Sumber daya yang tersedia</label>
+											<textarea class="form-control" name="kolom_ix" id="kolom_ix">@if(isset($dataAudit->aud_thp1_kolom_ix)) {{$dataAudit->aud_thp1_kolom_ix}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">X. Konfirmasi program audit sertifikasi tahap 2</label>
+											<textarea class="form-control" name="kolom_x" id="kolom_x">@if(isset($dataAudit->aud_thp1_kolom_x)) {{$dataAudit->aud_thp1_kolom_x}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">XI. Informasi pelaksanaan audit internal dan kaji ulang manajemen</label>
+											<textarea class="form-control" name="kolom_xi" id="kolom_xi">@if(isset($dataAudit->aud_thp1_kolom_xi)) {{$dataAudit->aud_thp1_kolom_xi}} @endif</textarea>
+										</div>
+										<div class="form-group">
+											<label class="label-form">XII. Kesimpulan</label>
+											<textarea class="form-control" name="kolom_xii" id="kolom_xii">@if(isset($dataAudit->aud_thp1_kolom_xii)) {{$dataAudit->aud_thp1_kolom_xii}} @endif</textarea>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<hr/>
+										<template v-if="loading_submit">
+											<div class="fa-3x" style="text-align: center">
+												<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+											</div>
+										</template>
+										<template v-else>
+											<button :disabled="!status_submit"
+													:class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}"
+													@click="submitAudit">
+												<i class="fad fa-disk"></i> Simpan Laporan Audit Tahap 1
+											</button>
+										</template>
+									</div>
+								</div>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+@endsection
+
+@push('javascript')
+	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+		const swalWithBootstrapButtons = swal.mixin({
+            confirmButtonClass: 'btn btn-primary mb-2',
+            cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+            buttonsStyling: false,
+        });
+		
+		$(document).ready(function () {
+            window.vueStepTwo = new Vue({
+                el: "#vueStepTwo",
+                data: {	
+                    status_submit: true,
+                    loading_submit: false,
+                },
+                mounted() {
+                    this.start();
+                },
+                methods: {
+					async submitAudit() {
+						tinyMCE.triggerSave();
+                        swalWithBootstrapButtons({
+                            title: `Simpan Data ?`,
+                            text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
+                            type: 'info',
+                            showCancelButton: true,
+                            confirmButtonText: 'Simpan',
+                            cancelButtonText: 'Batal',
+                            reverseButtons: true
+                        }).then(async (result) => {
+                            if (result.value) {
+								let formData = new FormData();
+								let status_from = true;
+								formData.append("tipe", 'update-audit-tahap1');
+								formData.append("cust_id", '{{$dataJadwal->cust_id}}');
+								formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}');
+								formData.append("sert_id", '{{$dataJadwal->sert_id}}');
+								formData.append("mohon_id", '{{$dataJadwal->mohon_id}}');
+								formData.append("kolom_v", tinyMCE.get('kolom_v').getContent());
+								formData.append("kolom_vi", tinyMCE.get('kolom_vi').getContent());
+								formData.append("kolom_vii", tinyMCE.get('kolom_vii').getContent());
+								formData.append("kolom_viii", tinyMCE.get('kolom_viii').getContent());
+								formData.append("kolom_x", tinyMCE.get('kolom_x').getContent());
+								formData.append("kolom_ix", tinyMCE.get('kolom_ix').getContent());
+								formData.append("kolom_xi", tinyMCE.get('kolom_xi').getContent());
+								formData.append("kolom_xii", tinyMCE.get('kolom_xii').getContent());
+								
+								this.loading_submit = true;
+								let self = this;
+								$.ajax({
+									url: `{{action("$module@update")}}`,
+									type: 'post',
+									processData: false,
+									contentType: false,
+									data: formData,
+									success: async function (res) {
+										toastCenter({
+											type: 'success',
+											title: res.message
+										})
+										setTimeout(() => location.href = "{{url("$url")}}", 1000)
+									},
+									error: function (xhr) {
+										self.loading_submit = false;
+										if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+										else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+									}
+								});
+                            }
+                        });
+                    },
+                    async start() {
+                        setTimeout(async () => {
+							this.tynimceForm(); 
+						}, 1000);					
+                    },
+					async tynimceForm() {
+						$('textarea#kolom_v').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_vi').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_vii').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_viii').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_ix').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_x').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_xi').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+							$('textarea#kolom_xii').tinymce({
+								height: 200,
+								plugins: 'autosave link image code lists',
+								relative_urls: false,
+								placeholder: '',
+								images_reuse_filename: true,
+								automatic_uploads: true,
+								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
+								images_upload_credentials: true,
+								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
+								],
+							  });
+						
+					},
+                }
+            });			
+        });		
+    </script>
+@endpush
+
+
+
