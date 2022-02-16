@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property MasterPegawai $master_pegawai
  * @property SisAuditTahap1 $sis_audit_tahap1
+ * @property SisAuditTahap1Logbook $sis_audit_tahap1_logbook
  *
  * @package App\Models\BbkkpSis
  */
@@ -58,5 +59,10 @@ class SisAuditTahap1Tim extends Model
 	public function sis_audit_tahap1()
 	{
 		return $this->belongsTo(SisAuditTahap1::class, 'aud_thp1_id');
+	}
+
+	public function sis_audit_tahap1_logbook()
+	{
+		return $this->hasOne(SisAuditTahap1Logbook::class, 'thp1_tim_id');
 	}
 }

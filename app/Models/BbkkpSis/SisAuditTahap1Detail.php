@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $aud_thp1_det_nilai
  * @property string|null $aud_thp1_det_satuan
  * @property string|null $aud_thp1_det_hasil_tinjauan
+ * @property string|null $aud_thp1_det_is_temuan
  * @property string|null $aud_thp1_det_status
  * @property Carbon|null $aud_thp1_det_tanggal_ditutup
  * @property string|null $aud_thp1_det_keterangan_ditutup
@@ -64,6 +65,7 @@ class SisAuditTahap1Detail extends Model
 		'aud_thp1_det_nilai',
 		'aud_thp1_det_satuan',
 		'aud_thp1_det_hasil_tinjauan',
+		'aud_thp1_det_is_temuan',
 		'aud_thp1_det_status',
 		'aud_thp1_det_tanggal_ditutup',
 		'aud_thp1_det_keterangan_ditutup'
