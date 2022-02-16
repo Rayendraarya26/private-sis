@@ -278,82 +278,15 @@ class AuTahap1Controller extends Controller
             "sert_id"               => 'required',
             "mohon_id"              => 'required',
             "jenis"              => 'required',
-            /* 
-			"kolom_v"               => 'required',
-            "kolom_vi"              => 'required',
-            "kolom_vii"             => 'required',
-            "kolom_viii"            => 'required',
-            "kolom_ix"              => 'required',
-            "kolom_x"               => 'required',
-            "kolom_xi"              => 'required',
-            "kolom_xii"             => 'required',
-            "status_audit"          => 'required',
-            "tutup_audit"           => 'required', 
-			*/
             "detail_hasil_tinjauan" => 'required',
             "detail_keterangan"     => 'required',
             "detail_judul_dok"      => 'nullable',
             "detail_kode_dok"       => 'nullable',
             "detail_nilai"       => 'nullable',
             "detail_satuan"       => 'nullable',
-            // "aud_thp1_file_daftar_hadir"       => 'required',
-            // "aud_thp1_file_notulen"       => 'required',
         ]);
-		// $uploadedPathDaftar = [];
-		// $uploadedPathNotulen = [];
+		
         try {
-           /*  
-		   $baseFileUpload = sprintf(config("app.path_file_tahap1"), $request['aud_thp1_id']);	
-            DB::beginTransaction();
-			$updateJadwal = [
-                    "aud_thp1_status"  => $request['status_audit'],
-                    "aud_thp1_ditutup" => $request['tutup_audit'],
-                    "updated_at"       => Carbon::now(),
-                ];
-			if ($request->hasFile('aud_thp1_file_daftar_hadir')){
-				$fileDaftar     = $request->file('aud_thp1_file_daftar_hadir');
-				$fileDaftarName = Str::slug('file-jadwal-' . $fileDaftar->getClientOriginalName()) . '-' . time() . '.' . $fileDaftar->getClientOriginalExtension();
-				$fileDaftarPath = sprintf("%s/%s", $baseFileUpload, $fileDaftarName);
-				$fileDaftar->move($baseFileUpload, $fileDaftarName);
-				array_push($uploadedPathDaftar, $fileDaftarPath);
-				$updateJadwal['aud_thp1_file_daftar_hadir'] = $fileDaftarPath;
-			}
-			
-			if ($request->hasFile('aud_thp1_file_notulen')){
-				$fileNotulen     = $request->file('aud_thp1_file_notulen');
-				$fileNotulenName = Str::slug('file-jadwal-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
-				$fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
-				$fileNotulen->move($baseFileUpload, $fileNotulenName);
-				array_push($uploadedPathNotulen, $fileNotulenPath);
-				
-				$updateJadwal['aud_thp1_file_notulen'] = $fileNotulenPath;
-			}
-						
-            
-			if($request['tutup_audit'] == 'ya' ){
-				$updateJadwal['aud_thp1_status_temuan'] = 'diajukan';
-			} 
-			
-			
-            DB::table('sis_audit_tahap1')
-                ->where('aud_thp1_id', $request['aud_thp1_id'])
-                ->update($updateJadwal);
-			
-            DB::table('sis_audit_tahap1')
-                ->where('aud_thp1_id', $request['aud_thp1_id'])
-                ->update([
-                    "aud_thp1_kolom_v"    => $request['kolom_v'],
-                    "aud_thp1_kolom_vi"   => $request['kolom_vi'],
-                    "aud_thp1_kolom_vii"  => $request['kolom_vii'],
-                    "aud_thp1_kolom_viii" => $request['kolom_viii'],
-                    "aud_thp1_kolom_ix"   => $request['kolom_ix'],
-                    "aud_thp1_kolom_x"    => $request['kolom_x'],
-                    "aud_thp1_kolom_xi"   => $request['kolom_xi'],
-                    "aud_thp1_kolom_xii"  => $request['kolom_xii'],
-                    "updated_at"          => Carbon::now(),
-                    "aud_thp1_tanggal_rapat_akhir"          => Carbon::now()->format('Y-m-d'),
-                ]);
-			*/
 			if($request['jenis'] == 'sni'){
 				if (!empty($request['detail_kode_dok'])) {
 					foreach ($request['detail_kode_dok'] as $key => $val) {
@@ -447,32 +380,6 @@ class AuTahap1Controller extends Controller
 				}
 			}
 			
-			/* 
-			if($request['tutup_audit'] == 'ya'){
-				// Notifikasi
-				$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
-				// Send Push
-				$notifStruct            = new NotifStruct();
-				$notifStruct->title     = "LKS Audit Tahap I";
-				$notifStruct->message   = sprintf("LKS/Klausul Audit Tahap I telah diinputkan untuk jadwal audit tahap 1 no #%s, silahkan klarifikasi temuan.", $request['aud_thp1_id']);
-				$notifStruct->user_id   = $data_pelanggan?->user_id;
-				$notifStruct->click_url = url('/pelanggan/jadwal');
-				sendNotification($notifStruct);
-
-				// Send Email
-				$structEmail          = new EmailStruct();
-				$structEmail->subject = "LKS Audit Tahap I";
-				$structEmail->body    = view("$this->view.mails.publish")
-					->with([
-						'nama'       => $data_pelanggan?->cust_nama,
-						'message'       => sprintf("LKS/Klausul Audit Tahap I telah diinputkan untuk jadwal audit tahap 1 no #%s, silahkan klarifikasi temuan.", $request['aud_thp1_id']),
-						'link_verif'        => url('/pelanggan/jadwal'),
-					])->render();
-				$structEmail->to      = $data_pelanggan?->cust_email;
-				sendEmail($structEmail);
-			}
-            */
-
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {

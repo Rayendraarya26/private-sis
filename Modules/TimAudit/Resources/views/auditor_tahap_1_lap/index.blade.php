@@ -102,29 +102,6 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
 					{
-                        field: 'aud_thp1_status_temuan',
-                        type: 'combobox',
-                        options: {
-                            panelHeight: 'auto',
-                            value: '',
-                            data: [
-                                {value: 'proses', text: 'Proses/Draft'},
-                                {value: 'diajukan', text: 'Diajukan'},
-                                {value: 'revisi', text: 'Revisi'},
-                                {value: '', text: 'Semua'}
-                            ],
-                            onChange: function (value) {
-                                dg.datagrid('addFilterRule', {
-                                    field: 'aud_thp1_status_temuan',
-                                    op: 'equal',
-                                    value: value
-                                });
-
-                                dg.datagrid('doFilter');
-                            }
-                        }
-                    },
-					{
                         field: 'aud_thp1_status',
                         type: 'combobox',
                         options: {
