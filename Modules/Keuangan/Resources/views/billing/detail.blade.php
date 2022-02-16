@@ -49,34 +49,34 @@
 											</thead>
 											<tbody>
 												<tr>
-													<th scope="row">Nama Pelanggan</th>
+													<td>Nama Pelanggan</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->cust_nama}}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">Nomor Billing</th>
+													<td>Nomor Billing</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_nomor_billing}}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">Tanggal Billing</th>
+													<td>Tanggal Billing</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_billing_date?->format('Y-m-d')}}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">Jatuh Tempo</th>
+													<td>Jatuh Tempo</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_due_date?->format('Y-m-d')}}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">Total Billing(Rp.)</th>
+													<td>Total Billing(Rp.)</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{ number_format($data_billing->itms_bil_total, 2, ',', '.') }}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">File Invoice</th>
+													<td>File Invoice</th>
 													<td>:</td>
-													<td><a href="{{url($data_billing->bill_invoice_file)}}" class="btn btn-xs btn-info" target="_blank">Download File</a></td>
+													<td><a href="{{url($data_billing->bill_invoice_file)}}"  target="_blank"><i class="fas fa-download"></i> Download File</a></td>
 												</tr>
 											</tbody>
 										</table>
@@ -98,26 +98,26 @@
 											</thead>
 											<tbody>
 												<tr>
-													<th scope="row">Informasi Pembayaran</th>
+													<td>Informasi Pembayaran</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_note}}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">Tanggal Pembayaran</th>
+													<td>Tanggal Pembayaran</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_date?->format('Y-m-d')}}</a></td>
 												</tr>
 												<tr>
-													<th scope="row">File Bukti Pembayaran</th>
+													<td>File Bukti Pembayaran</th>
 													<td>:</td>
 													<td>
 														@if ($data_billing->bill_payment_file != '')
-															<a href="{{url($data_billing->bill_payment_file)}}" class="btn btn-xs btn-info" target="_blank">Download File</a></h5>
+															<a href="{{url($data_billing->bill_payment_file)}}"  target="_blank"><i class="fas fa-download"></i> Download File</a></h5>
 														@endif
 													</td>
 												</tr>
 												<tr>
-													<th scope="row">Status Invoice</th>
+													<td>Status Invoice</th>
 													<td>:</td>
 													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_status}}</a></td>
 												</tr>
@@ -159,7 +159,7 @@
                 ]],
                 columns: [[
                     {field: 'itms_bil_tipe', title: 'Tipe', width: 100, sortable: true,},
-                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 420, sortable: true},
+                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 520, sortable: true},
                     // {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true, align:'right',},
                 ]],
             });

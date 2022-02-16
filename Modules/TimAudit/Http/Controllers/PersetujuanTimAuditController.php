@@ -158,12 +158,14 @@ class PersetujuanTimAuditController extends Controller
             array_push($result, $x);
         }
 
-		$dataKomite = SisAuditTimKomite::join('sis_jadwal', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id")->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
+		$dataKomite = SisAuditTimKomite::join('sis_jadwal', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+		$dataKomite->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $dataKomite->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataKomite->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataKomite->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
         $dataKomite->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
         // Filter
+        $dataKomite->where('master_pegawai.user_id', '=', auth()->id());
         $dataKomite->where('sis_audit_tim_komite.komite_kesanggupan', '=', 'none');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -191,18 +193,18 @@ class PersetujuanTimAuditController extends Controller
         $dataKomite->groupBy('sis_jadwal.jadw_id');
 
         foreach ($dataKomite->get() as $k) {
-            $x['jadw_status'] = 'komite';
-            $x['jadw_id']                  = $k->jadw_id;
-            $x['jadw_tanggal_mulai']       = $k->jadw_tanggal_mulai;
-            $x['jadw_tanggal_selesai']     = $k->jadw_tanggal_selesai;
-            $x['cust_nama']                = $k->cust_nama;
-            $x['sert_nama']                = $k->sert_nama;
-            $x['jadw_jenis']               = $k->jadw_jenis;
-            $x['jadw_audit_jenis']         = $k->jadw_audit_jenis;
-            $x['jadw_tim_kesanggupan']     = $k->komite_kesanggupan;
-            $x['jadw_tim_kesanggupan_tgl'] = $k->komite_tgl_kesanggupan;
+            $kx['jadw_status'] = 'komite';
+            $kx['jadw_id']                  = $k->jadw_id;
+            $kx['jadw_tanggal_mulai']       = $k->jadw_tanggal_mulai;
+            $kx['jadw_tanggal_selesai']     = $k->jadw_tanggal_selesai;
+            $kx['cust_nama']                = $k->cust_nama;
+            $kx['sert_nama']                = $k->sert_nama;
+            $kx['jadw_jenis']               = $k->jadw_jenis;
+            $kx['jadw_audit_jenis']         = $k->jadw_audit_jenis;
+            $kx['jadw_tim_kesanggupan']     = $k->komite_kesanggupan;
+            $kx['jadw_tim_kesanggupan_tgl'] = $k->komite_tgl_kesanggupan;
             // $x['komite_tgl_surat'] = $d->komite_tgl_surat;
-            $result[] = $x;
+            $result[] = $kx;
         }
 
         return response()->json(["rows" => $result]);

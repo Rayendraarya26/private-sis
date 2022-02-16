@@ -94,7 +94,7 @@
 										<label class="col-xl-3 col-form-label text-sm-left" for="bill_invoice_file" >File Invoice</label>
 										<div class="col-xl-8">
 											<input type="file" class="form-control" aria-label="File Invoice" accept="application/pdf" name="bill_invoice_file" id="bill_invoice_file">
-											<h5>File Lama <a href="{{url($data_billing->bill_invoice_file)}}" target="_blank">Download</a></h5>
+											<h5>File Lama <a href="{{url($data_billing->bill_invoice_file)}}" target="_blank"><i class="fas fa-download"></i> Download</a></h5>
 											<small><span>Upload file harus berjenis PDF, silahkan isikan kosong jika tidak ingin mengganti</span></small>
 										</div>
 									</div>

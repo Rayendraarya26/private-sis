@@ -139,6 +139,7 @@
                     form_edited_id: null,
                     status_submit: false,
                     loading_submit: false,
+                    mohon_det_id: null,
 					
                     jadwal_tims: [],
                 },
@@ -217,6 +218,7 @@
 						
 						if (currentData != null) {
 							setTimeout(async () => {
+								this.mohon_det_id = currentData.mohon_det_id;
 								this.jadwal_tims = await window.idb.tahap1_data_tim.toArray();
 								if (typeof this.jadwal_tims !== 'undefined' && this.jadwal_tims.length > 0) {
 									console.log(this.jadwal_tims);
@@ -262,7 +264,7 @@
                             idField: 'peg_id',
                             textField: 'peg_nama',
                             editable: true,
-							url:'{{ url("$url/ajax?action=combogrid-pegawai") }}',
+							url:`{{ url("$url/ajax?action=combogrid-pegawai") }}&mohon_det_id=${this.mohon_det_id}`,
                             method: 'get',
                             mode: 'remote',
                             multiSort: true,

@@ -6,11 +6,15 @@
     <div class="dt-content">
         <div class="row">
             <div class="col-xl-12">
-                <a class="btn btn-sm btn-default"
-                   href="{{url("$url")}}"
-                   style="margin-bottom: 20px">
-                    <i class="fad fa-arrow-left"></i> Kembali
-                </a>
+				<!--
+					ada 3 cara:
+					action(): mengarah ke controller
+					url(): mengarah ke lokasi url
+					route(): mengarah ke nama route
+				-->
+				<form method="POST" enctype="multipart/form-data" action="{{action("$module@update")}}" id="theForm">
+                <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
+				<a class="btn btn-sm btn-success" href="javascript:void(0)" onClick="confirmLunas()" style="margin-bottom: 20px"> <i class="fas fa-save"></i> Set Lunas ?</a>
                 <div class="dt-card">
                     <div class="dt-card__body">
                         <div class="row">
@@ -26,113 +30,100 @@
                                     </div>
 								@endif
 
-                            <!--
-                                    ada 3 cara:
-                                    action(): mengarah ke controller
-                                    url(): mengarah ke lokasi url
-                                    route(): mengarah ke nama route
-                                -->
-                                <form method="POST" enctype="multipart/form-data" action="{{action("$module@update")}}" id="theForm">
-                                    <!-- Security CSRF TOKEN -->
-                                    @csrf
-                                    <input type="hidden" name="tipe" value="pelunasan">
-                                    <input type="hidden" name="bil_id" value="{{old('bil_id') ?? $data_billing->bill_id}}">
-                                    <input type="hidden" name="cust_id" value="{{old('cust_id') ?? $data_billing->cust_id}}">
-                                    <input type="hidden" name="bill_nomor_billing" value="{{old('bill_nomor_billing') ?? $data_billing->bill_nomor_billing}}">
-									<div class="table-responsive">
-										<table class="table table-hover mb-0">
-											<thead>
-												<tr>
-												  <th scope="col">#</th>
-												  <th class="text-uppercase" scope="col"></th>
-												  <th class="text-uppercase" scope="col"></th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<th scope="row">Nama Pelanggan</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->cust_nama}}</a></td>
-												</tr>
-												<tr>
-													<th scope="row">Nomor Billing</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_nomor_billing}}</a></td>
-												</tr>
-												<tr>
-													<th scope="row">Tanggal Billing</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_billing_date?->format('Y-m-d')}}</a></td>
-												</tr>
-												<tr>
-													<th scope="row">Jatuh Tempo</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_due_date?->format('Y-m-d')}}</a></td>
-												</tr>
-												<tr>
-													<th scope="row">Total Billing(Rp.)</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{ number_format($data_billing->itms_bil_total, 2, ',', '.') }}</a></td>
-												</tr>
-												
-												<tr>
-													<th scope="row">File Invoice</th>
-													<td>:</td>
-													<td><a href="{{url($data_billing->bill_invoice_file)}}" class="btn btn-xs btn-info" target="_blank">Download File</a></td>
-												</tr>
-											</tbody>
-										</table>
-                                    </div>
-									
-									<div class="form-group form-row">
-										<div id="ttData" style="width:100%; min-width: 310px"></div>
-									</div>
-									
-									
-									<div class="table-responsive">
-										<table class="table table-hover mb-0">
-											<thead>
-												<tr>
-												  <th scope="col">#</th>
-												  <th class="text-uppercase" scope="col"></th>
-												  <th class="text-uppercase" scope="col"></th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<th scope="row">Informasi Pembayaran</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_note}}</a></td>
-												</tr>
-												<tr>
-													<th scope="row">Tanggal Pembayaran</th>
-													<td>:</td>
-													<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_date?->format('Y-m-d')}}</a></td>
-												</tr>
-												<tr>
-													<th scope="row">File Bukti Pembayaran</th>
-													<td>:</td>
-													<td>
-														@if ($data_billing->bill_payment_file != '')
-															<a href="{{url($data_billing->bill_payment_file)}}" class="btn btn-xs btn-info" target="_blank">Download File</a></h5>
-														@endif
-													</td>
-												</tr>
-											</tbody>
-										</table>
-                                    </div>
-									
-									
-                                    <div class="form-buttons-w">
-                                        <a class="btn btn-success" href="javascript:void(0)" onClick="confirmLunas()">
-                                            <i class="fas fa-save"></i> Set Lunas ?
-                                        </a>
-                                    </div>
-                                </form>
+					   
+								<!-- Security CSRF TOKEN -->
+								@csrf
+								<input type="hidden" name="tipe" value="pelunasan">
+								<input type="hidden" name="bil_id" value="{{old('bil_id') ?? $data_billing->bill_id}}">
+								<input type="hidden" name="cust_id" value="{{old('cust_id') ?? $data_billing->cust_id}}">
+								<input type="hidden" name="bill_nomor_billing" value="{{old('bill_nomor_billing') ?? $data_billing->bill_nomor_billing}}">
+								<div class="table-responsive">
+									<table class="table table-hover mb-0">
+										<thead>
+											<tr>
+											  <th scope="col">#</th>
+											  <th class="text-uppercase" scope="col"></th>
+											  <th class="text-uppercase" scope="col"></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>Nama Pelanggan</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->cust_nama}}</a></td>
+											</tr>
+											<tr>
+												<td>Nomor Billing</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_nomor_billing}}</a></td>
+											</tr>
+											<tr>
+												<td>Tanggal Billing</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_billing_date?->format('Y-m-d')}}</a></td>
+											</tr>
+											<tr>
+												<td>Jatuh Tempo</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_due_date?->format('Y-m-d')}}</a></td>
+											</tr>
+											<tr>
+												<td>Total Billing(Rp.)</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{ number_format($data_billing->itms_bil_total, 2, ',', '.') }}</a></td>
+											</tr>
+											
+											<tr>
+												<td>File Invoice</th>
+												<td>:</td>
+												<td><a href="{{url($data_billing->bill_invoice_file)}}"  target="_blank"><i class="fas fa-download"></i> Download File</a></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								
+								<div class="form-group form-row">
+									<div id="ttData" style="width:100%; min-width: 310px"></div>
+								</div>
+								
+								
+								<div class="table-responsive">
+									<table class="table table-hover mb-0">
+										<thead>
+											<tr>
+											  <th scope="col">#</th>
+											  <th class="text-uppercase" scope="col"></th>
+											  <th class="text-uppercase" scope="col"></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>Informasi Pembayaran</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_note}}</a></td>
+											</tr>
+											<tr>
+												<td>Tanggal Pembayaran</th>
+												<td>:</td>
+												<td><a href="javascript:void(0)" class="btn-link">{{$data_billing->bill_payment_date?->format('Y-m-d')}}</a></td>
+											</tr>
+											<tr>
+												<td>File Bukti Pembayaran</th>
+												<td>:</td>
+												<td>
+													@if ($data_billing->bill_payment_file != '')
+														<a href="{{url($data_billing->bill_payment_file)}}"  target="_blank"><i class="fas fa-download"></i> Download File</a></h5>
+													@endif
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
                             </div>
                         </div>
                     </div>
                 </div>
+				</form>
             </div>
         </div>
     </div>
@@ -185,7 +176,7 @@
                 ]],
                 columns: [[
                     {field: 'itms_bil_tipe', title: 'Tipe', width: 100, sortable: true,},
-                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 420, sortable: true},
+                    {field: 'itms_bil_desc', title: 'Deskripsi', width: 520, sortable: true},
                     // {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true, align:'right',},
                 ]],
             });

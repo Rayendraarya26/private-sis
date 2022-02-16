@@ -91,7 +91,7 @@ class AuUploadJadwalTahap1Controller extends Controller
             $x['aud_thp1_tanggal_selesai'] = $d->aud_thp1_tanggal_selesai;
             $x['cust_nama']                = $d->cust_nama;
             $x['sert_nama']                = $d->sert_nama;
-            $x['aud_thp1_file_jadwal']     = ($d->aud_thp1_file_jadwal != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->aud_thp1_file_jadwal) . '"><i class="fas fa-cloud-download"></i> Download</div>' : '';
+            $x['aud_thp1_file_jadwal']     = ($d->aud_thp1_file_jadwal != '') ? '<a target="_blank" href = "' . url($d->aud_thp1_file_jadwal) . '"><i class="fas fa-download"></i> Download</div>' : '';
             array_push($result, $x);
         }
 

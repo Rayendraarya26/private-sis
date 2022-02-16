@@ -221,16 +221,20 @@ class PenjadwalanTahap1Controller extends Controller
 
     private function ajax_combogrid_pegawai(Request $request)
     {
-        $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        $data = MasterPegawai::join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+		$data->join('pegawai_kompetensi_auditor', "pegawai_kompetensi_auditor.peg_id", "=", "master_pegawai.peg_id");
+		$data->join('sis_permohonan_detail', "sis_permohonan_detail.sert_id", "=", "pegawai_kompetensi_auditor.sert_id");
         // Filter
         if (!empty($request->q)) {
             $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
         }
+		$data->where('sis_permohonan_detail.mohon_det_id', $request->mohon_det_id);
+		$data->where('master_pegawai.is_auditor', 'yes');
         // Total
-        $total = $data->select(DB::raw('count(distinct peg_id) as total'))->first()->total;
+        $total = $data->select(DB::raw('COUNT(DISTINCT master_pegawai.peg_id) as total'))->first()->total;
         // Pagination
         $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
+		$data->groupBy("master_pegawai.peg_id");
         // Result
         $result = [];
         foreach ($data->get() as $d) {
@@ -326,7 +330,12 @@ class PenjadwalanTahap1Controller extends Controller
                 $newSisAuditTahap1Tim->created_at      = Carbon::now();
                 $newSisAuditTahap1Tim->updated_at      = Carbon::now();
                 $newSisAuditTahap1Tim->save();
-				
+            }
+
+            DB::commit();
+			
+			$dataItems = json_decode($request['jadwal_tims']);
+            foreach ($dataItems as $itm) {
 				$data_pegawai = MasterPegawai::where('peg_id', $itm->peg_id)->select('user_id')->first();
 				$notifStruct            = new NotifStruct();
 				$notifStruct->title     = 'Penunjukan Tim Tahap 1';
@@ -335,8 +344,6 @@ class PenjadwalanTahap1Controller extends Controller
 				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
 				sendNotification($notifStruct);
             }
-
-            DB::commit();
 			
 			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
 			// Send Push
