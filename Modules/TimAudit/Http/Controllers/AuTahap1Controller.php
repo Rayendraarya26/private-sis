@@ -4,6 +4,9 @@ namespace Modules\TimAudit\Http\Controllers;
 
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
+use App\Models\BbkkpSis\SisAuditTahap1Detail;
+use App\Models\BbkkpSis\SisAuditTahap1Revisi;
+use App\Models\BbkkpSis\SisAuditTahap1RevisiFile;
 use App\Models\BbkkpSis\SisPelanggan;
 
 use App\Http\Structs\EmailStruct;
@@ -275,7 +278,8 @@ class AuTahap1Controller extends Controller
             "sert_id"               => 'required',
             "mohon_id"              => 'required',
             "jenis"              => 'required',
-            "kolom_v"               => 'required',
+            /* 
+			"kolom_v"               => 'required',
             "kolom_vi"              => 'required',
             "kolom_vii"             => 'required',
             "kolom_viii"            => 'required',
@@ -284,20 +288,22 @@ class AuTahap1Controller extends Controller
             "kolom_xi"              => 'required',
             "kolom_xii"             => 'required',
             "status_audit"          => 'required',
-            "tutup_audit"           => 'required',
+            "tutup_audit"           => 'required', 
+			*/
             "detail_hasil_tinjauan" => 'required',
             "detail_keterangan"     => 'required',
             "detail_judul_dok"      => 'nullable',
             "detail_kode_dok"       => 'nullable',
             "detail_nilai"       => 'nullable',
             "detail_satuan"       => 'nullable',
-            "aud_thp1_file_daftar_hadir"       => 'required',
-            "aud_thp1_file_notulen"       => 'required',
+            // "aud_thp1_file_daftar_hadir"       => 'required',
+            // "aud_thp1_file_notulen"       => 'required',
         ]);
-		$uploadedPathDaftar = [];
-		$uploadedPathNotulen = [];
+		// $uploadedPathDaftar = [];
+		// $uploadedPathNotulen = [];
         try {
-            $baseFileUpload = sprintf(config("app.path_file_tahap1"), $request['aud_thp1_id']);	
+           /*  
+		   $baseFileUpload = sprintf(config("app.path_file_tahap1"), $request['aud_thp1_id']);	
             DB::beginTransaction();
 			$updateJadwal = [
                     "aud_thp1_status"  => $request['status_audit'],
@@ -326,12 +332,13 @@ class AuTahap1Controller extends Controller
             
 			if($request['tutup_audit'] == 'ya' ){
 				$updateJadwal['aud_thp1_status_temuan'] = 'diajukan';
-			}
+			} 
+			
 			
             DB::table('sis_audit_tahap1')
                 ->where('aud_thp1_id', $request['aud_thp1_id'])
                 ->update($updateJadwal);
-
+			
             DB::table('sis_audit_tahap1')
                 ->where('aud_thp1_id', $request['aud_thp1_id'])
                 ->update([
@@ -346,7 +353,8 @@ class AuTahap1Controller extends Controller
                     "updated_at"          => Carbon::now(),
                     "aud_thp1_tanggal_rapat_akhir"          => Carbon::now()->format('Y-m-d'),
                 ]);
-			
+			*/
+			$ada_temuan = 0;
 			if($request['jenis'] == 'sni'){
 				if (!empty($request['detail_kode_dok'])) {
 					foreach ($request['detail_kode_dok'] as $key => $val) {
@@ -358,6 +366,39 @@ class AuTahap1Controller extends Controller
 								'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
 								'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
 							]);
+							
+						if(isset($request['detail_hasil_tinjauan'][$key])){
+							if($request['detail_hasil_tinjauan'][$key] == 'no'){
+								DB::table('sis_audit_tahap1_detail')
+									->where('aud_thp1_det_id', $key)
+									->update([
+										'aud_thp1_det_is_temuan'	  => 'ya',
+									]);
+									
+								
+								$check_data = DB::table('sis_audit_tahap1_revisi')
+									->selectRaw('*')
+									->whereIn('thp1_revisi_status', [ 'open', 'fixed' ])
+									->get();
+								if ($check_data->isEmpty()) {
+									DB::table('sis_audit_tahap1_revisi')->insert([
+										'aud_thp1_det_id' => $key,
+										'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+										'thp1_revisi_status' => 'open'
+									]);
+								} else {
+									foreach($check_data as $ck){
+										DB::table('sis_audit_tahap1_revisi')
+										->where('thp1_revisi_id', $ck->thp1_revisi_id)
+										->update([
+											'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+										]);
+									}
+									
+								}
+								$ada_temuan++;
+							}
+						}
 					}
 				}
 			}
@@ -372,34 +413,69 @@ class AuTahap1Controller extends Controller
 								'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
 								'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
 							]);
+							
+						if(isset($request['detail_hasil_tinjauan'][$key])){
+							if($request['detail_hasil_tinjauan'][$key] == 'no'){
+								DB::table('sis_audit_tahap1_detail')
+									->where('aud_thp1_det_id', $key)
+									->update([
+										'aud_thp1_det_is_temuan'	  => 'ya',
+									]);
+									
+								
+								$check_data = DB::table('sis_audit_tahap1_revisi')
+									->selectRaw('*')
+									->whereIn('thp1_revisi_status', [ 'open', 'fixed' ])
+									->get();
+								if ($check_data->isEmpty()) {
+									DB::table('sis_audit_tahap1_revisi')->insert([
+										'aud_thp1_det_id' => $key,
+										'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+										'thp1_revisi_status' => 'open'
+									]);
+								} else {
+									foreach($check_data as $ck){
+										DB::table('sis_audit_tahap1_revisi')
+										->where('thp1_revisi_id', $ck->thp1_revisi_id)
+										->update([
+											'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
+										]);
+									}
+									
+								}
+								$ada_temuan++;
+							}
+						}
 					}
 				}
 			}
 			
+			/* 
 			if($request['tutup_audit'] == 'ya'){
+            */
+			if($ada_temuan > 0){
 				// Notifikasi
 				$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
 				// Send Push
 				$notifStruct            = new NotifStruct();
-				$notifStruct->title     = "Proses Audit Tahap I";
-				$notifStruct->message   = sprintf("Proses Audit Tahap I telah ditentukan untuk jadwal audit tahap 1 no #%s, silahkan klarifikasi temuan.", $request['aud_thp1_id']);
+				$notifStruct->title     = "LKS Audit Tahap I";
+				$notifStruct->message   = sprintf("LKS/Klausul Audit Tahap I telah diinputkan untuk jadwal audit tahap 1 no #%s, silahkan klarifikasi temuan.", $request['aud_thp1_id']);
 				$notifStruct->user_id   = $data_pelanggan?->user_id;
 				$notifStruct->click_url = url('/pelanggan/jadwal');
 				sendNotification($notifStruct);
 
 				// Send Email
 				$structEmail          = new EmailStruct();
-				$structEmail->subject = "Proses Audit Tahap I";
+				$structEmail->subject = "LKS Audit Tahap I";
 				$structEmail->body    = view("$this->view.mails.publish")
 					->with([
 						'nama'       => $data_pelanggan?->cust_nama,
-						'message'       => sprintf("Proses Audit Tahap I telah ditentukan untuk jadwal audit tahap 1 no #%s, silahkan klarifikasi temuan.", $request['aud_thp1_id']),
+						'message'       => sprintf("LKS/Klausul Audit Tahap I telah diinputkan untuk jadwal audit tahap 1 no #%s, silahkan klarifikasi temuan.", $request['aud_thp1_id']),
 						'link_verif'        => url('/pelanggan/jadwal'),
 					])->render();
 				$structEmail->to      = $data_pelanggan?->cust_email;
 				sendEmail($structEmail);
 			}
-            
 
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');

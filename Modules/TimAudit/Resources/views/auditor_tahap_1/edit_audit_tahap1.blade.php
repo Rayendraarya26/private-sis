@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Proses Audit Tahap 1')
+@section('title', 'Input Tinjauan Audit Tahap 1')
 
 @push("css")
     <!-- HTML -->
@@ -23,52 +23,126 @@
             <div class="col-md-12">
                 <div class="dt-card">
                     <div class="dt-card__body">
-                        <!-- SmartWizard html -->
-                        <div id="smartwizard">
-
-                            <ul class="nav">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#step-1">
-                                        <strong>Langkah 1</strong> <br>Hasil Tinjauan Dokumen
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#step-2">
-                                        <strong>Langkah 2</strong> <br>Laporan Audit Tahap 1
-                                    </a>
-                                </li>
-                            </ul>
-
-                            <div class="tab-content">
-                                <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
-                                    @include("timaudit::auditor_tahap_1._edit_audit_tahap1_step_1")
-                                </div>
-                                <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
-                                    @include("timaudit::auditor_tahap_1._edit_audit_tahap1_step_2")
-                                </div>
-                            </div>
-                        </div>
-
-                        <br/> &nbsp;
-
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div style="float: right">
-                                    <button class="btn btn-secondary" id="prev-btn" type="button">
-                                        <i class="far fa-arrow-left-from-line"></i> Kembali
-                                    </button>
-                                    <button class="btn btn-secondary" id="next-btn" type="button">
-                                        Lanjut <i class="far fa-arrow-right-from-line"></i>
-                                    </button>
-                                    {{--<button class="btn btn-danger" id="reset-btn" type="button">
-                                        <i class="far fa-arrow-left-rotate"></i>
-                                        Reset
-                                    </button>--}}
-                                </div>
-                            </div>
-                        </div>
-
+<div class="row" id="vueStepOne">
+	<div class="col-xl-12">
+		<div class="table-responsive">
+			<table class="table table-bordered mb-0">
+				<thead class="thead-light">
+					<tr>
+					  <th rowspan="2" scope="col">Klausul</th>
+					  <th rowspan="2" scope="col">Persyaratan</th>
+					  <th colspan="2" scope="col">Dokumen {{$dataJadwal->cust_nama}}</th>
+					  <th rowspan="2" scope="col">Hasil Tinjauan(OK / NO)</th>
+					  <th rowspan="2" scope="col">Keterangan</th>
+					</tr>
+					<tr>
+					  @if($dataJadwal->sert_tahap1_jenis == 'sni')
+						<th scope="col">Kode Dokumen </th>
+					    <th scope="col">Judul Dokumen</th>
+					  @elseif($dataJadwal->sert_tahap1_jenis == 'pusat')
+						<th scope="col">Nilai </th>
+					    <th scope="col">Satuan</th>
+					  @endif 
+					</tr>
+				</thead>
+				<tbody>
+					@foreach($dataAuditKlausul as $dpk)
+					<tr>
+					  <th scope="row">{{$dpk->aud_thp1_det_thp1_nomor}}</th>
+					  @if($dataJadwal->sert_tahap1_jenis == 'sni')
+					  <td>{{$dpk->aud_thp1_det_peryataan}}</td>
+					  @elseif($dataJadwal->sert_tahap1_jenis == 'pusat')
+					  <td>{{$dpk->aud_thp1_det_persyaratan}}</td>
+					  @endif 
+					  
+					  @if($dataJadwal->sert_tahap1_jenis == 'sni')
+					  <td>
+						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+							<input type="text" class="form-control" name="kode_dok[{{$dpk->aud_thp1_det_id}}]" id="kode_dok" placeholder="Kode Dokumen" value="{{$dpk->aud_thp1_det_kode_dok}}">
+						@endif 
+					  </td>
+					  <td>
+						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+							<input type="text" class="form-control" name="judul_dok[{{$dpk->aud_thp1_det_id}}]" id="judul_dok" placeholder="Judul Dokumen" value="{{$dpk->aud_thp1_det_judul_dok}}">
+						@endif 
+					  </td>
+					  @elseif($dataJadwal->sert_tahap1_jenis == 'pusat')
+					  <td>
+						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+							<input type="text" class="form-control" name="nilai[{{$dpk->aud_thp1_det_id}}]" id="nilai" placeholder="" value="{{$dpk->aud_thp1_det_nilai}}">
+						@endif 
+					  </td>
+					  <td>
+						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+							<input type="text" class="form-control" name="satuan[{{$dpk->aud_thp1_det_id}}]" id="satuan" placeholder="Satuan" value="{{$dpk->aud_thp1_det_satuan}}">
+						@endif 
+					  </td>
+					  @endif 
+					  <td>
+						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+							@if($dpk->aud_thp1_det_hasil_tinjauan == 'ok')
+								<div class="col-md-12 col-sm-12">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}" value="ok" checked>
+									<label class="form-check-label" for="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}">OK</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}" value="no">
+									<label class="form-check-label" for="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}">NO</label>
+								</div>
+								</div>
+							@elseif($dpk->aud_thp1_det_hasil_tinjauan == 'no')
+							<div class="col-md-12 col-sm-12">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}" value="ok">
+									<label class="form-check-label" for="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}">OK</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}" value="no" checked>
+									<label class="form-check-label" for="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}">NO</label>
+								</div>
+								</div>
+							@else
+								<div class="col-md-12 col-sm-12">
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}" value="ok" checked>
+										<label class="form-check-label" for="hasil_tinjauan_ok{{$dpk->aud_thp1_det_id}}">OK</label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}" id="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}" value="no">
+										<label class="form-check-label" for="hasil_tinjauan_no{{$dpk->aud_thp1_det_id}}">NO</label>
+									</div>
+								</div>
+							@endif 
+						@endif 
+					  </td>
+					  <td>
+						@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+							<textarea type="text" class="form-control" name="keterangan_{{$dpk->aud_thp1_det_id}}" id="keterangan" placeholder="Keterangan">{{$dpk->aud_thp1_det_keterangan}}</textarea>
+						@endif 
+					  </td>
+					</tr>
+					@endforeach
+				</tbody>
+			</table>
+		</div>
+		<div class="col-md-12">
+			<br/>
+			<template v-if="loading_submit">
+				<div class="fa-3x" style="text-align: center">
+					<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+				</div>
+			</template>
+			<template v-else>
+				<button :disabled="!status_submit"
+						:class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}"
+						@click="submitAudit">
+					<i class="fad fa-disk"></i> Simpan Audit Tahap 1 
+				</button>
+			</template>
+		</div>
+	</div>
+</div>
                     </div>
                 </div>
             </div>
@@ -79,12 +153,7 @@
 
 
 @push("javascript")
-    <script src="{{asset("assets/plugins/smartwizard/js/jquery.smartWizard.min.js")}}"></script>
-	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js" referrerpolicy="origin"></script>
     <script>
-		
-		
         const swalWithBootstrapButtons = swal.mixin({
             confirmButtonClass: 'btn btn-primary mb-2',
             cancelButtonClass: 'btn btn-warning mr-2 mb-2',
@@ -95,7 +164,7 @@
 			@if($statusEntry == false)
 				swalWithBootstrapButtons({
 					title: `Informasi Audit Tahap 1`,
-					text: `Data LKS dan Laporan belum pernah ter-entry, apakah anda ingin men-generate data dari master?`,
+					text: `Data LKS/Klausul dan Laporan belum pernah ter-entry, apakah anda ingin men-generate data dari master?`,
 					type: 'info',
 					showCancelButton: true,
 					allowOutsideClick: false,
@@ -138,75 +207,143 @@
 					}
 				});
 			@endif
-            // ============================================ SmartWizard ============================================
-            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
-                $("#prev-btn").removeClass('disabled');
-                $("#next-btn").removeClass('disabled');
-                if (stepPosition === 'first') {
-                    $("#prev-btn").addClass('disabled');
-                } else if (stepPosition === 'last') {
-                    $("#next-btn").addClass('disabled');
-                } else {
-                    $("#prev-btn").removeClass('disabled');
-                    $("#next-btn").removeClass('disabled');
+           
+		   window.vueStepOne = new Vue({
+                el: "#vueStepOne",
+                data: {
+                    aud_thp1_id: `{{$dataJadwal->aud_thp1_id}}`,
+                    aud_thp1_id: `{{$dataJadwal->aud_thp1_id}}`,
+                    status_validasi: true,
+                    status_submit: true,
+                    loading_submit: false,
+                },
+                mounted() {
+                    this.setForm();
+                },
+                methods: {
+                    validate() {
+						this.status_validasi = true;
+						@foreach($dataAuditKlausul as $dpk)
+							@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+								if($('input[name="hasil_tinjauan_{{$dpk->aud_thp1_det_id}}').is(':checked')) { 
+					
+								}
+								else{
+									toastCenter({
+												type: 'warning',
+												title: "Pilih Hasil Tinjauan untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}}"
+											})
+										this.status_validasi = false;
+								}
+								@if($dataJadwal->sert_tahap1_jenis == 'sni')
+									if ($('input[name="kode_dok[{{$dpk->aud_thp1_det_id}}]').val() == '') {
+										toastCenter({
+												type: 'warning',
+												title: "Kode Dokumen untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}} masih kosong" 
+											})
+										this.status_validasi = false;
+									}
+
+									
+									if ($('input[name="judul_dok[{{$dpk->aud_thp1_det_id}}]').val() == '') {
+										toastCenter({
+												type: 'warning',
+												title: "Judul Dokumen untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}} masih kosong" 
+											})
+										this.status_validasi = false;
+									}
+								@elseif($dataJadwal->sert_tahap1_jenis == 'pusat')
+									if ($('input[name="nilai[{{$dpk->aud_thp1_det_id}}]').val() == '') {
+										toastCenter({
+												type: 'warning',
+												title: "Satuan untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}} masih kosong" 
+											})
+										this.status_validasi = false;
+									}
+									
+									if ($('input[name="satuan[{{$dpk->aud_thp1_det_id}}]').val() == '') {
+										toastCenter({
+												type: 'warning',
+												title: "Satuan untuk Klausul {{$dpk->aud_thp1_det_thp1_nomor}} masih kosong" 
+											});
+										this.status_validasi = false;
+									} 
+								@endif
+							@endif
+						@endforeach
+						
+                    },
+                    async setForm() {
+                        
+                    },
+					async submitAudit() {
+						this.validate();
+						if(this.status_validasi == true){
+							swalWithBootstrapButtons({
+								title: `Simpan Data ?`,
+								text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
+								type: 'info',
+								showCancelButton: true,
+								confirmButtonText: 'Simpan',
+								cancelButtonText: 'Batal',
+								reverseButtons: true
+							}).then(async (result) => {
+								if (result.value) {
+									let formData = new FormData();
+									let status_from = true;
+									formData.append("tipe", 'update-audit-tahap1');
+									formData.append("cust_id", '{{$dataJadwal->cust_id}}');
+									formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}');
+									formData.append("sert_id", '{{$dataJadwal->sert_id}}');
+									formData.append("mohon_id", '{{$dataJadwal->mohon_id}}');
+									formData.append("jenis", '{{$dataJadwal->sert_tahap1_jenis}}');
+
+									@foreach($dataAuditKlausul as $dpk)
+										@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
+											var myRadio = $("input[name=hasil_tinjauan_{{$dpk->aud_thp1_det_id}}]");
+											var checkedValue = myRadio.filter(":checked").val();
+											formData.append("detail_hasil_tinjauan[{{$dpk->aud_thp1_det_id}}]", checkedValue);
+											@if($dataJadwal->sert_tahap1_jenis == 'sni')
+											formData.append("detail_kode_dok[{{$dpk->aud_thp1_det_id}}]", $('input[name="kode_dok[{{$dpk->aud_thp1_det_id}}]').val());
+											formData.append("detail_judul_dok[{{$dpk->aud_thp1_det_id}}]", $('input[name="judul_dok[{{$dpk->aud_thp1_det_id}}]').val());
+											@elseif($dataJadwal->sert_tahap1_jenis == 'pusat')
+											formData.append("detail_nilai[{{$dpk->aud_thp1_det_id}}]", $('input[name="nilai[{{$dpk->aud_thp1_det_id}}]').val());
+											formData.append("detail_satuan[{{$dpk->aud_thp1_det_id}}]", $('input[name="satuan[{{$dpk->aud_thp1_det_id}}]').val());
+											@endif
+											formData.append("detail_keterangan[{{$dpk->aud_thp1_det_id}}]", $('textarea[name="keterangan_{{$dpk->aud_thp1_det_id}}').val());
+										@endif
+									@endforeach
+									
+									this.loading_submit = true;
+									let self = this;
+									$.ajax({
+										url: `{{action("$module@update")}}`,
+										type: 'post',
+										processData: false,
+										contentType: false,
+										data: formData,
+										success: async function (res) {
+											toastCenter({
+												type: 'success',
+												title: res.message
+											})
+											setTimeout(() => location.href = "{{url("$url")}}", 1000)
+											// self.loading_submit = false;
+										},
+										error: function (xhr) {
+											self.loading_submit = false;
+											if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+											else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+										}
+									});
+								}
+							});
+						}
+                        
+                    },
                 }
             });
-
-            // Smart Wizard
-            $('#smartwizard').smartWizard({
-                selected: 0,
-                cycleSteps: false,
-                theme: 'arrows', // default, arrows, dots, progress
-                enableURLhash: false,
-                // darkMode: true,
-                transition: {
-                    animation: 'slide-horizontal', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
-                },
-                toolbarSettings: {
-                    toolbarPosition: 'bottom', // none, top, bottom, both
-                    toolbarButtonPosition: 'right', // left, right, center
-                    showNextButton: false, // show/hide a Next button
-                    showPreviousButton: false, // show/hide a Previous button
-                    toolbarExtraButtons: [] // Extra buttons to show on toolbar, array of jQuery input/buttons elements
-                },
-                anchorSettings: {
-                    anchorClickable: false, // Enable/Disable anchor navigation
-                    removeDoneStepOnNavigateBack: true, // While navigate back done step after active step will be cleared
-                },
-                keyboardSettings: {
-                    keyNavigation: false,
-                },
-            });
-
-            $("#prev-btn").on("click", function () {
-                // Navigate previous
-                $('#smartwizard').smartWizard("prev");
-                return true;
-            });
-
-            $("#next-btn").on("click", function () {
-                try {
-                    const currentStep = $('#smartwizard').smartWizard("getStepIndex");
-                    // Validate STEP
-                    switch (currentStep) {
-                        case 0:
-                            vueStepOne.validate();
-                            vueStepTwo.start();
-                            break;
-                    }
-
-                    // Navigate next
-                    $('#smartwizard').smartWizard("next");
-                    return true;
-                } catch (message) {
-                    swalWithBootstrapButtons({
-                        title: `Validasi`,
-                        text: message,
-                        type: 'warning',
-                    })
-                }
-            });
-
+			
         });
     </script>
 @endpush

@@ -54,8 +54,9 @@
 							let dom = `dropdownMenu_${row.aud_thp1_id}`;
                             let btnEdit = ``;	
 							if(row.aud_thp1_status_temuan == 'proses'){
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Audit</div>`;
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Tinjauan</div>`;
 							}
+							/*
 							else if(row.aud_thp1_status_temuan == 'diajukan'){
 								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
 								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
@@ -64,13 +65,14 @@
 								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Revisi Audit</div>`;
 								btnEdit += `<div data-options="iconCls:'fas fa-flag'" onclick="location.href = '{{ url("$url/print") }}?tipe=lihat-revisi&aud_thp1_id=${row.aud_thp1_id}'">Lihat Revisi</div>`;
 							}
+							*/
 							
                             return `
 								<div>
 									<button class="btn-action btn-info btn-block" data-index="${row.aud_thp1_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
-									<div id="${dom}" style="width:150px; display: none;">
+									<div id="${dom}" style="width:170px; display: none;">
 										@if(authorized("{$module}@edit")) ${btnEdit} @endif
 								</div>
 							</div>`
