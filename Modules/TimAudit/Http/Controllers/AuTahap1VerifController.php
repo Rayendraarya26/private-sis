@@ -59,10 +59,9 @@ class AuTahap1VerifController extends Controller
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
-        $data->whereIn('sis_audit_tahap1.aud_thp1_status_temuan', ['diajukan', 'setuju']);
+        $data->whereIn('sis_audit_tahap1.aud_thp1_status_temuan', ['setuju']);
         $data->whereIn('sis_audit_tahap1.aud_thp1_ditutup', ['tidak']);
         $data->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya');
-        $data->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua');
         $data->whereNotNull('sis_audit_tahap1.aud_thp1_file_jadwal');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {

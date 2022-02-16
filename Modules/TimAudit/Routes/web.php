@@ -25,6 +25,7 @@ use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuTahap1LapController;
 use Modules\TimAudit\Http\Controllers\AuTahap1RapatAkhirController;
 use Modules\TimAudit\Http\Controllers\AuTahap1LogBookController;
+use Modules\TimAudit\Http\Controllers\AuTahap1VerifController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
 use Modules\TimAudit\Http\Controllers\HistoriPenugasanController;
@@ -100,6 +101,13 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::any('/ajax', [AuTahap1LogBookController::class, 'ajax']);
 			Route::get('/upload', [AuTahap1LogBookController::class, 'upload']);
 			Route::post('/save', [AuTahap1LogBookController::class, 'save']);
+        });
+		
+		Route::prefix("tahap1-verif")->group(function () {
+            Route::get('/', [AuTahap1VerifController::class, 'index']);
+            Route::any('/ajax', [AuTahap1VerifController::class, 'ajax']);
+			Route::get('/edit', [AuTahap1VerifController::class, 'edit']);
+			Route::post('/update', [AuTahap1VerifController::class, 'update']);
         });
 		
         Route::prefix("daftar-periksa")->group(function () {
