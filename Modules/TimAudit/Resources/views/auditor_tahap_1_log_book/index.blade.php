@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Audit Tahap 1')
+@section('title', 'Upload Log Book Auditor Tahap I')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Jadwal Audit Tahap 1</h3>
+                            <h3 class="dt-card__title">Data Jadwal Audit dan File Upload Log Book Auditor</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -47,37 +47,49 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "<br><br><br>",
-                        width: 100,
+                        title: "",
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
 							let btnEdit = '';
-							btnEdit = `<a href="{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}" class="btn btn-primary btn-xs btn-block"><i class="fad fa-paper-plane"></i> Proses</a>`;
-                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`;
+							if(row.status_upload == 're-upload'){
+								btnEdit = `<a href="{{ url("$url/upload") }}?aud_thp1_id=${row.aud_thp1_id}" class="btn btn-warning btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Re-Upload</a>`;
+							}
+							else{
+								btnEdit = `<a href="{{ url("$url/upload") }}?aud_thp1_id=${row.aud_thp1_id}" class="btn btn-primary btn-xs btn-block"><i class="fas fa-cloud-upload"></i> Upload</a>`;
+							}
+                            return `@if(authorized("{$module}@upload")) ${btnEdit} @endif`;
                         }
                     }
                 ]],
                 columns: [[
-                    {field: 'aud_thp1_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',
+                    {field: 'thp1_logbook_filepath', title: 'File', width: 100, sortable: false,
 						formatter: function (val, row) {
-                            return `${row.aud_thp1_id}`
+                            let btnDownload = ``;		
+							if(row.thp1_logbook_filepath != ''){
+								btnDownload += `${row.thp1_logbook_filepath}`;
+							}
+							
+                            return `${btnDownload}`
                         }
 					},
+					{field: 'aud_thp1_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left'},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'aud_thp1_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'aud_thp1_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
                 ]],
 				onBeforeLoad: function () {
-                    
+
                 },
                 onLoadSuccess: function (data) {
-                   
+
                 },
             });
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'thp1_logbook_filepath', type: 'label'},
                 ]);
         });
     </script>

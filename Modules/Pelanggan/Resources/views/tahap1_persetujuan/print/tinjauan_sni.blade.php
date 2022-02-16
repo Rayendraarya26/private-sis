@@ -92,7 +92,7 @@
             <th rowspan="2">Klausul</th>
             <th rowspan="2">Persyaratan</th>
             <th colspan="2">
-                Dokumen PT. {{strtoupper($data->sis_permohonan->mohon_cust_nama)}}
+                Dokumen {{strtoupper($data->sis_permohonan->mohon_cust_nama)}}
             </th>
 
             <th rowspan="2">Hasil Tinjauan <br>(OK / NO)</th>
@@ -119,7 +119,7 @@
     </table>
 
     <br>
-    <span style="font-size: 10px">Kesimpulan: {!! $data->aud_thp1_kesimpulan !!}</span>
+    <span style="font-size: 10px">Kesimpulan: Dokumen yang disusun oleh {{strtoupper($data->sis_permohonan->mohon_cust_nama)}} <strong>{{$data->aud_thp1_status}}</strong> kecukupan minimal terhadap Standar {!! $data->aud_thp1_standart_acuan !!}.</span>
     <br>
     <span style="font-size: 10px">Rekomendasi: {!! $data->aud_thp1_pernyataan_auditor !!}</span>
 </section>

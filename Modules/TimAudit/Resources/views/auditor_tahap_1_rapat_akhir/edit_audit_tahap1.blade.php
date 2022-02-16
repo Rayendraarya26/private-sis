@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Proses Audit Tahap 1')
+@section('title', 'Rapat Penutupan Tahap 1')
 
 @push("css")
     <!-- HTML -->
@@ -34,17 +34,17 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#step-2">
-                                        <strong>Langkah 2</strong> <br>Laporan Audit Tahap 1
+                                        <strong>Langkah 2</strong> <br>Dokumen Rapat Akhir
                                     </a>
                                 </li>
                             </ul>
 
                             <div class="tab-content">
                                 <div id="step-1" class="tab-pane" role="tabpanel" aria-labelledby="step-1">
-                                    @include("timaudit::auditor_tahap_1._edit_audit_tahap1_step_1")
+                                    @include("timaudit::auditor_tahap_1_rapat_akhir._edit_audit_tahap1_step_1")
                                 </div>
                                 <div id="step-2" class="tab-pane" role="tabpanel" aria-labelledby="step-2">
-                                    @include("timaudit::auditor_tahap_1._edit_audit_tahap1_step_2")
+                                    @include("timaudit::auditor_tahap_1_rapat_akhir._edit_audit_tahap1_step_2")
                                 </div>
                             </div>
                         </div>
@@ -92,52 +92,6 @@
         });
 
         $(document).ready(function () {
-			@if($statusEntry == false)
-				swalWithBootstrapButtons({
-					title: `Informasi Audit Tahap 1`,
-					text: `Data LKS dan Laporan belum pernah ter-entry, apakah anda ingin men-generate data dari master?`,
-					type: 'info',
-					showCancelButton: true,
-					allowOutsideClick: false,
-					confirmButtonText: 'Generate',
-					cancelButtonText: 'Batal',
-					reverseButtons: true
-				}).then(async (result) => {
-					if (result.value) {
-						$.messager.progress();
-						let formData = new FormData();
-						formData.append("tipe", 'update-generate-tahap1')
-						formData.append("sert_tahap1_jenis", '{{$dataJadwal->sert_tahap1_jenis}}')
-						formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}')
-						formData.append("sert_id", '{{$dataJadwal->sert_id}}')
-						formData.append("mohon_id", '{{$dataJadwal->mohon_id}}')
-						$.ajax({
-							url: `{{action("$module@update")}}`,
-							type: 'post',
-							processData: false,
-							contentType: false,
-							data: formData,
-							success: async function (res) {
-								$.messager.progress('close');
-								toastCenter({
-									type: 'success',
-									title: res.message
-								})
-								setTimeout(() => location.href = "{{url("$url")}}/edit?tipe=audit-tahap1&aud_thp1_id={{$dataJadwal->aud_thp1_id}}", 1000)
-							},
-							error: function (xhr) {
-								$.messager.progress('close');
-								self.loading_submit = false;
-								if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-								else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-							}
-						});
-					}
-					else{
-						setTimeout(() => location.href = "{{url("$url")}}", 500);
-					}
-				});
-			@endif
             // ============================================ SmartWizard ============================================
             $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection, stepPosition) {
                 $("#prev-btn").removeClass('disabled');

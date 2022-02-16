@@ -53,24 +53,16 @@
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.aud_thp1_id}`;
                             let btnEdit = ``;	
-							if(row.aud_thp1_status_temuan == 'proses'){
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Audit</div>`;
-							}
-							else if(row.aud_thp1_status_temuan == 'diajukan'){
-								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
-								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
-							}
-							else {
-								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Revisi Audit</div>`;
-								btnEdit += `<div data-options="iconCls:'fas fa-flag'" onclick="location.href = '{{ url("$url/print") }}?tipe=lihat-revisi&aud_thp1_id=${row.aud_thp1_id}'">Lihat Revisi</div>`;
-							}
+							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Input Laporan</div>`;
+							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
+							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=lap_lengkap&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
 							
                             return `
 								<div>
 									<button class="btn-action btn-info btn-block" data-index="${row.aud_thp1_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
-									<div id="${dom}" style="width:150px; display: none;">
+									<div id="${dom}" style="width:200px; display: none;">
 										@if(authorized("{$module}@edit")) ${btnEdit} @endif
 								</div>
 							</div>`
@@ -83,12 +75,11 @@
                             return `${row.aud_thp1_id}`
                         }
 					},
-                    {field: 'aud_thp1_status_temuan', title: 'Status<br/>Pengajuan<br/>Temuan', width: 150, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'aud_thp1_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
                     {field: 'aud_thp1_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true},
-                    {field: 'aud_thp1_status', title: 'Status<br/>Audit', width: 100, sortable: true},
+                    {field: 'aud_thp1_status', title: 'Status Audit', width: 150, sortable: true},
                 ]],
 				onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {

@@ -354,7 +354,6 @@ class AuTahap1Controller extends Controller
                     "aud_thp1_tanggal_rapat_akhir"          => Carbon::now()->format('Y-m-d'),
                 ]);
 			*/
-			$ada_temuan = 0;
 			if($request['jenis'] == 'sni'){
 				if (!empty($request['detail_kode_dok'])) {
 					foreach ($request['detail_kode_dok'] as $key => $val) {
@@ -396,7 +395,6 @@ class AuTahap1Controller extends Controller
 									}
 									
 								}
-								$ada_temuan++;
 							}
 						}
 					}
@@ -443,7 +441,6 @@ class AuTahap1Controller extends Controller
 									}
 									
 								}
-								$ada_temuan++;
 							}
 						}
 					}
@@ -452,8 +449,6 @@ class AuTahap1Controller extends Controller
 			
 			/* 
 			if($request['tutup_audit'] == 'ya'){
-            */
-			if($ada_temuan > 0){
 				// Notifikasi
 				$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
 				// Send Push
@@ -476,6 +471,7 @@ class AuTahap1Controller extends Controller
 				$structEmail->to      = $data_pelanggan?->cust_email;
 				sendEmail($structEmail);
 			}
+            */
 
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
