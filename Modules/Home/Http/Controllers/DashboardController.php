@@ -9,6 +9,8 @@ use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisBillingItems;
+use App\Models\BbkkpSis\SisJadwalTim;
+use App\Models\BbkkpSis\SisJadwalAudit;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -43,7 +45,69 @@ class DashboardController extends Controller
                 ];
                 return view('home::dashboard.pelanggan')->with($data);
             break;
-            default:
+            case 4: // marketing
+                $company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
+
+                $data = [
+                    'total_pelanggan' => SisPelanggan::count(),
+                    'company_types' => $company_types
+                ];
+
+                return view('home::dashboard.marketing')->with($data);
+            break;
+            case 5: // pegawai/auditor
+                return view('home::dashboard.pegawai_auditor');
+            break;
+            case 6: // operator ls
+                $company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
+
+                $data = [
+                    'total_pelanggan' => SisPelanggan::count(),
+                    'total_sertifikat' => SisPelangganSertifikasi::count(),
+                    'total_sertifikat_active' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['on_going'])->count(),
+                    'total_sertifikat_expired' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['expired'])->count(),
+                    'total_sertifikat_banned' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['dibekukan'])->count(),
+                    'company_types' => $company_types
+                ];
+
+                return view('home::dashboard.operator_ls')->with($data);
+            break;
+            case 7: // keuangan
+                return view('home::dashboard.keuangan');
+            break;
+            case 8: // kerjasama
+                return view('home::dashboard.kerjasama');
+            break;
+            case 9: // PJT
+                $company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
+
+                $data = [
+                    'total_pelanggan' => SisPelanggan::count(),
+                    'total_sertifikat' => SisPelangganSertifikasi::count(),
+                    'total_sertifikat_active' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['on_going'])->count(),
+                    'total_sertifikat_expired' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['expired'])->count(),
+                    'total_sertifikat_banned' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['dibekukan'])->count(),
+                    'company_types' => $company_types
+                ];
+
+                return view('home::dashboard.pjt')->with($data);
+            break;
+            case 10: // paskal
+                $company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
+
+                $data = [
+                    'total_pelanggan' => SisPelanggan::count(),
+                    'total_sertifikat' => SisPelangganSertifikasi::count(),
+                    'total_sertifikat_active' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['on_going'])->count(),
+                    'total_sertifikat_expired' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['expired'])->count(),
+                    'total_sertifikat_banned' => SisPelangganSertifikasi::whereIn('cust_sert_status', ['dibekukan'])->count(),
+                    'company_types' => $company_types
+                ];
+
+                return view('home::dashboard.paskal')->with($data);
+            break;
+            case 1: // root
+            case 2: // admin
             	$company_types = MasterJenisPerusahaan::withCount(['sis_pelanggans'])->get();
 
                	$data = [
@@ -296,9 +360,125 @@ class DashboardController extends Controller
         			'datasets' => $datasets
         		]);
     		break;
+            case 'pie-sertifikat':
+                $data = SisPelangganSertifikasi::selectRaw('sert_id, COUNT(cust_sert_id) as total')
+                ->groupBy('sert_id');
+
+                if ($year) $data = $data->whereYear('created_at', '=', $year);
+
+                $results = [];
+                $total = 0;
+                foreach ($data->get() as &$row)
+                {
+                    $total += (int) $row['total'];
+                    $row['color'] = "#".$this->random_color_part().$this->random_color_part().$this->random_color_part();
+                    $row['sert_nama'] = $row->master_sertifikasi->sert_nama;
+                    array_push($results, $row);
+                }
+
+                return response()->json([
+                    'results' => $results,
+                    'total' => $total
+                ]);
+            break;
+            case 'performance-auditor':
+                $performance_auditor = SisJadwalTim::from('sis_jadwal_tim AS s')
+                ->selectRaw("*, (
+                    SELECT COUNT(jadw_tim_id) 
+                    FROM sis_jadwal_tim AS sja 
+                    JOIN sis_jadwal sj2 ON sj2.jadw_id = sja.jadw_id
+                    WHERE s.peg_id = sja.peg_id 
+                    AND jadw_tim_posisi = 'ketua'
+                    AND YEAR(sj2.jadw_tanggal_mulai) = $year
+                ) AS total_ketua,
+                (
+                    SELECT COUNT(jadw_tim_id)
+                    FROM sis_jadwal_tim AS sja
+                    JOIN sis_jadwal sj2 ON sj2.jadw_id = sja.jadw_id
+                    WHERE s.peg_id = sja.peg_id
+                    AND jadw_tim_posisi = 'auditor'
+                    AND YEAR(sj2.jadw_tanggal_mulai) = $year
+                ) AS total_auditor")
+                ->join('sis_jadwal AS sj', 's.jadw_id', '=', 'sj.jadw_id')
+                ->whereYear('sj.jadw_tanggal_mulai', '=', $year)
+                ->whereNotIn('s.jadw_tim_posisi', ['ppc'])
+                ->groupBy('peg_id');
+
+                $results = [];
+
+                foreach ($performance_auditor->get() as $key => $row)
+                {
+                    $row->master_pegawai;
+                    $row->master_pegawai->peg_nama = trim(preg_replace('/\s\s+/', ' ', $row->master_pegawai->peg_nama));
+                    array_push($results, $row);
+                }
+
+                return response()->json([
+                    'results' => $results
+                ]);
+            break;
+            case 'performance-detail':
+                $results = [];
+
+                $peg_id = $request->get('peg');
+                $position = $request->get('pos');
+
+                if ($peg_id && $position)
+                {
+                    $performance_auditor = SisJadwalTim::where([
+                        'jadw_tim_posisi' => $position,
+                        'peg_id' => $peg_id
+                    ]);
+
+                    foreach ($performance_auditor->get() as $key => $row)
+                    {
+                        $row->sis_jadwal;
+                        $row->sis_jadwal?->sis_jadwal_audits;
+
+                        foreach ($row?->sis_jadwal?->sis_jadwal_audits ?? [] as $k => $aud)
+                        {
+                            $aud?->sis_permohonan?->sis_pelanggan;
+                        }
+
+                        array_push($results, $row);
+                    }
+
+                    return response()->json([
+                        'results' => $results
+                    ]);
+                }
+            break;
+            case 'plan-audit':
+                $results = [];
+
+                if ($year)
+                {
+                    $audits = SisJadwalAudit::join('sis_jadwal', 'sis_jadwal_audit.jadw_id', '=', 'sis_jadwal.jadw_id')
+                    ->whereYear('jadw_tanggal_mulai', '=', $year);
+
+                    foreach ($audits->get() as $row)
+                    {
+                        $row->master_sertifikasi;
+                        $row?->sis_permohonan?->sis_pelanggan;
+                        foreach ($row?->sis_jadwal?->sis_jadwal_tims ?? [] as $r)
+                        {
+                            $r?->master_pegawai;
+                        }
+                        array_push($results, $row);
+                    }
+
+                    return response()->json([
+                        'results' => $results
+                    ]);
+                }
+            break;
     		default:
     			# code...
     		break;
     	}
+    }
+
+    function random_color_part() {
+        return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
     }
 }

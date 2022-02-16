@@ -239,31 +239,6 @@
 			  	</div>
 			</div>
 		</div>
-		<div class="col-md-12 col-12 mb-1">
-			<div class="dt-card dt-card__full-height">
-			  	<div class="dt-card__header">
-					<div class="dt-card__heading">
-				  		<h3 class="dt-card__title text-center" id="plan-audit-title">Rencana Audit</h3>
-					</div>
-			  	</div>
-			  	<div class="dt-card__body d-flex justify-content-center align-items-center">
-			  		<div class="w-100">
-			  			<table class="table table-striped" style="border: 2px solid #eaeaea; border-radius: 6px;">
-			  				<thead>
-			  					<tr>
-			  						<th width="3%">#</th>
-			  						<th width="20%">Nama Perusahaan</th>
-			  						<th width="15%">Jenis Sertifikasi</th>
-			  						<th width="15%">Tanggal</th>
-			  						<th width="15%">Tim</th>
-			  					</tr>
-			  				</thead>
-			  				<tbody id="plan-audit-table"></tbody>
-			  			</table>
-			  		</div>
-			  	</div>
-			</div>
-		</div>
     </div>
 </div>
 
@@ -331,7 +306,6 @@
 			getGrafikPermohonan();
 			getSertifikatTerbit();
 			getPerformanceAuditor();
-			getPlanAudit();
 	    });
 
 	    getPnbp();
@@ -342,7 +316,6 @@
 		getGrafikPermohonan();
 		getSertifikatTerbit();
 		getPerformanceAuditor();
-		getPlanAudit();
 	});
 
 	function getPnbp()
@@ -801,52 +774,6 @@
 	    const day = String(dateObj.getDate()).padStart(2, '0');
 	    const year = dateObj.getFullYear();
 	    return `${day} ${month} ${year}`;
-	}
-
-	function getPlanAudit()
-	{
-		const tahun = $('#tahun').val();
-		$('#plan-audit-title').html('Rencana Audit '+tahun);
-		$('#plan-audit-table').html('<tr><td colspan="5">Mohon tunggu</td></tr>');
-		$.get(`{{url("/dashboard/ajax?type=plan-audit")}}&year=${tahun}`)
-        .then(({results}) => {
-        	let rows = '';
-        	if (results)
-        	{
-        		results.map((r, i) =>
-        		{
-        			let teams = '<ul style="padding-left: 16px;">';
-        			if (r?.sis_jadwal?.sis_jadwal_tims)
-        			{
-        				r?.sis_jadwal?.sis_jadwal_tims.map((t) => {
-        					teams += `<li style="color: ${t.jadw_tim_kesanggupan == 'ya' ? 'green' : 'red'}">
-        						${t?.master_pegawai?.peg_nama ?? '-'}
-        					</li>`;
-        				})
-        			}
-        			teams += '</ul>';
-
-        			rows += `
-        				<tr>
-        					<td>${i + 1}</td>
-        					<td>${r?.sis_permohonan?.sis_pelanggan?.cust_nama ?? '-'}</td>
-        					<td>
-        						<b>(${r.jadw_audit_jenis.toUpperCase()})</b>
-        						<br>${r?.master_sertifikasi?.sert_nama ?? '-'}
-        					</td>
-        					<td>
-								${dateFormat(r.sis_jadwal?.jadw_tanggal_mulai)}
-								s/d<br>
-								${dateFormat(r.sis_jadwal?.jadw_tanggal_selesai)}
-        					</td>
-        					<td>${teams}</td>
-        				</tr>
-        			`;
-        		});
-
-				$('#plan-audit-table').html(rows);
-			}
-		});
 	}
 </script>
 @endpush
