@@ -181,8 +181,12 @@ class AuTahap1Controller extends Controller
         if ($dataAuditKlausul->exists()) {
             $status_entry = true;
         }
+		
+		$dataRevisi = SisAuditTahap1::join('sis_audit_tahap1_persetujuan_revisi', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_persetujuan_revisi.aud_thp1_id")
+		->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id'])
+        ->select('*')->get();
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' => $restAudit];
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' => $restAudit, 'dataRevisi' => $dataRevisi];
         return view("$this->view.edit_audit_tahap1")->with($parser);
     }
 
@@ -329,6 +333,11 @@ class AuTahap1Controller extends Controller
 									
 								}
 							}
+							else{
+								DB::table('sis_audit_tahap1_revisi')
+										->where('aud_thp1_det_id', $key)
+										->delete();
+							}
 						}
 					}
 				}
@@ -375,6 +384,11 @@ class AuTahap1Controller extends Controller
 									
 								}
 							}
+							else{
+								DB::table('sis_audit_tahap1_revisi')
+										->where('aud_thp1_det_id', $key)
+										->delete();
+							}
 						}
 					}
 				}
@@ -386,4 +400,74 @@ class AuTahap1Controller extends Controller
             return responseJSON(500, [], $e->getMessage());
         }
     }
+	
+	public function print(Request $request)
+    {
+        $request->validate(['tipe' => 'required']);
+        return match ($request['tipe']) {
+            'hasil-tinjauan' => $this->print_hasil_tinjauan($request),
+            default        => null,
+        };
+    }
+	
+	private function print_hasil_tinjauan(Request $request)
+	{
+        $dataJadwal = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
+        $dataJadwal->select(
+            '*',
+            DB::raw("'tunggal' as jadw_jenis"),
+            DB::raw("'tahap-1' as jadw_audit_jenis"),
+            DB::raw("sis_audit_tahap1.aud_thp1_id as jadw_id"),
+            DB::raw("sis_audit_tahap1.aud_thp1_tujuan as jadw_audit_tujuan_audit"),
+            DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'),
+            DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_sni) as sni'),
+            DB::raw('GROUP_CONCAT(DISTINCT sis_permohonan_detail.mohon_det_no_referensi) as no_referensi'),
+            DB::raw('GROUP_CONCAT(DISTINCT sis_permohonan_komoditi.mohon_kmditi_ruang_lingkup) as ruang_lingkup'),
+        );
+
+        $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
+			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+			->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+			->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+			->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
+			->groupBy('sis_audit_tahap1.aud_thp1_id');
+
+        $restAudit = $dataJadwal->get()[0];
+
+        $dataAuditKlausul = SisAuditTahap1::join('sis_audit_tahap1_detail', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_detail.aud_thp1_id");
+        $dataAuditKlausul->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
+		
+        $parser = [
+			'module' => $this->module,
+			'url' => $this->url,
+			'restAudit' => $restAudit,
+			'dataAuditKlausul' => $dataAuditKlausul->get(),
+		];
+		
+		$dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
+			$dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+			$dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$dataTim->select('*');
+			$dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
+		foreach($dataTim->get() as $tim){
+			if($tim->thp1_tim_posisi == 'ketua'){
+				$parser['ketua_tim'] = $tim->peg_nama;
+				break;
+			}
+		}
+		$parser['dataTim'] = $dataTim->get();
+		if($restAudit['sert_tahap1_jenis'] == 'sni'){
+			// return view("$this->view.print.hasil_tinjauan_sni")->with($parser);
+			$pdf    = PDF::loadView("$this->view.print.hasil_tinjauan_sni", $parser)->setPaper('a4', 'portrait');
+			return $pdf->stream();
+		}
+		else{
+			$pdf    = PDF::loadView("$this->view.print.hasil_tinjauan_pusat", $parser)->setPaper('a4', 'portrait');
+			return $pdf->stream();
+			// return view("$this->view.print.hasil_tinjauan_pusat")->with($parser);
+		}
+	}
 }

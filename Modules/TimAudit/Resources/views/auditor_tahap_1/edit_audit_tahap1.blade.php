@@ -126,21 +126,40 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="col-md-12">
-			<br/>
-			<template v-if="loading_submit">
-				<div class="fa-3x" style="text-align: center">
-					<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
-				</div>
-			</template>
-			<template v-else>
-				<button :disabled="!status_submit"
-						:class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}"
-						@click="submitAudit">
-					<i class="fad fa-disk"></i> Simpan Audit Tahap 1 
-				</button>
-			</template>
+		@if(!$dataRevisi->isEmpty())
+		<br/>
+		<div class="table-responsive">
+			<table class="table table-bordered mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th scope="col">Tanggal Revisi</th>
+						<th scope="col">Catatan Revisi Dari Pelanggan</th>
+					</tr>
+				</thead>
+				<tbody>
+				@foreach($dataRevisi as $drv)
+				<tr>
+					<td>{{date('d mm Y', strtotime($drv->created_at))}}</td>
+					<td>{!! $drv->aud_thp1_perseujuan_revisi_catatan !!}</td>
+				</tr>
+				@endforeach
+				</tbody>
+			</table>
 		</div>
+		@endif 
+		<br/>
+		<template v-if="loading_submit">
+			<div class="fa-3x" style="text-align: center">
+				<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
+			</div>
+		</template>
+		<template v-else>
+			<button :disabled="!status_submit"
+					:class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}"
+					@click="submitAudit">
+				<i class="fad fa-disk"></i> Simpan Audit Tahap 1 
+			</button>
+		</template>
 	</div>
 </div>
                     </div>

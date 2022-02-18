@@ -214,31 +214,8 @@ class AuTahap1LapController extends Controller
         return match ($request['tipe']) {
             'hasil-tinjauan' => $this->print_hasil_tinjauan($request),
             'lap_lengkap' => $this->print_lap_lengkap($request),
-            'lihat-revisi' => $this->print_revisi($request),
             default        => null,
         };
-    }
-	
-	private function print_revisi(Request $request)
-    {
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
-            new BreadcrumbsStruct('Audit Tahap 1', url($this->url)),
-            new BreadcrumbsStruct('Revisi Audit Tahap 1'),
-        ];
-
-        $dataRevisi = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id'])
-			->join('sis_audit_tahap1_revisi', "sis_audit_tahap1_revisi.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id")
-			->select('*');
-
-        $parser = [
-			'module' => $this->module
-			, 'url' => $this->url
-			, 'breadcrumbs' => $breadcrumbs
-			, 'dataRevisi' => $dataRevisi->get()
-		];
-        return view("$this->view.print.revisi")->with($parser);
     }
 	
 	private function print_hasil_tinjauan(Request $request)

@@ -56,9 +56,11 @@
 							if(row.aud_thp1_status_temuan == 'proses'){
 								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Input Tinjauan</div>`;
 							}
-							else{
-								btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
+							else if(row.aud_thp1_status_temuan == 'revisi'){
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=audit-tahap1&aud_thp1_id=${row.aud_thp1_id}'">Revisi Tinjauan</div>`;
 							}
+							
+							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/print") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
 							
                             return `
 								<div>
