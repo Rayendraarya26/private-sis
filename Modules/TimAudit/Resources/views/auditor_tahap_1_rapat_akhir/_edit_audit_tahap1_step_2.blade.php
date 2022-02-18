@@ -20,6 +20,29 @@
     <div class="col-md-12" style="padding-bottom: 20px">
         <div class="row">
             <div class="col-md-12">
+				@if(!$dataRevisi->isEmpty())
+				<div class="form-group row">
+					<div class="table-responsive">
+						<table class="table table-bordered mb-0">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Tanggal Revisi</th>
+									<th scope="col">Catatan Revisi Dari Pelanggan</th>
+								</tr>
+							</thead>
+							<tbody>
+							@foreach($dataRevisi as $drv)
+							<tr>
+								<td>{{date('d mm Y', strtotime($drv->created_at))}}</td>
+								<td>{!! $drv->aud_thp1_perseujuan_revisi_catatan !!}</td>
+							</tr>
+							@endforeach
+							</tbody>
+						</table>
+					</div>
+				</div>
+				@endif
+			
 				<div class="form-group row">
 					<div class="table-responsive">
 						<table class="table table-bordered mb-0">

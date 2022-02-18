@@ -81,22 +81,18 @@
 												</ul>
 											@endif
 										</td>
-										@if($isFixed)
-											@if($dataRevisi->thp1_revisi_status == 'fixed')
-											<td>
-												<button class="btn btn-primary btn-xs btn-block"
-															onClick="processVerifikasi('{{$detail->aud_thp1_det_id}}')">
-														<i class="fas fa-check"></i> Close
-													</button>
+										@if($dataRevisi->thp1_revisi_status == 'fixed')
+										<td>
+											<button class="btn btn-primary btn-xs btn-block"
+														onClick="processVerifikasi('{{$detail->aud_thp1_det_id}}')">
+													<i class="fas fa-check"></i> Close
+												</button>
 
-													<button class="btn btn-warning btn-xs btn-block"
-															onClick="propmtRevisi('{{$detail->aud_thp1_det_id}}')">
-														<i class="fas fa-edit"></i> Revisi
-													</button>
-											</td>
-											@else
-												<td></td>
-											@endif
+												<button class="btn btn-warning btn-xs btn-block"
+														onClick="propmtRevisi('{{$detail->aud_thp1_det_id}}')">
+													<i class="fas fa-edit"></i> Revisi
+												</button>
+										</td>
 										@else
 											<td></td>
 										@endif

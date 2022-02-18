@@ -167,7 +167,12 @@ class AuTahap1RapatAkhirController extends Controller
 		
 		$dataLogbook = DB::table('sis_audit_tahap1_tim')->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")->leftJoin('sis_audit_tahap1_logbook', "sis_audit_tahap1_logbook.thp1_tim_id", "=", "sis_audit_tahap1_tim.thp1_tim_id")->where('aud_thp1_id', '=', $request['aud_thp1_id'])->get();
 		
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataLogbook' => $dataLogbook];
+		$dataRevisi = SisAuditTahap1::join('sis_audit_tahap1_persetujuan_revisi', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_persetujuan_revisi.aud_thp1_id")
+		->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id'])
+        ->select('*')->get();
+
+
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataLogbook' => $dataLogbook, 'dataRevisi' => $dataRevisi];
         return view("$this->view.edit_audit_tahap1")->with($parser);
     }
 
@@ -218,7 +223,7 @@ class AuTahap1RapatAkhirController extends Controller
 			$notifStruct->title     = "Proses Audit Tahap I";
 			$notifStruct->message   = sprintf("Proses Audit Tahap I telah ditentukan untuk jadwal audit tahap 1 no #%s, silahkan upload file-file rapat dan klarifikasi temuan jika ada.", $request['aud_thp1_id']);
 			$notifStruct->user_id   = $data_pelanggan?->user_id;
-			$notifStruct->click_url = url('/pelanggan/jadwal');
+			$notifStruct->click_url = url('/pelanggan/tahap1/persetujuan-temuan');
 			sendNotification($notifStruct);
 
 			// Send Email
@@ -228,7 +233,7 @@ class AuTahap1RapatAkhirController extends Controller
 				->with([
 					'nama'       => $data_pelanggan?->cust_nama,
 					'message'       => sprintf("Proses Audit Tahap I telah ditentukan untuk jadwal audit tahap 1 no #%s, silahkan upload file-file rapat dan klarifikasi temuan jika ada.", $request['aud_thp1_id']),
-					'link_verif'        => url('/pelanggan/jadwal'),
+					'link_verif'        => url('/pelanggan/tahap1/persetujuan-temuan'),
 				])->render();
 			$structEmail->to      = $data_pelanggan?->cust_email;
 			sendEmail($structEmail);
@@ -244,31 +249,8 @@ class AuTahap1RapatAkhirController extends Controller
         return match ($request['tipe']) {
             'hasil-tinjauan' => $this->print_hasil_tinjauan($request),
             'audit-tahap1' => $this->print_audit_tahap1($request),
-            'lihat-revisi' => $this->print_revisi($request),
             default        => null,
         };
-    }
-	
-	private function print_revisi(Request $request)
-    {
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
-            new BreadcrumbsStruct('Audit Tahap 1', url($this->url)),
-            new BreadcrumbsStruct('Revisi Audit Tahap 1'),
-        ];
-
-        $dataRevisi = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id'])
-			->join('sis_audit_tahap1_revisi', "sis_audit_tahap1_revisi.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id")
-			->select('*');
-
-        $parser = [
-			'module' => $this->module
-			, 'url' => $this->url
-			, 'breadcrumbs' => $breadcrumbs
-			, 'dataRevisi' => $dataRevisi->get()
-		];
-        return view("$this->view.print_revisi")->with($parser);
     }
 	
 	private function print_hasil_tinjauan(Request $request)

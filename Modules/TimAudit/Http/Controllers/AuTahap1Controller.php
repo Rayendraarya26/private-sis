@@ -280,6 +280,9 @@ class AuTahap1Controller extends Controller
             "aud_thp1_id"           => 'required',
             "cust_id"               => 'required',
             "sert_id"               => 'required',
+            "user_id"               => 'required',
+            "cust_email"               => 'required',
+            "cust_nama"               => 'required',
             "mohon_id"              => 'required',
             "jenis"              => 'required',
             "detail_hasil_tinjauan" => 'required',
@@ -288,9 +291,16 @@ class AuTahap1Controller extends Controller
             "detail_kode_dok"       => 'nullable',
             "detail_nilai"       => 'nullable',
             "detail_satuan"       => 'nullable',
+            "is_revisi"       => 'required',
         ]);
 		
         try {
+			if($request['is_revisi'] == 'ya'){
+				DB::table('sis_audit_tahap1')
+							->where('aud_thp1_id', $request['aud_thp1_id'])
+							->update(['aud_thp1_status_temuan' => 'proses']);
+			}
+			
 			if($request['jenis'] == 'sni'){
 				if (!empty($request['detail_kode_dok'])) {
 					foreach ($request['detail_kode_dok'] as $key => $val) {
@@ -395,6 +405,8 @@ class AuTahap1Controller extends Controller
 			}
 			
             DB::commit();
+			if($request['is_revisi'] == 'ya'){
+			}
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());

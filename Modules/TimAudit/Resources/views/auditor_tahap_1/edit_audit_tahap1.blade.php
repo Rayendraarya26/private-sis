@@ -312,10 +312,14 @@
 									let status_from = true;
 									formData.append("tipe", 'update-audit-tahap1');
 									formData.append("cust_id", '{{$dataJadwal->cust_id}}');
+									formData.append("user_id", '{{$dataJadwal->user_id}}');
+									formData.append("cust_email", '{{$dataJadwal->cust_email}}');
+									formData.append("cust_nama", '{{$dataJadwal->cust_nama}}');
 									formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}');
 									formData.append("sert_id", '{{$dataJadwal->sert_id}}');
 									formData.append("mohon_id", '{{$dataJadwal->mohon_id}}');
 									formData.append("jenis", '{{$dataJadwal->sert_tahap1_jenis}}');
+									formData.append("is_revisi", @if(!$dataRevisi->isEmpty()) 'ya' @else 'tidak' @endif)
 
 									@foreach($dataAuditKlausul as $dpk)
 										@if($dpk->aud_thp1_det_is_tinjauan == 'ya')
