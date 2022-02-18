@@ -100,7 +100,7 @@ class Tahap1PerbaikanController extends Controller
                 $notifStruct->title     = sprintf("#%d Revisi tahap 1 dikirim", $dataTahap1->aud_thp1_id);
                 $notifStruct->message   = sprintf("%s telah melakukan perbaikan revisi tahap 1, harap segera lakukan verifiaksi", $dataTahap1->sis_permohonan->mohon_cust_nama);
                 $notifStruct->user_id   = $tim->master_pegawai->user_id;
-                $notifStruct->click_url = url('/timaudit/tahap1');
+                $notifStruct->click_url = url('/timaudit/auditor/tahap1-verif/edit?aud_thp1_id='.$dataTahap1->aud_thp1_id);
                 sendNotification($notifStruct);
             }
 

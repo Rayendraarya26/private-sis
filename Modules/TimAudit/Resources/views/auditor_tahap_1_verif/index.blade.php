@@ -52,8 +52,17 @@
                         align: 'center',
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.aud_thp1_id}`;
-                            let btnEdit = ``;	
-							btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Input Laporan</div>`;
+                            let btnEdit = ``;
+							if(row.revisi_fixed_total > 0){
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Verifikasi</div>`;
+							}
+							
+							if(row.thp1_tim_posisi == 'ketua'){
+								if(row.revisi_fixed_total == 0 && row.revisi_open_total == 0){
+									btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Tutup Tahap I</div>`;
+								}
+							}
+							
 							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
 							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=lap_lengkap&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
 							
@@ -98,6 +107,7 @@
                     });
                 },
             });
+			
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},

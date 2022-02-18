@@ -108,6 +108,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
             Route::any('/ajax', [AuTahap1VerifController::class, 'ajax']);
 			Route::get('/edit', [AuTahap1VerifController::class, 'edit']);
 			Route::post('/update', [AuTahap1VerifController::class, 'update']);
+			Route::post('/cetak', [AuTahap1VerifController::class, 'cetak']);
         });
 		
         Route::prefix("daftar-periksa")->group(function () {

@@ -1,275 +1,356 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Laporan Audit Tahap 1')
-@push('css')
-    <style>
-        .komoditi-button {
-            padding-top: 15px;
-        }
-		
-		.label-form {
-            font-weight:normal;
-        }
-		
-        @media screen and (max-width: 450px) {
-            .komoditi-button {
-                padding-top: 0;
-            }
-        }
-    </style>
-@endpush
+@section('title', 'Verifikasi Audit Tahap 1')
+
 @section('content')
     <div class="dt-content">
         <div class="row">
-			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
             <div class="col-md-12">
+				<a href="{{url($url)}}" class="btn btn-default"><i class="fad fa-arrow-left"></i>Kembali</a>
                 <div class="dt-card">
-                    <div class="dt-card__body">
-                        <div class="row" id="vueStepTwo">
-							<div class="col-md-12" style="padding-bottom: 20px">
-								<div class="row">
-									<div class="col-md-12">
-										<div class="form-group">
-											<label class="label-form">V. Audit kecukupan informasi terdokumentasi: *</label>
-											<textarea class="form-control" name="kolom_v" id="kolom_v">@if(isset($dataAudit->aud_thp1_kolom_v)) {{$dataAudit->aud_thp1_kolom_v}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">VI. Kondisi Lapangan</label>
-											<textarea class="form-control" name="kolom_vi" id="kolom_vi">@if(isset($dataAudit->aud_thp1_kolom_vi)) {{$dataAudit->aud_thp1_kolom_vi}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">VII. Status dan pemahaman persyaratan standar</label>
-											<textarea class="form-control" name="kolom_vii" id="kolom_vii">@if(isset($dataAudit->aud_thp1_kolom_vii)) {{$dataAudit->aud_thp1_kolom_vii}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">VIII. Informasi yang diperlukan yang berkenaan dengan (lingkup sistem manajemen K3, proses dan lokasi perusahaan, identifikasi bahaya dan risiko dan perundang-undangan/peraturan K3, dari operasi perusahaan dan risiko) tersedia.</label>
-											<textarea class="form-control" name="kolom_viii" id="kolom_viii">@if(isset($dataAudit->aud_thp1_kolom_viii)) {{$dataAudit->aud_thp1_kolom_viii}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">IX. Sumber daya yang tersedia</label>
-											<textarea class="form-control" name="kolom_ix" id="kolom_ix">@if(isset($dataAudit->aud_thp1_kolom_ix)) {{$dataAudit->aud_thp1_kolom_ix}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">X. Konfirmasi program audit sertifikasi tahap 2</label>
-											<textarea class="form-control" name="kolom_x" id="kolom_x">@if(isset($dataAudit->aud_thp1_kolom_x)) {{$dataAudit->aud_thp1_kolom_x}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">XI. Informasi pelaksanaan audit internal dan kaji ulang manajemen</label>
-											<textarea class="form-control" name="kolom_xi" id="kolom_xi">@if(isset($dataAudit->aud_thp1_kolom_xi)) {{$dataAudit->aud_thp1_kolom_xi}} @endif</textarea>
-										</div>
-										<div class="form-group">
-											<label class="label-form">XII. Kesimpulan</label>
-											<textarea class="form-control" name="kolom_xii" id="kolom_xii">@if(isset($dataAudit->aud_thp1_kolom_xii)) {{$dataAudit->aud_thp1_kolom_xii}} @endif</textarea>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<hr/>
-										<template v-if="loading_submit">
-											<div class="fa-3x" style="text-align: center">
-												<i class="fas fa-spinner fa-spin" style="color: #0390DE"></i>
-											</div>
-										</template>
-										<template v-else>
-											<button :disabled="!status_submit"
-													:class="{'btn': true, 'btn-primary':status_submit, 'btn-outline-primary':!status_submit,'btn-block':true}"
-													@click="submitAudit">
-												<i class="fad fa-disk"></i> Simpan Laporan Audit Tahap 1
-											</button>
-										</template>
-									</div>
-								</div>
+                    <div class="dt-card__body table-responsive">
+                        <div class="pb-3">
+                            <span class="bg-orange">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Revisi
+                            <br>
+                            <span class="bg-light-green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Perbaikan
+                            Dikirim ke Auditor
+                        </div>
+						<table id="tinjauan" class="table table-striped table-bordered">
+							<thead>
+							<tr>
+								<th rowspan="2">Klausul</th>
+								<th rowspan="2">Persyaratan</th>
+								<th colspan="2" class="text-center">
+									Dokumen PT. {{strtoupper($data->sis_permohonan->mohon_cust_nama)}}
+								</th>
+
+								<th rowspan="2" class="text-center">Hasil Tinjauan <br>(OK / NO)</th>
+								<th colspan="3" class="text-center">Perbaikan</th>
+								<th rowspan="2"></th>
+							</tr>
+							<tr>
+								<th>Kode Dokumen</th>
+								<th>Judul Dokumen</th>
+								<th>Ket Revisi</th>
+								<th>Info Perbaikan</th>
+								<th>File Upload</th>
+							</tr>
+							</thead>
+
+							<tbody>
+							@php
+								$isClosed = 0;
+							@endphp
+							@foreach($data->sis_audit_tahap1_details as $detail)
+								@php
+									
+									$isFixed = false;
+									$dataRevisi = $detail->sis_audit_tahap1_revisis->whereIn("thp1_revisi_status", ["open", "fixed"])->sortByDesc("created_at")->first();
+									if(empty($dataRevisi)){
+										$isFixed = true;
+										$dataRevisi = $detail->sis_audit_tahap1_revisis->sortByDesc("created_at")->first();
+									}
+									else{
+										$isClosed++;
+									}
+								@endphp
+
+								<tr class="{!! (($detail->sis_audit_tahap1_revisis->count() == 0 || $dataRevisi?->thp1_revisi_status == "closed") ? '' : (!$isFixed ? 'bg-orange' : 'bg-light-green')) !!}">
+									<td style="padding-left: 10px">{{$detail->aud_thp1_det_thp1_nomor}}</td>
+									<td>{{$detail->aud_thp1_det_peryataan}}</td>
+									<td>{{$detail->aud_thp1_det_kode_dok}}</td>
+									<td>{{$detail->aud_thp1_det_judul_dok}}</td>
+									<td class="text-center">{{ucwords($detail->aud_thp1_det_hasil_tinjauan)}}</td>
+									{{--<td>{{$detail->aud_thp1_det_keterangan}}</td>--}}
+
+									{{--Field Revisi--}}
+									@if($detail->sis_audit_tahap1_revisis->count() > 0)
+										<td>{{$dataRevisi->thp1_revisi_catatan}}</td>
+										<td>{{$dataRevisi->thp1_revisi_perbaikan}}</td>
+										<td>
+											@if($dataRevisi->sis_audit_tahap1_revisi_files->count() > 0)
+												<ul>
+													@foreach($dataRevisi->sis_audit_tahap1_revisi_files as $revisiFile)
+														<li>
+															<a href="{!! asset($revisiFile->thp1_revisi_file_path) !!}"
+															   target="_blank">
+																Berkas {{$loop->iteration}}
+															</a>
+														</li>
+													@endforeach
+												</ul>
+											@endif
+										</td>
+										@if($isFixed)
+											@if($dataRevisi->thp1_revisi_status == 'fixed')
+											<td>
+												<button class="btn btn-primary btn-xs btn-block"
+															onClick="processVerifikasi('{{$detail->aud_thp1_det_id}}')">
+														<i class="fas fa-check"></i> Close
+													</button>
+
+													<button class="btn btn-warning btn-xs btn-block"
+															onClick="propmtRevisi('{{$detail->aud_thp1_det_id}}')">
+														<i class="fas fa-edit"></i> Revisi
+													</button>
+											</td>
+											@else
+												<td></td>
+											@endif
+										@else
+											<td></td>
+										@endif
+									@else
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									@endif
+								</tr>
+							@endforeach
+							</tbody>
+						</table>
+						@if($isClosed == 0 && $isKetua)
+							<div style="float: right">
+								<button class="btn btn-primary" type="button" id="agreeTemuan" onclick="showModalBerkas()">
+									<i class="fad fa-save"></i> Tutup Tahap I
+								</button>
 							</div>
-						</div>
+						@endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
-	
+	<div class="modal fade" id="modalBerkas" tabindex="-1" role="dialog" aria-labelledby="modalBerkas" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-md" role="document">
+			<!-- Modal Content -->
+			<div class="modal-content">
+			@csrf
+			<!-- Modal Header -->
+				<div class="modal-header">
+					<h3 class="modal-title" id="modalBerkasTitle">
+						Unggah Berkas
+					</h3>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<!-- /modal header -->
+
+				<!-- Modal Body -->
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-1"></div>
+						<div class="col-sm-10">
+							<div class="form-group">
+								<label for="berkas_ket">*Unggah <b>Scan Verifikasi Tahap 1</b> yang sudah diberi TTD</label>
+								<input type="file" class="form-control" id="file_verifikasi" accept="application/pdf">
+							</div>
+							<div class="form-group">
+								<label for="berkas_ket">*Unggah <b>Scan Laporan</b> yang sudah diberi TTD</label>
+								<input type="file" class="form-control" id="file_laporan" accept="application/pdf">
+							</div>
+						</div>
+						<div class="col-sm-1"></div>
+					</div>
+				</div>
+				<!-- /modal body -->
+
+				<!-- Modal Footer -->
+				<div class="modal-footer">
+					<button id="simpanBerkas" type="button" onclick="promptAgree({{$data->jadw_id}})"
+							class="btn btn-success btn-sm">
+						Simpan
+					</button>
+				</div>
+				<!-- /modal footer -->
+			</div>
+			<!-- /modal content -->
+		</div>
+	</div>
 @endsection
 
 @push('javascript')
-	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-	<script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js" referrerpolicy="origin"></script>
     <script>
-		const swalWithBootstrapButtons = swal.mixin({
-            confirmButtonClass: 'btn btn-primary mb-2',
-            cancelButtonClass: 'btn btn-warning mr-2 mb-2',
-            buttonsStyling: false,
-        });
+		function showModalBerkas() {
+            $("#modalBerkas").modal('show')
+        }
 		
-		$(document).ready(function () {
-            window.vueStepTwo = new Vue({
-                el: "#vueStepTwo",
-                data: {	
-                    status_submit: true,
-                    loading_submit: false,
-                },
-                mounted() {
-                    this.start();
-                },
-                methods: {
-					async submitAudit() {
-						tinyMCE.triggerSave();
-                        swalWithBootstrapButtons({
-                            title: `Simpan Data ?`,
-                            text: `Proses akan berjalan beberapa saat, mohon bersabar untuk menunggu`,
-                            type: 'info',
-                            showCancelButton: true,
-                            confirmButtonText: 'Simpan',
-                            cancelButtonText: 'Batal',
-                            reverseButtons: true
-                        }).then(async (result) => {
-                            if (result.value) {
-								let formData = new FormData();
-								let status_from = true;
-								formData.append("tipe", 'update-audit-tahap1');
-								formData.append("cust_id", '{{$dataJadwal->cust_id}}');
-								formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}');
-								formData.append("sert_id", '{{$dataJadwal->sert_id}}');
-								formData.append("mohon_id", '{{$dataJadwal->mohon_id}}');
-								formData.append("kolom_v", tinyMCE.get('kolom_v').getContent());
-								formData.append("kolom_vi", tinyMCE.get('kolom_vi').getContent());
-								formData.append("kolom_vii", tinyMCE.get('kolom_vii').getContent());
-								formData.append("kolom_viii", tinyMCE.get('kolom_viii').getContent());
-								formData.append("kolom_x", tinyMCE.get('kolom_x').getContent());
-								formData.append("kolom_ix", tinyMCE.get('kolom_ix').getContent());
-								formData.append("kolom_xi", tinyMCE.get('kolom_xi').getContent());
-								formData.append("kolom_xii", tinyMCE.get('kolom_xii').getContent());
-								
-								this.loading_submit = true;
-								let self = this;
-								$.ajax({
-									url: `{{action("$module@update")}}`,
-									type: 'post',
-									processData: false,
-									contentType: false,
-									data: formData,
-									success: async function (res) {
-										toastCenter({
-											type: 'success',
-											title: res.message
-										})
-										setTimeout(() => location.href = "{{url("$url")}}", 1000)
-									},
-									error: function (xhr) {
-										self.loading_submit = false;
-										if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-										else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-									}
-								});
-                            }
-                        });
+		function submitApproval() {
+            try {
+                $("#agreeTemuan").attr("disabled", true)
+                let formData = new FormData();
+                formData.append('aud_thp1_id', {{$data->aud_thp1_id}})
+                formData.append('aud_thp1_ditutup', 'ya')
+                formData.append('tipe', 'tutup-tahap1')
+				formData.append('user_id', `{{$data->sis_permohonan->user_id}}`);
+				formData.append('cust_nama', `{{strtoupper($data->sis_permohonan->mohon_cust_nama)}}`);
+				formData.append('cust_email', `{{strtoupper($data->sis_permohonan->mohon_cust_email)}}`);
+
+                let fileLKS = document.querySelector("#file_verifikasi").files[0];
+                    validateBerkas(fileLKS);
+                    formData.append('file_verifikasi', fileLKS)
+
+                    let fileLapRing = document.querySelector("#file_laporan").files[0];
+                    validateBerkas(fileLapRing);
+                    formData.append('file_laporan', fileLapRing)
+
+				$.ajax({
+                    url: `{{url("$url/update")}}`,
+                    type: 'post',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: async function (res) {
+                        toastCenter({
+                            type: 'success',
+                            title: res.message
+                        })
+
+                        location.href = "/{{$url}}"
                     },
-                    async start() {
-                        setTimeout(async () => {
-							this.tynimceForm(); 
-						}, 1000);					
-                    },
-					async tynimceForm() {
-						$('textarea#kolom_v').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_vi').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_vii').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_viii').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_ix').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_x').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_xi').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-							$('textarea#kolom_xii').tinymce({
-								height: 200,
-								plugins: 'autosave link image code lists',
-								relative_urls: false,
-								placeholder: '',
-								images_reuse_filename: true,
-								automatic_uploads: true,
-								images_upload_url: '{{url("$url/ajax?action=tinymce-uploadimage")}}',
-								images_upload_credentials: true,
-								toolbar: [{name: 'history',items: ['undo', 'redo']}, {name: 'styles',items: ['styleselect']}, {name: 'formatting',items: ['bold', 'italic']}, {name: 'alignment',items: ['alignleft', 'aligncenter', 'alignright', 'alignjustify']}, {name: 'list',items: ['bullist', 'numlist']}, {name: 'indentation',items: ['outdent', 'indent']}, {name: 'link',items: ['link', 'image']}, {name: 'restore',items: ['restoredraft']},
-								],
-							  });
-						
-					},
+                    error: function (xhr) {
+                        if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                        else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                    }
+                });
+            } catch (error) {
+                toastCenter({type: 'error', 'title': error})
+            }
+
+        }
+
+        function validateBerkas(berkas) {
+            if (berkas == null) throw `Berkas tidak dapat kosong`
+            if (berkas.type != "application/pdf") {
+                throw `File ${berkas.name} harus berformat PDF`
+            }
+        }
+		
+		function promptAgree() {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: 'Tutup Tahap 1 ?',
+                html: `Keputusan ini bersifat permanen dan tidak dapat dikembalikan<br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    submitApproval()
                 }
-            });			
-        });		
+            });
+        }
+		
+		function processVerifikasi(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-primary mb-2',
+                cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Closed Temuan ?`,
+                text: "Apakah anda yakin ingin menutup temuan ini?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Tutup',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    let formData = new FormData();
+					formData.append('tipe', 'tutup-temuan');
+					formData.append('aud_thp1_det_id', `${id}`);
+					
+					$.ajax({
+						url: `{{url("$url/update")}}`,
+						type: 'post',
+						processData: false,
+						contentType: false,
+						data: formData,
+						success: async function (res) {
+							setTimeout(() => location.href = "{{url("$url/edit?aud_thp1_id=$data->aud_thp1_id")}}", 100);
+						},
+						error: function (xhr) {
+							self.loading_submit = false;
+							if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+							else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+						}
+					});
+                }
+            });
+        }
+				
+        function propmtRevisi(id) {
+			Swal.fire({
+				title: 'Silahkan isikan catatan revisi',
+				input: 'textarea',
+				inputAttributes: {
+				autocapitalize: 'off'
+				},
+				showCancelButton: true,
+				confirmButtonText: 'Revisi',
+				showLoaderOnConfirm: true,
+				preConfirm: (revisi) => {
+					let formData = new FormData();
+					formData.append('thp1_revisi_catatan', `${revisi}`);
+					formData.append('tipe', 'revisi-temuan');
+					formData.append('aud_thp1_det_id', `${id}`);
+					formData.append('aud_thp1_id', `{{$data->aud_thp1_id}}`);
+					formData.append('user_id', `{{$data->sis_permohonan->user_id}}`);
+					formData.append('cust_nama', `{{strtoupper($data->sis_permohonan->mohon_cust_nama)}}`);
+					formData.append('cust_email', `{{strtoupper($data->sis_permohonan->mohon_cust_email)}}`);
+					if(revisi != ''){
+						return fetch(`{{url("$url/update")}}`, {
+							headers: {
+								"X-CSRF-TOKEN": `{{ csrf_token() }}`
+							  },
+							  method: "POST",
+							  credentials: "same-origin",
+							  body: formData
+						})
+						.then(response => {
+							if (!response.ok) {
+							  throw new Error(response.statusText)
+							}
+							return response.json()
+						})
+						.catch(error => {
+							  console.log(error);
+							Swal.showValidationMessage(
+							  `Request failed: ${error}`
+							)
+						})
+					}
+					else{
+						return Swal.showValidationMessage(
+							  `Request failed: Silahkan isikan text`
+							);
+					}
+					
+				},
+				allowOutsideClick: () => !Swal.isLoading()
+				}).then((obj) => {
+					if (obj.value.results.isConfirmed) {
+						setTimeout(() => location.href = "{{url("$url/edit?aud_thp1_id=$data->aud_thp1_id")}}", 100);
+					}
+					else{
+						toastCenter({type: 'error', 'title': 'Error data tidak bisa disimpan.'});
+					}
+				});
+		}
     </script>
 @endpush
-
 
 
