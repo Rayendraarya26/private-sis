@@ -60,7 +60,7 @@ class AuTahap1RapatAkhirController extends Controller
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
-        $data->where('sis_audit_tahap1.aud_thp1_status_temuan', '=', 'proses');
+        $data->whereIn('sis_audit_tahap1.aud_thp1_status_temuan', ['proses', 'revisi']);
         $data->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya');
         $data->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua');
         $data->whereNotNull('sis_audit_tahap1.aud_thp1_file_jadwal');

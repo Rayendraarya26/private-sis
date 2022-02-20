@@ -147,10 +147,12 @@
                     },
 					validateUploadKehadiran(event) {
                         let uploaded = event.target.files[0];
-                        if (uploaded.type !== "application/pdf") {
+                        if (uploaded.type !== "application/pdf" &&
+                            uploaded.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" &&
+                            uploaded.type !== "application/vnd.ms-excel") {
                             swalWithBootstrapButtons({
                                 title: `Validasi`,
-                                text: "File harus bertipe PDF",
+                                text: "File harus bertipe PDF dan Excel",
                                 type: 'warning',
                             })
 

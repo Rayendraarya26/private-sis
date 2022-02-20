@@ -107,11 +107,15 @@
 							</tbody>
 						</table>
 						@if($isClosed == 0 && $isKetua)
+							@if($data->aud_thp1_kolom_v != '' && $data->aud_thp1_kolom_vi != '' && $data->aud_thp1_kolom_vii != '' && $data->aud_thp1_kolom_viii != '' && $data->aud_thp1_kolom_ix != '' && $data->aud_thp1_kolom_x != '' && $data->aud_thp1_kolom_xi != '' && $data->aud_thp1_kolom_xii != '')
 							<div style="float: right">
 								<button class="btn btn-primary" type="button" id="agreeTemuan" onclick="showModalBerkas()">
 									<i class="fad fa-save"></i> Tutup Tahap I
 								</button>
 							</div>
+							@else
+								<p style="color:red;text-align:center;">Silahkan isikan data-data seperti logbook file dan tulis laporan akhir tahap 1 terlebih dahulu!!!</p>
+							@endif
 						@endif
                     </div>
                 </div>
