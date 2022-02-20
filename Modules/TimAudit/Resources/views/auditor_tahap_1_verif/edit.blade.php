@@ -107,14 +107,14 @@
 							</tbody>
 						</table>
 						@if($isClosed == 0 && $isKetua)
-							@if($data->aud_thp1_kolom_v != '' && $data->aud_thp1_kolom_vi != '' && $data->aud_thp1_kolom_vii != '' && $data->aud_thp1_kolom_viii != '' && $data->aud_thp1_kolom_ix != '' && $data->aud_thp1_kolom_x != '' && $data->aud_thp1_kolom_xi != '' && $data->aud_thp1_kolom_xii != '')
+							@if($data->aud_thp1_lap_verifikasi_status == 'ya')
 							<div style="float: right">
-								<button class="btn btn-primary" type="button" id="agreeTemuan" onclick="showModalBerkas()">
+								<button class="btn btn-primary" type="button" id="tutupTahap1" onclick="promptAgree({{$data->jadw_id}})">
 									<i class="fad fa-save"></i> Tutup Tahap I
 								</button>
 							</div>
 							@else
-								<p style="color:red;text-align:center;">Silahkan isikan data-data seperti logbook file dan tulis laporan akhir tahap 1 terlebih dahulu!!!</p>
+								<p style="color:red;text-align:center;">Silahkan isikan data-data seperti logbook file dan tulis laporan akhir tahap 1 sampai terverifikasi terlebih dahulu!!!</p>
 							@endif
 						@endif
                     </div>
@@ -179,7 +179,7 @@
 		
 		function submitApproval() {
             try {
-                $("#agreeTemuan").attr("disabled", true)
+                $("#tutupTahap1").attr("disabled", true)
                 let formData = new FormData();
                 formData.append('aud_thp1_id', {{$data->aud_thp1_id}})
                 formData.append('aud_thp1_ditutup', 'ya')
@@ -187,7 +187,7 @@
 				formData.append('user_id', `{{$data->sis_permohonan->user_id}}`);
 				formData.append('cust_nama', `{{strtoupper($data->sis_permohonan->mohon_cust_nama)}}`);
 				formData.append('cust_email', `{{strtoupper($data->sis_permohonan->mohon_cust_email)}}`);
-
+/* 
                 let fileLKS = document.querySelector("#file_verifikasi").files[0];
                     validateBerkas(fileLKS);
                     formData.append('file_verifikasi', fileLKS)
@@ -195,7 +195,7 @@
                     let fileLapRing = document.querySelector("#file_laporan").files[0];
                     validateBerkas(fileLapRing);
                     formData.append('file_laporan', fileLapRing)
-
+ */
 				$.ajax({
                     url: `{{url("$url/update")}}`,
                     type: 'post',
@@ -213,6 +213,7 @@
                     error: function (xhr) {
                         if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
                         else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+						$("#tutupTahap1").attr("disabled", false);
                     }
                 });
             } catch (error) {

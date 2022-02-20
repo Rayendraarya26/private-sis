@@ -1,11 +1,10 @@
 <?php
 
-namespace Modules\TimAudit\Http\Controllers;
+namespace Modules\KoordinatorSertifikasi\Http\Controllers;
 
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisPelanggan;
-use App\Models\BbkkpSis\SysUser;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -20,21 +19,20 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class AuTahap1LapController extends Controller
+class VerifLapTahap1Controller extends Controller
 {
     public $module = self::class;
-    private $url = 'timaudit/auditor/tahap1-lap';
-    private $view = "timaudit::auditor_tahap_1_lap";
+    private $view = "koordinatorsertifikasi::verif_lap_tahap1";
+    private $url = 'koordinatorsertifikasi/verif-lap-tahap1';
 
     public function index()
     {
         $breadcrumbs = [
-            new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
-            new BreadcrumbsStruct('Laporan Audit Tahap 1'),
+            new BreadcrumbsStruct('Koorinator Sertifikasi'),
+            new BreadcrumbsStruct('Verifikasi Lap. Tahap 1'),
         ];
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs , 'view' => $this->view];
         return view("$this->view.index")->with($parser);
     }
 
@@ -43,27 +41,22 @@ class AuTahap1LapController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-jadwal-audit' => $this->ajax_datagrid_jadwal_audit($request),
-            'tinymce-uploadimage'   => $this->ajax_tinymce_uploadimage($request),
             default                 => null,
         };
     }
 
     private function ajax_datagrid_jadwal_audit(Request $request)
     {
-        $data = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+        $data = SisAuditTahap1::join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
 			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
 			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
-			->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
 
         // Filter
-        $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->whereIn('sis_audit_tahap1.aud_thp1_status_temuan', ['diajukan', 'setuju']);
+        $data->whereIn('sis_audit_tahap1.aud_thp1_lap_verifikasi_status', ['none', 'revisi']);
+        $data->whereIn('sis_audit_tahap1.aud_thp1_verifikasi_diajukan', ['ya']);
         $data->whereIn('sis_audit_tahap1.aud_thp1_ditutup', ['tidak']);
-        $data->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya');
-        $data->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua');
         $data->whereNotNull('sis_audit_tahap1.aud_thp1_file_jadwal');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -101,129 +94,52 @@ class AuTahap1LapController extends Controller
             $x['jadw_jenis']               = $d->jadw_jenis;
             $x['aud_thp1_jenis']           = $d->aud_thp1_jenis;
             $x['aud_thp1_verifikasi_diajukan']           = $d->aud_thp1_verifikasi_diajukan;
-            $x['aud_thp1_lap_verifikasi_status']           = $d->aud_thp1_lap_verifikasi_status;
             array_push($result, $x);
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
 
-    private function ajax_tinymce_uploadimage(Request $request)
-    {
-        try {
-            $request->validate([
-                'file' => 'required|mimetypes:image/jpeg,image/png|max:1000', // 1MB
-            ]);
-
-            $img     = $request->file('file');
-            $imgName = $img->hashName();
-            $img->move(public_path(config('app.path_file_tinymce')), $imgName);
-            $publicUrl = asset(config('app.path_file_tinymce') . '/' . $imgName);
-
-            return response()->json(["location" => $publicUrl]);
-        } catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
-        }
-    }
-
-    public function edit(Request $request)
-    {
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Tim Audit'),
-            new BreadcrumbsStruct('Kepala Auditor', url($this->url)),
-            new BreadcrumbsStruct('Laporan Audit Tahap 1', url($this->url)),
-            new BreadcrumbsStruct('Input Laporan'),
-        ];
-
-        $dataJadwal = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
-        $dataJadwal->select(
-            '*',
-            DB::raw("'tunggal' as jadw_jenis"),
-            DB::raw("'tahap-1' as jadw_audit_jenis"),
-            DB::raw("sis_audit_tahap1.aud_thp1_id as jadw_id"),
-            DB::raw("sis_audit_tahap1.aud_thp1_tujuan as jadw_audit_tujuan_audit"),
-            DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'),
-            DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_nace) as jadw_audit_kode_nace'),
-            DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ea) as jadw_audit_kode_ea'),
-            DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_ruang_lingkup) as jadw_audit_ruang_lingkup'),
-            DB::raw('GROUP_CONCAT(distinct sis_audit_tahap1_tim.thp1_tim_posisi) as jadw_tim_posisi'),
-            DB::raw('GROUP_CONCAT(distinct master_pegawai.peg_id) as peg_id')
-        );
-
-        $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-			->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
-			->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
-			->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
-			->where('master_pegawai.user_id', '=', auth()->id())
-			->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya')
-			->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua')
-			->groupBy('sis_audit_tahap1.aud_thp1_id');
-
-        $restAudit = $dataJadwal->get()[0];
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
-        return view("$this->view.edit")->with($parser);
-    }
-
-    public function update(Request $request)
+    public function doVerif(Request $request)
     {
         $request->validate([
             "aud_thp1_id"           => 'required',
-            "cust_id"               => 'required',
-            "sert_id"               => 'required',
-            "mohon_id"              => 'required',
-            "kolom_v"               => 'required',
-            "kolom_vi"              => 'required',
-            "kolom_vii"             => 'required',
-            "kolom_viii"            => 'required',
-            "kolom_ix"              => 'required',
-            "kolom_x"               => 'required',
-            "kolom_xi"              => 'required',
-            "kolom_xii"             => 'required',
-            "aud_thp1_verifikasi_diajukan"             => 'required',
-            "aud_thp1_verifikasi_oleh"             => 'required',
-            "aud_thp1_verifikasi_jabatan"             => 'required',
+            "catatan"               => 'nullable',
+            "status"               => 'required',
         ]);
-		
         try {
             DB::beginTransaction();
 			
             DB::table('sis_audit_tahap1')
                 ->where('aud_thp1_id', $request['aud_thp1_id'])
                 ->update([
-                    "aud_thp1_kolom_v"    => $request['kolom_v'],
-                    "aud_thp1_kolom_vi"   => $request['kolom_vi'],
-                    "aud_thp1_kolom_vii"  => $request['kolom_vii'],
-                    "aud_thp1_kolom_viii" => $request['kolom_viii'],
-                    "aud_thp1_kolom_ix"   => $request['kolom_ix'],
-                    "aud_thp1_kolom_x"    => $request['kolom_x'],
-                    "aud_thp1_kolom_xi"   => $request['kolom_xi'],
-                    "aud_thp1_kolom_xii"  => $request['kolom_xii'],
-                    "aud_thp1_verifikasi_diajukan"  => $request['aud_thp1_verifikasi_diajukan'],
-                    "aud_thp1_verifikasi_oleh"  => $request['aud_thp1_verifikasi_oleh'],
-                    "aud_thp1_verifikasi_jabatan"  => $request['aud_thp1_verifikasi_jabatan'],
-                    "updated_at"          => Carbon::now(),
+                    "aud_thp1_lap_verifikasi_status"    => $request['status'],
+                    "aud_thp1_lap_revisi_note"   => ($request['status'] != 'ya') ? $request['catatan'] : null,
+                    "aud_thp1_verifikasi_tanggal"          => ($request['status'] != 'ya') ? Carbon::now() : null,
+                    "aud_thp1_verifikasi_diajukan"          => ($request['status'] == 'ya') ? 'ya' : 'tidak',
                 ]);
 			
-			if($request['aud_thp1_verifikasi_diajukan'] == 'ya'){
-				$dataUser = SysUser::whereIn('ug_group_id', ['11'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
-				foreach ($dataUser->get() as $us) {
-					$notifUsr            = new NotifStruct();
-					$notifUsr->title     = 'Pengajuan Laporan Tahap 1 Jadwal #' . $request['aud_thp1_id'];
-					$notifUsr->message   = sprintf("Pengajuan laporan lengkap untuk jadwal nomor #%s telah didelegasikan, silahkan lakukan proses Verifikasi.", $request['aud_thp1_id']);
-					$notifUsr->user_id   = $us->user_id;
-					$notifUsr->click_url = url('/koordinatorsertifikasi/verif-lap-tahap1');
-					sendNotification($notifUsr);
+			// Send Notification to Auditor
+			$groupAuditor = SisAuditTahap1Tim::join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+			$groupAuditor->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$groupAuditor->where('thp1_tim_posisi' ,'=', 'ketua')->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id'])->select(DB::raw('sys_user.user_id AS user_id'), 'thp1_tim_posisi');
+			foreach ($groupAuditor->get() as $auditor) {
+				$notifStruct = new NotifStruct();
+				if ($request['status'] == "ya") {
+					$notifStruct->title   = sprintf("#%d Valid Laporan tahap 1", $request['aud_thp1_id']);
+					$notifStruct->message = sprintf("Jadwal nomor %s pada laporan tahap 1 telah dilakuan verifikasi dengan hasil ter-verifikasi.", $request['aud_thp1_id']);
+				} else {
+					$notifStruct->title   = sprintf("#%d Revisi Laporan tahap 1", $request['aud_thp1_id']);
+					$notifStruct->message = sprintf("Jadwal nomor %s pada laporan tahap 1 telah dilakuan verifikasi dengan hasil direvisi.", $request['aud_thp1_id']);
 				}
+				$notifStruct->click_url = url('/timaudit/auditor/tahap1-lap');
+				$notifStruct->user_id   = $auditor->user_id;
+				sendNotification($notifStruct);
 			}
 			
+			$responseMessage = sprintf("Data berhasil disimpan untuk jadwal #", $request['aud_thp1_id']);
             DB::commit();
-            return redirect(url($this->url))->with('message', "Data berhasil ditambahkan/diperbarui");
+			return redirect()->back()->with('message', $responseMessage);
         } catch (Exception $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }

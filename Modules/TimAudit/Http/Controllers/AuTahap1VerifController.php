@@ -180,13 +180,13 @@ class AuTahap1VerifController extends Controller
             'user_id'                  => 'required',
             'aud_thp1_id'                  => 'required',
             'aud_thp1_ditutup'                  => 'required',
-            'file_verifikasi'                  => 'required',
-            'file_laporan'                  => 'required',
+            // 'file_verifikasi'                  => 'required',
+            // 'file_laporan'                  => 'required',
         ]);
 
-        $newFilePath = [];
+        // $newFilePath = [];
         try {
-            $baseFileUpload = sprintf(config("app.path_file_tahap1"), $request->aud_thp1_id);
+           /*  $baseFileUpload = sprintf(config("app.path_file_tahap1"), $request->aud_thp1_id);
             if ($request->hasFile('file_verifikasi')) {
 				$fileVerifikasi     = $request->file('file_verifikasi');
 				$fileVerifikasiName = Str::slug('file-file-verifikasi-' . $fileVerifikasi->getClientOriginalName()) . '-' . time() . '.' . $fileVerifikasi->getClientOriginalExtension();
@@ -206,13 +206,14 @@ class AuTahap1VerifController extends Controller
 				
 				$dataUpdate['aud_thp1_file_laporan'] = $fileLapPath;
             }
+			 */
 			DB::beginTransaction();
 			DB::table('sis_audit_tahap1')
                 ->where('aud_thp1_id', $request->aud_thp1_id)
                 ->update([
                     "aud_thp1_ditutup"    => 'ya',
-                    "aud_thp1_file_laporan"    => $dataUpdate['aud_thp1_file_laporan'],
-                    "aud_thp1_file_temuan"    => $dataUpdate['aud_thp1_file_temuan'],
+                    // "aud_thp1_file_laporan"    => $dataUpdate['aud_thp1_file_laporan'],
+                    // "aud_thp1_file_temuan"    => $dataUpdate['aud_thp1_file_temuan'],
                     "updated_at"          => Carbon::now(),
                 ]);
             DB::commit();
@@ -238,9 +239,9 @@ class AuTahap1VerifController extends Controller
 
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
-            foreach ($newFilePath as $path) { // remove new file uploaded
+            /* foreach ($newFilePath as $path) { // remove new file uploaded
                 @unlink($path);
-            }
+            } */
             return responseJSON(500, [], $e->getMessage());
         }
     }

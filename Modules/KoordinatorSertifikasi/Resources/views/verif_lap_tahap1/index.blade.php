@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Audit Tahap 1')
+@section('title', 'Verifikasi Laporan Audit Tahap 1')
 
 @section('content')
     <div class="dt-content">
@@ -27,10 +27,49 @@
             </div>
         </div>
     </div>
+	
+	 @include("$view._index_approve")
+
+	@include("$view._index_revisi")
 @endsection
 
 @push("javascript")
     <script>
+		function confirmTahap1(id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-danger mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Verifikasi Laporan Tahap 1 ?`,
+                html: `keputusan ini bersifat permanen <br><br> tekan ESC untuk batal`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Setuju',
+                cancelButtonText: 'Revisi',
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+                    approveModal(id);
+                } else if (result.dismiss === swal.DismissReason.cancel) {
+                    revisionModal(id);
+                }
+            });
+        }
+
+        function approveModal(id) {
+            $("#approve_aud_thp1_id").val(id)
+            $("#modalApprove").modal('show')
+        }
+
+        function revisionModal(id) {
+            $("#revision_aud_thp1_id").val(id)
+            $("#modalRevisi").modal('show')
+        }
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -52,25 +91,18 @@
                         align: 'center',
                         formatter: function (val, row) {
 							let dom = `dropdownMenu_${row.aud_thp1_id}`;
-                            let btnEdit = ``;	
-							if(row.aud_thp1_verifikasi_diajukan == 'tidak'){
-								if(row.aud_thp1_lap_verifikasi_status == 'revisi'){
-									btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Revisi Laporan</div>`;
-								}
-								else if(row.aud_thp1_lap_verifikasi_status == 'none'){
-									btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Input Laporan</div>`;
-								}
-							}
-							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
-							btnEdit += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=lap_lengkap&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
+                            let btnCetak = ``;	
+							btnCetak += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=hasil-tinjauan&aud_thp1_id=${row.aud_thp1_id}')">Hasil Tinjauan</div>`;
+							btnCetak += `<div data-options="iconCls:'fas fa-print'" onclick="window.open('{{ url("$url/cetak") }}?tipe=lap_lengkap&aud_thp1_id=${row.aud_thp1_id}')">Laporan Tahap 1</div>`;
 							
                             return `
 								<div>
-									<button class="btn-action btn-info btn-block" data-index="${row.aud_thp1_id}" title="Aksi">
-										<i class="fa fa-setting"></i> Aksi
+									<a href="javascript:void(0)" class="btn btn-xs btn-warning btn-block" onClick="confirmTahap1('${row.aud_thp1_id}')"><i class="fas fa-check-square-o"></i> Verifikasi</a>
+									<button class="btn-action btn-info btn-block " data-index="${row.aud_thp1_id}" title="Cetak">
+										<i class="fa fa-setting"></i> Lihat
 									</button>
 									<div id="${dom}" style="width:200px; display: none;">
-										@if(authorized("{$module}@edit")) ${btnEdit} @endif
+										${btnCetak}
 								</div>
 							</div>`
                         }

@@ -58,7 +58,7 @@
                         formatter: function (val, row) {
                             let btnPreview   = `<a target="blank_" href="{{url("$url/cetak")}}/${row.jadw_id}/lap-lengkap" class="btn btn-xs btn-primary btn-block"><i class="fas file-pdf"></i> Preview</a>`
                             let btnDet = ``
-                            btnDet     = `<a href="{{url("$url/detail")}}/${row.jadw_id}" class="btn btn-xs btn-danger btn-block"><i class="fas fa-check-square-o"></i> Verifikasi</a>`
+                            btnDet     = `<a href="{{url("$url/detail")}}/${row.jadw_id}" class="btn btn-xs btn-danger btn-block"><i class="fas fa-check-square-o"></i> Verifikasi</a>`;
                             return `@if(authorized("{$module}@cetak")) ${btnPreview} @endif  @if(authorized("{$module}@detail")) ${btnDet} @endif`;
                         },
                     },

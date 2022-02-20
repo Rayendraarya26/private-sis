@@ -36,7 +36,7 @@ class VerifLapLengkapController extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('Koorinator Sertifikasi'),
-            new BreadcrumbsStruct('Verifikasi'),
+            new BreadcrumbsStruct('Verifikasi Lap. Tahap 2'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
@@ -49,7 +49,7 @@ class VerifLapLengkapController extends Controller
 			
 			$breadcrumbs = [
                 new BreadcrumbsStruct('Koorinator Sertifikasi'),
-				new BreadcrumbsStruct('Verifikasi'),
+            new BreadcrumbsStruct('Verifikasi Lap. Tahap 2'),
                 new BreadcrumbsStruct('Detail Laporan Lengkap'),
             ];
 						

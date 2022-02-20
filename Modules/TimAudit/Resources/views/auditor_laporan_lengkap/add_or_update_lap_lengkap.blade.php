@@ -200,8 +200,7 @@
                     </div>
                     <div class="dt-card__body">
                         <div class="col-md-12">
-                            <form action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post"
-                                  enctype="multipart/form-data">
+                            <form id="addForm" action="{{ action("$module@processLaporan", $data->jadw_id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
 
                                 <div class="form-group row">
@@ -495,10 +494,14 @@
 
 
 @push('javascript')
-    <script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js">
-    </script>
+    <script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js"></script>
 
     <script>
+	const swalWithBootstrapButtons = swal.mixin({
+            confirmButtonClass: 'btn btn-primary mb-2',
+            cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+            buttonsStyling: false,
+        });
         function initEditor() {
             tinyMCE.init({
                 autosave_ask_before_unload: false,
