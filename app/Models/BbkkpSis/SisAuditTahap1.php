@@ -23,13 +23,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $aud_thp1_ditutup
  * @property Carbon|null $aud_thp1_tanggal_mulai
  * @property Carbon|null $aud_thp1_tanggal_selesai
- * @property string|null $aud_thp1_file_jadwal
  * @property string|null $aud_thp1_jenis
  * @property string|null $aud_thp1_tujuan
  * @property string|null $aud_thp1_standart_acuan
- * @property string|null $aud_thp1_file_temuan
- * @property string|null $aud_thp1_file_notulen
+ * @property string|null $aud_thp1_file_jadwal
  * @property string|null $aud_thp1_file_daftar_hadir
+ * @property string|null $aud_thp1_file_surat_tugas
+ * @property string|null $aud_thp1_file_notulen
+ * @property string|null $aud_thp1_file_subkon
+ * @property string|null $aud_thp1_file_temuan
+ * @property string|null $aud_thp1_file_laporan
  * @property Carbon|null $aud_thp1_tanggal_rapat_akhir
  * @property string|null $aud_thp1_kolom_v
  * @property string|null $aud_thp1_kolom_vi
@@ -50,6 +53,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property SisPermohonan $sis_permohonan
  * @property SisPermohonanDetail $sis_permohonan_detail
  * @property Collection|SisAuditTahap1Detail[] $sis_audit_tahap1_details
+ * @property Collection|SisAuditTahap1PersetujuanRevisi[] $sis_audit_tahap1_persetujuan_revisis
  * @property Collection|SisAuditTahap1Tim[] $sis_audit_tahap1_tims
  *
  * @package App\Models\BbkkpSis
@@ -81,13 +85,16 @@ class SisAuditTahap1 extends Model
 		'aud_thp1_ditutup',
 		'aud_thp1_tanggal_mulai',
 		'aud_thp1_tanggal_selesai',
-		'aud_thp1_file_jadwal',
 		'aud_thp1_jenis',
 		'aud_thp1_tujuan',
 		'aud_thp1_standart_acuan',
-		'aud_thp1_file_temuan',
-		'aud_thp1_file_notulen',
+		'aud_thp1_file_jadwal',
 		'aud_thp1_file_daftar_hadir',
+		'aud_thp1_file_surat_tugas',
+		'aud_thp1_file_notulen',
+		'aud_thp1_file_subkon',
+		'aud_thp1_file_temuan',
+		'aud_thp1_file_laporan',
 		'aud_thp1_tanggal_rapat_akhir',
 		'aud_thp1_kolom_v',
 		'aud_thp1_kolom_vi',
@@ -121,6 +128,11 @@ class SisAuditTahap1 extends Model
 	public function sis_audit_tahap1_details()
 	{
 		return $this->hasMany(SisAuditTahap1Detail::class, 'aud_thp1_id');
+	}
+
+	public function sis_audit_tahap1_persetujuan_revisis()
+	{
+		return $this->hasMany(SisAuditTahap1PersetujuanRevisi::class, 'aud_thp1_id');
 	}
 
 	public function sis_audit_tahap1_tims()
