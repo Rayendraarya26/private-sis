@@ -5,6 +5,7 @@ namespace Modules\Pelanggan\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditTahap1;
+use App\Models\BbkkpSis\SisAuditTahap1PersetujuanRevisi;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisPermohonanStatus;
 use App\Models\BbkkpSis\SysUserGroup;
@@ -14,6 +15,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class Tahap1PersetujuanController extends Controller
@@ -30,7 +32,7 @@ class Tahap1PersetujuanController extends Controller
             new BreadcrumbsStruct('Persetujuan Temuan'),
         ];
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
+        $parser = ['module' => $this->module, 'url' => $this->url, 'view' => $this->view, 'breadcrumbs' => $breadcrumbs];
         return view("$this->view.index")->with($parser);
     }
 
@@ -38,71 +40,120 @@ class Tahap1PersetujuanController extends Controller
     {
         $request->validate(['aud_thp1_id' => 'required|integer', 'status' => ['required', Rule::in(['setuju', 'revisi'])]]);
 
+        $newUploadedPath = [];
         try {
+            if ($request['status'] == 'revisi') {
+                if (empty($request['catatan'])) throw new Exception('Mohon tuliskan catatan');
+            } else if ($request['status'] == 'setuju') {
+                if (!$request->hasFile('file_surat_tugas')) throw new Exception('Mohon unggah surat tugas');
+                if (!$request->hasFile('file_notulen')) throw new Exception('Mohon unggah notulen');
+            }
+
             DB::beginTransaction();
-            $dataAudit1 = SisAuditTahap1::join("sis_permohonan", "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id")
+            $dataTahap1 = SisAuditTahap1::join("sis_permohonan", "sis_permohonan.mohon_id", "=", "sis_audit_tahap1.mohon_id")
                 ->where("user_id", auth()->id())
                 ->findOrFail($request['aud_thp1_id']);
 
-            $dataAudit1->aud_thp1_status_temuan = $request['status'];
-            $dataAudit1->save();
+            $dataTahap1->aud_thp1_status_temuan = $request['status'];
+            $dataTahap1->save();
+
+            $timeNow         = Carbon::now();
+            $responseMessage = "";
+            if ($request['status'] == "setuju") {
+                $responseMessage = sprintf("%s menyetujui temuan tahap 1", $dataTahap1->mohon_cust_nama);
+                // Add permohonan Status
+                SisPermohonanStatus::updateOrCreate(
+                    [
+                        "status_mohon_id" => $dataTahap1->mohon_id,
+                        "status_tipe"     => "informasi",
+                        "status_judul"    => "Temuan tahap 1",
+                        "status_pesan"    => sprintf("%s menyetujui temuan tahap 1", $dataTahap1->mohon_cust_nama),
+                        "created_at"      => $timeNow
+                    ],
+                    [
+                        "updated_at" => $timeNow,
+                    ]);
+
+                // Upload Dokumens
+
+                $baseFileUpload = sprintf(config("app.path_file_tahap1"), $dataTahap1->aud_thp1_id);
+                // ======= SuratTugas ======= //
+                $fileSuratTugas     = $request->file('file_surat_tugas');
+                $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
+                $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
+                $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
+                $newUploadedPath[]                     = public_path($fileSuratTugasPath);
+                $dataTahap1->aud_thp1_file_surat_tugas = $fileSuratTugasPath;
+
+                // ======= Notulen ======= //
+                $fileNotulen     = $request->file('file_notulen');
+                $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
+                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
+                $fileNotulen->move($baseFileUpload, $fileNotulenName);
+                $newUploadedPath[]                 = public_path($fileNotulenPath);
+                $dataTahap1->aud_thp1_file_notulen = $fileNotulenPath;
+
+                // ======= Notulen ======= //
+                if ($request->hasFile('file_subkontrak')) {
+                    $fileSubkon     = $request->file('file_subkontrak');
+                    $fileSubkonName = Str::slug('file-scan-subkon-' . $fileSubkon->getClientOriginalName()) . '-' . time() . '.' . $fileSubkon->getClientOriginalExtension();
+                    $fileSubkonPath = sprintf("%s/%s", $baseFileUpload, $fileSubkonName);
+                    $fileSubkon->move($baseFileUpload, $fileSubkonName);
+                    $newUploadedPath[]                = public_path($fileSubkonPath);
+                    $dataTahap1->aud_thp1_file_subkon = $fileSubkonPath;
+                }
+
+                $dataTahap1->save();
+            } else {
+                $responseMessage = sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
+                SisAuditTahap1PersetujuanRevisi::create([
+                    'aud_thp1_id'                        => $dataTahap1->aud_thp1_id,
+                    'aud_thp1_perseujuan_revisi_catatan' => $request['catatan'],
+                ]);
+
+                // Add permohonan Status
+                SisPermohonanStatus::updateOrCreate(
+                    [
+                        "status_mohon_id" => $dataTahap1->mohon_id,
+                        "status_tipe"     => "informasi",
+                        "status_judul"    => "Temuan tahap 1",
+                        "status_pesan"    => sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataTahap1->mohon_cust_nama),
+                        "created_at"      => $timeNow,
+                    ],
+                    [
+                        "updated_at" => $timeNow,
+                    ]
+                );
+            }
 
             // Send Notification to Operator LS
             $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
-            $timeNow = Carbon::now();
             if ($groupMarketing) {
                 foreach ($groupMarketing as $marketing) {
                     $notifStruct = new NotifStruct();
                     if ($request['status'] == "setuju") {
                         // Send Push
-                        $notifStruct->title     = sprintf("#%d Setuju temuan tahap 1", $dataAudit1->mohon_id);
-                        $notifStruct->message   = sprintf("%s memberikan persetujuan pada temuan tahap 1", $dataAudit1->mohon_cust_nama);
-                        $notifStruct->user_id   = $marketing?->ug_user_id;
-                        $notifStruct->click_url = url('/operatorls/penjadwalan-tahap1');
-                        sendNotification($notifStruct);
-
-                        // Add Pengajuan Status
-                        SisPermohonanStatus::updateOrCreate(
-                            [
-                                "status_mohon_id" => $dataAudit1->mohon_id,
-                                "status_tipe"     => "informasi",
-                                "status_judul"    => "Temuan tahap 1",
-                                "status_pesan"    => sprintf("%s menyetujui temuan tahap 1", $dataAudit1->mohon_cust_nama),
-                                "created_at"      => $timeNow
-                            ],
-                            [
-                                "updated_at" => $timeNow,
-                            ]);
+                        $notifStruct->title   = sprintf("#%d Setuju temuan tahap 1", $dataTahap1->mohon_id);
+                        $notifStruct->message = sprintf("%s memberikan persetujuan pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
                     } else {
                         // Send Push
-                        $notifStruct->title     = sprintf("#%d Revisi temuan tahap 1", $dataAudit1->mohon_id);
-                        $notifStruct->message   = sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataAudit1->mohon_cust_nama);
-                        $notifStruct->user_id   = $marketing?->ug_user_id;
-                        $notifStruct->click_url = url('/operatorls/penjadwalan-tahap1');
-                        sendNotification($notifStruct);
-
-                        // Add Pengajuan Status
-                        SisPermohonanStatus::updateOrCreate(
-                            [
-                                "status_mohon_id" => $dataAudit1->mohon_id,
-                                "status_tipe"     => "informasi",
-                                "status_judul"    => "Temuan tahap 1",
-                                "status_pesan"    => sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataAudit1->mohon_cust_nama),
-                                "created_at"      => $timeNow,
-                            ],
-                            [
-                                "updated_at" => $timeNow,
-                            ]
-                        );
+                        $notifStruct->title   = sprintf("#%d Revisi temuan tahap 1", $dataTahap1->mohon_id);
+                        $notifStruct->message = sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
                     }
+                    $notifStruct->user_id   = $marketing?->ug_user_id;
+                    $notifStruct->click_url = url('/operatorls/penjadwalan-tahap1');
+                    sendNotification($notifStruct);
                 }
             }
 
             DB::commit();
-            return responseJSON(200, null, "Approval berhasil " . ucwords($request['status']));
+            return redirect()->back()->with('message', $responseMessage);
         } catch (Exception $e) {
             DB::rollBack();
-            return responseJSON(500, null, $e->getMessage());
+            foreach ($newUploadedPath as $path) {
+                @unlink($path);
+            }
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
 
@@ -220,7 +271,7 @@ class Tahap1PersetujuanController extends Controller
             ->join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
             ->leftJoin('sis_jadwal_audit', 'sis_audit_tahap1.mohon_id', '=', 'sis_jadwal_audit.mohon_id')
             ->leftJoin('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-            ->where('aud_thp1_status_temuan', '=','diajukan')
+            ->where('aud_thp1_status_temuan', '=', 'diajukan')
             ->where('sis_permohonan.user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {

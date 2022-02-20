@@ -64,7 +64,7 @@ class Tahap1JadwalController extends Controller
                 }
             ])
             ->join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
-            ->where('aud_thp1_status_temuan', '!=', 'setuju')
+            ->orWhereNotIn('aud_thp1_status_temuan', ['setuju'])
             ->where('sis_permohonan.user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {

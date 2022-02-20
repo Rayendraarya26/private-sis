@@ -18,13 +18,16 @@
                         </div>
                     @endif
 
-
                     <div class="dt-card__body">
                         <div id="ttData" style="width:100%; min-width: 310px"></div>
                     </div>
                 </div>
             </div>
         </div>
+
+        @include("$view._index_approve")
+
+        @include("$view._index_revisi")
     </div>
 @endsection
 
@@ -43,44 +46,27 @@
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Setuju',
-                cancelButtonText: 'Tolak',
+                cancelButtonText: 'Revisi',
                 closeOnConfirm: false,
                 closeOnCancel: false,
                 reverseButtons: true
             }).then((result) => {
-                let status = null;
                 if (result.value) {
-                    status = "setuju"
+                    approveModal(id);
                 } else if (result.dismiss === swal.DismissReason.cancel) {
-                    status = "tidak"
-                }
-
-                if (status !== null) {
-                    $.ajax({
-                        url: `{{url("$url/approve-temuan")}}`,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {aud_thp1_id: id, status},
-                        success: function (response) {
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            // Destroy MenuButton (rebuild onloadsuccess)
-                            let dg = $('#ttData');
-                            dg.datagrid('getPanel').find('.btn-action').each(function () {
-                                $(this).menubutton('destroy');
-                            })
-                            dg.datagrid('reload');
-                        },
-                        error: function (xhr) {
-                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                        }
-                    });
+                    revisionModal(id);
                 }
             });
+        }
+
+        function approveModal(id) {
+            $("#approve_aud_thp1_id").val(id)
+            $("#modalApprove").modal('show')
+        }
+
+        function revisionModal(id) {
+            $("#revision_aud_thp1_id").val(id)
+            $("#modalRevisi").modal('show')
         }
 
         $(function () {
@@ -150,8 +136,6 @@
                                     return 'color:white;background-color:#2e7d32;';
                                 case 'revisi':
                                     return 'color:white;background-color:#e65100;';
-                                case 'diajukan':
-                                    return 'color:black;background-color:#4caf50;';
                             }
                         }
                     },
