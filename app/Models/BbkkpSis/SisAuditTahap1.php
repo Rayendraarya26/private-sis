@@ -42,6 +42,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $aud_thp1_kolom_x
  * @property string|null $aud_thp1_kolom_xi
  * @property string|null $aud_thp1_kolom_xii
+ * @property string|null $aud_thp1_lap_verifikasi_status
+ * @property string|null $aud_thp1_lap_revisi_note
+ * @property string|null $aud_thp1_verifikasi_diajukan
+ * @property Carbon|null $aud_thp1_verifikasi_tanggal
+ * @property string|null $aud_thp1_verifikasi_oleh
+ * @property string|null $aud_thp1_verifikasi_jabatan
  * @property string|null $aud_thp1_nomor
  * @property string|null $aud_thp1_kesimpulan
  * @property string|null $aud_thp1_pernyataan_auditor
@@ -72,7 +78,8 @@ class SisAuditTahap1 extends Model
 	protected $dates = [
 		'aud_thp1_tanggal_mulai',
 		'aud_thp1_tanggal_selesai',
-		'aud_thp1_tanggal_rapat_akhir'
+		'aud_thp1_tanggal_rapat_akhir',
+		'aud_thp1_verifikasi_tanggal'
 	];
 
 	protected $fillable = [
@@ -104,6 +111,12 @@ class SisAuditTahap1 extends Model
 		'aud_thp1_kolom_x',
 		'aud_thp1_kolom_xi',
 		'aud_thp1_kolom_xii',
+		'aud_thp1_lap_verifikasi_status',
+		'aud_thp1_lap_revisi_note',
+		'aud_thp1_verifikasi_diajukan',
+		'aud_thp1_verifikasi_tanggal',
+		'aud_thp1_verifikasi_oleh',
+		'aud_thp1_verifikasi_jabatan',
 		'aud_thp1_nomor',
 		'aud_thp1_kesimpulan',
 		'aud_thp1_pernyataan_auditor',

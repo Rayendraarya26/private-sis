@@ -125,26 +125,32 @@ class Tahap1PersetujuanController extends Controller
                     ]
                 );
             }
-
-            // Send Notification to Operator LS
-            $groupMarketing = SysUserGroup::with('user')->where('ug_group_id', 6)->get();
-            if ($groupMarketing) {
-                foreach ($groupMarketing as $marketing) {
-                    $notifStruct = new NotifStruct();
-                    if ($request['status'] == "setuju") {
-                        // Send Push
-                        $notifStruct->title   = sprintf("#%d Setuju temuan tahap 1", $dataTahap1->mohon_id);
-                        $notifStruct->message = sprintf("%s memberikan persetujuan pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
-                    } else {
-                        // Send Push
-                        $notifStruct->title   = sprintf("#%d Revisi temuan tahap 1", $dataTahap1->mohon_id);
-                        $notifStruct->message = sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
-                    }
-                    $notifStruct->user_id   = $marketing?->ug_user_id;
-                    $notifStruct->click_url = url('/operatorls/penjadwalan-tahap1');
-                    sendNotification($notifStruct);
-                }
-            }
+			
+			// Send Notification to Auditor
+			$groupAuditor = SisAuditTahap1Tim::join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+			$groupAuditor->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$groupAuditor->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id'])->select(DB::raw('sys_user.user_id AS user_id'), 'thp1_tim_posisi');
+			foreach ($groupAuditor->get() as $auditor) {
+				$notifStruct = new NotifStruct();
+				if ($request['status'] == "setuju") {
+					// Send Push
+					$notifStruct->title   = sprintf("#%d Setuju temuan tahap 1", $dataTahap1->mohon_id);
+					$notifStruct->message = sprintf("%s memberikan persetujuan pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
+					$notifStruct->click_url = url('/timaudit/auditor/tahap1-verif');
+				} else {
+					// Send Push
+					$notifStruct->title   = sprintf("#%d Revisi temuan tahap 1", $dataTahap1->mohon_id);
+					$notifStruct->message = sprintf("%s mengajuakan revisi pada temuan tahap 1", $dataTahap1->mohon_cust_nama);
+					if($auditor?->thp1_tim_posisi == 'ketua'){
+						$notifStruct->click_url = url('/timaudit/auditor/tahap1-rapat-akhir');
+					}
+					else{
+						$notifStruct->click_url = url('/timaudit/auditor/tahap1-verif');
+					}
+				}
+				$notifStruct->user_id   = $auditor->user_id;
+				sendNotification($notifStruct);
+			}
 
             DB::commit();
             return redirect()->back()->with('message', $responseMessage);

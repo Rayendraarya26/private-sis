@@ -56,6 +56,9 @@
 							if(row.revisi_fixed_total > 0){
 								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Verifikasi</div>`;
 							}
+							else if(row.revisi_open_total > 0){
+								btnEdit += `<div data-options="iconCls:'fas fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}'">Lihat Detail</div>`;
+							}
 							
 							if(row.thp1_tim_posisi == 'ketua'){
 								if(row.revisi_fixed_total == 0 && row.revisi_open_total == 0){

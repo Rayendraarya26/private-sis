@@ -48,21 +48,24 @@
                     {
                         field: 'action',
                         title: "<br><br><br>",
-                        width: 100,
+                        width: 140,
                         align: 'center',
                         formatter: function (val, row) {
 							let btnEdit = '';
-							btnEdit = `<a href="{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}" class="btn btn-primary btn-xs btn-block"><i class="fad fa-paper-plane"></i> Proses</a>`;
+							if(row.aud_thp1_status_temuan == 'proses'){
+								btnEdit = `<a href="{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}" class="btn btn-primary btn-xs btn-block"><i class="fad fa-paper-plane"></i> Ajukan</a>`;
+							}
+							else{
+								btnEdit = `<a href="{{ url("$url/edit") }}?aud_thp1_id=${row.aud_thp1_id}" class="btn btn-warning btn-xs btn-block"><i class="fad fa-paper-plane"></i> Ajukan Ulang</a>`;
+							}
+							
                             return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`;
                         }
                     }
                 ]],
                 columns: [[
-                    {field: 'aud_thp1_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',
-						formatter: function (val, row) {
-                            return `${row.aud_thp1_id}`
-                        }
-					},
+                    {field: 'aud_thp1_id', title: 'No.<br>Jadwal', width: 120, sortable: true, align: 'left',},
+                    {field: 'aud_thp1_status_temuan', title: 'Status<br>Pengajuan', width: 120, sortable: true, align: 'left',},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
                     {field: 'aud_thp1_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
@@ -78,6 +81,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'aud_thp1_status_temuan', type: 'label'},
                 ]);
         });
     </script>

@@ -191,7 +191,7 @@
                             onSelect: async function (index, row) {
 								await self.setCustId(row.cust_id);
 								await self.setBillId(row.bill_id);
-								$('#mohon_id').combogrid({url : `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${self.cust_id}`});
+								$('#mohon_id').combogrid({url : `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${self.cust_id}&bill_id=${self.bill_id}`});
                             },
                         });
 						
@@ -223,7 +223,7 @@
                         });
 						
 						if(self.cust_id != null){
-							$('#mohon_id').combogrid({url : `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${self.cust_id}`});
+							$('#mohon_id').combogrid({url : `{{ url("$url/ajax?action=combogrid-permohonan") }}&cust_id=${self.cust_id}&bill_id=${self.bill_id}`});
 						}
 						
 						if(self.mohon_det_id != null){

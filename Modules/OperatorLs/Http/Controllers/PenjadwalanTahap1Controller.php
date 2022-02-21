@@ -147,8 +147,8 @@ class PenjadwalanTahap1Controller extends Controller
     private function ajax_combogrid_pelanggan(Request $request)
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
-			->whereNotIn('bill_id', function ($query) use ($request) {
-                $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
+			->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+                $query->select('bill_id')->from('sis_audit_tahap1')->whereNotNull('bill_id');
             });
 		
         $data->orderBy("cust_nama");
@@ -187,6 +187,9 @@ class PenjadwalanTahap1Controller extends Controller
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         $data->where('mohon_det_perlu_tahap1', '=', 'ya');
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
+        $data->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
+                $query->select('sis_permohonan_detail.mohon_det_id')->from('sis_billing_items')->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_billing_items.mohon_id")->where("sis_billing_items.bill_id", "=", $request->bill_id);
+            });;
         $cust_id = $request->cust_id;		
 		$data->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($cust_id) {
             $query->select(DB::raw('IFNULL(sis_audit_tahap1.mohon_det_id, 0)'))

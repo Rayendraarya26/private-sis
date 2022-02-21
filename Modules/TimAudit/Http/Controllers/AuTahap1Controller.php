@@ -319,12 +319,14 @@ class AuTahap1Controller extends Controller
 									->where('aud_thp1_det_id', $key)
 									->update([
 										'aud_thp1_det_is_temuan'	  => 'ya',
+										'aud_thp1_det_status'	  => 'proses',
 									]);
 									
 								
 								$check_data = DB::table('sis_audit_tahap1_revisi')
 									->selectRaw('*')
 									->whereIn('thp1_revisi_status', [ 'open', 'fixed' ])
+									->where('aud_thp1_det_id', $key)
 									->get();
 								if ($check_data->isEmpty()) {
 									DB::table('sis_audit_tahap1_revisi')->insert([
@@ -344,6 +346,12 @@ class AuTahap1Controller extends Controller
 								}
 							}
 							else{
+								DB::table('sis_audit_tahap1_detail')
+									->where('aud_thp1_det_id', $key)
+									->update([
+										'aud_thp1_det_is_temuan'	  => 'tidak',
+										'aud_thp1_det_status'	  => 'closed',
+									]);
 								DB::table('sis_audit_tahap1_revisi')
 										->where('aud_thp1_det_id', $key)
 										->delete();
@@ -370,12 +378,14 @@ class AuTahap1Controller extends Controller
 									->where('aud_thp1_det_id', $key)
 									->update([
 										'aud_thp1_det_is_temuan'	  => 'ya',
+										'aud_thp1_det_status'	  => 'proses',
 									]);
 									
 								
 								$check_data = DB::table('sis_audit_tahap1_revisi')
 									->selectRaw('*')
 									->whereIn('thp1_revisi_status', [ 'open', 'fixed' ])
+									->where('aud_thp1_det_id', $key)
 									->get();
 								if ($check_data->isEmpty()) {
 									DB::table('sis_audit_tahap1_revisi')->insert([
@@ -395,6 +405,13 @@ class AuTahap1Controller extends Controller
 								}
 							}
 							else{
+								DB::table('sis_audit_tahap1_detail')
+									->where('aud_thp1_det_id', $key)
+									->update([
+										'aud_thp1_det_is_temuan'	  => 'tidak',
+										'aud_thp1_det_status'	  => 'closed',
+									]);
+								
 								DB::table('sis_audit_tahap1_revisi')
 										->where('aud_thp1_det_id', $key)
 										->delete();
