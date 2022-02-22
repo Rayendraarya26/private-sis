@@ -147,17 +147,29 @@ class KomiteController extends Controller
     private function ajax_combogrid_pegawai(Request $request)
     {
         $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+		$data->join('pegawai_kompetensi_komite', "pegawai_kompetensi_komite.peg_id", "=", "master_pegawai.peg_id");
+		$data->join('sis_jadwal_audit', "sis_jadwal_audit.sert_id", "=", "pegawai_kompetensi_komite.sert_id");
+			
         // Filter
         if (!empty($request->q)) {
             $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
         }
-        $data->whereNotIn('peg_id', function ($query) use ($request) {
+		$data->where('master_pegawai.is_komite', 'yes');
+		/* 
+		$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
+                $query->select('peg_id')->from('sis_audit_tim_komite')->where('jadw_id', '=', $request['jadw_id']);
+            }); 
+		*/
+		
+		$data->where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
+        $data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
             $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request['jadw_id']);
         });
         // Total
-        $total = $data->select(DB::raw('count(distinct peg_id) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
         // Pagination
         $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+		$data->groupBy("master_pegawai.peg_id");
 
         // Result
         $result = [];

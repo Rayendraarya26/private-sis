@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Input Tim')
+@section('title', 'Input Tim Audit Tahap 2')
 
 @section('content')
     <div class="dt-content">
@@ -53,7 +53,7 @@
 								<div class="row">
 									@if(authorized("{$module}@edit"))
 										<div>
-											<a href="#" onclick="insert()" class="btn btn-outline-success btn-xs">
+											<a href="javascript:void(0)" onclick="insert()" class="btn btn-outline-success btn-xs">
 												<i class="fas fa-plus"></i> Tambah
 											</a>
 										</div>
@@ -140,10 +140,22 @@
 				},
 				onBeginEdit:function(index,row){
 					var editors = $(this).datagrid('getEditors', index);
-					var ed_cb = $(editors[0].target);
-					var ed_kode = $(editors[1].target);
+					var ed_cb_posisi = $(editors[0].target);
+					var ed_cb_peg = $(editors[1].target);
+					var ed_kode = $(editors[2].target);
 					
-					ed_cb.combogrid('options').onSelect = function(index, rowData){
+					ed_cb_posisi.combobox('options').onSelect = function(rData){
+						var peg_id = ``;
+						if(typeof row.peg_id !== 'undefined'){
+							peg_id = `${row.peg_id}`;
+						}
+						ed_cb_peg.combogrid({
+							url:`{{ url("$url/ajax?action=combogrid-pegawai") }}&posisi=${rData.id}&jadw_id={{$dataJadwal->jadw_id}}`,
+							value:`${peg_id}`
+						});  
+					}
+					
+					ed_cb_peg.combogrid('options').onSelect = function(index, rowData){
 						$(ed_kode).textbox({value:`${rowData.peg_kode}`});
 					}
 					
@@ -193,11 +205,22 @@
 					{field: 'jadw_id', hidden: true},
 					{field: 'jadw_tim_id', hidden: true},
 					{field: 'peg_id', hidden: true},
+					{field: 'jadw_tim_posisi', title: 'Posisi', width: 100, sortable: true,
+						editor:{
+							type:'combobox',
+							options:{
+								valueField:'id',
+								textField:'name',
+								required:true,
+								method: 'get',
+								url:`{{ url("$url/ajax?action=combobox-posisi") }}`,
+							}
+						}
+					},
                     {field: 'peg_nama', title: 'Nama', width: 300, sortable: true,
 						editor:{
 							type:'combogrid',
 							options:{
-								url:`{{ url("$url/ajax?action=combogrid-pegawai") }}`,
 								pageSize: '50',
 								panelWidth: 650,
 								pagination: true,
@@ -221,18 +244,6 @@
 						}
 					},
                     {field: 'jadw_tim_kode', title: 'Kode', width: 100, sortable: true,editor: {type: 'textbox', options: {required: true}}},
-					{field: 'jadw_tim_posisi', title: 'Posisi', width: 100, sortable: true,
-						editor:{
-							type:'combobox',
-							options:{
-								valueField:'id',
-								textField:'name',
-								required:true,
-								method: 'get',
-								url:`{{ url("$url/ajax?action=combobox-posisi") }}`,
-							}
-						}
-					},
                 ]],
             });
             dg.datagrid(

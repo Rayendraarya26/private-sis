@@ -161,26 +161,74 @@ class TimController extends Controller
 
     private function ajax_combogrid_pegawai(Request $request)
     {
-        $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-        // Filter
-        if (!empty($request->q)) {
-            $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
-        }
-        // Total
-        $total = $data->select(DB::raw('count(distinct peg_id) as total'))->first()->total;
-        // Pagination
-        $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-
-        // Result
-        $result = [];
-        foreach ($data->get() as $d) {
-            $x['peg_id']   = $d->peg_id;
-            $x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
-            $x['peg_nama'] = $d->peg_nama;
-            $x['peg_telp'] = $d->peg_telp;
-            $x['peg_nip']  = $d->peg_nip;
-            array_push($result, $x);
-        }
+		$total = 0;
+		$result = [];
+		if(in_array($request->posisi, ['ketua', 'auditor', 'observer'])) {
+			$data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$data->join('pegawai_kompetensi_auditor', "pegawai_kompetensi_auditor.peg_id", "=", "master_pegawai.peg_id");
+			$data->join('sis_jadwal_audit', "sis_jadwal_audit.sert_id", "=", "pegawai_kompetensi_auditor.sert_id");
+			// Filter
+			if (!empty($request->q)) {
+				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+			}
+			$data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
+			$data->where('master_pegawai.is_auditor', 'yes');
+			$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
+                $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request->jadw_id);
+            });
+			// Filter
+			if (!empty($request->q)) {
+				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+			}
+			// Total
+			$total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
+			// Pagination
+			$data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+			$data->groupBy("master_pegawai.peg_id");
+			// Result
+		   
+			foreach ($data->get() as $d) {
+				$x['peg_id']   = $d->peg_id;
+				$x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
+				$x['peg_nama'] = $d->peg_nama;
+				$x['peg_telp'] = $d->peg_telp;
+				$x['peg_nip']  = $d->peg_nip;
+				array_push($result, $x);
+			}
+		}
+		else if(in_array($request->posisi, ['ppc'])) {
+			$data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$data->join('pegawai_kompetensi_ppc', "pegawai_kompetensi_ppc.peg_id", "=", "master_pegawai.peg_id");
+			$data->join('sis_jadwal_audit', "sis_jadwal_audit.komodt_id", "=", "pegawai_kompetensi_ppc.komodt_id");
+			// Filter
+			if (!empty($request->q)) {
+				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+			}
+			$data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
+			$data->where('master_pegawai.is_ppc', 'yes');
+			$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
+                $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request->jadw_id);
+            });
+			// Filter
+			if (!empty($request->q)) {
+				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+			}
+			// Total
+			$total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
+			// Pagination
+			$data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+			$data->groupBy("master_pegawai.peg_id");
+			// Result
+		   
+			foreach ($data->get() as $d) {
+				$x['peg_id']   = $d->peg_id;
+				$x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
+				$x['peg_nama'] = $d->peg_nama;
+				$x['peg_telp'] = $d->peg_telp;
+				$x['peg_nip']  = $d->peg_nip;
+				array_push($result, $x);
+			}
+		}
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
