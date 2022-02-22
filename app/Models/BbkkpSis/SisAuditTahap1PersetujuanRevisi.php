@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class SisAuditTahap1PersetujuanRevisi
- *
+ * 
  * @property int $aud_thp1_perseujuan_revisi_id
  * @property int|null $aud_thp1_id
  * @property string|null $aud_thp1_perseujuan_revisi_catatan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
+ * 
  * @property SisAuditTahap1|null $sis_audit_tahap1
  *
  * @package App\Models\BbkkpSis
@@ -28,7 +28,6 @@ class SisAuditTahap1PersetujuanRevisi extends Model
 	protected $primaryKey = 'aud_thp1_perseujuan_revisi_id';
 
 	protected $casts = [
-		'aud_thp1_perseujuan_revisi_id' => 'int',
 		'aud_thp1_id' => 'int'
 	];
 
