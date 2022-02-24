@@ -46,7 +46,6 @@
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
                     {
                         field: 'action', title: 'Aksi', sortable: false, width: 80, align: 'center',
                         formatter: function (value, row) {

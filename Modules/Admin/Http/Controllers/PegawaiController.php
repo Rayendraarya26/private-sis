@@ -103,6 +103,9 @@ class PegawaiController extends Controller
             $pegawai->peg_nip        = $request['nip'];
             $pegawai->peg_ttd_base64 = $request['signature_base64'];
             $pegawai->peg_status     = "aktif";
+            $pegawai->is_auditor     = isset($request['is_auditor']) ? 'yes' : 'no';
+            $pegawai->is_komite      = isset($request['is_komite']) ? 'yes' : 'no';
+            $pegawai->is_ppc         = isset($request['is_ppc']) ? 'yes' : 'no';
             $pegawai->save();
 
             if ($request->hasFile('signature_file')) {
@@ -221,6 +224,9 @@ class PegawaiController extends Controller
             $pegawai->peg_telp   = $request['no_telp'];
             $pegawai->peg_nip    = $request['nip'];
             $pegawai->peg_status = "aktif";
+            $pegawai->is_auditor = isset($request['is_auditor']) ? 'yes' : 'no';
+            $pegawai->is_komite  = isset($request['is_komite']) ? 'yes' : 'no';
+            $pegawai->is_ppc     = isset($request['is_ppc']) ? 'yes' : 'no';
             if (!empty($request['signature_base64'])) $pegawai->peg_ttd_base64 = $request['signature_base64'];
             $pegawai->save();
 

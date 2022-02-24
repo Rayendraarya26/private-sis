@@ -6,9 +6,6 @@
     <div class="dt-content" id="pegawai">
         <div class="row">
             <div class="col-xl-12">
-                {{--<a class="btn btn-sm btn-default" href="{{ url("$url") }}" style="margin-bottom: 20px">
-                    <i class="fad fa-arrow-left"></i> Kembali
-                </a>--}}
                 <div class="dt-card">
                     <div class="dt-card__body">
                         <div class="row">
@@ -134,6 +131,38 @@
                                                         </label>
                                                     </div>
                                                 @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="form-group row">
+                                        <label class="col-form-label col-sm-3"
+                                               for="no_telp">Pengaturan Tim Audit</label>
+                                        <div class="col-sm-8">
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <label for="auditor">Auditor</label>
+                                                    <br>
+                                                    <input name="is_auditor" class="easyui-switchbutton"
+                                                           data-options="onText:'Ya',offText:'Tidak'"
+                                                           style="width: 100px" aria-label="auditor">
+                                                </div>
+                                                <div class="col-4">
+                                                    <label for="komite">Komite</label>
+                                                    <br>
+                                                    <input name="is_komite" class="easyui-switchbutton"
+                                                           data-options="onText:'Ya',offText:'Tidak'"
+                                                           style="width: 100px" aria-label="komite">
+                                                </div>
+                                                <div class="col-4">
+                                                    <label for="ppc">PPC</label>
+                                                    <br>
+                                                    <input name="is_ppc" class="easyui-switchbutton"
+                                                           data-options="onText:'Ya',offText:'Tidak'"
+                                                           style="width: 100px" aria-label="ppc">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
