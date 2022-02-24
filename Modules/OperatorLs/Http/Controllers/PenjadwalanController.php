@@ -571,7 +571,7 @@ class PenjadwalanController extends Controller
             $notifStruct->title     = 'Penjadwalan Audit Tahap II';
             $notifStruct->message   = sprintf("Penjadwalan Audit tahap II telah diterbitkan , yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tanggal.", $request['jadw_tanggal_mulai'], $request['jadw_tanggal_selesai']);
             $notifStruct->user_id   = $data_pelanggan?->user_id;
-            $notifStruct->click_url = url('/pelanggan/jadwal');
+            $notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
             sendNotification($notifStruct);
 
             // Send Email
@@ -581,7 +581,7 @@ class PenjadwalanController extends Controller
                 ->with([
                     'nama'       => $data_pelanggan?->cust_nama,
                     'message'    => sprintf("Penjadwalan Audit tahap II telah diterbitkan , yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tanggal.", $request['jadw_tanggal_mulai'], $request['jadw_tanggal_selesai']),
-                    'link_verif' => url('/pelanggan/jadwal'),
+                    'link_verif' => url('/pelanggan/tahap2/jadwal'),
                 ])->render();
             $structEmail->to      = $data_pelanggan?->cust_email;
             sendEmail($structEmail);
@@ -704,7 +704,7 @@ class PenjadwalanController extends Controller
             $notifStruct->title     = 'Penjadwalan Audit Tahap II';
             $notifStruct->message   = sprintf("Penjadwalan Audit tahap II telah diterbitkan dan direvisi, yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tanggal.", $request['jadw_tanggal_mulai'], $request['jadw_tanggal_selesai']);
             $notifStruct->user_id   = $data_pelanggan?->user_id;
-            $notifStruct->click_url = url('/pelanggan/jadwal');
+            $notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
             sendNotification($notifStruct);
 
             // Send Email
@@ -714,7 +714,7 @@ class PenjadwalanController extends Controller
                 ->with([
                     'nama'       => $data_pelanggan?->cust_nama,
                     'message'    => sprintf("Penjadwalan Audit tahap II telah diterbitkan dan direvisi, yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tanggal.", $request['jadw_tanggal_mulai'], $request['jadw_tanggal_selesai']),
-                    'link_verif' => url('/pelanggan/jadwal'),
+                    'link_verif' => url('/pelanggan/tahap2/jadwal'),
                 ])->render();
             $structEmail->to      = $data_pelanggan?->cust_email;
             sendEmail($structEmail);

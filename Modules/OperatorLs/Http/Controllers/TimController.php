@@ -184,7 +184,7 @@ class TimController extends Controller
 			$data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 			$data->groupBy("master_pegawai.peg_id");
 			// Result
-		   
+
 			foreach ($data->get() as $d) {
 				$x['peg_id']   = $d->peg_id;
 				$x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
@@ -217,7 +217,7 @@ class TimController extends Controller
 			$data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 			$data->groupBy("master_pegawai.peg_id");
 			// Result
-		   
+
 			foreach ($data->get() as $d) {
 				$x['peg_id']   = $d->peg_id;
 				$x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
@@ -452,7 +452,7 @@ class TimController extends Controller
 			$notifStruct->title     = $title;
 			$notifStruct->message   = $message;
 			$notifStruct->user_id   = $data_pelanggan?->user_id;
-			$notifStruct->click_url = url('/pelanggan/jadwal');
+			$notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
 			sendNotification($notifStruct);
 
 			// Send Email
@@ -462,7 +462,7 @@ class TimController extends Controller
 				->with([
 					'nama'       => $data_pelanggan?->cust_nama,
 					'message'       => $message,
-					'link_verif'        => url('/pelanggan/jadwal'),
+					'link_verif'        => url('/pelanggan/tahap2/jadwal'),
 				])->render();
 			$structEmail->to      = $data_pelanggan?->cust_email;
 			sendEmail($structEmail);
