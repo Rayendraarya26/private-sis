@@ -24,7 +24,7 @@ trait LksTrait
                     // klausul
                     $dataLKS['klausul']['kritis'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                     // no lks
-                    $dataLKS['no_lks']['kritis'] .= $lks->lks_id . '; ';
+                    $dataLKS['no_lks']['kritis'] .= $lks->lks_nomor . '; ';
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['kritis'] == null) {
@@ -43,7 +43,7 @@ trait LksTrait
                     // klausul
                     $dataLKS['klausul']['mayor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                     // no lks
-                    $dataLKS['no_lks']['mayor'] .= $lks->lks_id . '; ';
+                    $dataLKS['no_lks']['mayor'] .= $lks->lks_nomor . '; ';
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['mayor'] == null) {
@@ -62,7 +62,7 @@ trait LksTrait
                     // klausul
                     $dataLKS['klausul']['minor'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                     // no lks
-                    $dataLKS['no_lks']['minor'] .= $lks->lks_id . '; ';
+                    $dataLKS['no_lks']['minor'] .= $lks->lks_nomor . '; ';
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['minor'] == null) {
@@ -81,7 +81,7 @@ trait LksTrait
                     // klausul
                     $dataLKS['klausul']['observasi'] .= strip_tags($lks->lks_klausul_ketidaksesuaian . '; ');
                     // no lks
-                    $dataLKS['no_lks']['observasi'] .= $lks->lks_id . '; ';
+                    $dataLKS['no_lks']['observasi'] .= $lks->lks_nomor . '; ';
                     // tgl penyelesaian
                     if (!empty($lks->lks_expired_date_perbaikan)) {
                         if ($dataLKS['tgl_pelyelesaian']['observasi'] == null) {

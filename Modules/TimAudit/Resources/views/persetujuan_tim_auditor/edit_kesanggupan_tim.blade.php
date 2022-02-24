@@ -61,7 +61,7 @@
 								Kami menunjuk Saudara menjadi <b>{{$dataJadwal->jadw_tim_posisi}}</b> *)<br/>
 								<div class="form-group custom-control custom-checkbox">
 									<input type="checkbox" class="custom-control-input" name="ck_agreement" id="ck_agreement" aria-label="sanggup" v-model="agreement">
-									<label class="custom-control-label" for="ck_agreement">Saya menyatakan  sanggup *) ditunjuk sebagai @if(in_array($dataJadwal->jadw_tim_posisi, ['ketua', 'anggota']))Tim Audit @else <s>Tim Audit</s> @endif/@if(in_array($dataJadwal->jadw_tim_posisi, ['ppc']))PPC @else <s>PPC</s> @endif/<s>TAT</s> *)<br/>Saya menyatakan tidak pernah melakukan layanan konsultansi sistem manajemen terhadap perusahaan ini dalam 2 (dua) tahun terakhir.</label>
+									<label class="custom-control-label" for="ck_agreement">Saya menyatakan  sanggup *) ditunjuk sebagai @if(str_contains($dataJadwal->jadw_tim_posisi, 'ketua')) Tim Audit @elseif(str_contains($dataJadwal->jadw_tim_posisi, 'anggota')) Tim Audit @else <s>Tim Audit</s> @endif/@if(str_contains($dataJadwal->jadw_tim_posisi, 'ppc'))PPC @else <s>PPC</s> @endif/<s>TAT</s> *)<br/>Saya menyatakan tidak pernah melakukan layanan konsultansi sistem manajemen terhadap perusahaan ini dalam 2 (dua) tahun terakhir.</label>
 								</div>
 								</p>
 							@endif

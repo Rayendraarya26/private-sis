@@ -53,9 +53,7 @@ class TimController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-
         $data->leftJoin('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-
 
         // Filter
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
@@ -207,7 +205,7 @@ class TimController extends Controller
 			$data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
 			$data->where('master_pegawai.is_ppc', 'yes');
 			$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
-                $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request->jadw_id);
+                $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request->jadw_id)->where('jadw_tim_posisi', '=', 'ppc');
             });
 			// Filter
 			if (!empty($request->q)) {

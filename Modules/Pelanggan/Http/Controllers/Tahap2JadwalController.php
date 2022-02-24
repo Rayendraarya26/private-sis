@@ -66,8 +66,8 @@ class Tahap2JadwalController extends Controller
         }
 
         $data->where('sis_pelanggan.user_id', '=', auth()->id());
-        $data->where('jadw_team_status', '!=', 'accepted');
-        $data->where('jadw_setujui_temuan', '!=', 'setuju');
+		$data->where('jadw_team_status', '=', 'accepted');
+		$data->where('jadw_setujui_temuan', '!=', 'setuju');
 
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;

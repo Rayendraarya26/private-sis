@@ -127,7 +127,7 @@ class PpcLaporanController extends Controller
             $x['audit_ppc_id']         = $d->audit_ppc_id;
             $x['jadw_id']              = $d->jadw_id;
             $x['audit_ppc_jenis_file'] = $d->audit_ppc_jenis_file;
-            $x['audit_ppc_filepath']   = ($d->audit_ppc_filepath != '') ? '<a class="btn-xs btn-success btn-block" target="_blank" href = "' . url($d->audit_ppc_filepath) . '"><i class="fas fa-cloud-download"></i> Download</a>' : '';
+            $x['audit_ppc_filepath']   = ($d->audit_ppc_filepath != '') ? '<a target="_blank" href = "' . url($d->audit_ppc_filepath) . '"><i class="fas fa-download"></i> Download</a>' : '';
 
             $x['created_at'] = $d->created_at?->format("Y-m-d");
             $x['updated_at'] = $d->updated_at?->format("Y-m-d");
