@@ -66,8 +66,8 @@ class Tahap2JadwalController extends Controller
         }
 
         $data->where('sis_pelanggan.user_id', '=', auth()->id());
-		$data->where('jadw_team_status', '=', 'accepted');
-		$data->where('jadw_setujui_temuan', '!=', 'setuju');
+        // $data->where('jadw_team_status', '=', 'accepted');
+        // $data->where('jadw_setujui_temuan', '!=', 'setuju');
 
         // Total
         $total = $data->select(DB::raw('count(*) as total'))->first()->total;
@@ -94,7 +94,7 @@ class Tahap2JadwalController extends Controller
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
             $x['jadw_team_status']     = $d->jadw_team_status;
             $x['jadw_jenis']           = $d->jadw_jenis;
-            $x['jadw_file_jadwal']     = $d->jadw_file_jadwal;
+            $x['jadw_file_jadwal']     = empty($d->jadw_file_jadwal) ? "" : asset($d->jadw_file_jadwal);
             $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
             $x['logs']                 = $logs;
             $result[]                  = $x;
