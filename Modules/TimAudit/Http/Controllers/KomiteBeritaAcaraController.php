@@ -351,13 +351,38 @@ class KomiteBeritaAcaraController extends Controller
 						if ($restDataAudit !== null) {
 							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
 								if($restDataAudit->jadw_audit_status == 'berhak-memperoleh'){
+		// generate nomor sertifikat						
+		$counterRef = DB::table('sis_pelanggan_sertifikasi')->select(DB::raw("COUNT(cust_sert_id)+1 AS counterSert"))->where('sert_id', '=', $restDataAudit->sert_id)->get()[0];
+
+		$sert_format_nomor = explode(' ',$restDataAudit->sert_format_nomor_sertifikat);
+		$nomor_sert = '';
+		if(!empty($sert_format_nomor)){
+			$countDat = count($sert_format_nomor);
+			$jt = 0;
+			$time = strtotime($val);
+			foreach($sert_format_nomor as $dat){
+				if($dat == '{NOMOR}')
+					$nomor_sert .= $counterRef->counterSert;
+				else if($dat == '{TAHUN4}')
+					$nomor_sert .= date("Y",$time);
+				else if($dat == '{TAHUN2}')
+					$nomor_sert .= date("y",$time);
+				else
+					$nomor_sert .= $dat;
+
+				$jt++;
+				if($countDat != $jt)
+					$nomor_sert .= ' ';
+			}
+		}
+							
 									DB::table('sis_pelanggan_sertifikasi')
 										->insert([
 											'sert_id'  => $restDataAudit->sert_id,
 											'cust_id'  => $restDataAudit->cust_id,
 											'mohon_id'  => $restDataAudit->mohon_id,
 											// digenerate
-											'cust_sert_nomor_sertifikat'  => NULL,
+											'cust_sert_nomor_sertifikat'  => $nomor_sert,
 											'cust_sert_nomor_referensi'  => $restDataAudit->jadw_audit_nomor_referensi,
 											'cust_sert_nomor_sni'  => $restDataAudit->jadw_audit_sni,
 											'cust_sert_lingkup'  => $restDataAudit->jadw_audit_ruang_lingkup,

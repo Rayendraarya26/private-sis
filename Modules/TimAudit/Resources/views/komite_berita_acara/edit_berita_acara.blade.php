@@ -84,34 +84,34 @@
 											  <td>
 												@if($dau->jadw_audit_jenis == 'sertifikasi')
 													Tanggal Terbit<br/>
-													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:140px;"><br/><br/>
 													Tanggal Berakhir<br/>
-													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;">
+													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:140px;">
 													
-													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:140px;display:none;">
 													
 												@elseif($dau->jadw_audit_jenis == 're-sertifikasi')
 													Tanggal Terbit<br/>
-													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:140px;"><br/><br/>
 													Tanggal Perubahan<br/>
-													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:140px;"><br/><br/>
 													Tanggal Berakhir<br/>
-													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;">
+													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:140px;">
 													
 												@elseif($dau->jadw_audit_jenis == 'pengaktifan')
 													Tanggal Terbit<br/>
-													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:140px;"><br/><br/>
 													Tanggal Perubahan<br/>
-													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;"><br/><br/>
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:140px;"><br/><br/>
 													Tanggal Berakhir<br/>
-													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;">
+													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:140px;">
 													
 												@elseif($dau->jadw_audit_jenis == 'pencabutan')
 													Tanggal Berakhir<br/>
 													<?=date('d M Y')?>
-													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
-													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
-													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:120px;display:none;">
+													<input type="text" class="form-control" name="tanggal_terbit[{{$dau->jadw_audit_id}}]" id="tanggal_terbit{{$dau->jadw_audit_id}}" style="max-width:140px;display:none;">
+													<input type="text" class="form-control" name="tanggal_perubahan[{{$dau->jadw_audit_id}}]" id="tanggal_perubahan{{$dau->jadw_audit_id}}" style="max-width:140px;display:none;">
+													<input type="text" class="form-control" name="tanggal_berakhir[{{$dau->jadw_audit_id}}]" id="tanggal_berakhir{{$dau->jadw_audit_id}}" style="max-width:140px;display:none;">
 												@endif
 													
 											  </td>

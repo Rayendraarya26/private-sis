@@ -427,6 +427,7 @@ class KomiteLembarPeriksaController extends Controller
 			
 			if(strpos($request['posisi'], 'ketua') !== false){
 				$mohon_id = [];
+				$other_survailent_counter = 0;
 				if(!empty($request['status'])){
 					foreach($request['status'] as $key => $val){
 						$restDataAudit = DB::table('sis_jadwal_audit')
@@ -443,6 +444,7 @@ class KomiteLembarPeriksaController extends Controller
 									else{
 										$status = 'tidak-berhak-menggunakan';
 									}
+									$other_survailent_counter++;
 								}
 								elseif($restDataAudit->jadw_audit_jenis == 're-sertifikasi'){
 									if($val == 'ya'){
@@ -451,12 +453,15 @@ class KomiteLembarPeriksaController extends Controller
 									else{
 										$status = 'tidak-berhak-menggunakan';
 									}
+									$other_survailent_counter++;
 								}
 								elseif($restDataAudit->jadw_audit_jenis == 'pengaktifan'){
 									$status = 'berhak-memperoleh-kembali';
+									$other_survailent_counter++;
 								}
 								elseif($restDataAudit->jadw_audit_jenis == 'pencabutan'){
 									$status = 'tidak-berhak-menggunakan';
+									$other_survailent_counter++;
 								}
 								elseif($restDataAudit->jadw_audit_jenis == 'surveilans'){
 									if($val == 'ya'){
@@ -480,12 +485,13 @@ class KomiteLembarPeriksaController extends Controller
 					}
 				}
 				
-				if(strpos($request['posisi'], 'ketua') !== false){
-					/* DB::table('sis_jadwal')
+				
+				if($other_survailent_counter == 0){
+					DB::table('sis_jadwal')
 								->where('jadw_id', $request['jadw_id'])
 								->update([
 									'jadw_is_tutup' => 'ya',
-								]); */
+								]);
 				}
 			}
 			

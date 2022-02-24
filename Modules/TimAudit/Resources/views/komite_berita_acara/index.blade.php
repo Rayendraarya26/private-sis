@@ -58,7 +58,7 @@
 									<button class="btn-action btn-info btn-block" data-index="${row.jadw_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
-									<div id="${dom}" style="width:170px; display: none;">
+									<div id="${dom}" style="width:170px; min-height:42px; display: none;">
 										@if(authorized("{$module}@edit")) ${btnEdit} @endif
 								</div>
 							</div>`
