@@ -397,6 +397,7 @@ class AuLksController extends Controller
 
         // Pagination
         $data->select(
+            "cust_nama",
             "jadw_setujui_temuan",
             "jadw_tanggal_mulai",
             "jadw_tanggal_selesai",

@@ -447,7 +447,7 @@
                     });
 
                     swalWithBootstrapButtons({
-                        title: 'Berapa total data yang akan anda tambah ?',
+                        title: 'Berapa total temuan yang akan anda tambah ?',
                         input: 'number',
                         inputAttributes: {
                             autocapitalize: 'off'

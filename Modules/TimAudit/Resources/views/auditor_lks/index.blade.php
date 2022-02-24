@@ -224,7 +224,7 @@
                     },
                 ]],
                 columns: [[
-                    {field: 'jadw_setujui_temuan', title: 'Pengajuan ?', width: 200, sortable: true},
+                    {field: 'jadw_id', title: 'Jadwal ID', width: 200, sortable: true},
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
                     {
