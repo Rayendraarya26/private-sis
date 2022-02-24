@@ -93,6 +93,7 @@
                             let btnDetail  = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.aud_thp1_id}'">Detail</div>`;
                             let btnCetakLap   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/laporan', '_blank')">Laporan</div>`;
                             let btnCetakTinjauan   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/tinjauan', '_blank')">Hasil Tinjauan</div>`;
+                            let btnCetakNotulen   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/notulen', '_blank')">Notulen Rapat</div>`;
                             let btnApprove = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTahap1('${row.aud_thp1_id}')">Persetujuan</div>`;
 
                             if (row.aud_thp1_status_temuan !== "diajukan") {
@@ -109,6 +110,7 @@
                             @if(authorized("{$module}@approveTemuan")) ${btnApprove} @endif
                             @if(authorized("{$module}@cetakLaporan")) ${btnCetakLap} @endif
                             @if(authorized("{$module}@cetakTinjauan")) ${btnCetakTinjauan} @endif
+                            @if(authorized("{$module}@cetakNotulen")) ${btnCetakNotulen} @endif
                             </div>`;
                         }
                     }

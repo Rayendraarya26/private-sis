@@ -55,7 +55,7 @@
                                             </td>
                                         </tr>
                                     @endif
-									@if(!empty($data->aud_thp1_file_daftar_hadir))
+                                    @if(!empty($data->aud_thp1_file_daftar_hadir))
                                         <tr>
                                             <td>File Daftar Hadir</td>
                                             <td>:
@@ -65,6 +65,15 @@
                                             </td>
                                         </tr>
                                     @endif
+                                    <tr>
+                                        <td>Notulen Rapat</td>
+                                        <td>:
+                                            <a href="{{ url("$url/cetak/$data->aud_thp1_id/notulen") }}"
+                                               target="_blank">
+                                                <i class="fad fa-download"></i> Unduh
+                                            </a>
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="col-md-12">

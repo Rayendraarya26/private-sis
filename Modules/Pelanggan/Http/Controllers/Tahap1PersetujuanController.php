@@ -8,7 +8,6 @@ use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1PersetujuanRevisi;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisPermohonanStatus;
-use App\Models\BbkkpSis\SysUserGroup;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Exception;
@@ -125,7 +124,7 @@ class Tahap1PersetujuanController extends Controller
                     ]
                 );
             }
-			
+
 			// Send Notification to Auditor
 			$groupAuditor = SisAuditTahap1Tim::join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
 			$groupAuditor->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
@@ -253,6 +252,25 @@ class Tahap1PersetujuanController extends Controller
         ];
 
         $pdf = PDF::loadView("$this->view.print.laporan", $parser)
+            ->setPaper('a4', 'portrait');
+        return $pdf->stream();
+    }
+
+    public function cetakNotulen($tahap1Id)
+    {
+        $data   = SisAuditTahap1::with([
+            'sis_permohonan',
+            'sis_permohonan_detail.master_sertifikasi',
+            'sis_permohonan_detail.sis_permohonan_komoditis.master_komoditi',
+            'sis_audit_tahap1_details.sis_audit_tahap1_revisis',
+            'sis_audit_tahap1_tims.master_pegawai',
+        ])
+            ->findOrFail($tahap1Id);
+
+        $ketua = $data->sis_audit_tahap1_tims()->where('thp1_tim_posisi', 'ketua')->first();
+        $parser = ['data' => $data, 'ketua' => $ketua];
+
+        $pdf = PDF::loadView("$this->view.print.notulen_rapat", $parser)
             ->setPaper('a4', 'portrait');
         return $pdf->stream();
     }

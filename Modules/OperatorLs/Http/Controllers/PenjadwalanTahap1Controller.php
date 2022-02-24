@@ -150,7 +150,7 @@ class PenjadwalanTahap1Controller extends Controller
 			->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_audit_tahap1')->whereNotNull('bill_id');
             });
-		
+
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {
@@ -190,7 +190,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
                 $query->select('sis_permohonan_detail.mohon_det_id')->from('sis_billing_items')->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_billing_items.mohon_id")->where("sis_billing_items.bill_id", "=", $request->bill_id);
             });;
-        $cust_id = $request->cust_id;		
+        $cust_id = $request->cust_id;
 		$data->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($cust_id) {
             $query->select(DB::raw('IFNULL(sis_audit_tahap1.mohon_det_id, 0)'))
                 ->from('sis_audit_tahap1')
@@ -198,7 +198,7 @@ class PenjadwalanTahap1Controller extends Controller
                 ->whereNotNull('sis_audit_tahap1.mohon_det_id')
                 ->where('sis_permohonan.cust_id', '=', $cust_id);
         });
-		
+
         if (!empty($request->q)) {
             $data->where('master_sertifikasi.sert_nama', 'LIKE', '%' . $request->q . '%');
         }
@@ -310,7 +310,7 @@ class PenjadwalanTahap1Controller extends Controller
             $newSisAuditTahap1->created_at               = Carbon::now();
             $newSisAuditTahap1->updated_at               = Carbon::now();
             $newSisAuditTahap1->save();
-			
+
             if ($request['mohon_id'] != '') {
                 SisPermohonanStatus::create([
                     "status_mohon_id" => $request['mohon_id'],
@@ -336,7 +336,7 @@ class PenjadwalanTahap1Controller extends Controller
             }
 
             DB::commit();
-			
+
 			$dataItems = json_decode($request['jadwal_tims']);
             foreach ($dataItems as $itm) {
 				$data_pegawai = MasterPegawai::where('peg_id', $itm->peg_id)->select('user_id')->first();
@@ -347,7 +347,7 @@ class PenjadwalanTahap1Controller extends Controller
 				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
 				sendNotification($notifStruct);
             }
-			
+
 			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
 			// Send Push
 			$notifStruct            = new NotifStruct();
@@ -368,8 +368,8 @@ class PenjadwalanTahap1Controller extends Controller
 				])->render();
 			$structEmail->to      = $data_pelanggan?->cust_email;
 			sendEmail($structEmail);
-			
-			
+
+
             return responseJSON(200, null, "Data jadwal berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
