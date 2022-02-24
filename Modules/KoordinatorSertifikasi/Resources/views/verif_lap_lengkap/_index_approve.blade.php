@@ -16,12 +16,12 @@
                 </button>
             </div>
             <!-- /modal header -->
-            <form action="{{action("$module@doVerif")}}" method="post" enctype="multipart/form-data"
+            <form action="{{action("$module@verifikasi")}}" method="post" enctype="multipart/form-data"
                   onsubmit="$('#simpanApprove').attr('disabled', true)">
                 @csrf
-                <input type="hidden" name="aud_thp1_id" id="approve_aud_thp1_id">
-                <input type="hidden" name="status" value="ya">
-                <input type="hidden" name="catatan" value="">
+                <input type="hidden" name="jadw_id" id="approve_jadw_id">
+                <input type="hidden" name="lap_lengkp_verifikasi_status" value="ya">
+                <input type="hidden" name="lap_lengkp_revisi_note" value="">
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <div class="row">

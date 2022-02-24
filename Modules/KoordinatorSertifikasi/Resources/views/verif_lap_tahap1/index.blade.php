@@ -28,7 +28,7 @@
         </div>
     </div>
 	
-	 @include("$view._index_approve")
+	@include("$view._index_approve")
 
 	@include("$view._index_revisi")
 @endsection

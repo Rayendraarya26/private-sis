@@ -468,12 +468,11 @@
                         reverseButtons: true
                     }).then(async (result) => {
                         if (result.value) {
-                            $("#simpanClose").attr('disabled', true);
+							$("#simpanClose").attr('disabled', true);
                             let content = tinymce.get('close_ket').getContent();
                             await this.verifikasi(this.selectedCloseLksID, content)
 
                             $("#modalClose").modal('hide')
-                            $("#simpanClose").removeAttr('disabled')
                         }
                     });
                 },
@@ -502,12 +501,15 @@
                                 })
                                 this.doFilter()
                                 resolve()
+								$("#simpanClose").attr('disabled', false);
                             })
                             .fail((xhr) => {
                                 if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
                                 else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
                                 reject();
+								$("#simpanClose").attr('disabled', false);
                             });
+						
                     })
 
                 },

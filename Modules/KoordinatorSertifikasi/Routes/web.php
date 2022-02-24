@@ -10,7 +10,7 @@ Route::prefix('koordinatorsertifikasi')->middleware(['auth', 'restrict'])->group
 		Route::get('/ajax', [VerifLapLengkapController::class, 'ajax']);
 		Route::get("/cetak/{jadw_id}/{type}", [VerifLapLengkapController::class, 'cetak'])->where('type', 'lap-lengkap');
 		Route::get('/detail/{jadw_id}', [VerifLapLengkapController::class, 'detail']);
-		Route::post('/verifikasi/{jadw_id}', [VerifLapLengkapController::class, 'verifikasi']);
+		Route::post('/verifikasi', [VerifLapLengkapController::class, 'verifikasi']);
     });
 	
 	 Route::prefix('verif-lap-tahap1')->group(function(){

@@ -8,6 +8,7 @@ use App\Models\BbkkpSis\SisJadwalAudit;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SysUserGroup;
+use App\Models\BbkkpSis\SisJadwalTim;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 use Modules\TimAudit\Http\Traits\LksTrait;
 
@@ -39,7 +40,7 @@ class VerifLapLengkapController extends Controller
             new BreadcrumbsStruct('Verifikasi Lap. Tahap 2'),
         ];
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'view' => $this->view];
         return view("$this->view.index")->with($parser);
     }
 	
@@ -67,31 +68,44 @@ class VerifLapLengkapController extends Controller
         }
     }
 	
-	public function verifikasi(Request $request, $jadwalID)
+	public function verifikasi(Request $request)
     {
         try {
-            $where          = ['jadw_id' => $jadwalID];
-            $updateOrCreate = $request->except('_token', 'ketua_tim');
+            $where          = ['jadw_id' => $request->jadw_id];
+            $updateOrCreate = $request->except('_token');
+			$groupAuditor = SisJadwalTim::join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+			$groupAuditor->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+			$groupAuditor->where('jadw_tim_posisi' ,'=', 'ketua')->where('sis_jadwal_tim.jadw_id', '=', $request->jadw_id)->select(DB::raw('sys_user.user_id AS user_id'), 'jadw_tim_posisi');
 			
 			if($updateOrCreate['lap_lengkp_verifikasi_status'] == 'ya'){
 				$updateOrCreate['lap_lengkp_verifikasi_tanggal'] = Carbon::now();
+				foreach ($groupAuditor->get() as $auditor) {
+					$notifStruct            = new NotifStruct();
+					$notifStruct->title     = 'Verifikasi Laporan Lengkap';
+					$notifStruct->message   = sprintf("Laporan lengkap untuk jadwal nomor #%s telah di-verifikasi dengan status valid, silahkan lakukan mengisikan rekomendasi LKS.", $request->jadw_id);
+					$notifStruct->user_id   = $auditor->user_id;
+					$notifStruct->click_url = url('/timaudit/auditor/lks');
+					sendNotification($notifStruct);
+				}
 			}
 			else{
-				
-				$notifStruct            = new NotifStruct();
-				$notifStruct->title     = 'Verifikasi Laporan Lengkap';
-				$notifStruct->message   = sprintf("Laporan lengkap untuk jadwal nomor #%s telah di-revisi, silahkan lihat revisi dan ajukan kembali.", $jadwalID);
-				$notifStruct->user_id   = $request->ketua_tim;
-				$notifStruct->click_url = url('/timaudit/auditor/laporan-lengkap');
-				sendNotification($notifStruct);
+				foreach ($groupAuditor->get() as $auditor) {
+					$notifStruct            = new NotifStruct();
+					$notifStruct->title     = 'Revisi Laporan Lengkap';
+					$notifStruct->message   = sprintf("Laporan lengkap untuk jadwal nomor #%s telah di-revisi, silahkan lihat revisi dan ajukan kembali.", $request->jadw_id);
+					$notifStruct->user_id   = $auditor->user_id;
+					$notifStruct->click_url = url('/timaudit/auditor/laporan-lengkap');
+					sendNotification($notifStruct);
+				}
 				$updateOrCreate['lap_lengkp_verifikasi_diajukan'] = 'tidak';
 			}
 			
             SisAuditLapLengkap::updateOrCreate($where, $updateOrCreate);
-			return responseJSON(200, [], 'Berhasil menyimpan data');
+			$responseMessage = sprintf("Data berhasil disimpan untuk jadwal #", $request->jadw_id);
+			return redirect()->back()->with('message', $responseMessage);
         } 
 		catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
 

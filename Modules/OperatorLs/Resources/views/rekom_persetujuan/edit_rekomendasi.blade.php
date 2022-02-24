@@ -272,6 +272,7 @@
                                                                 </a>
                                                             </td>
                                                         </tr>
+														@if($dataJadwal->jadw_file_subkon != '')
                                                         <tr>
                                                             <td>Scan Subkontrak</td>
                                                             <td>
@@ -282,7 +283,7 @@
                                                                 </a>
                                                             </td>
                                                         </tr>
-
+														@endif
                                                     </table>
                                                 </div>
                                             </div>
@@ -377,6 +378,8 @@
                                                                         @elseif($ppc->audit_ppc_jenis_file == '21')
                                                                             21. LABEL CONTOH UJI
                                                                         @elseif($ppc->audit_ppc_jenis_file == '22')
+                                                                            22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
+																		@else
                                                                             22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
                                                                         @endif
                                                                     </td>

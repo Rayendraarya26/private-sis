@@ -445,13 +445,20 @@ class RekomPersetujuanController extends Controller
 
         try {
             DB::beginTransaction();
-            SisAuditKomiteRekomendasi::updateOrCreate([
+            /* SisAuditKomiteRekomendasi::updateOrCreate([
                 ['jadw_id' => $request['jadw_id']],
                 [
                     'rekmd_komte_isi'    => $request['rekmd_komte_isi'],
                     'rekmd_komte_status' => $request['rekmd_komte_status'],
                 ]
-            ]);
+            ]); */
+			
+			DB::table('sis_audit_komite_rekomendasi')
+										->where('jadw_id', $request->jadw_id)
+										->update([
+											'rekmd_komte_isi'    => $request['rekmd_komte_isi'],
+											'rekmd_komte_status' => $request['rekmd_komte_status'],
+										]);
 
             // Notifikasi
             /*
