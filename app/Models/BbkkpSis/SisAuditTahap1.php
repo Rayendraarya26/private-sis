@@ -51,6 +51,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $aud_thp1_nomor
  * @property string|null $aud_thp1_kesimpulan
  * @property string|null $aud_thp1_pernyataan_auditor
+ * @property string|null $aud_thp1_pengesahan_client_nama
+ * @property string|null $aud_thp1_pengesahan_client_jabatan
  * @property string|null $aud_thp1_notulen
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -120,6 +122,8 @@ class SisAuditTahap1 extends Model
 		'aud_thp1_nomor',
 		'aud_thp1_kesimpulan',
 		'aud_thp1_pernyataan_auditor',
+		'aud_thp1_pengesahan_client_nama',
+		'aud_thp1_pengesahan_client_jabatan',
 		'aud_thp1_notulen'
 	];
 
