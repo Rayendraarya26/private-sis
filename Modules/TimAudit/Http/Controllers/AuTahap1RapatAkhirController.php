@@ -186,6 +186,8 @@ class AuTahap1RapatAkhirController extends Controller
             "status_audit"          => 'required',
             "aud_thp1_file_daftar_hadir" => 'required',
             "aud_thp1_notulen" => 'required',
+            "aud_thp1_pengesahan_client_nama" => 'required',
+            "aud_thp1_pengesahan_client_jabatan" => 'required',
         ]);
 		
 		$uploadedPathDaftar = [];
@@ -208,6 +210,8 @@ class AuTahap1RapatAkhirController extends Controller
 			
 			$updateJadwal['aud_thp1_status_temuan'] = 'diajukan';
 			$updateJadwal['aud_thp1_notulen'] = $request['aud_thp1_notulen'];
+			$updateJadwal['aud_thp1_pengesahan_client_nama'] = $request['aud_thp1_pengesahan_client_nama'];
+			$updateJadwal['aud_thp1_pengesahan_client_jabatan'] = $request['aud_thp1_pengesahan_client_jabatan'];
 			$updateJadwal['aud_thp1_tanggal_rapat_akhir'] = Carbon::now()->format('Y-m-d');
 			
             DB::table('sis_audit_tahap1')

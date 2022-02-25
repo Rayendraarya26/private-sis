@@ -67,6 +67,26 @@
 				</div>
 				<br>
 				<br>
+				<div class="form-group row">
+					<label class="col-form-label col-sm-3" for="aud_thp1_pengesahan_client_nama">
+						Tanda Tangan Nama*
+					</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" name="aud_thp1_pengesahan_client_nama" id="aud_thp1_pengesahan_client_nama" value="{{$dataJadwal->aud_thp1_pengesahan_client_nama != '' ?? $data->aud_thp1_pengesahan_client_nama}}"/>
+						<span><small>Pengesahan untuk client/pelanggan</small></span>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<label class="col-form-label col-sm-3" for="aud_thp1_pengesahan_client_jabatan">
+						Tanda Tangan Jabatan*
+					</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" name="aud_thp1_pengesahan_client_jabatan" id="aud_thp1_pengesahan_client_jabatan" value="{{$dataJadwal->aud_thp1_pengesahan_client_jabatan != '' ?? $data->aud_thp1_pengesahan_client_jabatan}}"/>
+						<span><small>Pengesahan untuk client/pelanggan</small></span>
+					</div>
+				</div>
+				
 				<div class="form-group">
 					<label class="label-form">Notulen Rapat*</label>
 					<textarea class="form-control" name="aud_thp1_notulen" id="aud_thp1_notulen">@if(isset($dataJadwal->aud_thp1_kolom_xii)) {{$dataJadwal->aud_thp1_kolom_xii}} @endif</textarea>
@@ -179,6 +199,18 @@
 												title: "Silahkan Unggah File Daftar Hadir"
 											})
 								}
+								else if (@if($dataJadwal->aud_thp1_pengesahan_client_nama == '') $.trim($("#aud_thp1_pengesahan_client_nama").val()) === "" @else status_from == false @endif) {
+									toastCenter({
+												type: 'warning',
+												title: "Silahkan Isi Nama Tanda Tangan Pengesahan Untuk Pelanggan"
+											})
+								}
+								else if (@if($dataJadwal->aud_thp1_pengesahan_client_jabatan == '') $.trim($("#aud_thp1_pengesahan_client_jabatan").val()) === "" @else status_from == false @endif) {
+									toastCenter({
+												type: 'warning',
+												title: "Silahkan Isi Jabatan Tanda Tangan Pengesahan Untuk Pelanggan"
+											})
+								}
 								else{
 									formData.append("cust_id", '{{$dataJadwal->cust_id}}');
 									formData.append("aud_thp1_id", '{{$dataJadwal->aud_thp1_id}}');
@@ -186,6 +218,8 @@
 									formData.append("mohon_id", '{{$dataJadwal->mohon_id}}');
 									formData.append("jenis", '{{$dataJadwal->sert_tahap1_jenis}}');
 									formData.append("aud_thp1_notulen", tinyMCE.get('aud_thp1_notulen').getContent());
+									formData.append("aud_thp1_pengesahan_client_nama", $('#aud_thp1_pengesahan_client_nama').val());
+									formData.append("aud_thp1_pengesahan_client_jabatan", $('#aud_thp1_pengesahan_client_jabatan').val());
 									formData.append("status_audit", this.status_audit);
 									const file_daftar = document.querySelector("#aud_thp1_file_daftar_hadir").files[0];
 									formData.append("aud_thp1_file_daftar_hadir", file_daftar);

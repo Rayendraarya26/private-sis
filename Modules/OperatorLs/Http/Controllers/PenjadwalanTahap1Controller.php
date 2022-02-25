@@ -187,7 +187,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         $data->where('mohon_det_perlu_tahap1', '=', 'ya');
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
-        $data->whereNotIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
+        $data->whereIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
                 $query->select('sis_permohonan_detail.mohon_det_id')->from('sis_billing_items')->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_billing_items.mohon_id")->where("sis_billing_items.bill_id", "=", $request->bill_id);
             });;
         $cust_id = $request->cust_id;
