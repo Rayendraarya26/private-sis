@@ -9,6 +9,7 @@ use App\Models\BbkkpSis\MasterKabupaten;
 use App\Models\BbkkpSis\MasterKecamatan;
 use App\Models\BbkkpSis\MasterNegara;
 use App\Models\BbkkpSis\MasterProvinsi;
+use App\Models\BbkkpSis\SysUser;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -127,28 +128,46 @@ class AccountController extends Controller
 
     public function editProfile()
     {
-        $master_badan_hukum      = MasterBadanHukum::all();
-        $master_jenis_perusahaan = MasterJenisPerusahaan::all();
-        $master_negara           = MasterNegara::orderBy('negara_nama', 'asc')->get();
-        $master_provinsi         = MasterProvinsi::orderBy('prov_nama', 'asc')->get();
+        if ((int) session('group_selected') == 3)
+        {
+            // pelanggan
+            $master_badan_hukum      = MasterBadanHukum::all();
+            $master_jenis_perusahaan = MasterJenisPerusahaan::all();
+            $master_negara           = MasterNegara::orderBy('negara_nama', 'asc')->get();
+            $master_provinsi         = MasterProvinsi::orderBy('prov_nama', 'asc')->get();
 
-        $breadcrumbs = [
-            new BreadcrumbsStruct('Akun'),
-            new BreadcrumbsStruct('Profile', url('/account/profile')),
-            new BreadcrumbsStruct('Update Profile'),
-        ];
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Akun'),
+                new BreadcrumbsStruct('Profile', url('/account/profile')),
+                new BreadcrumbsStruct('Update Profile'),
+            ];
 
-        $data = [
-            'url'                     => $this->url,
-            'user_data'               => auth()->user(),
-            'master_badan_hukum'      => $master_badan_hukum,
-            'master_jenis_perusahaan' => $master_jenis_perusahaan,
-            'master_negara'           => $master_negara,
-            'master_provinsi'         => $master_provinsi,
-            'breadcrumbs'             => $breadcrumbs
-        ];
+            $data = [
+                'url'                     => $this->url,
+                'user_data'               => auth()->user(),
+                'master_badan_hukum'      => $master_badan_hukum,
+                'master_jenis_perusahaan' => $master_jenis_perusahaan,
+                'master_negara'           => $master_negara,
+                'master_provinsi'         => $master_provinsi,
+                'breadcrumbs'             => $breadcrumbs
+            ];
 
-        return view('home::account.update_profile')->with($data);
+            return view('home::account.update_profile')->with($data);
+        } else {
+            // not pelanggan
+
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Akun'),
+                new BreadcrumbsStruct('Profile', url('/account/profile')),
+                new BreadcrumbsStruct('Update Profile'),
+            ];
+
+            $data = [
+                'breadcrumbs' => $breadcrumbs
+            ];
+
+            return view('home::account.update_profile_user')->with($data);
+        }
     }
 
     public function updateProfile(Request $request)
@@ -164,9 +183,9 @@ class AccountController extends Controller
             'company_wakil_name'    => 'required',
             'company_address'       => 'required',
             'company_country'       => 'required',
-            'company_province'      => 'required',
-            'company_kabupaten'     => 'required',
-            'company_kecamatan'     => 'required',
+            'company_province'      => 'required_if:company_country,3',
+            'company_kabupaten'     => 'required_if:company_country,3',
+            'company_kecamatan'     => 'required_if:company_country,3',
             'company_no_akta'       => 'required',
             'company_badan_hukum'   => 'required',
             'company_jenis'         => 'required',
@@ -199,9 +218,9 @@ class AccountController extends Controller
         $user->sis_pelanggan->jenis_perusahaan_id       = $request['company_jenis'];
         $user->sis_pelanggan->badan_hukum_id            = $request['company_badan_hukum'];
         $user->sis_pelanggan->negara_id                 = $request['company_country'];
-        $user->sis_pelanggan->kec_id                    = $request['company_kecamatan'];
-        $user->sis_pelanggan->kab_id                    = $request['company_kabupaten'];
-        $user->sis_pelanggan->prov_id                   = $request['company_province'];
+        $user->sis_pelanggan->kec_id                    = $request['company_country'] == 3 ? $request['company_kecamatan'] : null;
+        $user->sis_pelanggan->kab_id                    = $request['company_country'] == 3 ? $request['company_kabupaten'] : null;
+        $user->sis_pelanggan->prov_id                   = $request['company_country'] == 3 ? $request['company_province'] : null;
         $user->sis_pelanggan->cust_alamat               = $request['company_address'];
         $user->sis_pelanggan->cust_nomor_akta_pendirian = $request['company_no_akta'];
         $user->sis_pelanggan->cust_nama_pemilik         = $request['company_owner_name'];
@@ -211,5 +230,40 @@ class AccountController extends Controller
         $user->sis_pelanggan->save();
 
         return redirect()->back()->with('message', "Profil berhasil diperbarui");
+    }
+
+    public function updateUserProfile(Request $request)
+    {
+        $request->validate([
+            'fullname'  => 'required|string|min:4',
+            'email'     => 'required|email|min:4',
+            'foto'      => 'sometimes|max:500|mimes:jpeg,jpg,png',
+        ]);
+
+        // TODO: check apakah ada email yg kembar
+        $currentUser = SysUser::findOrFail(auth()->user()->user_id);
+        $newEmail    = SysUser::where("user_email", $request->email)->where('user_email', '<>', $currentUser->user_email)->first();
+        if (!empty($newEmail)) return redirect()->back()->withInput($request->all())->withErrors("Email telah digunakan");
+
+        $currentUser->user_fullname = $request->fullname;
+        $currentUser->user_email    = $request->email;
+
+        if ($request->hasFile("foto")) {
+            $image = $request->file('foto');
+            $img   = Image::make($request->file('foto')->getRealPath());
+            $img->resize(300, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            $imageName = "/images/profiles/" . str_replace(" ", "_", $request->fullname) . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
+            $img->save(public_path($imageName), 80);
+            $currentUser->user_picture = $imageName;
+        }
+
+        if ($currentUser->save()) {
+            return redirect()->back()->with("message", "Profil berhasil diperbarui");
+        } else {
+            return redirect()->back()->withErrors("Gagal memperbarui profil");
+        }
     }
 }

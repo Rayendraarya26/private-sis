@@ -9,17 +9,16 @@
         <div class="dt-card">
             <!-- Card Body -->
             <div class="dt-card__body">
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        {!! implode('', $errors->all('<li>:message</li>')) !!}
+                    </div>
+                @endif
                 @if(session('message'))
                     <div class="alert alert-success" role="alert">
                         {{ session('message') }}
                     </div>
                 @endif
-
-                @error('message')
-                <div class="alert alert-danger">
-                    {{$message}}
-                </div>
-            @enderror
             <!-- Form -->
                 <form method="post" action="{{route('update_profile')}}" enctype="multipart/form-data" onsubmit="$('#btn-submit').attr('disabled', 'true')">
                 @csrf
@@ -150,7 +149,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group form-row">
+                            <div class="form-group form-row" id="company_province_container">
                                 <label class="col-md-3 col-form-label text-sm-right" for="company_province">
                                     Provinsi<span class="text-danger ml-1">*</span>
                                 </label>
@@ -164,7 +163,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group form-row">
+                            <div class="form-group form-row" id="company_kabupaten_container">
                                 <label class="col-md-3 col-form-label text-sm-right" for="company_kabupaten">
                                     Kabupaten/Kota<span class="text-danger ml-1">*</span>
                                 </label>
@@ -178,7 +177,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group form-row">
+                            <div class="form-group form-row" id="company_kecamatan_container">
                                 <label class="col-md-3 col-form-label text-sm-right" for="company_kecamatan">
                                     Kecamatan<span class="text-danger ml-1">*</span>
                                 </label>
@@ -303,6 +302,26 @@
 @endsection
 @push("javascript")
     <script>
+        $(function(){
+            $('#company_country').on('change', function(e){
+                if (e.target.value != 3) { // bukan indonesia
+                    $('#company_province_container').hide();
+                    $('#company_kabupaten_container').hide();
+                    $('#company_kecamatan_container').hide();
+                } else {
+                    $('#company_province_container').show();
+                    $('#company_kabupaten_container').show();
+                    $('#company_kecamatan_container').show();
+                }
+            });
+
+            @if($user_data->sis_pelanggan?->negara_id != 3)
+                $('#company_province_container').hide();
+                $('#company_kabupaten_container').hide();
+                $('#company_kecamatan_container').hide();
+            @endif
+        });
+
         let cb_prov = $('#company_province').combobox({
             mode: 'remote',
             method: 'GET',
