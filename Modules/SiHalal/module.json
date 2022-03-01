@@ -1,0 +1,13 @@
+{
+    "name": "SiHalal",
+    "alias": "sihalal",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SiHalal\\Providers\\SiHalalServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
