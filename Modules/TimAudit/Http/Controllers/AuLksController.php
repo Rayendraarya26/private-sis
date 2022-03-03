@@ -337,7 +337,7 @@ class AuLksController extends Controller
     {
         $dataLKS = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+            ->where('sis_jadwal.cust_id', $dataJadwal->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
             ->get();
 
