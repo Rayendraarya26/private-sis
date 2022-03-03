@@ -422,11 +422,15 @@ class AuLksController extends Controller
         foreach ($data->get() as $d) {
             $totalTemuanLKS = $d->sis_audit_lks->count();
 
+            $isCloseLKS       = false;
             $allowRekomendasi = false;
-            if ($d->sis_audit_lks->where('lks_sudah_ditutup', '=', 'tidak')->count() == 0 && $d->jadw_lks_rekomendasi == null) {
-                $allowRekomendasi = true;
+            if ($d->sis_audit_lks->where('lks_sudah_ditutup', '=', 'tidak')->count() == 0) {
+                $isCloseLKS = true;
             }
 
+            if ($isCloseLKS && $d->jadw_lks_rekomendasi == null && $d->sis_audit_lap_lengkap?->lap_lengkp_verifikasi_status == "ya") {
+                $allowRekomendasi = true;
+            }
 
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_setujui_temuan']  = $d->jadw_setujui_temuan;
@@ -438,6 +442,7 @@ class AuLksController extends Controller
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
             $x['total_temuan']         = $totalTemuanLKS;
             $x['allow_rekomendasi']    = $allowRekomendasi;
+            $x['is_close_lks']         = $isCloseLKS;
             $result[]                  = $x;
         }
 
