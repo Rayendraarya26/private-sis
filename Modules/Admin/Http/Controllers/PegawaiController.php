@@ -338,7 +338,7 @@ class PegawaiController extends Controller
             $x['user_id']         = $d->user_id;
             $x['user_fullname']   = $d->user_fullname;
             $x['user_email']      = $d->user_email;
-            $x['peg_kode']        = $d->master_pegawai->peg_kode;
+            $x['peg_kode']        = $d->master_pegawai?->peg_kode;
             $x['user_is_active']  = ucwords($d->user_is_active);
             $x['user_picture']    = url(config("app.url_profile_image") . $d->user_picture);
             $x['user_last_login'] = !empty($d->user_last_login) ? Carbon::createFromFormat('Y-m-d H:i:s', $d->user_last_login)->format("d M Y, h:i:s") : $d->user_last_login;
