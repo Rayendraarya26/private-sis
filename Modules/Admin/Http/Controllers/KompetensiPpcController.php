@@ -107,7 +107,7 @@ class KompetensiPpcController extends Controller
     {
         $data = SysUser::leftJoin('master_pegawai', 'master_pegawai.user_id', '=', 'sys_user.user_id')
             ->leftJoin('sys_user_group', 'ug_user_id', '=', 'sys_user.user_id')
-            ->with('master_pegawai.pegawai_kompetensi_ppcs.master_sertifikasi')
+            ->with('master_pegawai.pegawai_kompetensi_ppcs.master_komoditi')
             ->whereNotIn('sys_user_group.ug_group_id', [1, 3])
             ->where('is_ppc', '=', 'yes');
 
