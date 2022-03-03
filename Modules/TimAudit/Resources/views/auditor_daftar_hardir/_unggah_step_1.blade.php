@@ -90,6 +90,7 @@
 								<li>Kritis: {{$dataLKS['jumlah']['kritis']}}</li>
 								<li>Mayor: {{$dataLKS['jumlah']['mayor']}}</li>
 								<li>Minor: {{$dataLKS['jumlah']['minor']}}</li>
+								<li>Observasi: {{$dataLKS['jumlah']['observasi']}}</li>
 								<br>
 								<li>Total: {{$dataLKS['jumlah']['total']}}</li>
 							</ul>

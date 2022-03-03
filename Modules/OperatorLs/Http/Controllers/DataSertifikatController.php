@@ -3,6 +3,9 @@
 namespace Modules\OperatorLs\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
+
 use App\Http\Structs\CertJecaStruct;
 use App\Http\Structs\CertJpaStruct;
 use App\Http\Structs\CertYok3Struct;
@@ -56,6 +59,8 @@ class DataSertifikatController extends Controller
     public function saveSertifikat(Request $request)
     {
         $request->validate([
+            'cust_id'       => 'required',
+            'sert_nama'       => 'required',
             'cust_sert_id'       => 'required|integer',
             'cust_sert_filepath' => 'required|mimes:pdf'
         ]);
@@ -70,6 +75,27 @@ class DataSertifikatController extends Controller
             DB::transaction(function () use ($request, $dataInsert) {
                 SisPelangganSertifikasi::findOrFail($request['cust_sert_id'])->update(['cust_sert_filepath' => $dataInsert['cust_sert_filepath']]);
             });
+			
+			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+            // Send Push
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = 'Penerbitan Sertifikat';
+            $notifStruct->message   = sprintf("Selamat, Sertifikat %s anda telah diterbitkan.", $request['sert_nama']);
+            $notifStruct->user_id   = $data_pelanggan?->user_id;
+            $notifStruct->click_url = url('/pelanggan/sertifikasi/data');
+            sendNotification($notifStruct);
+
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = "Penerbitan Sertifikat";
+            $structEmail->body    = view('operatorls::penjadwalan.mails.publish')
+                ->with([
+                    'nama'       => $data_pelanggan?->cust_nama,
+                    'message'    => sprintf("Selamat, Sertifikat %s anda telah diterbitkan.", $request['sert_nama']),
+                    'link_verif' => url('/pelanggan/sertifikasi/data'),
+                ])->render();
+            $structEmail->to      = $data_pelanggan?->cust_email;
+            sendEmail($structEmail);
 
             return redirect($this->url)->with('message', "Upload file sertifikat sudah berhasil disimpan.");
         } else {

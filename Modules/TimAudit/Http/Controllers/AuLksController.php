@@ -153,9 +153,9 @@ class AuLksController extends Controller
                     // Send Push
                     $notifStruct            = new NotifStruct();
                     $notifStruct->title     = sprintf("Proses Audit #%d telah selesai", $dataJadwal->jadw_id);
-                    $notifStruct->message   = sprintf("Proses audit pada %s tanggal %s telah selesai, harap segera susun tim komite", $dataJadwal->sis_pelanggan->cust_nama, $dataJadwal->jadw_tanggal_mulai->isoFormat("LL"));
+                    $notifStruct->message   = sprintf("Proses audit pada %s tanggal %s telah selesai, segera inputkan rekomendasi persetujuan. ", $dataJadwal->sis_pelanggan->cust_nama, $dataJadwal->jadw_tanggal_mulai->isoFormat("LL"));
                     $notifStruct->user_id   = $user?->ug_user_id;
-                    $notifStruct->click_url = url('/operatorls/komite');
+                    $notifStruct->click_url = url('/operatorls/rekomendasi-persetujuan/edit?tipe=rekomendasi&jadw_id='.$request['jadw_id']);
                     sendNotification($notifStruct);
                 }
             }

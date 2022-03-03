@@ -35,6 +35,8 @@
 									<div class="form-group row">
 										<label class="col-form-label col-sm-3" for="">Nama Perusahaan</label>
 										<div class="col-sm-8">
+											<input type="hidden" id="cust_id" name="cust_id" class="form-control" value="{{$data_sertifikat->cust_id}}"/>
+											<input type="hidden" id="sert_nama" name="sert_nama" class="form-control" value="{{$data_sertifikat->master_sertifikasi->sert_nama}}"/>
 											<label class="" >{{$data_sertifikat->sis_pelanggan->cust_nama}}</label>
 										</div>
 									</div>

@@ -6,7 +6,7 @@
     <div class="dt-content">
 		<div class="col-xl-12">
 			<a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i class="fad fa-arrow-left"></i> Kembali</a>
-			<a class="btn btn-sm btn-success" href="#" onClick="confirmSimpan()" style="margin-bottom: 20px"><i class="fad fa-check"></i> Simpan Komite</a>
+			<a class="btn btn-sm btn-success" href="#" onClick="confirmSimpan()" style="margin-bottom: 20px"><i class="fad fa-check"></i> Ajukan Komite ?</a>
 			<div class="row">
 				<div class="col-xl-12">
 					<div class="card">
