@@ -104,7 +104,7 @@ class SertifikasiPermohonanController extends Controller
 
             DB::beginTransaction();
             // 1
-            $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumens", "sis_pelanggan_pabriks"])->find($custID)->first();
+            $dataSisPelanggan = SisPelanggan::with(["sis_pelanggan_dokumens", "sis_pelanggan_pabriks"])->find($custID);
 
             // 2
             $sertifikatNama = [];
@@ -573,7 +573,7 @@ class SertifikasiPermohonanController extends Controller
 
 							sendNotification($notifStruct);
 						}
-                        
+
                     } else {
 						if( in_array($user->ug_group_id, [4,6]) ){
 							// Send Push
@@ -586,7 +586,7 @@ class SertifikasiPermohonanController extends Controller
                     }
                 }
             }
-			
+
 			if ($request['status'] == "setuju") {
 				// Add Pengajuan Status
 				SisPermohonanStatus::updateOrCreate([
