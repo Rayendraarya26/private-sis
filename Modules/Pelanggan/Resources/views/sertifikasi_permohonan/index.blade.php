@@ -74,7 +74,7 @@
                             let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.mohon_id}', '${row.sert_nama}')">Delete</div>`;
                             let btnTrack  = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
-                            let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}')">Approve Harga</div>`;
+                            let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}', ${row.mohon_harga_permohonan})">Approve Harga</div>`;
 
                             if (row.mohon_approved_status !== "on-progress") {
                                 btnDelete = "";
@@ -197,7 +197,7 @@
                                 let signed = "";
                                 @if(authorized("{$module}@detail"))
                                 if (row.mohon_tagihan_biaya_status == "proses" && val > 0) {
-                                    signed = `<span style="cursor:pointer;" onclick="confirmHarga(${row.mohon_id})"><i class="fas fa-question"></i> Butuh Persetujuan</span>`
+                                    signed = `<span style="cursor:pointer;" onclick="confirmHarga(${row.mohon_id}, ${row.mohon_harga_permohonan})"><i class="fas fa-question"></i> Butuh Persetujuan</span>`
                                 } else if (row.mohon_tagihan_biaya_status == "tidak") {
                                     signed = `<span style="color: red"><i class="fas fa-close"></i> Tolak</span>`
                                 } else if (row.mohon_tagihan_biaya_status == "setuju") {
@@ -284,8 +284,17 @@
                 ]);
         });
 
+        function reloadTable() {
+            // Destroy MenuButton (rebuild onloadsuccess)
+            let dg = $('#ttData');
+            dg.datagrid('getPanel').find('.btn-action').each(function () {
+                $(this).menubutton('destroy');
+            })
+            dg.datagrid('reload');
+        }
+
         @if(authorized("{$module}@detail"))
-        function confirmHarga(id) {
+        function confirmHarga(id, harga) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-success mb-2',
                 cancelButtonClass: 'btn btn-danger mr-2 mb-2',
@@ -293,7 +302,7 @@
             });
 
             swalWithBootstrapButtons({
-                title: `Persetujuan Harga ?`,
+                title: `Persetujuan Harga Rp${harga.toString().formatUang(".")} ?`,
                 html: `Jika anda menolak maka proses pengajuan akan berhenti ditahap ini, keputusan ini bersifat permanen <br><br> tekan ESC untuk batal`,
                 type: 'warning',
                 showCancelButton: true,
@@ -302,40 +311,60 @@
                 closeOnConfirm: false,
                 closeOnCancel: false,
                 reverseButtons: true
-            }).then((result) => {
-                let status = null;
+            }).then(async (result) => {
                 if (result.value) {
-                    status = "setuju"
+                    result = await swalWithBootstrapButtons({
+                        title: "Anda Yakin ?",
+                        html: `Setujui harga sertifikasi <b>Rp${harga.toString().formatUang(".")}</b>.`,
+                        type: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    })
+                    if (result.value) {
+                        await submitApproval(id, "setuju");
+                        reloadTable()
+                    }
                 } else if (result.dismiss === swal.DismissReason.cancel) {
-                    status = "tidak"
-                }
-
-                if (status !== null) {
-                    $.ajax({
-                        url: `{{url("$url/approve-harga")}}`,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {mohon_id: id, status},
-                        success: function (response) {
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            // Destroy MenuButton (rebuild onloadsuccess)
-                            let dg = $('#ttData');
-                            dg.datagrid('getPanel').find('.btn-action').each(function () {
-                                $(this).menubutton('destroy');
-                            })
-                            dg.datagrid('reload');
-                        },
-                        error: function (xhr) {
-                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                        }
-                    });
+                    result = await swalWithBootstrapButtons({
+                        title: "Anda Yakin ?",
+                        html: `Tolak harga sertifikasi <b>Rp${harga.toString().formatUang(".")}</b> ? <br>Proses akan berhenti apabila anda menolak harga`,
+                        type: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    })
+                    if (result.value) {
+                        await submitApproval(id, "tidak");
+                        reloadTable()
+                    }
                 }
             });
+        }
+
+        function submitApproval(mohon_id, status) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: `{{url("$url/approve-harga")}}`,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {mohon_id, status},
+                    success: function (response) {
+                        toastCenter({
+                            type: 'success',
+                            title: response.message
+                        })
+                        resolve();
+                    },
+                    error: function (xhr) {
+                        if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                        else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        reject();
+                    }
+                });
+            })
         }
         @endif
 
