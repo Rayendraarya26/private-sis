@@ -613,7 +613,7 @@ class SertifikasiPermohonanController extends Controller
 			}
 
             DB::commit();
-            return responseJSON(200, null, "Approval berhasil " . ucwords($request['status']));
+            return responseJSON(200, null, "Approval berhasil " . $request['status'] == "Tidak" ? "ditolak" : "disetujui");
         } catch (Exception $e) {
             DB::rollBack();
             return responseJSON(500, null, $e->getMessage());

@@ -52,13 +52,9 @@
                                             <small>(pdf/png/jpg)</small>
                                         </label>
                                         <div class="col-sm-8">
-                                            <div class="custom-file">
-                                                <input type="file" name="bill_payment_file" class="custom-file-input"
-                                                       id="bill_payment_file"
-                                                       accept="image/png,image/jpg,application/pdf">
-                                                <label class="custom-file-label" for="bill_payment_file">Unggah bukti
-                                                    pembayaran...</label>
-                                            </div>
+                                            <input type="file" name="bill_payment_file" class="form-control"
+                                                   id="bill_payment_file"
+                                                   accept="image/png,image/jpg,application/pdf">
                                             @if(!empty($data->bill_payment_file))
                                                 <small>
                                                     <a href="{{asset($data->bill_payment_file)}}" target="_blank">
@@ -73,9 +69,10 @@
                                             Tanggal Pembayaran</label>
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan tanggal pembayaran..."
-                                                   data-toggle="datetimepicker" data-target="#bill_payment_date"
-                                                   type="text" name="bill_payment_date" id="bill_payment_date"
+                                                   data-toggle="datetimepicker" type="text" name="bill_payment_date"
+                                                   id="bill_payment_date"
                                                    value="{{$data->bill_payment_date ?? old('bill_payment_date')}}">
+                                            <small style="float: right">Klik kolom untuk menampilkan/menghilangkan tanggal</small>
                                         </div>
                                     </div>
 
@@ -108,6 +105,7 @@
 @endsection
 
 @push("javascript")
+{{--    <script src="{{asset('assets/plugins/datepicker/bootstrap-datepicker.min.js')}}"></script>--}}
     <script src="{{asset('assets/plugins/datetimepicker/tempusdominus-bootstrap-4.min.js')}}"></script>
     <script>
         $(document).ready(function () {
@@ -121,6 +119,10 @@
             $('#bill_payment_date').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm:ss',
                 showClose: true,
+                todayHighlight: true,
+                autoclose: true,
+                useCurrent: false,
+                keepOpen: false,
             });
         });
     </script>
