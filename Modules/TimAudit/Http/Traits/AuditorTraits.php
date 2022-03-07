@@ -61,7 +61,7 @@ trait AuditorTraits
                 }
                 return $data;
             }]);
-
+        
         $data = $data->first();
 
         if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");

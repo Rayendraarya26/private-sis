@@ -60,7 +60,14 @@ class AuLksController extends Controller
                 new BreadcrumbsStruct('Temuan'),
             ];
 
-            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
+            try {
+                $this->isKepalaAudit($dataJadwal->jadw_id);
+                $isKepala = true;
+            } catch (Exception) {
+                $isKepala = false;
+            }
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'is_kepala' => $isKepala];
             return view("$this->view.temuan")->with($parser);
         } catch (Exception $e) {
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);

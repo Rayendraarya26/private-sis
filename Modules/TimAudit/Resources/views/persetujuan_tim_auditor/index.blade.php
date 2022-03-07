@@ -36,12 +36,12 @@
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-jadwal-audit") }}`,
-                rownumbers: false,
+                rownumbers: true,
                 nowrap: false,
-                singleSelect: false,
+                singleSelect: true,
                 remoteFilter: true,
                 multiSort: true,
-                pagination: false,
+                pagination: true,
                 pageSize: 50,
                 clientPaging: false,
                 frozenColumns: [[
@@ -51,15 +51,35 @@
                         width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-                            let btnEdit = ``;			
-							btnEdit += `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-handshake"></i> Persetujuan</a>`;
-							
-                            return `@if(authorized("{$module}@edit")) ${btnEdit} @endif`
+                            let btnEdit   = '';
+                            let btnDetail = '';
+                            if (!row.is_approve) {
+                                btnEdit += `<a class="btn btn-success btn-block btn-xs" href="{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-handshake"></i> Persetujuan</a>`;
+                            }
+                            btnDetail = `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/detail") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-info"></i> Detail Audit</a>`;
+
+                            return `
+                            @if(authorized("{$module}@edit")) ${btnEdit} @endif
+                            @if(authorized("{$module}@detail")) ${btnDetail} @endif
+                            `
                         }
                     }
                 ]],
                 columns: [[
-					{field: 'jadw_id', title: 'No.<br>Jadwal', width: 150, sortable: true, align: 'left',},
+                    {field: 'jadw_id', title: 'No.<br>Jadwal', width: 80, sortable: true, align: 'left',},
+                    {
+                        field: 'file_jadwal',
+                        title: 'File Jadwal',
+                        width: 120,
+                        sortable: true,
+                        formatter: function (val) {
+                            if (val != null) {
+                                return `<a href="${val}" target="_blank"><i class="fad fa-download"></i> Unduh</a>`
+                            } else {
+                                return `Belum tersedia`
+                            }
+                        }
+                    },
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_audit_jenis', title: 'Jenis Audit', width: 150, sortable: true},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 250, sortable: true},
