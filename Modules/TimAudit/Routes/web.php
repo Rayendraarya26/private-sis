@@ -23,8 +23,8 @@ use Modules\TimAudit\Http\Controllers\AuLogBookController;
 use Modules\TimAudit\Http\Controllers\AuPengajuanKomiteController;
 use Modules\TimAudit\Http\Controllers\AuTahap1Controller;
 use Modules\TimAudit\Http\Controllers\AuTahap1LapController;
-use Modules\TimAudit\Http\Controllers\AuTahap1RapatAkhirController;
 use Modules\TimAudit\Http\Controllers\AuTahap1LogBookController;
+use Modules\TimAudit\Http\Controllers\AuTahap1RapatAkhirController;
 use Modules\TimAudit\Http\Controllers\AuTahap1VerifController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalController;
 use Modules\TimAudit\Http\Controllers\AuUploadJadwalTahap1Controller;
@@ -38,10 +38,11 @@ use Modules\TimAudit\Http\Controllers\PpcLogBookController;
 
 Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
     // ============================== Persetujuan TIM ==============================
-    Route::prefix("persetujuan-tim")->group(function () {
+    Route::prefix("persetujuan-tim-dan-jadwal")->group(function () {
         Route::prefix("auditor")->group(function () {
             Route::get('/', [PersetujuanTimAuditController::class, 'index']);
             Route::get('/ajax', [PersetujuanTimAuditController::class, 'ajax']);
+            Route::get('/detail', [PersetujuanTimAuditController::class, 'detail']);
             Route::get('/edit', [PersetujuanTimAuditController::class, 'edit']);
             Route::post('/update', [PersetujuanTimAuditController::class, 'update']);
         });
@@ -79,7 +80,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
 			Route::delete('/delete', [AuTahap1Controller::class, 'destroy']);
 			Route::get('/print', [AuTahap1Controller::class, 'print']);
         });
-		
+
 		Route::prefix("tahap1-lap")->group(function () {
             Route::get('/', [AuTahap1LapController::class, 'index']);
             Route::any('/ajax', [AuTahap1LapController::class, 'ajax']);
@@ -87,7 +88,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
 			Route::post('/update', [AuTahap1LapController::class, 'update']);
 			Route::get('/cetak', [AuTahap1LapController::class, 'cetak']);
         });
-		
+
 		Route::prefix("tahap1-rapat-akhir")->group(function () {
             Route::get('/', [AuTahap1RapatAkhirController::class, 'index']);
             Route::any('/ajax', [AuTahap1RapatAkhirController::class, 'ajax']);
@@ -95,14 +96,14 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
 			Route::post('/update', [AuTahap1RapatAkhirController::class, 'update']);
 			Route::get('/cetak', [AuTahap1RapatAkhirController::class, 'cetak']);
         });
-		
+
 		Route::prefix("tahap1-logbook")->group(function () {
             Route::get('/', [AuTahap1LogBookController::class, 'index']);
             Route::any('/ajax', [AuTahap1LogBookController::class, 'ajax']);
 			Route::get('/upload', [AuTahap1LogBookController::class, 'upload']);
 			Route::post('/save', [AuTahap1LogBookController::class, 'save']);
         });
-		
+
 		Route::prefix("tahap1-verif")->group(function () {
             Route::get('/', [AuTahap1VerifController::class, 'index']);
             Route::any('/ajax', [AuTahap1VerifController::class, 'ajax']);
@@ -110,7 +111,7 @@ Route::prefix('timaudit')->middleware(['auth', 'restrict'])->group(function () {
 			Route::post('/update', [AuTahap1VerifController::class, 'update']);
 			Route::post('/cetak', [AuTahap1VerifController::class, 'cetak']);
         });
-		
+
         Route::prefix("daftar-periksa")->group(function () {
             Route::get('/', [AuDaftarPeriksaController::class, 'index']);
             Route::get('/ajax', [AuDaftarPeriksaController::class, 'ajax']);

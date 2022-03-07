@@ -164,7 +164,7 @@
                                         </tr>
                                         </thead>
                                         <tbody id="tbody-lks">
-                                        @foreach($data->sis_audit_lks as $lks)
+                                        @foreach($data->sis_audit_lks()->orderBy('lks_nomor')->get() as $lks)
                                             @php($lksIDs[] = $lks->lks_id)
                                             <tr>
                                                 <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
@@ -259,7 +259,20 @@
                                                             </div>
                                                         </div>
                                                     @else
-                                                        No LKS: {!! $lks->lks_nomor !!}
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div style="padding-bottom: 10px">
+                                                                    <b style="font-size: 12px">No LKS: </b>
+                                                                    <input type="text" id="lks_nomor_{{$lks->lks_id}}"
+                                                                           class="form-control"
+                                                                           placeholder="Tuliskan nomor LKS..."
+                                                                           @keyup="changeNoLks({{$lks->lks_id}})"
+                                                                           aria-label="nomor lks"
+                                                                           value="{!! $lks->lks_nomor !!}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                         <br><br>
                                                         {!! $lks->lks_uraian_ketidaksesuaian !!}
                                                         <br>
@@ -725,7 +738,7 @@
                     return new Promise((resolve, reject) => {
                         if (value == null || value == "") {
                             reject()
-                            return toastCenter({type: 'error', title: "Text editor tidak dapat kosong"})
+                            return toastCenter({type: 'error', title: `Text editor tidak dapat kosong ${key}:${value}`})
                         }
                         $.ajax({
                             url: `{{url("$url/temuan/$data->jadw_id/save-draft")}}`,
