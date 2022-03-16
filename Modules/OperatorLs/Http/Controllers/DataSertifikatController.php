@@ -3,18 +3,18 @@
 namespace Modules\OperatorLs\Http\Controllers;
 
 use App\Http\Structs\BreadcrumbsStruct;
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-
 use App\Http\Structs\CertJecaStruct;
 use App\Http\Structs\CertJpaStruct;
 use App\Http\Structs\CertYok3Struct;
 use App\Http\Structs\CertYqStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Modules\OperatorLs\Http\Traits\SertifikatTrait;
 
@@ -59,24 +59,25 @@ class DataSertifikatController extends Controller
     public function saveSertifikat(Request $request)
     {
         $request->validate([
-            'cust_id'       => 'required',
-            'sert_nama'       => 'required',
+            'cust_id'            => 'required',
+            'sert_nama'          => 'required',
             'cust_sert_id'       => 'required|integer',
             'cust_sert_filepath' => 'required|mimes:pdf'
         ]);
         $dataInsert = [];
         if ($request->hasFile("cust_sert_filepath")) {
             $file     = $request->file('cust_sert_filepath');
-            $namaFile = Str::slug($request->cust_sert_id) . '_sertifikat_' . time() . '.' . $file->getClientOriginalExtension();
-            $path     = sprintf(config("app.path_file_sertifikat"));
-            $file->move(public_path($path), $namaFile);
-            $dataInsert['cust_sert_filepath'] = $path . '/' . $namaFile;
+            $namaFile = Str::slug($request->sert_nama) . '_sertifikat_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = sprintf(config("app.path_file_sertifikat"), $request['cust_id']);
+            if (!File::exists($filePath)) File::makeDirectory($filePath, 0777, true, true);
+            $file->move(public_path($filePath), $namaFile);
+            $dataInsert['cust_sert_filepath'] = $filePath . '/' . $namaFile;
 
             DB::transaction(function () use ($request, $dataInsert) {
                 SisPelangganSertifikasi::findOrFail($request['cust_sert_id'])->update(['cust_sert_filepath' => $dataInsert['cust_sert_filepath']]);
             });
-			
-			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+
+            $data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
             // Send Push
             $notifStruct            = new NotifStruct();
             $notifStruct->title     = 'Penerbitan Sertifikat';
