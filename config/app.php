@@ -27,6 +27,14 @@ return [
     'path_file_audit'         => "files/audit/%d",
     'path_file_tahap1'        => "files/tahap1/%d",
     'path_file_sertifikat'	  => "files/sertifikat",
+	
+	
+    'sihalal_api_server'	  => "http://103.7.14.55",
+	
+    'sihalal_username'	  => "surveyor",
+    'sihalal_password'	  => "lph@ptsi123",
+
+    'sihalal_unit_kode'	  => "D10217E0-383E-42F3-9841-827915AE0438",
 
     /*
     |--------------------------------------------------------------------------

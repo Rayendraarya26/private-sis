@@ -12,6 +12,9 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
 	
 	Route::prefix("permohonan")->group(function () {
         Route::get("/", [ManagePermohonanController::class, 'index']);
+        Route::any("/ajax", [ManagePermohonanController::class, 'ajax']);
+		Route::get('/detail', [ManagePermohonanController::class, 'detail']);
+        Route::post('/update', [ManagePermohonanController::class, 'update']);
     });
 	
 	Route::prefix("invoice")->group(function () {
