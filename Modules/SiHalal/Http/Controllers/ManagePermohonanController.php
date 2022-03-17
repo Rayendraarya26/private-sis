@@ -30,6 +30,18 @@ class ManagePermohonanController extends Controller
         return view("$this->view.index")->with($parser); 
     }
 	
+	public function detail(Request $request, $regId)
+    {
+        $breadcrumbs = [
+            new BreadcrumbsStruct('SiHalal'),
+            new BreadcrumbsStruct('Data Permohonan'),
+            new BreadcrumbsStruct('Detail Biaya'),
+        ];
+
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
+        return view("$this->view.detail")->with($parser); 
+    }
+	
 	public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
@@ -41,7 +53,7 @@ class ManagePermohonanController extends Controller
 	
 	private function ajax_datagrid_permohonan(Request $request)
     {
-		$data = $this->getPermohonan();
+		$data = $this->getPermohonan('10010');
 		
         $result = [];
 		if(isset($data['payload'])){

@@ -29,14 +29,36 @@ trait ServiceSihalalTrait
 		}
     }
 	
-	public function getPermohonan()
+	public function getPermohonan($status_list = '10010')
     {
 		$login_data = $this->postLogin();
 		if(!is_null($login_data)){
 			return Http::withHeaders([
 				'Cookie' => $login_data,
 			])
-			->get(config("app.sihalal_api_server").'/api/v1/data_list/10010/'.config("app.sihalal_unit_kode"))->json();
+			->get(config("app.sihalal_api_server")."/api/v1/data_list/$status_list/".config("app.sihalal_unit_kode"))->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function postUpdatePermohonan($status_list = 'Ajuan', $reg_id)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->post(config("app.sihalal_api_server")."/api/v1/data_list/updatestatus",  
+				[
+					"status" => "$status_list"
+					, "reg_id" => $reg_id
+					, "lph_mapped_id" => config('app.sihalal_unit_kode')
+				]
+			)->json();
 		}
 		else{
 			return [];

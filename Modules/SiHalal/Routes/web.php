@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\SiHalal\Http\Controllers\SiHalalController;
 use Modules\SiHalal\Http\Controllers\ManagePermohonanController;
-use Modules\SiHalal\Http\Controllers\ManageInvoiceController;
+use Modules\SiHalal\Http\Controllers\ManageBiayaController;
 use Modules\SiHalal\Http\Controllers\ManageAuditController;
 use Modules\SiHalal\Http\Controllers\DataAuditorController;
 
@@ -17,8 +17,14 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
         Route::post('/update', [ManagePermohonanController::class, 'update']);
     });
 	
-	Route::prefix("invoice")->group(function () {
-        Route::get("/", [ManageInvoiceController::class, 'index']);
+	Route::prefix("biaya")->group(function () {
+        Route::get("/", [ManageBiayaController::class, 'index']);
+		Route::any("/ajax", [ManageBiayaController::class, 'ajax']);
+		Route::get('/detail/{reg_id}', [ManageBiayaController::class, 'detail']);
+        Route::post('/addBiaya', [ManageBiayaController::class, 'addBiaya']);
+        Route::post('/updateBiaya', [ManageBiayaController::class, 'updateBiaya']);
+        Route::post('/deleteBiaya', [ManageBiayaController::class, 'deleteBiaya']);
+        Route::post('/updateStatus', [ManageBiayaController::class, 'updateStatus']);
     });
 	
 	Route::prefix("audit")->group(function () {

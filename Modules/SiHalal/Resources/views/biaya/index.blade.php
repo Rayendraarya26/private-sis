@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Manajemen Permohonan SiHalal')
+@section('title', 'Manajemen Biaya SiHalal')
 
 @section('content')
     <div class="dt-content">
@@ -31,7 +31,7 @@
 
 @push("javascript")
     <script>
-		function confirmAjukan(id_reg) {
+		function confirmInvoice(id_reg) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
                 cancelButtonClass: 'btn btn-success mr-2 mb-2',
@@ -40,7 +40,7 @@
 
             swalWithBootstrapButtons({
                 title: `Ajukan Permohonan ?`,
-                text: `Ajukan ke tahap pembiayaan permohonan dengan no pengajuan "${id_reg}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "${id_reg}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ajukan',
@@ -79,7 +79,7 @@
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-permohonan") }}`,
+                url: `{{ url("$url/ajax?action=datagrid-permohonan-biaya") }}`,
                 rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
@@ -91,10 +91,13 @@
                     {
                         field: 'action',
                         title: "<br/><br/>",
-                        width: 150,
+                        width: 130,
                         align: 'center',
                         formatter: function (val, row) {
-                            return `<a href="javascript:void(0)" class="btn btn-xs btn-info" onclick="confirmAjukan('${row.id_reg}')"><i class="far fa-comment-alt-edit"></i> Update Status</a>`;
+							var btnAksi = ``;
+							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail Biaya</a>`;
+							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="confirmInvoice('${row.id_reg}')"><i class="far fa-comment-alt-edit"></i> Update Status</a>`;
+                            return `${btnAksi}`;
                         },
                     },
                 ]],
