@@ -31,51 +31,7 @@
 
 @push("javascript")
     <script>
-		function confirmInvoice(id_reg) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Ajukan Permohonan ?`,
-                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "${id_reg}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					$.messager.progress();
-                    $.ajax({
-                        url: `{{url("$url/update")}}`,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {id_reg: id_reg},
-                        success: function (response) {
-							$.messager.progress('close');
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            // Destroy MenuButton (rebuild onloadsuccess)
-                            let dg = $('#ttData');
-                            dg.datagrid('reload');
-                        },
-                        error: function (xhr) {
-							$.messager.progress('close');
-                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                        }
-                    });
-                }
-            });
-        }
-		
-        $(function () {
+		$(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
@@ -96,7 +52,6 @@
                         formatter: function (val, row) {
 							var btnAksi = ``;
 							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail Biaya</a>`;
-							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="confirmInvoice('${row.id_reg}')"><i class="far fa-comment-alt-edit"></i> Update Status</a>`;
                             return `${btnAksi}`;
                         },
                     },
@@ -116,11 +71,6 @@
 					{field: 'nama_jenis_usaha', title: 'Jenis<br/>Usaha', width: 150, sortable: false},
 					{field: 'jenis_daftar', hidden: true},
 					{field: 'jenis_produk', hidden: true},
-                   /*  {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
-                    {field: 'jadw_setujui_temuan', title: 'Persetujuan<br/>Temuan?', width: 100, sortable: true},
-                    {field: 'sert_nama', title: 'Jadwal Detail', width: 300, sortable: true},
-                    {field: 'jadw_tanggal_mulai', title: 'Tanggal<br/>Mulai', width: 100, sortable: true},
-                    {field: 'jadw_tanggal_selesai', title: 'Tanggal<br/>Selesai', width: 100, sortable: true}, */
                 ]],
             });
 			

@@ -30,15 +30,22 @@ class ManageBiayaController extends Controller
         return view("$this->view.index")->with($parser);
     }
 	
-	public function detail()
+	public function detail(Request $request, $regId)
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('SiHalal'),
             new BreadcrumbsStruct('Manajemen Biaya'),
+            new BreadcrumbsStruct('Detail Biaya'),
         ];
-
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
-        return view("$this->view.index")->with($parser);
+		
+		$data_permohonan = [];
+		$rest_permohonan = $this->getPermohonanDetail($regId);
+		if(isset($rest_permohonan['payload'])){
+			$data_permohonan = $rest_permohonan['payload'];
+		}
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
+        return view("$this->view.detail")->with($parser);
     }
 	
 	public function ajax(Request $request)
@@ -46,6 +53,7 @@ class ManageBiayaController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-permohonan-biaya'                 => $this->ajax_datagrid_permohonan_biaya($request),
+            'datagrid-biaya'                 => $this->ajax_datagrid_biaya($request),
             default                    => responseJSON(404, null, "Invalid url"),
         };
     }
@@ -150,6 +158,27 @@ class ManageBiayaController extends Controller
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
+    }
+	
+	private function ajax_datagrid_biaya(Request $request)
+    {
+		$data = $this->getBiaya();
+		
+        $result = [];
+		if(isset($data['payload'])){
+			foreach ($data['payload'] as $d) {
+				if($d['id_reg'] == $request->id_reg){
+					$x['id_biaya'] = $d['id_biaya'];
+					$x['id_reg'] = $d['id_reg'];
+					$x['keterangan'] = $d['keterangan'];
+					$x['qty'] = $d['qty'];
+					$x['harga'] = $d['harga'];
+					$x['total'] = $d['total'];
+					array_push($result, $x);
+				}
+			}
+		}
+        return response()->json(["rows" => $result]);
     }
 	
 	private function ajax_datagrid_permohonan_biaya(Request $request)

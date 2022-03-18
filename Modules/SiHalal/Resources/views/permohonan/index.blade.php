@@ -30,51 +30,7 @@
 @endsection
 
 @push("javascript")
-    <script>
-		function confirmAjukan(id_reg) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Ajukan Permohonan ?`,
-                text: `Ajukan ke tahap pembiayaan permohonan dengan no pengajuan "${id_reg}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					$.messager.progress();
-                    $.ajax({
-                        url: `{{url("$url/update")}}`,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {id_reg: id_reg},
-                        success: function (response) {
-							$.messager.progress('close');
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            // Destroy MenuButton (rebuild onloadsuccess)
-                            let dg = $('#ttData');
-                            dg.datagrid('reload');
-                        },
-                        error: function (xhr) {
-							$.messager.progress('close');
-                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                        }
-                    });
-                }
-            });
-        }
-		
+    <script>		
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
@@ -91,10 +47,12 @@
                     {
                         field: 'action',
                         title: "<br/><br/>",
-                        width: 150,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            return `<a href="javascript:void(0)" class="btn btn-xs btn-info" onclick="confirmAjukan('${row.id_reg}')"><i class="far fa-comment-alt-edit"></i> Update Status</a>`;
+                            var btnAksi = ``;
+							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-info btn-block"><i class="fal fa-table"></i> Detail</a>`;
+                            return `${btnAksi}`;
                         },
                     },
                 ]],

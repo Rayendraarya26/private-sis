@@ -43,6 +43,21 @@ trait ServiceSihalalTrait
 		}
     }
 	
+	public function getPermohonanDetail($reg_id)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/reg/$reg_id")->json();
+		}
+		else{
+			return [];
+		}
+		return [];
+    }
+	
 	public function postUpdatePermohonan($status_list = 'Ajuan', $reg_id)
     {
 		$login_data = $this->postLogin();
@@ -59,6 +74,20 @@ trait ServiceSihalalTrait
 					, "lph_mapped_id" => config('app.sihalal_unit_kode')
 				]
 			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function getBiaya()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/costs?order_dir=asc&limit=500000")->json();
 		}
 		else{
 			return [];

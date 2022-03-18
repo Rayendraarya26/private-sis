@@ -35,10 +35,16 @@ class ManagePermohonanController extends Controller
         $breadcrumbs = [
             new BreadcrumbsStruct('SiHalal'),
             new BreadcrumbsStruct('Data Permohonan'),
-            new BreadcrumbsStruct('Detail Biaya'),
+            new BreadcrumbsStruct('Detail'),
         ];
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
+        $data_permohonan = [];
+		$rest_permohonan = $this->getPermohonanDetail($regId);
+		if(isset($rest_permohonan['payload'])){
+			$data_permohonan = $rest_permohonan['payload'];
+		}
+		
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
         return view("$this->view.detail")->with($parser); 
     }
 	
