@@ -23,7 +23,7 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
 		Route::get('/detail/{reg_id}', [ManageBiayaController::class, 'detail']);
         Route::post('/addBiaya', [ManageBiayaController::class, 'addBiaya']);
         Route::post('/updateBiaya', [ManageBiayaController::class, 'updateBiaya']);
-        Route::post('/deleteBiaya', [ManageBiayaController::class, 'deleteBiaya']);
+        Route::delete('/deleteBiaya', [ManageBiayaController::class, 'deleteBiaya']);
         Route::post('/updateStatus', [ManageBiayaController::class, 'updateStatus']);
     });
 	

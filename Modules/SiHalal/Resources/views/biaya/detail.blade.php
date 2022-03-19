@@ -106,12 +106,20 @@
 							<!-- Tab Content-->
 							<div class="tab-content mt-5">
 								<div id="paneBiaya" class="tab-pane active">
+									@if(session('message'))
+										<div class="alert alert-primary alert-dismissible fade show" role="alert">
+											{!! session('message') !!}
+											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+									@endif
 									<div id="ttData" style="width:100%; min-width: 310px"></div>
 									<div id="toolbar" style="padding: 10px 0 10px 20px">
 										<div class="row">
 											@if(authorized("{$module}@addBiaya"))
 												<div>
-													<a href="javascript:void(0)" class="btn btn-outline-success btn-xs">
+													<a href="javascript:void(0)" class="btn btn-outline-success btn-xs" onclick="addModal()"> 
 														<i class="fas fa-plus"></i> Tambah Biaya
 													</a>
 												</div>
@@ -144,7 +152,7 @@
 													<tr>
 													  <td>{{$dpd['tipe_dok']}}</td>
 													  <td>{{$dpd['ket_lainnya']}}</td>
-													  <td><a href="ptsp.halal.go.id/file/{{$dpd['file_dok']}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
+													  <td><a href="https://ptsp.halal.go.id/file/{{$dpd['file_dok']}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
 													  <td>{{$dpd['ck_list']}}</td>
 													</tr>
 													@endforeach
@@ -169,7 +177,7 @@
 													<tr>
 													  <td>{{$dpp['reg_prod_name']}}</td>
 													  <td>{{$dpp['reg_publish']}}</td>
-													  <td>@if($dpp['foto_produk'] != '')<a href="ptsp.halal.go.id/file/{{$dpd['foto_produk']}}" target="_blank" class="btn btn-xs btn-primary">Download</a>@endif</td>
+													  <td>@if($dpp['foto_produk'] != '')<a href="https://ptsp.halal.go.id/file/{{$dpd['foto_produk']}}" target="_blank" class="btn btn-xs btn-primary">Download</a>@endif</td>
 													</tr>
 													@endforeach
 												</tbody>
@@ -275,6 +283,9 @@
 			</div>
         </div>
     </div>
+	
+	@include("$view._index_add_form")
+	@include("$view._index_update_form")
 @endsection
 
 
@@ -300,8 +311,10 @@
                         title: "",
                         width: 80,
                         align: 'center',
-                        formatter: function (val, row) {
-							
+                        formatter: function (val, row, index) {
+							var btnAksi = ``;
+							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-success btn-block" onclick="editModal(${index})"><i class="fal fa-pencil"></i> Edit</a>`;
+                            return `${btnAksi}`;
                         }
                     }
                 ]],
@@ -329,46 +342,22 @@
                 ]);
         });
 		
-		function confirmBelumLunas(id) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Set Belum Lunas ?`,
-                text: "Apakah anda yakin untuk men-set data ini menjadi belum lunas?",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'OK',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					$.ajax({
-                        url: `{{url("$url/update")}}`,
-						data: { 'bil_id': id, 'tipe':'reset-pelunasan' },
-						type: 'POST',
-                        success: function (response) {
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            $('#ttData').datagrid({url:`{{ url("$url/ajax?action=datagrid-billing") }}`});
-                        },
-                        error: function (err) {
-                            if (err.responseJSON.message) {
-                                toastCenter({
-                                    type: 'error',
-                                    title: err.responseJSON.message
-                                })
-                            }
-                        }
-                    });
-                }
-            });
+		
+        function addModal() {
+            $("#id_biaya").val("");
+            $("#modalFormAdd").modal('show');
+        }
+		
+		function editModal(index) {
+			
+			var row = $('#ttData').datagrid('getRows')[index];
+			$("#edit_id_biaya").val(row.id_biaya);
+			$("#edit_id_reg").val(row.id_reg);
+			$("#edit_keterangan").val(row.keterangan);
+			$("#edit_harga").val(row.harga);
+			$("#edit_qty").val(row.qty);
+            $("#modalFormUpdate").modal('show');
+            $("#modalFormUpdateTitle").html(`Edit Biaya #${row.id_biaya}`);
         }
 		
 		function confirmDelete() {
@@ -395,15 +384,12 @@
 						var tr = opts.finder.getTr($('#ttData')[0],i);
 						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
 						if(atLeastOneIsChecked == true){
-							if (data.rows[i].can_delete == 'true'){
-								idData.push(data.rows[i].bill_id);
-							} 
-							
+							idData.push(data.rows[i].id_biaya);
 						}
 					}
                     $.ajax({
-                        url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData, 'tipe': 'data_billing' },
+                        url: `{{url("$url/deleteBiaya")}}`,
+						data: { 'ids[]': idData },
 						type: 'DELETE',
                         success: function (response) {
                             toastCenter({
@@ -452,13 +438,13 @@
                         data: {id_reg: id_reg},
                         success: function (response) {
 							$.messager.progress('close');
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            // Destroy MenuButton (rebuild onloadsuccess)
-                            
+							$.messager.alert({
+								title: 'Informasi',
+								msg: response.message,
+								fn: function(){
+									window.location.href = `{{url("$url")}}`;
+								}
+							});                            
                         },
                         error: function (xhr) {
 							$.messager.progress('close');

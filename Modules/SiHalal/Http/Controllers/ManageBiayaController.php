@@ -44,7 +44,7 @@ class ManageBiayaController extends Controller
 			$data_permohonan = $rest_permohonan['payload'];
 		}
 		
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
+        $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
         return view("$this->view.detail")->with($parser);
     }
 	
@@ -60,77 +60,79 @@ class ManageBiayaController extends Controller
 	
 	public function addBiaya(Request $request)
     {
-        $request->validate([
-            // "id_reg" => 'required',
+		$request->validate([
+            "id_reg"			=> 'required',
+            "keterangan"		=> 'required',
+            "qty"				=> 'required',
+            "harga"             => 'required',
         ]);
-        try {            
-			/*
-			$rest = $this->postUpdatePermohonan('Ajuan', $request['id_reg']);
-			if(isset($rest['status'])){
-				if($rest['status'] == 200){
-					return responseJSON(200, [], 'Berhasil menyimpan data.');
-				}
-				else{
-					return responseJSON(500, [], $rest['message']);
-				}
-			}
-			else{
-				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
-			} 
-			*/
-            
-        } catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
+		
+		try {
+			$data_save = [
+				'id_reg' => $request->id_reg
+				, 'keterangan' => $request->keterangan
+				, 'qty' => $request->qty
+				, 'harga' => $request->harga
+			];
+			
+			$this->postAddBiaya($data_save);
+			
+			return redirect($this->url."/detail/$request->id_reg")->with('message', "Biaya berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
+		} catch (Exception $e) {
+			return redirect($this->url."/detail/$request->id_reg")->with('message', $e->getMessage());
         }
     }
 	
 	public function updateBiaya(Request $request)
     {
         $request->validate([
-            // "id_reg" => 'required',
+            "id_reg"			=> 'required',
+            "id_biaya"			=> 'required',
+            "keterangan"		=> 'required',
+            "qty"				=> 'required',
+            "harga"             => 'required',
         ]);
-        try {            
-			/*
-			$rest = $this->postUpdatePermohonan('Ajuan', $request['id_reg']);
-			if(isset($rest['status'])){
-				if($rest['status'] == 200){
-					return responseJSON(200, [], 'Berhasil menyimpan data.');
-				}
-				else{
-					return responseJSON(500, [], $rest['message']);
-				}
-			}
-			else{
-				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
-			} 
-			*/
-            
-        } catch (Exception $e) {
-            return responseJSON(500, [], $e->getMessage());
+		
+		try {
+			$data_save = [
+				'id_reg' => $request->id_reg
+				, 'keterangan' => $request->keterangan
+				, 'qty' => $request->qty
+				, 'harga' => $request->harga
+			];
+			
+			$this->putUpdateBiaya($data_save, $request->id_biaya);
+			
+			return redirect($this->url."/detail/$request->id_reg")->with('message', "Biaya berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
+		} catch (Exception $e) {
+			return redirect($this->url."/detail/$request->id_reg")->with('message', $e->getMessage());
         }
     }
 	
 	public function deleteBiaya(Request $request)
     {
-        $request->validate([
-            // "id_reg" => 'required',
-        ]);
-        try {            
-			/*
-			$rest = $this->postUpdatePermohonan('Ajuan', $request['id_reg']);
-			if(isset($rest['status'])){
-				if($rest['status'] == 200){
-					return responseJSON(200, [], 'Berhasil menyimpan data.');
-				}
-				else{
-					return responseJSON(500, [], $rest['message']);
-				}
-			}
-			else{
-				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
-			} 
-			*/
-            
+         try {
+            $status_return = TRUE;
+            if(!empty($request->ids)){
+                foreach ($request->ids as $id) {
+					$rest = $this->deletBiaya($id);
+                    if ($rest) {
+
+                    } else {
+                        $status_return = FALSE;
+                        break;
+                    }
+                }
+            } else{
+                $status_return = FALSE;
+            }
+
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data, data belum dipilih atau kesalahan system, silahkan ulangi lagi.");
+            }
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
@@ -152,7 +154,7 @@ class ManageBiayaController extends Controller
 				}
 			}
 			else{
-				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
+				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Biaya".');
 			} 
             
         } catch (Exception $e) {

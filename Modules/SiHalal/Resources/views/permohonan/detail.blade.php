@@ -230,7 +230,7 @@
 													<tr>
 													  <td>{{$dpd['tipe_dok']}}</td>
 													  <td>{{$dpd['ket_lainnya']}}</td>
-													  <td><a href="ptsp.halal.go.id/file/{{$dpd['file_dok']}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
+													  <td><a href="https://ptsp.halal.go.id/file/{{$dpd['file_dok']}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
 													  <td>{{$dpd['ck_list']}}</td>
 													</tr>
 													@endforeach
@@ -255,7 +255,7 @@
 													<tr>
 													  <td>{{$dpp['reg_prod_name']}}</td>
 													  <td>{{$dpp['reg_publish']}}</td>
-													  <td>@if($dpp['foto_produk'] != '')<a href="ptsp.halal.go.id/file/{{$dpd['foto_produk']}}" target="_blank" class="btn btn-xs btn-primary">Download</a>@endif</td>
+													  <td>@if($dpp['foto_produk'] != '')<a href="https://ptsp.halal.go.id/file/{{$dpd['foto_produk']}}" target="_blank" class="btn btn-xs btn-primary">Download</a>@endif</td>
 													</tr>
 													@endforeach
 												</tbody>

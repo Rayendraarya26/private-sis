@@ -93,4 +93,76 @@ trait ServiceSihalalTrait
 			return [];
 		}
     }
+	
+	public function postAddBiaya($data)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->post(config("app.sihalal_api_server")."/api/v1/costs",  
+				[
+					"id_reg" => $data['id_reg']
+					, "keterangan" => $data['keterangan']
+					, "qty" => $data['qty']
+					, "harga" => $data['harga']
+				]
+			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function putUpdateBiaya($data, $id_biaya)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Cache-Control' => 'no-cache',
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->put(config("app.sihalal_api_server")."/api/v1/costs/$id_biaya",  
+				[
+					"id_reg" => $data['id_reg']
+					, "keterangan" => $data['keterangan']
+					, "qty" => $data['qty']
+					, "harga" => $data['harga']
+				]
+			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function deletBiaya($id_biaya)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			$rest = Http::withHeaders([
+				'Cookie' => $login_data,
+				'Cache-Control' => 'no-cache',
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+				'X-Powered-By' => 'Express',
+				'Vary' => 'Origin',
+				'Access-Control-Allow-Credentials' => true,
+			])
+			->delete(config("app.sihalal_api_server")."api/v1/costs/$id_biaya")->json();
+			
+			if(isset($rest["status"]))
+				return false;
+			else
+				return true;
+		}
+		else{
+			return false;
+		}
+    }
 }
