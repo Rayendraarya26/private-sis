@@ -47,11 +47,11 @@
                     {
                         field: 'action',
                         title: "<br/><br/>",
-                        width: 130,
+                        width: 80,
                         align: 'center',
                         formatter: function (val, row) {
 							var btnAksi = ``;
-							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail Biaya</a>`;
+							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail</a>`;
                             return `${btnAksi}`;
                         },
                     },

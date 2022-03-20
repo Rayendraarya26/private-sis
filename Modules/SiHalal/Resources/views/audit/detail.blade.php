@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Detail Biaya')
+@section('title', 'Detail Audit')
 
 @section('content')
 <style>
@@ -14,7 +14,7 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@updateStatus"))
-                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmInvoice('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Biaya</a>
+                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmInvoice('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
 				@endif
 			</div>
 		</div>
@@ -32,7 +32,7 @@
 				  <div class="ml-sm-auto">
 					<ul class="dt-list dt-list-bordered dt-list-one-third">
 					  <li class="dt-list__item text-center">
-						<h4 class="font-weight-medium mb-4 text-white">Biaya</h4>
+						<h4 class="font-weight-medium mb-4 text-white">Periksa</h4>
 						<span class="d-inline-block f-12">Status</span>
 					  </li>
 					</ul>
@@ -86,7 +86,13 @@
 						<div class="card-body pb-1">
 							<ul class="card-header-links nav nav-underline" role="tablist">
 								<li class="nav-item">
-									<a class="nav-link active" data-toggle="tab" href="#paneBiaya" role="tab" aria-controls="paneBiaya" aria-selected="true">Biaya</a>
+									<a class="nav-link @if($pane_active == 'jadwal') active @endif" data-toggle="tab" href="#paneJadwal" role="tab" aria-controls="paneJadwal" aria-selected="true">Jadwal Audit</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link @if($pane_active == 'auditor') active @endif" data-toggle="tab" href="#paneAuditor" role="tab" aria-controls="paneAuditor" aria-selected="true">List Auditor</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link @if($pane_active == 'audit') active @endif" data-toggle="tab" href="#paneAudit" role="tab" aria-controls="paneAudit" aria-selected="true">Laporan Audit</a>
 								</li>
 								<li class="nav-item">
 									<a class="nav-link" data-toggle="tab" href="#paneOverview" role="tab" aria-controls="paneOverview" aria-selected="true">Overview</a>
@@ -105,35 +111,14 @@
 							<br/>
 							<!-- Tab Content-->
 							<div class="tab-content mt-5">
-								<div id="paneBiaya" class="tab-pane active">
-									@if(session('message'))
-										<div class="alert alert-primary alert-dismissible fade show" role="alert">
-											{!! session('message') !!}
-											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-												<span aria-hidden="true">×</span>
-											</button>
-										</div>
-									@endif
-									<div id="ttData" style="width:100%; min-width: 310px"></div>
-									<div id="toolbar" style="padding: 10px 0 10px 20px">
-										<div class="row">
-											@if(authorized("{$module}@addBiaya"))
-												<div>
-													<a href="javascript:void(0)" class="btn btn-outline-success btn-xs" onclick="addModal()"> 
-														<i class="fas fa-plus"></i> Tambah Biaya
-													</a>
-												</div>
-												&nbsp;&nbsp;&nbsp;
-											@endif							
-											@if(authorized("{$module}@deleteBiaya"))
-												<div class="datagrid-btn-separator"></div>
-												&nbsp;&nbsp;&nbsp;
-												<div>
-													<button class="btn btn-outline-danger btn-xs" onclick="confirmDelete()"><i class="fas fa-trash"></i> Hapus Biaya</button>
-												</div>
-											@endif
-										</div>
-									</div>
+								<div id="paneBiaya" class="tab-pane @if($pane_active == 'jadwal') active @endif">
+									@include("$view._detail_pane_jadwal")
+								</div>
+								<div id="paneAuditor" class="tab-pane @if($pane_active == 'auditor') active @endif">
+									@include("$view._detail_pane_auditor")
+								</div>
+								<div id="paneAudit" class="tab-pane @if($pane_active == 'audit') active @endif">
+									@include("$view._detail_pane_audit")
 								</div>
 								<div id="paneDokumen" class="tab-pane">
 									<div class="dt-card__body" id="panel-dokumen">
@@ -283,177 +268,31 @@
 			</div>
         </div>
     </div>
-	
-	@include("$view._detail_add_form")
-	@include("$view._detail_update_form")
 @endsection
 
 
 @push("javascript")
     <script>
-		$(function () {
-            let dg = $('#ttData').datagrid({
-                method: 'get',
-                height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-biaya") }}&id_reg={{$data_permohonan['id_reg']}}`,
-                toolbar: '#toolbar',
-                rownumbers: false,
-                nowrap: false,
-                singleSelect: false,
-                remoteSort: false,
-                remoteFilter: false,
-                multiSort: true,
-                pagination: false,
-                frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
-                    {
-                        field: 'action',
-                        title: "",
-                        width: 80,
-                        align: 'center',
-                        formatter: function (val, row, index) {
-							var btnAksi = ``;
-							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-success btn-block" onclick="editModal(${index})"><i class="fal fa-pencil"></i> Edit</a>`;
-                            return `${btnAksi}`;
-                        }
-                    }
-                ]],
-                columns: [[
-                    {field: 'keterangan', title: 'Keterangan', width: 320, sortable: true},
-                    {field: 'qty', title: 'Qty', width: 100, sortable: true},
-                    {field: 'harga', title: 'Harga(Rp.)', width: 100, sortable: true},
-                    {field: 'total', title: 'Total(Rp.)', width: 100, sortable: true},
-					{field: 'id_biaya', hidden: true},
-					{field: 'id_reg', hidden: true},
-                ]],
-				onBeforeLoad: function () {
-                    
-                },
-                onLoadSuccess: function (data) {
-					var opts = $(this).datagrid('options');
-					for(var i=0; i<data.rows.length; i++){
-						
-					}
-                },
-            });
-            dg.datagrid(
-                'enableFilter', [
-                    {field: 'action', type: 'label'},
-                ]);
-        });
-		
-		
-        function addModal() {
-            $("#id_biaya").val("");
-            $("#modalFormAdd").modal('show');
+		function myformatter(date){
+            var y = date.getFullYear();
+            var m = date.getMonth()+1;
+            var d = date.getDate();
+            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
         }
-		
-		function editModal(index) {
-			
-			var row = $('#ttData').datagrid('getRows')[index];
-			$("#edit_id_biaya").val(row.id_biaya);
-			$("#edit_id_reg").val(row.id_reg);
-			$("#edit_keterangan").val(row.keterangan);
-			$("#edit_harga").val(row.harga);
-			$("#edit_qty").val(row.qty);
-            $("#modalFormUpdate").modal('show');
-            $("#modalFormUpdateTitle").html(`Edit Biaya #${row.id_biaya}`);
+        function myparser(s){
+            if (!s) return new Date();
+            var ss = (s.split('-'));
+            var y = parseInt(ss[0],10);
+            var m = parseInt(ss[1],10);
+            var d = parseInt(ss[2],10);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+                return new Date(y,m-1,d);
+            } else {
+                return new Date();
+            }
         }
-		
-		function confirmDelete() {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Menghapus Data ?`,
-                text: "Menghapus data bersifat permanen dan tidak dapat di kembalikan",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Hapus',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					var idData = []; 
-					var data = $('#ttData').datagrid('getData');
-					var opts = $('#ttData').datagrid('options');
-					for (var i = 0; i < data.rows.length; i++) {
-						var tr = opts.finder.getTr($('#ttData')[0],i);
-						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
-						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].id_biaya);
-						}
-					}
-                    $.ajax({
-                        url: `{{url("$url/deleteBiaya")}}`,
-						data: { 'ids[]': idData },
-						type: 'DELETE',
-                        success: function (response) {
-                            toastCenter({
-                                type: 'success',
-                                title: response.message
-                            })
-
-                            let dg = $('#ttData');
-                            dg.datagrid('reload');
-                        },
-                        error: function (err) {
-                            if (err.responseJSON.message) {
-                                toastCenter({
-                                    type: 'error',
-                                    title: err.responseJSON.message
-                                })
-                            }
-                        }
-                    });
-                }
-            });
-        }
-		
-		function confirmInvoice(id_reg) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Ajukan Permohonan ?`,
-                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					$.messager.progress();
-                    $.ajax({
-                        url: `{{url("$url/updateStatus")}}`,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {id_reg: id_reg},
-                        success: function (response) {
-							$.messager.progress('close');
-							$.messager.alert({
-								title: 'Informasi',
-								msg: response.message,
-								fn: function(){
-									window.location.href = `{{url("$url")}}`;
-								}
-							});                            
-                        },
-                        error: function (xhr) {
-							$.messager.progress('close');
-                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
-                        }
-                    });
-                }
-            });
-        }
+		@include("$view._detail_pane_jadwal_javascript")
+		@include("$view._detail_pane_auditor_javascript")
+		@include("$view._detail_pane_audit_javascript")
     </script>
 @endpush

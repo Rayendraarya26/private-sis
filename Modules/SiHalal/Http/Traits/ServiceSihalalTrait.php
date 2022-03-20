@@ -165,4 +165,104 @@ trait ServiceSihalalTrait
 			return false;
 		}
     }
+	
+	public function getListAuditor()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/".config("app.sihalal_unit_kode"))->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function getListJadawlAudit()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/audit_schedule?order_dir=asc&limit=500000")->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function postAddListJadawlAudit($data)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->post(config("app.sihalal_api_server")."/api/v1/audit_schedule",  
+				[
+					"id_reg" => $data['id_reg']
+					, "jadwal_awal" => $data['jadwal_awal']
+					, "jadwal_akhir" => $data['jadwal_akhir']
+					, "jml_hari" => $data['jml_hari']
+				]
+			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function putUpdateListJadawlAudit($data, $id_audit)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Cache-Control' => 'no-cache',
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->put(config("app.sihalal_api_server")."/api/v1/audit_schedule/$id_audit",  
+				[
+					"id_reg" => $data['id_reg']
+					, "jadwal_awal" => $data['jadwal_awal']
+					, "jadwal_akhir" => $data['jadwal_akhir']
+					, "jml_hari" => $data['jml_hari']
+				]
+			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function deleteListJadawlAudit($id_audit)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			$rest = Http::withHeaders([
+				'Cookie' => $login_data,
+				'Cache-Control' => 'no-cache',
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+				'X-Powered-By' => 'Express',
+				'Vary' => 'Origin',
+				'Access-Control-Allow-Credentials' => true,
+			])
+			->delete(config("app.sihalal_api_server")."api/v1/costs/$id_audit")->json();
+			
+			if(isset($rest["status"]))
+				return false;
+			else
+				return true;
+		}
+		else{
+			return false;
+		}
+    }
 }

@@ -29,6 +29,15 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
 	
 	Route::prefix("audit")->group(function () {
         Route::get("/", [ManageAuditController::class, 'index']);
+        Route::get("/ajax", [ManageAuditController::class, 'ajax']);
+        Route::get("/detail/{reg_id}", [ManageAuditController::class, 'detail']);
+        Route::post("/addJadwal", [ManageAuditController::class, 'addJadwal']);
+        Route::post("/updateJadwal", [ManageAuditController::class, 'updateJadwal']);
+        Route::delete("/destroyJadwal", [ManageAuditController::class, 'destroyJadwal']);
+        Route::post("/addAuditor", [ManageAuditController::class, 'addAuditor']);
+        Route::delete("/destroyAuditor", [ManageAuditController::class, 'destroyAuditor']);
+        Route::post("/prosesAudit1", [ManageAuditController::class, 'prosesAudit1']);
+        Route::post("/prosesAudit2", [ManageAuditController::class, 'prosesAudit2']);
     });
 	
 	Route::prefix("ref-auditor")->group(function () {
