@@ -57,7 +57,8 @@ class ManageAuditController extends Controller
             'datagrid-permohonan-audit'                 => $this->ajax_datagrid_permohonan_audit($request),
             'datagrid-jadwal-audit'                 => $this->ajax_datagrid_jadwal_audit($request),
             'datagrid-auditor-audit'                 => $this->ajax_datagrid_auditor_audit($request),
-            default                    => responseJSON(404, null, "Invalid url"),
+            'combobox-auditor'                 => $this->ajax_combobox_auditor($request),
+            default                    => responseJSON(404, null, "Invalid url!"),
         };
     }
 	
@@ -93,7 +94,7 @@ class ManageAuditController extends Controller
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)
     {
-		$data = $this->getListJadawlAudit();
+		$data = $this->getListJadwalAudit();
 		
         $result = [];
 		if(isset($data['payload'])){
@@ -104,6 +105,54 @@ class ManageAuditController extends Controller
 					$x['jadwal_awal'] = $d['jadwal_awal'];
 					$x['jadwal_akhir'] = $d['jadwal_akhir'];
 					$x['jml_hari'] = $d['jml_hari'];
+					array_push($result, $x);
+				}
+			}
+		}
+        return response()->json(["rows" => $result]);
+    }
+	
+	private function ajax_combobox_auditor(Request $request)
+    {
+		$data = $this->getRefAuditor();
+		
+        $result = [];
+		if(isset($data['payload'])){
+			foreach ($data['payload'] as $d) {
+				$x['id'] = $d['auditor_id'];
+				$x['text'] = $d['nama'];
+				array_push($result, $x);
+			}
+		}
+        return response()->json($result);
+    }
+	
+	private function ajax_datagrid_auditor_audit(Request $request)
+    {
+		$data = $this->getListJadwalAuditor();
+		$data_auditor = $this->getRefAuditor();
+		$search_data = [];
+		if(isset($data_auditor['payload'])){
+			foreach ($data_auditor['payload'] as $da) {
+				$search_data[$da['auditor_id']] = $da;
+			}
+		}
+		
+        $result = [];
+		if(isset($data['payload'])){
+			foreach ($data['payload'] as $d) {
+				if($d['id_reg'] == $request->id_reg){
+					$x['auditor_id'] = $d['auditor_id'];
+					if (array_key_exists($d['auditor_id'], $search_data)){
+						$x['nama_auditor'] = (isset($search_data[$d['auditor_id']]['nama'])) ? $search_data[$d['auditor_id']]['nama'] : '';
+					}
+					else{
+						$x['nama_auditor'] = '';
+					}
+					$x['id_audit_person'] = $d['id_audit_person'];
+					$x['id_reg'] = $d['id_reg'];
+					$x['create_by'] = $d['create_by'];
+					$x['create_on'] = $d['create_on'];
 					array_push($result, $x);
 				}
 			}
@@ -128,7 +177,7 @@ class ManageAuditController extends Controller
 				, 'jml_hari' => $request->jml_hari
 			];
 			
-			$this->postAddListJadawlAudit($data_save);
+			$this->postAddListJadwalAudit($data_save);
 			
 			return redirect($this->url."/detail/$request->id_reg?pane_active=jadwal")->with('message', "Jadwal berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
 		} catch (Exception $e) {
@@ -154,7 +203,7 @@ class ManageAuditController extends Controller
 				, 'jml_hari' => $request->jml_hari
 			];
 			
-			$this->putUpdateListJadawlAudit($data_save, $request->id_audit);
+			$this->putUpdateListJadwalAudit($data_save, $request->id_audit);
 			
 			return redirect($this->url."/detail/$request->id_reg?pane_active=jadwal")->with('message', "Jadwal berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
 		} catch (Exception $e) {
@@ -168,7 +217,7 @@ class ManageAuditController extends Controller
             $status_return = TRUE;
             if(!empty($request->ids)){
                 foreach ($request->ids as $id) {
-					$rest = $this->deleteListJadawlAudit($id);
+					$rest = $this->deleteListJadwalAudit($id);
                     if ($rest) {
 
                     } else {
@@ -186,6 +235,81 @@ class ManageAuditController extends Controller
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data, data belum dipilih atau kesalahan system, silahkan ulangi lagi.");
             }
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
+	
+	public function addAuditor(Request $request)
+    {
+		$request->validate([
+            "id_reg"			=> 'required',
+            "auditor_id"		=> 'required',
+        ]);
+		
+		try {
+			$data_save = [
+				'id_reg' => $request->id_reg
+				, 'auditor_id' => $request->auditor_id
+				, 'create_by' => 'LPH00000XX'
+			];
+			
+			$this->postAddListJadwalAuditor($data_save);
+			
+			return redirect($this->url."/detail/$request->id_reg?pane_active=auditor")->with('message', "Auditor berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
+		} catch (Exception $e) {
+			return redirect($this->url."/detail/$request->id_reg?pane_active=auditor")->with('message', $e->getMessage());
+        }
+    }
+	
+	public function destroyAuditor(Request $request)
+    {
+         try {
+            $status_return = TRUE;
+            if(!empty($request->ids)){
+                foreach ($request->ids as $id) {
+					$rest = $this->deleteListJadwalAuditor($id);
+                    if ($rest) {
+
+                    } else {
+                        $status_return = FALSE;
+                        break;
+                    }
+                }
+            } else{
+                $status_return = FALSE;
+            }
+
+
+            if ($status_return == TRUE) {
+                return responseJSON(200, [], "Berhasil menghapus data");
+            } else {
+                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data, data belum dipilih atau kesalahan system, silahkan ulangi lagi.");
+            }
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
+	
+	public function updateStatus(Request $request)
+    {
+        $request->validate([
+            "id_reg" => 'required',
+        ]);
+        try {
+			$rest = $this->postUpdatePermohonan('Periksa', $request['id_reg']);
+			if(isset($rest['status'])){
+				if($rest['status'] == 200){
+					return responseJSON(200, [], 'Berhasil menyimpan data.');
+				}
+				else{
+					return responseJSON(500, [], $rest['message']);
+				}
+			}
+			else{
+				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Periksa".');
+			} 
+            
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }

@@ -166,21 +166,7 @@ trait ServiceSihalalTrait
 		}
     }
 	
-	public function getListAuditor()
-    {
-		$login_data = $this->postLogin();
-		if(!is_null($login_data)){
-			return Http::withHeaders([
-				'Cookie' => $login_data,
-			])
-			->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/".config("app.sihalal_unit_kode"))->json();
-		}
-		else{
-			return [];
-		}
-    }
-	
-	public function getListJadawlAudit()
+	public function getListJadwalAudit()
     {
 		$login_data = $this->postLogin();
 		if(!is_null($login_data)){
@@ -194,7 +180,7 @@ trait ServiceSihalalTrait
 		}
     }
 	
-	public function postAddListJadawlAudit($data)
+	public function postAddListJadwalAudit($data)
     {
 		$login_data = $this->postLogin();
 		if(!is_null($login_data)){
@@ -217,7 +203,7 @@ trait ServiceSihalalTrait
 		}
     }
 	
-	public function putUpdateListJadawlAudit($data, $id_audit)
+	public function putUpdateListJadwalAudit($data, $id_audit)
     {
 		$login_data = $this->postLogin();
 		if(!is_null($login_data)){
@@ -241,7 +227,7 @@ trait ServiceSihalalTrait
 		}
     }
 	
-	public function deleteListJadawlAudit($id_audit)
+	public function deleteListJadwalAudit($id_audit)
     {
 		$login_data = $this->postLogin();
 		if(!is_null($login_data)){
@@ -254,7 +240,83 @@ trait ServiceSihalalTrait
 				'Vary' => 'Origin',
 				'Access-Control-Allow-Credentials' => true,
 			])
-			->delete(config("app.sihalal_api_server")."api/v1/costs/$id_audit")->json();
+			->delete(config("app.sihalal_api_server")."api/v1/audit_schedule/$id_audit")->json();
+			
+			if(isset($rest["status"]))
+				return false;
+			else
+				return true;
+		}
+		else{
+			return false;
+		}
+    }
+	
+	public function getListJadwalAuditor()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/reg_auditor?order_dir=asc&limit=500000")->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function getRefAuditor()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			// ->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/{map_id}")->json();
+			->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/552CEDB6-BFCE-42D8-A22F-04FECB33E50D")->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function postAddListJadwalAuditor($data)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->post(config("app.sihalal_api_server")."/api/v1/reg_auditor",  
+				[
+					"id_reg" => $data['id_reg']
+					, "auditor_id" => $data['auditor_id']
+					, "create_by" => $data['create_by']
+				]
+			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function deleteListJadwalAuditor($id_audit_person)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			$rest = Http::withHeaders([
+				'Cookie' => $login_data,
+				'Cache-Control' => 'no-cache',
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+				'X-Powered-By' => 'Express',
+				'Vary' => 'Origin',
+				'Access-Control-Allow-Credentials' => true,
+			])
+			->delete(config("app.sihalal_api_server")."api/v1/audit_schedule/$id_audit_person")->json();
 			
 			if(isset($rest["status"]))
 				return false;

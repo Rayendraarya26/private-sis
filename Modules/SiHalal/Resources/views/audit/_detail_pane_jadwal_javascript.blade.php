@@ -26,8 +26,22 @@
                     }
                 ]],
                 columns: [[
-                    {field: 'jadwal_awal', title: 'Jadwal Awal', width: 250, sortable: true},
-                    {field: 'jadwal_akhir', title: 'Jadwal Awal', width: 250, sortable: true},
+                    {
+						field: 'jadwal_awal', title: 'Jadwal Awal', width: 250, sortable: true,
+						formatter: function (val, row, index) {
+							var date = new Date(val),
+								dformat = ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' +  ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + date.getFullYear();
+							return dformat;
+						}
+					},
+                    {
+						field: 'jadwal_akhir', title: 'Jadwal Awal', width: 250, sortable: true,
+						formatter: function (val, row, index) {
+							var date = new Date(val),
+								dformat = ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' +  ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + date.getFullYear();
+							return dformat;
+						}
+					},
                     {field: 'jml_hari', title: 'Jumlah Hari', width: 150, sortable: true},
 					{field: 'id_audit', hidden: true},
 					{field: 'id_reg', hidden: true},
@@ -112,49 +126,6 @@
                                     title: err.responseJSON.message
                                 })
                             }
-                        }
-                    });
-                }
-            });
-        }
-		
-		function confirmInvoice(id_reg) {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Ajukan Permohonan ?`,
-                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-					$.messager.progress();
-                    $.ajax({
-                        url: `{{url("$url/updateStatus")}}`,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: {id_reg: id_reg},
-                        success: function (response) {
-							$.messager.progress('close');
-							$.messager.alert({
-								title: 'Informasi',
-								msg: response.message,
-								fn: function(){
-									window.location.href = `{{url("$url")}}`;
-								}
-							});                            
-                        },
-                        error: function (xhr) {
-							$.messager.progress('close');
-                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
-                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
                         }
                     });
                 }

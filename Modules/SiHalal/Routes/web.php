@@ -5,6 +5,7 @@ use Modules\SiHalal\Http\Controllers\SiHalalController;
 use Modules\SiHalal\Http\Controllers\ManagePermohonanController;
 use Modules\SiHalal\Http\Controllers\ManageBiayaController;
 use Modules\SiHalal\Http\Controllers\ManageAuditController;
+use Modules\SiHalal\Http\Controllers\ManageInvoiceController;
 use Modules\SiHalal\Http\Controllers\DataAuditorController;
 
 Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
@@ -38,6 +39,14 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
         Route::delete("/destroyAuditor", [ManageAuditController::class, 'destroyAuditor']);
         Route::post("/prosesAudit1", [ManageAuditController::class, 'prosesAudit1']);
         Route::post("/prosesAudit2", [ManageAuditController::class, 'prosesAudit2']);
+        Route::post("/updateStatus", [ManageAuditController::class, 'updateStatus']);
+    });
+	
+	Route::prefix("invoice")->group(function () {
+        Route::get("/", [ManageInvoiceController::class, 'index']);
+        Route::get("/ajax", [ManageInvoiceController::class, 'ajax']);
+        Route::get("/detail/{id}", [ManageInvoiceController::class, 'detail']);
+        Route::post("/update", [ManageInvoiceController::class, 'update']);
     });
 	
 	Route::prefix("ref-auditor")->group(function () {

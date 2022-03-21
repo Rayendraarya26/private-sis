@@ -1,6 +1,54 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Detail Audit')
+@section('title', 'Detail Permohonan')
+
+
+@push("javascript")
+    <script>		
+		function confirmStatus(id_reg) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Ajukan Permohonan ?`,
+                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ajukan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+				if (result.value) {
+					$.messager.progress();
+                    $.ajax({
+                        url: `{{url("$url/update")}}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {id_reg: id_reg},
+                        success: function (response) {
+							$.messager.progress('close');
+                            $.messager.alert({
+								title: 'Informasi',
+								msg: response.message,
+								fn: function(){
+									window.location.href = `{{url("$url")}}`;
+								}
+							});
+                        },
+                        error: function (xhr) {
+							$.messager.progress('close');
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+@endpush
 
 @section('content')
 <style>
@@ -13,8 +61,8 @@
         <div class="row">
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
-				@if(authorized("{$module}@updateStatus"))
-                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmInvoice('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
+				@if(authorized("{$module}@update"))
+                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmStatus({{$data_permohonan['id_reg']}})"> <i class="far fa-comment-alt-edit"></i> Update Status => Ajuan</a>
 				@endif
 			</div>
 		</div>
@@ -32,7 +80,7 @@
 				  <div class="ml-sm-auto">
 					<ul class="dt-list dt-list-bordered dt-list-one-third">
 					  <li class="dt-list__item text-center">
-						<h4 class="font-weight-medium mb-4 text-white">Periksa</h4>
+						<h4 class="font-weight-medium mb-4 text-white">Ajuan</h4>
 						<span class="d-inline-block f-12">Status</span>
 					  </li>
 					</ul>
@@ -86,16 +134,7 @@
 						<div class="card-body pb-1">
 							<ul class="card-header-links nav nav-underline" role="tablist">
 								<li class="nav-item">
-									<a class="nav-link @if($pane_active == 'jadwal') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=jadwal" role="tab">Jadwal Audit</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link @if($pane_active == 'auditor') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=auditor" role="tab">List Auditor</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link @if($pane_active == 'audit') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=audit" role="tab">Laporan Audit</a>
-								</li>
-								<li class="nav-item">
-									<a class="nav-link" data-toggle="tab" href="#paneOverview" role="tab" aria-controls="paneOverview" aria-selected="true">Overview</a>
+									<a class="nav-link active" data-toggle="tab" href="#paneOverview" role="tab" aria-controls="paneOverview" aria-selected="true">Overview</a>
 								</li>
 								<li class="nav-item">
 									<a class="nav-link" data-toggle="tab" href="#paneDokumen" role="tab" aria-controls="paneDokumen" aria-selected="true">Dokumen</a>
@@ -110,21 +149,69 @@
 							<br/>
 							<br/>
 							<!-- Tab Content-->
-							<div class="tab-content mt-5">
-								<div id="paneJadwal" class="tab-pane @if($pane_active == 'jadwal') active @endif">
-								@if($pane_active == 'jadwal')
-									@include("$view._detail_pane_jadwal")
-								@endif
-								</div>
-								<div id="paneAuditor" class="tab-pane @if($pane_active == 'auditor') active @endif">
-								@if($pane_active == 'auditor')
-									@include("$view._detail_pane_auditor")
-								@endif
-								</div>
-								<div id="paneAudit" class="tab-pane @if($pane_active == 'audit') active @endif">
-								@if($pane_active == 'audit')
-									@include("$view._detail_pane_audit")
-								@endif
+							<div class="tab-content mt-5">	
+								<div id="paneOverview" class="tab-pane active">
+									<div class="table-responsive">
+										<table class="table mb-0">
+											<tbody>
+												<tr>
+												  <td class="text-uppercase" scope="col">No. Pendaftaran</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['no_daftar']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Tanggal Daftar</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['tgl_daftar']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Jenis Usaha</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['jenis_usaha']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Jenis Daftar</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['jenis_daftar']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Skala Usaha</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['skala_usaha']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Nama PJ</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['nama_pj']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Telp PJ</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['no_kontak_pj']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Email PJ</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['email_pj']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Jenis Produk</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['jenis_produk']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Merk Dagang</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['merek_dagang']}}</a></td>
+												</tr>
+												<tr>
+												  <td class="text-uppercase" scope="col">Area Pemasaran</td>
+												  <td class="text-uppercase" scope="col">:</td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['area_pemasaran']}}</a></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 								</div>
 								<div id="paneDokumen" class="tab-pane">
 									<div class="dt-card__body" id="panel-dokumen">
@@ -202,69 +289,6 @@
 											</table>
 										</div>
 								</div>
-								<div id="paneOverview" class="tab-pane">
-									<div class="table-responsive">
-										<table class="table mb-0">
-											<tbody>
-												<tr>
-												  <td class="text-uppercase" scope="col">No. Pendaftaran</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['no_daftar']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Tanggal Daftar</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['tgl_daftar']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Jenis Usaha</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['jenis_usaha']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Jenis Daftar</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['jenis_daftar']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Skala Usaha</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['skala_usaha']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Nama PJ</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['nama_pj']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Telp PJ</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['no_kontak_pj']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Email PJ</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['email_pj']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Jenis Produk</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['jenis_produk']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Merk Dagang</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['merek_dagang']}}</a></td>
-												</tr>
-												<tr>
-												  <td class="text-uppercase" scope="col">Area Pemasaran</td>
-												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['area_pemasaran']}}</a></td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
-								</div>
 							</div>
 						</div>
 					</div>
@@ -275,38 +299,3 @@
         </div>
     </div>
 @endsection
-
-
-@push("javascript")
-    <script>
-		function myformatter(date){
-            var y = date.getFullYear();
-            var m = date.getMonth()+1;
-            var d = date.getDate();
-            return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);
-        }
-        function myparser(s){
-            if (!s) return new Date();
-            var ss = (s.split('-'));
-            var y = parseInt(ss[0],10);
-            var m = parseInt(ss[1],10);
-            var d = parseInt(ss[2],10);
-            if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
-                return new Date(y,m-1,d);
-            } else {
-                return new Date();
-            }
-        }
-		@if($pane_active == 'jadwal')
-			@include("$view._detail_pane_jadwal_javascript")
-		@endif
-		
-		@if($pane_active == 'auditor')
-			@include("$view._detail_pane_auditor_javascript")
-		@endif
-		
-		@if($pane_active == 'audit')
-			@include("$view._detail_pane_audit_javascript")
-		@endif
-    </script>
-@endpush
