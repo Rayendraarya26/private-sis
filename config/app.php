@@ -26,7 +26,13 @@ return [
     'path_file_billing'       => "files/billing/%d",
     'path_file_audit'         => "files/audit/%d",
     'path_file_tahap1'        => "files/tahap1/%d",
-    'path_file_sertifikat'	  => "files/sertifikat/%d",
+    'path_file_sertifikat'    => "files/sertifikat/%d",
+
+
+    'sihalal_api_server' => env('SIHALAL_SERVER'),
+    'sihalal_username'   => env('SIHALAL_USERNAME'),
+    'sihalal_password'   => env('SIHALAL_PASSWORD'),
+    'sihalal_unit_kode'  => env('SIHALAL_UNITKODE'),
 
     /*
     |--------------------------------------------------------------------------
