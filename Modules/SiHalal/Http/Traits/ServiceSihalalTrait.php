@@ -36,7 +36,7 @@ trait ServiceSihalalTrait
 			return Http::withHeaders([
 				'Cookie' => $login_data,
 			])
-			->get(config("app.sihalal_api_server")."/api/v1/data_list/$status_list/".config("app.sihalal_unit_kode"))->json();
+			->get(config("app.sihalal_api_server")."/api/v1/data_list/$status_list/".config("app.sihalal_lph_id"))->json();
 		}
 		else{
 			return [];
@@ -71,7 +71,7 @@ trait ServiceSihalalTrait
 				[
 					"status" => "$status_list"
 					, "reg_id" => $reg_id
-					, "lph_mapped_id" => config('app.sihalal_unit_kode')
+					, "lph_mapped_id" => config('app.sihalal_lph_id')
 				]
 			)->json();
 		}
@@ -274,7 +274,7 @@ trait ServiceSihalalTrait
 				'Cookie' => $login_data,
 			])
 			// ->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/{map_id}")->json();
-			->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/552CEDB6-BFCE-42D8-A22F-04FECB33E50D")->json();
+			->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/".config("app.sihalal_lph_maped_id"))->json();
 		}
 		else{
 			return [];
@@ -325,6 +325,57 @@ trait ServiceSihalalTrait
 		}
 		else{
 			return false;
+		}
+    }
+	
+	public function getAuditResult()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/audit_result?order_dir=asc&limit=50000")->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function postProsesAudit1($data)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->post(config("app.sihalal_api_server")."/api/v1/audit_result",  
+				[
+					"id_reg" => $data['id_reg']
+					, "tgl_selesai" => $data['tgl_selesai']
+					, "keterangan" => $data['keterangan']
+					, "hasil_audit" => $data['hasil_audit']
+				]
+			)->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function getInvoice()
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/invoice?order_dir=asc&limit=50000")->json();
+		}
+		else{
+			return [];
 		}
     }
 }

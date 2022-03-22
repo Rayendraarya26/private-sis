@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Manajemen Invoice SiHalal')
+@section('title', 'Manajemen Laporan Audit SiHalal')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Invoice SiHalal</h3>
+                            <h3 class="dt-card__title">Data Permohonan SiHalal</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -30,12 +30,12 @@
 @endsection
 
 @push("javascript")
-    <script>		
-        $(function () {
+    <script>
+		$(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-invoice") }}`,
+                url: `{{ url("$url/ajax?action=datagrid-permohonan") }}`,
                 rownumbers: true,
                 nowrap: false,
                 singleSelect: false,
@@ -50,44 +50,33 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            var btnAksi = ``;
-							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="confirmLunas('${row.id_inv}')"><i class="fal fa-table"></i> Konfirmasi Lunas</a>`;
+							var btnAksi = ``;
+							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail</a>`;
                             return `${btnAksi}`;
                         },
                     },
                 ]],
                 columns: [[
-
-					{field: 'no_inv', title: 'NO<br>INVOICE', width: 120, sortable: true},
-                    {field: 'no_ref', title: 'NO<br/>REF', width: 120, sortable: true},
-                    {field: 'id_ref', title: 'ID<br/>REF', width: 120, sortable: true},
-					{field: 'tgl_inv', title: 'Tanggal<br/>Invoice', width: 120, sortable: true},
-					{field: 'nama_pu', title: 'PU', width: 300, sortable: true},
-					{field: 'alamat1', title: 'Alamat PU', width: 300, sortable: true},
-					{field: 'id_inv', hidden: true},
-					
-									/* 
-18. "alamat2": "KAB. TANGERANG 15710 Banten",
-19. "alamat3": "Indonesia",
-20. "No_telp": "02159403000",
-21. "gol_prod": null,
-22. "status": null,
-23. "kategori_transaksi": null,
-24. "asal": null,
-25. "duedate": "2021-04-03T20:41:00.000Z",
-26. "status_payment": "SB005",
-27. "status_date": "2021-04-05T00:00:00.000Z",SISTEM
-Pedoman Integrasi Aplikasi dengan Web Service | BPJPH 35
-28. "total_inv": 150001,
-29. "unik_id": "364197EDC8FD4F899002533F9A6CBAEE",
-34. "id_pu": "0DB5D677-9FFC-45F3-8FF7-4C8C05BA8CDA",
-35. "file_inv": "IN-21000002-637526472748300047.pdf"
-				*/
+					{field: 'nama_status_reg', title: 'REG<br>STATUS', width: 120, sortable: true},
+                    {field: 'id_reg', title: 'ID<br/>REG', width: 120, sortable: true},
+					{field: 'no_urut_ndpu', title: 'No.<br/>Urut<br/>NDPU', width: 120, sortable: true},
+					{field: 'no_ndpu', title: 'No.<br/>NDPU', width: 120, sortable: true},
+					{field: 'no_daftar', title: 'Nomor<br/>Pendaftaran', width: 150, sortable: true},
+					{field: 'nama_pu', title: 'Pelaku Usaha', width: 200, sortable: true},
+					{field: 'nama_pu_alt', title: 'Bidang Usaha', width: 200, sortable: false},
+					{field: 'tgl_daftar', title: 'Tanggal<br/>Pendaftaran', width: 200, sortable: true},
+					{field: 'nama_jenis_daftar', title: 'Jenis Pendaftaran', width: 200, sortable: false},
+					{field: 'nama_jenis_produk', title: 'Jenis Produk', width: 200, sortable: false},
+					{field: 'jml_produk', title: 'Jumlah<br/>Produk', width: 100, sortable: false},
+					{field: 'nama_jenis_usaha', title: 'Jenis<br/>Usaha', width: 150, sortable: false},
+					{field: 'jenis_daftar', hidden: true},
+					{field: 'jenis_produk', hidden: true},
                 ]],
             });
 			
 			dg.datagrid(
                 'enableFilter', [
+                    {field: 'nama_status_reg', type: 'label'},
                     {field: 'action', type: 'label'},
                 ]);
         });

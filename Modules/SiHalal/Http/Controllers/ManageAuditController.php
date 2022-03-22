@@ -132,13 +132,13 @@ class ManageAuditController extends Controller
 		$data = $this->getListJadwalAuditor();
 		$data_auditor = $this->getRefAuditor();
 		$search_data = [];
+        $result = [];
 		if(isset($data_auditor['payload'])){
 			foreach ($data_auditor['payload'] as $da) {
 				$search_data[$da['auditor_id']] = $da;
 			}
 		}
 		
-        $result = [];
 		if(isset($data['payload'])){
 			foreach ($data['payload'] as $d) {
 				if($d['id_reg'] == $request->id_reg){

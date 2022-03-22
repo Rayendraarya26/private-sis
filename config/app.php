@@ -32,7 +32,8 @@ return [
     'sihalal_api_server' => env('SIHALAL_SERVER'),
     'sihalal_username'   => env('SIHALAL_USERNAME'),
     'sihalal_password'   => env('SIHALAL_PASSWORD'),
-    'sihalal_unit_kode'  => env('SIHALAL_UNITKODE'),
+    'sihalal_lph_id'  => env('SIHALAL_LPH_ID'),
+    'sihalal_lph_maped_id'  => env('SIHALAL_LPH_MAPED_ID'),
 
     /*
     |--------------------------------------------------------------------------

@@ -5,6 +5,7 @@ use Modules\SiHalal\Http\Controllers\SiHalalController;
 use Modules\SiHalal\Http\Controllers\ManagePermohonanController;
 use Modules\SiHalal\Http\Controllers\ManageBiayaController;
 use Modules\SiHalal\Http\Controllers\ManageAuditController;
+use Modules\SiHalal\Http\Controllers\LaporanAuditController;
 use Modules\SiHalal\Http\Controllers\ManageInvoiceController;
 use Modules\SiHalal\Http\Controllers\DataAuditorController;
 
@@ -37,9 +38,15 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
         Route::delete("/destroyJadwal", [ManageAuditController::class, 'destroyJadwal']);
         Route::post("/addAuditor", [ManageAuditController::class, 'addAuditor']);
         Route::delete("/destroyAuditor", [ManageAuditController::class, 'destroyAuditor']);
-        Route::post("/prosesAudit1", [ManageAuditController::class, 'prosesAudit1']);
-        Route::post("/prosesAudit2", [ManageAuditController::class, 'prosesAudit2']);
         Route::post("/updateStatus", [ManageAuditController::class, 'updateStatus']);
+    });
+	
+	Route::prefix("laporan")->group(function () {
+        Route::get("/", [LaporanAuditController::class, 'index']);
+        Route::get("/ajax", [LaporanAuditController::class, 'ajax']);
+        Route::get("/detail/{reg_id}", [LaporanAuditController::class, 'detail']);
+        Route::post("/prosesAudit1", [LaporanAuditController::class, 'prosesAudit1']);
+        Route::post("/prosesAudit2", [LaporanAuditController::class, 'prosesAudit2']);
     });
 	
 	Route::prefix("invoice")->group(function () {

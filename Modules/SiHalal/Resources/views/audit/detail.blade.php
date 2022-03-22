@@ -14,7 +14,7 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@updateStatus"))
-                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmInvoice('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
+                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmPeriksa('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
 				@endif
 			</div>
 		</div>
@@ -91,9 +91,11 @@
 								<li class="nav-item">
 									<a class="nav-link @if($pane_active == 'auditor') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=auditor" role="tab">List Auditor</a>
 								</li>
+								<!--
 								<li class="nav-item">
 									<a class="nav-link @if($pane_active == 'audit') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=audit" role="tab">Laporan Audit</a>
 								</li>
+								-->
 								<li class="nav-item">
 									<a class="nav-link" data-toggle="tab" href="#paneOverview" role="tab" aria-controls="paneOverview" aria-selected="true">Overview</a>
 								</li>
@@ -121,10 +123,12 @@
 									@include("$view._detail_pane_auditor")
 								@endif
 								</div>
+								<!--
 								<div id="paneAudit" class="tab-pane @if($pane_active == 'audit') active @endif">
 								@if($pane_active == 'audit')
 									@include("$view._detail_pane_audit")
 								@endif
+								-->
 								</div>
 								<div id="paneDokumen" class="tab-pane">
 									<div class="dt-card__body" id="panel-dokumen">
@@ -297,6 +301,50 @@
                 return new Date();
             }
         }
+		
+		function confirmPeriksa(id_reg) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Ajukan Permohonan ?`,
+                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ajukan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+					$.messager.progress();
+                    $.ajax({
+                        url: `{{url("$url/updateStatus")}}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {id_reg: id_reg},
+                        success: function (response) {
+							$.messager.progress('close');
+							$.messager.alert({
+								title: 'Informasi',
+								msg: response.message,
+								fn: function(){
+									window.location.href = `{{url("$url")}}`;
+								}
+							});                            
+                        },
+                        error: function (xhr) {
+							$.messager.progress('close');
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+		
 		@if($pane_active == 'jadwal')
 			@include("$view._detail_pane_jadwal_javascript")
 		@endif
@@ -305,8 +353,10 @@
 			@include("$view._detail_pane_auditor_javascript")
 		@endif
 		
+		/* 
 		@if($pane_active == 'audit')
 			@include("$view._detail_pane_audit_javascript")
-		@endif
+		@endif 
+		*/
     </script>
 @endpush

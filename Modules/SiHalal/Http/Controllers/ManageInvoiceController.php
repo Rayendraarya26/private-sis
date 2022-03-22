@@ -59,7 +59,41 @@ class ManageInvoiceController extends Controller
 	
 	private function ajax_datagrid_invoice(Request $request)
     {
-		$result = [];
+        $data = $this->getInvoice();
+		
+        $result = [];
+		if(isset($data['payload'])){
+			foreach ($data['payload'] as $d) {
+				$x['id_inv'] = $d['id_inv'];
+				$x['no_inv'] = $d['no_inv'];
+				$x['no_ref'] = $d['no_ref'];
+				$x['id_ref'] = $d['id_ref'];
+				$x['tgl_inv'] = $d['tgl_inv'];
+				$x['tipe_trans'] = $d['tipe_trans'];
+				$x['nama_pu'] = $d['nama_pu'];
+				$x['ndpu'] = $d['ndpu'];
+				$x['alamat1'] = $d['alamat1'];
+				$x['alamat2'] = $d['alamat2'];
+				$x['alamat3'] = $d['alamat3'];
+				$x['No_telp'] = $d['No_telp'];
+				$x['gol_prod'] = $d['gol_prod'];
+				$x['status'] = $d['status'];
+				$x['kategori_transaksi'] = $d['kategori_transaksi'];
+				$x['asal'] = $d['asal'];
+				$x['duedate'] = $d['duedate'];
+				$x['status_payment'] = $d['status_payment'];
+				$x['total_inv'] = $d['total_inv'];
+				$x['unik_id'] = $d['unik_id'];
+				$x['create_by'] = $d['create_by'];
+				$x['create_on'] = $d['create_on'];
+				$x['update_by'] = $d['update_by'];
+				
+				$x['update_on'] = $d['update_on'];
+				$x['id_pu'] = $d['id_pu'];
+				$x['file_inv'] = $d['file_inv'];
+				array_push($result, $x);
+			}
+		}
 
         return response()->json(["rows" => $result]);
     }
@@ -67,7 +101,7 @@ class ManageInvoiceController extends Controller
 	public function update(Request $request)
     {
         $request->validate([
-            "id_reg" => 'required',
+            "id_inv" => 'required',
         ]);
         try {
 			return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
