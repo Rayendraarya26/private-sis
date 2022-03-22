@@ -26,16 +26,13 @@ return [
     'path_file_billing'       => "files/billing/%d",
     'path_file_audit'         => "files/audit/%d",
     'path_file_tahap1'        => "files/tahap1/%d",
-    'path_file_sertifikat'	  => "files/sertifikat",
-	
-	
-    'sihalal_api_server'	  => "http://103.7.14.55",
-	
-    'sihalal_username'	  => "surveyor",
-    'sihalal_password'	  => "lph@ptsi123",
+    'path_file_sertifikat'    => "files/sertifikat/%d",
 
-    'sihalal_unit_kode'	  => "D10217E0-383E-42F3-9841-827915AE0438",
-	/* 552CEDB6-BFCE-42D8-A22F-04FECB33E50D */
+
+    'sihalal_api_server' => env('SIHALAL_SERVER'),
+    'sihalal_username'   => env('SIHALAL_USERNAME'),
+    'sihalal_password'   => env('SIHALAL_PASSWORD'),
+    'sihalal_unit_kode'  => env('SIHALAL_UNITKODE'),
 
     /*
     |--------------------------------------------------------------------------

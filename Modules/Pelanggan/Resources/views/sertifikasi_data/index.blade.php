@@ -105,7 +105,7 @@
                         sortable: true,
                         formatter: function (val) {
                             if (val != "" && val != null) {
-                                return `<a href="{{ asset("/") }} . ${val}"><i class="fad fa-download"></i> Download</a>`
+                                return `<a href="${val}"><i class="fad fa-download"></i> Download</a>`
                             }
                         }
                     },
