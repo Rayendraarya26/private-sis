@@ -86,16 +86,11 @@
 						<div class="card-body pb-1">
 							<ul class="card-header-links nav nav-underline" role="tablist">
 								<li class="nav-item">
-									<a class="nav-link @if($pane_active == 'jadwal') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=jadwal" role="tab">Jadwal Audit</a>
+									<a aria-controls="paneTable"  class="nav-link @if($pane_active == 'jadwal') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=jadwal" role="tab">Jadwal Audit</a>
 								</li>
 								<li class="nav-item">
-									<a class="nav-link @if($pane_active == 'auditor') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=auditor" role="tab">List Auditor</a>
+									<a aria-controls="paneTable"  class="nav-link @if($pane_active == 'auditor') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=auditor" role="tab">List Auditor</a>
 								</li>
-								<!--
-								<li class="nav-item">
-									<a class="nav-link @if($pane_active == 'audit') active @endif" href="{{ url($url."/detail/".$data_permohonan['id_reg']) }}?pane_active=audit" role="tab">Laporan Audit</a>
-								</li>
-								-->
 								<li class="nav-item">
 									<a class="nav-link" data-toggle="tab" href="#paneOverview" role="tab" aria-controls="paneOverview" aria-selected="true">Overview</a>
 								</li>
@@ -113,22 +108,12 @@
 							<br/>
 							<!-- Tab Content-->
 							<div class="tab-content mt-5">
-								<div id="paneJadwal" class="tab-pane @if($pane_active == 'jadwal') active @endif">
+								<div id="paneTable" class="tab-pane active">
 								@if($pane_active == 'jadwal')
 									@include("$view._detail_pane_jadwal")
-								@endif
-								</div>
-								<div id="paneAuditor" class="tab-pane @if($pane_active == 'auditor') active @endif">
-								@if($pane_active == 'auditor')
+								@elseif($pane_active == 'auditor')
 									@include("$view._detail_pane_auditor")
 								@endif
-								</div>
-								<!--
-								<div id="paneAudit" class="tab-pane @if($pane_active == 'audit') active @endif">
-								@if($pane_active == 'audit')
-									@include("$view._detail_pane_audit")
-								@endif
-								-->
 								</div>
 								<div id="paneDokumen" class="tab-pane">
 									<div class="dt-card__body" id="panel-dokumen">
