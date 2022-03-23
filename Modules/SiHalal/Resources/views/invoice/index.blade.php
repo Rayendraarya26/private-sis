@@ -43,10 +43,10 @@
 
             swalWithBootstrapButtons({
                 title: `Pelunasan Invoice ?`,
-                text: `Ajukan ke tahap lunas untuk invoice dengan ID #"${id_inv}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                text: `Proses ke tahap lunas untuk invoice dengan ID #"${id_inv}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
                 type: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ajukan',
+                confirmButtonText: 'Proses',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
             }).then((result) => {
@@ -107,7 +107,7 @@
                 nowrap: false,
                 singleSelect: false,
                 remoteSort: false,
-                remoteFilter: false,
+                remoteFilter: true,
                 multiSort: true,
                 pageSize: 10,
                 pagination: true,
@@ -130,18 +130,45 @@
 
 					{field: 'no_inv', title: 'NO<br>INVOICE', width: 120, sortable: true},
                     {field: 'no_ref', title: 'NO<br/>REF', width: 120, sortable: true},
-                    {field: 'id_ref', title: 'ID<br/>REF', width: 120, sortable: true},
-					{field: 'tgl_inv', title: 'Tanggal<br/>Invoice', width: 120, sortable: true},
+					{
+						field: 'tgl_inv', title: 'Tanggal<br/>Invoice', width: 120, sortable: true,
+						formatter: function (val, row, index) {
+							var date = new Date(val),
+								dformat = ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' +  ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + date.getFullYear();
+							return dformat;
+						}
+					},
 					{field: 'status_payment', title: 'Status<br/>Payment', width: 120, sortable: true},
 					{field: 'nama_pu', title: 'PU', width: 300, sortable: true},
 					{field: 'alamat1', title: 'Alamat PU', width: 300, sortable: true},
+					{
+						field: 'total_inv', title: 'Total(Rp.)', width: 100, sortable: true, align:'right',
+						formatter: function (val, row, index) {
+							return val.toString().formatUang(".");
+						}
+					},
+					{
+						field: 'duedate', title: 'Due Date', width: 100, sortable: true,
+						formatter: function (val, row, index) {
+							var date = new Date(val),
+								dformat = ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' +  ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + date.getFullYear();
+							return dformat;
+						}
+					},
 					{field: 'id_inv', hidden: true},
+					{field: 'id_ref', hidden: true},
                 ]],
             });
 			
 			dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'no_ref', type: 'label'},
+                    {field: 'id_ref', type: 'label'},
+                    {field: 'tgl_inv', type: 'label'},
+                    {field: 'alamat1', type: 'label'},
+                    {field: 'total_inv', type: 'label'},
+                    {field: 'duedate', type: 'label'},
                 ]);
         });
     </script>

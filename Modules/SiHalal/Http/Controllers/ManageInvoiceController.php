@@ -39,6 +39,25 @@ class ManageInvoiceController extends Controller
         };
     }
 	
+	private function multi_array_search($array, $search)
+	{
+		$result = array();
+		foreach ($array as $key => $value)
+		{
+		  foreach ($search as $k => $v)
+		  {
+			$pattern = '/.*' . preg_quote($v) . '.*/i';
+			if (!isset($value[$k]) ||  preg_match($pattern, $value[$k]) == false) // $value[$k] != $v ||
+			{
+			  continue 2;
+			}
+
+		  }
+		  $result[] = $key;
+		}
+		return $result;
+	}
+	
 	private function ajax_datagrid_invoice(Request $request)
     {
         $data = $this->getInvoice();
@@ -78,8 +97,22 @@ class ManageInvoiceController extends Controller
 			}
 		}
 		
+		$result_data = $result;
+		$where = [];
+		if (!empty($request->filterRules)) {
+            foreach (json_decode($request->filterRules) as $f) {
+				$where[$f->field] = $f->value;
+            }
+			
+			$search_array = $this->multi_array_search($result, $where);
+			$result_data = [];
+			foreach ($search_array as $val) {
+				$result_data[] = $result[$val];
+			}
+        }
+		
 		$page = !empty( $_GET['page'] ) ? (int) $_GET['page'] : 1;
-		$total = count( $result ); //total items in array    
+		$total = count( $result_data ); //total items in array    
 		$limit = !empty( $_GET['rows'] ) ? (int) $_GET['rows'] : 10;; //per page    
 		$totalPages = ceil( $total/ $limit ); //calculate total pages
 		$page = max($page, 1); //get 1 page when $_GET['page'] <= 0
@@ -87,7 +120,7 @@ class ManageInvoiceController extends Controller
 		$offset = ($page - 1) * $limit;
 		if( $offset < 0 ) $offset = 0;
 
-		$response = array_slice( $result, $offset, $limit );
+		$response = array_slice( $result_data, $offset, $limit );
 
         return response()->json(["total" => $total,"rows" => $response]);
     }
