@@ -14,7 +14,7 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@updateStatus"))
-                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmInvoice('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Biaya</a>
+                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmInvoice('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Ajuan</a>
 				@endif
 			</div>
 		</div>
@@ -32,7 +32,7 @@
 				  <div class="ml-sm-auto">
 					<ul class="dt-list dt-list-bordered dt-list-one-third">
 					  <li class="dt-list__item text-center">
-						<h4 class="font-weight-medium mb-4 text-white">Biaya</h4>
+						<h4 class="font-weight-medium mb-4 text-white">Ajuan</h4>
 						<span class="d-inline-block f-12">Status</span>
 					  </li>
 					</ul>

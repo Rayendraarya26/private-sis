@@ -32,7 +32,7 @@
 				  <div class="ml-sm-auto">
 					<ul class="dt-list dt-list-bordered dt-list-one-third">
 					  <li class="dt-list__item text-center">
-						<h4 class="font-weight-medium mb-4 text-white">Periksa</h4>
+						<h4 class="font-weight-medium mb-4 text-white">Biaya</h4>
 						<span class="d-inline-block f-12">Status</span>
 					  </li>
 					</ul>

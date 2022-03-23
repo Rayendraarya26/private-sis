@@ -81,7 +81,7 @@ class LaporanAuditController extends Controller
 	
 	private function ajax_datagrid_permohonan(Request $request)
     {
-		$data = $this->getPermohonan('10040');
+		$data = $this->getPermohonan('10030');
 		
         $result = [];
 		if(isset($data['payload'])){

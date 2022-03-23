@@ -23,7 +23,7 @@ class ManageAuditController extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('SiHalal'),
-            new BreadcrumbsStruct('Manajemen Audit'),
+            new BreadcrumbsStruct('Manajemen Jadwal Audit'),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
@@ -34,7 +34,7 @@ class ManageAuditController extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('SiHalal'),
-            new BreadcrumbsStruct('Manajemen Audit'),
+            new BreadcrumbsStruct('Manajemen Jadwal Audit'),
             new BreadcrumbsStruct('Detail'),
         ];
 		
@@ -64,7 +64,7 @@ class ManageAuditController extends Controller
 	
 	private function ajax_datagrid_permohonan_audit(Request $request)
     {
-		$data = $this->getPermohonan('10030');
+		$data = $this->getPermohonan('10020');
 		
         $result = [];
 		if(isset($data['payload'])){

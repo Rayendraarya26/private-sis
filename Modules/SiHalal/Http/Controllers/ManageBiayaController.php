@@ -144,7 +144,7 @@ class ManageBiayaController extends Controller
             "id_reg" => 'required',
         ]);
         try {
-			$rest = $this->postUpdatePermohonan('Biaya', $request['id_reg']);
+			$rest = $this->postUpdatePermohonan('Ajuan', $request['id_reg']);
 			if(isset($rest['status'])){
 				if($rest['status'] == 200){
 					return responseJSON(200, [], 'Berhasil menyimpan data.');
@@ -154,7 +154,7 @@ class ManageBiayaController extends Controller
 				}
 			}
 			else{
-				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Biaya".');
+				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
 			} 
             
         } catch (Exception $e) {
@@ -185,7 +185,7 @@ class ManageBiayaController extends Controller
 	
 	private function ajax_datagrid_permohonan_biaya(Request $request)
     {
-		$data = $this->getPermohonan('10020');
+		$data = $this->getPermohonan('10010');
 		
         $result = [];
 		if(isset($data['payload'])){
