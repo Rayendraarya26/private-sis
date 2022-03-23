@@ -27,31 +27,101 @@
             </div>
         </div>
     </div>
+	
+	@include("$view.detail")
 @endsection
 
 @push("javascript")
     <script>		
+		function confirmLunas() {
+			var id_inv = $("#id_inv").val();
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Pelunasan Invoice ?`,
+                text: `Ajukan ke tahap lunas untuk invoice dengan ID #"${id_inv}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ajukan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+				if (result.value) {
+					$.messager.progress();
+                    $.ajax({
+                        url: `{{url("$url/update")}}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {id_inv: id_inv},
+                        success: function (response) {
+							$.messager.progress('close');
+							var status_resp = 'success';
+							if(response.code != 200){
+								status_resp = 'error';
+							}
+                            toastCenter({type: status_resp, 'title': response.message});
+							$("#modalFormLunas").modal('hide');
+							$('#ttData').datagrid('reload');
+							
+                        },
+                        error: function (xhr) {
+							$.messager.progress('close');
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
+        }
+		
+		function detailLunas(index) {
+			var row = $('#ttData').datagrid('getRows')[index];
+			$("#id_inv").val(row.id_inv);
+			$("#id_inv_text").html(row.id_inv);
+			$("#no_inv").html(row.no_inv);
+			$("#no_ref").html(row.no_ref);
+			$("#id_ref").html(row.id_ref);
+			$("#tgl_inv").html(row.tgl_inv);
+			$("#tipe_trans").html(row.tipe_trans);
+			$("#nama_pu").html(row.nama_pu);
+			$("#alamat1").html(row.alamat1);
+			$("#No_telp").html(row.No_telp);
+			$("#duedate").html(row.duedate);
+			$("#total_inv").html(row.total_inv);
+			
+			$("#file_inv").attr("href", "http://ptsp.halal.go.id/files/"+row.file_inv);
+            $("#modalFormLunas").modal('show');
+            $("#modalFormLunasTitle").html(`Detail Inv #${row.id_inv}`);
+        }
+		
         $(function () {
             let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: document.documentElement.scrollHeight - 300,
                 url: `{{ url("$url/ajax?action=datagrid-invoice") }}`,
-                rownumbers: true,
+                rownumbers: false,
                 nowrap: false,
                 singleSelect: false,
                 remoteSort: false,
                 remoteFilter: false,
                 multiSort: true,
-                pagination: false,
+                pageSize: 10,
+                pagination: true,
+                clientPaging: false,
                 frozenColumns: [[
                     {
                         field: 'action',
                         title: "<br/><br/>",
                         width: 80,
                         align: 'center',
-                        formatter: function (val, row) {
+                        formatter: function (val, row, index) {
                             var btnAksi = ``;
-							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="confirmLunas('${row.id_inv}')"><i class="fal fa-table"></i> Konfirmasi Lunas</a>`;
+							// btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_inv}" class="btn btn-xs btn-info btn-block"><i class="fal fa-table"></i> Detail</a>`;
+							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="detailLunas('${index}')"><i class="fal fa-table"></i> Konfirmasi Lunas</a>`;
                             return `${btnAksi}`;
                         },
                     },
@@ -62,27 +132,10 @@
                     {field: 'no_ref', title: 'NO<br/>REF', width: 120, sortable: true},
                     {field: 'id_ref', title: 'ID<br/>REF', width: 120, sortable: true},
 					{field: 'tgl_inv', title: 'Tanggal<br/>Invoice', width: 120, sortable: true},
+					{field: 'status_payment', title: 'Status<br/>Payment', width: 120, sortable: true},
 					{field: 'nama_pu', title: 'PU', width: 300, sortable: true},
 					{field: 'alamat1', title: 'Alamat PU', width: 300, sortable: true},
 					{field: 'id_inv', hidden: true},
-					
-									/* 
-18. "alamat2": "KAB. TANGERANG 15710 Banten",
-19. "alamat3": "Indonesia",
-20. "No_telp": "02159403000",
-21. "gol_prod": null,
-22. "status": null,
-23. "kategori_transaksi": null,
-24. "asal": null,
-25. "duedate": "2021-04-03T20:41:00.000Z",
-26. "status_payment": "SB005",
-27. "status_date": "2021-04-05T00:00:00.000Z",SISTEM
-Pedoman Integrasi Aplikasi dengan Web Service | BPJPH 35
-28. "total_inv": 150001,
-29. "unik_id": "364197EDC8FD4F899002533F9A6CBAEE",
-34. "id_pu": "0DB5D677-9FFC-45F3-8FF7-4C8C05BA8CDA",
-35. "file_inv": "IN-21000002-637526472748300047.pdf"
-				*/
                 ]],
             });
 			

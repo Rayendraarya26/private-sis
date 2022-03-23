@@ -372,7 +372,24 @@ trait ServiceSihalalTrait
 			return Http::withHeaders([
 				'Cookie' => $login_data,
 			])
-			->get(config("app.sihalal_api_server")."/api/v1/invoice?order_dir=asc&limit=50000")->json();
+			// ?order_dir=asc&limit=50000
+			->get(config("app.sihalal_api_server")."/api/v1/invoice/".config("app.sihalal_lph_maped_id"))->json();
+		}
+		else{
+			return [];
+		}
+    }
+	
+	public function putInvoiceLunas($id_inv)
+    {
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+				'Content-Type' => 'application/json',
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+			])
+			->put(config("app.sihalal_api_server")."/api/v1/invoice/".$id_inv)->json();
 		}
 		else{
 			return [];

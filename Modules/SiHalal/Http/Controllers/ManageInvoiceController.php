@@ -26,26 +26,8 @@ class ManageInvoiceController extends Controller
             new BreadcrumbsStruct('Data Invoice'),
         ];
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
+        $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view("$this->view.index")->with($parser); 
-    }
-	
-	public function detail(Request $request, $id)
-    {
-        $breadcrumbs = [
-            new BreadcrumbsStruct('SiHalal'),
-            new BreadcrumbsStruct('Data Invoice'),
-            new BreadcrumbsStruct('Detail'),
-        ];
-
-        $data_permohonan = [];
-		$rest_permohonan = $this->getPermohonanDetail($id);
-		if(isset($rest_permohonan['payload'])){
-			$data_permohonan = $rest_permohonan['payload'];
-		}
-		
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
-        return view("$this->view.detail")->with($parser); 
     }
 	
 	public function ajax(Request $request)
@@ -77,7 +59,7 @@ class ManageInvoiceController extends Controller
 				$x['alamat3'] = $d['alamat3'];
 				$x['No_telp'] = $d['No_telp'];
 				$x['gol_prod'] = $d['gol_prod'];
-				$x['status'] = $d['status'];
+				$x['Status'] = $d['Status'];
 				$x['kategori_transaksi'] = $d['kategori_transaksi'];
 				$x['asal'] = $d['asal'];
 				$x['duedate'] = $d['duedate'];
@@ -91,11 +73,23 @@ class ManageInvoiceController extends Controller
 				$x['update_on'] = $d['update_on'];
 				$x['id_pu'] = $d['id_pu'];
 				$x['file_inv'] = $d['file_inv'];
+				$x['no_daftar'] = $d['no_daftar'];
 				array_push($result, $x);
 			}
 		}
+		
+		$page = !empty( $_GET['page'] ) ? (int) $_GET['page'] : 1;
+		$total = count( $result ); //total items in array    
+		$limit = !empty( $_GET['rows'] ) ? (int) $_GET['rows'] : 10;; //per page    
+		$totalPages = ceil( $total/ $limit ); //calculate total pages
+		$page = max($page, 1); //get 1 page when $_GET['page'] <= 0
+		$page = min($page, $totalPages); //get last page when $_GET['page'] > $totalPages
+		$offset = ($page - 1) * $limit;
+		if( $offset < 0 ) $offset = 0;
 
-        return response()->json(["rows" => $result]);
+		$response = array_slice( $result, $offset, $limit );
+
+        return response()->json(["total" => $total,"rows" => $response]);
     }
 	
 	public function update(Request $request)
@@ -103,8 +97,16 @@ class ManageInvoiceController extends Controller
         $request->validate([
             "id_inv" => 'required',
         ]);
+		
+		
         try {
-			return responseJSON(500, [], 'Gagal untuk diubah menjadi "Ajuan".');
+			$rest = $this->putInvoiceLunas($request['id_inv']);
+			if(isset($rest['status_code'])){
+				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Lunas". => '. $rest['message']);
+			}
+			else{
+				return responseJSON(200, [], 'Berhasil menyimpan data.');
+			}
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
