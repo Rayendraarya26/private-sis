@@ -47,6 +47,7 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
         Route::get("/detail/{reg_id}", [LaporanAuditController::class, 'detail']);
         Route::post("/prosesAudit1", [LaporanAuditController::class, 'prosesAudit1']);
         Route::post("/prosesAudit2", [LaporanAuditController::class, 'prosesAudit2']);
+        Route::post("/updateStatus", [LaporanAuditController::class, 'updateStatus']);
     });
 	
 	Route::prefix("invoice")->group(function () {

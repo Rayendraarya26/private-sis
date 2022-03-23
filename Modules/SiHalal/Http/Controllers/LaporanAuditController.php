@@ -132,4 +132,28 @@ class LaporanAuditController extends Controller
 			return redirect($this->url."/detail/$request->id_reg")->with('message', $e->getMessage());
         }
     }
+	
+	public function updateStatus(Request $request)
+    {
+        $request->validate([
+            "id_reg" => 'required',
+        ]);
+        try {
+			$rest = $this->postUpdatePermohonan('Periksa', $request['id_reg']);
+			if(isset($rest['status'])){
+				if($rest['status'] == 200){
+					return responseJSON(200, [], 'Berhasil menyimpan data.');
+				}
+				else{
+					return responseJSON(500, [], $rest['message']);
+				}
+			}
+			else{
+				return responseJSON(500, [], 'Gagal untuk diubah menjadi "Periksa".');
+			} 
+            
+        } catch (Exception $e) {
+            return responseJSON(500, [], $e->getMessage());
+        }
+    }
 }

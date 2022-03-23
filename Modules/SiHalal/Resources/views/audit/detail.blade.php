@@ -14,7 +14,7 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@updateStatus"))
-                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmPeriksa('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
+                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmBiaya('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
 				@endif
 			</div>
 		</div>
@@ -287,7 +287,7 @@
             }
         }
 		
-		function confirmPeriksa(id_reg) {
+		function confirmBiaya(id_reg) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
                 cancelButtonClass: 'btn btn-success mr-2 mb-2',

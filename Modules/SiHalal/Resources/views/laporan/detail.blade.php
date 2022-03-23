@@ -13,6 +13,9 @@
         <div class="row">
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
+				@if(authorized("{$module}@updateStatus"))
+                <a class="btn btn-sm btn-info" href="javascript:void(0)" style="margin-bottom: 20px" onclick="confirmPeriksa('{{$data_permohonan['id_reg']}}')"> <i class="far fa-comment-alt-edit"></i> Update Status => Periksa</a>
+				@endif
 			</div>
 		</div>
 		<hr/>
@@ -297,6 +300,49 @@
             } else {
                 return new Date();
             }
+        }
+		
+		function confirmPeriksa(id_reg) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-danger mb-2',
+                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Ajukan Permohonan ?`,
+                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ajukan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+					$.messager.progress();
+                    $.ajax({
+                        url: `{{url("$url/updateStatus")}}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {id_reg: id_reg},
+                        success: function (response) {
+							$.messager.progress('close');
+							$.messager.alert({
+								title: 'Informasi',
+								msg: response.message,
+								fn: function(){
+									window.location.href = `{{url("$url")}}`;
+								}
+							});                            
+                        },
+                        error: function (xhr) {
+							$.messager.progress('close');
+                            if (xhr.readyState === 0) toastCenter({type: 'error', title: "Network Error"})
+                            else toastCenter({type: 'error', 'title': xhr.responseJSON.message})
+                        }
+                    });
+                }
+            });
         }
 		
 		$(function () {

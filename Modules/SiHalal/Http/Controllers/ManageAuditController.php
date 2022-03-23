@@ -297,7 +297,7 @@ class ManageAuditController extends Controller
             "id_reg" => 'required',
         ]);
         try {
-			$rest = $this->postUpdatePermohonan('Periksa', $request['id_reg']);
+			$rest = $this->postUpdatePermohonan('Biaya', $request['id_reg']);
 			if(isset($rest['status'])){
 				if($rest['status'] == 200){
 					return responseJSON(200, [], 'Berhasil menyimpan data.');
