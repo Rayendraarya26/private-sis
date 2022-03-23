@@ -81,17 +81,17 @@
 		function detailLunas(index) {
 			var row = $('#ttData').datagrid('getRows')[index];
 			$("#id_inv").val(row.id_inv);
-			$("#id_inv_text").html(row.id_inv);
-			$("#no_inv").html(row.no_inv);
-			$("#no_ref").html(row.no_ref);
-			$("#id_ref").html(row.id_ref);
-			$("#tgl_inv").html(row.tgl_inv);
-			$("#tipe_trans").html(row.tipe_trans);
-			$("#nama_pu").html(row.nama_pu);
-			$("#alamat1").html(row.alamat1);
-			$("#No_telp").html(row.No_telp);
-			$("#duedate").html(row.duedate);
-			$("#total_inv").html(row.total_inv);
+			$("#id_inv_text").val(row.id_inv);
+			$("#no_inv").val(row.no_inv);
+			$("#no_ref").val(row.no_ref);
+			$("#id_ref").val(row.id_ref);
+			$("#tgl_inv").val(row.tgl_inv);
+			$("#tipe_trans").val(row.tipe_trans);
+			$("#nama_pu").val(row.nama_pu);
+			$("#alamat1").val(row.alamat1 +", "+ row.alamat2 +", "+ row.alamat3);
+			$("#No_telp").val(row.No_telp);
+			$("#duedate").val(row.duedate);
+			$("#total_inv").val(row.total_inv.toString().formatUang("."));
 			
 			$("#file_inv").attr("href", "http://ptsp.halal.go.id/files/"+row.file_inv);
             $("#modalFormLunas").modal('show');

@@ -20,32 +20,8 @@ trait ServiceSihalalTrait
 		$body_data = $login_process->json();
 		$headers_data = $login_process->headers();
 		
-		try {
-			if($body_data['status'] == 'success'){
-				$cookie_string = str_replace("\r\n","",str_replace("; Path=/; HttpOnly","",implode(';', $headers_data['Set-Cookie'])));
-				session()->put('sihalal_cookie', $cookie_string);
-			}
-			else{
-				return responseJSON(401, null, "Error login");
-			}
-		} catch (Exception $e) {
-			return $e->getMessage();
-        }
-    }
-	
-	public function postLoginGetCookie()
-    {
-        $login_process = Http::asForm()->timeout(3)->post(config("app.sihalal_api_server").'/auth/signin', [
-			'userid' => config("app.sihalal_username"),
-			'password' => config("app.sihalal_password"),
-		]);
-		
-		$body_data = $login_process->json();
-		$headers_data = $login_process->headers();
-		
 		if($body_data['status'] == 'success'){
 			$cookie_string = str_replace("\r\n","",str_replace("; Path=/; HttpOnly","",implode(';', $headers_data['Set-Cookie'])));
-			session()->put('sihalal_cookie', $cookie_string);
 			return $cookie_string;
 		}
 		else{
@@ -55,34 +31,39 @@ trait ServiceSihalalTrait
 	
 	public function getPermohonan($status_list = '10010')
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		$result = Http::withHeaders([
-			'Cookie' => $cookie_string,
-		])
-		->get(config("app.sihalal_api_server")."/api/v1/data_list/$status_list/".config("app.sihalal_lph_id"))->json();
-		if(isset($result['message']) == "You are not logged in"){
-			$this->postLogin();
-			return $this->getPermohonan($status_list);
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
+			])
+			->get(config("app.sihalal_api_server")."/api/v1/data_list/$status_list/".config("app.sihalal_lph_id"))->json();
 		}
 		else{
-			return $result;
+			return [];
 		}
     }
 	
 	public function getPermohonanDetail($reg_id)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 			])
-			->get(config("app.sihalal_api_server")."/api/v1/reg/$reg_id")->json();			
+			->get(config("app.sihalal_api_server")."/api/v1/reg/$reg_id")->json();
+		}
+		else{
+			return [];
+		}
+		return [];
     }
 	
 	public function postUpdatePermohonan($status_list = 'Ajuan', $reg_id)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
 			])
@@ -92,25 +73,33 @@ trait ServiceSihalalTrait
 					, "reg_id" => $reg_id
 					, "lph_mapped_id" => config('app.sihalal_lph_id')
 				]
-			)->json();		
+			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function getBiaya()
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		$result = Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 			])
 			->get(config("app.sihalal_api_server")."/api/v1/costs?order_dir=asc&limit=500000")->json();
-			
-		return $result;
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function postAddBiaya($data)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
 			])
@@ -122,13 +111,18 @@ trait ServiceSihalalTrait
 					, "harga" => $data['harga']
 				]
 			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function putUpdateBiaya($data, $id_biaya)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Cache-Control' => 'no-cache',
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
@@ -140,14 +134,19 @@ trait ServiceSihalalTrait
 					, "qty" => $data['qty']
 					, "harga" => $data['harga']
 				]
-			)->json();		
+			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function deletBiaya($id_biaya)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		$result = Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			$rest = Http::withHeaders([
+				'Cookie' => $login_data,
 				'Cache-Control' => 'no-cache',
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
@@ -157,27 +156,36 @@ trait ServiceSihalalTrait
 			])
 			->delete(config("app.sihalal_api_server")."api/v1/costs/$id_biaya")->json();
 			
-		if(isset($result["status"]))
+			if(isset($rest["status"]))
+				return false;
+			else
+				return true;
+		}
+		else{
 			return false;
-		else
-			return true;
-			
+		}
     }
 	
 	public function getListJadwalAudit()
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 			])
 			->get(config("app.sihalal_api_server")."/api/v1/audit_schedule?order_dir=asc&limit=500000")->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function postAddListJadwalAudit($data)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
 			])
@@ -189,13 +197,18 @@ trait ServiceSihalalTrait
 					, "jml_hari" => $data['jml_hari']
 				]
 			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function putUpdateListJadwalAudit($data, $id_audit)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Cache-Control' => 'no-cache',
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
@@ -208,13 +221,18 @@ trait ServiceSihalalTrait
 					, "jml_hari" => $data['jml_hari']
 				]
 			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function deleteListJadwalAudit($id_audit)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		$result = Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			$rest = Http::withHeaders([
+				'Cookie' => $login_data,
 				'Cache-Control' => 'no-cache',
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
@@ -223,37 +241,52 @@ trait ServiceSihalalTrait
 				'Access-Control-Allow-Credentials' => true,
 			])
 			->delete(config("app.sihalal_api_server")."api/v1/audit_schedule/$id_audit")->json();
-		
-		if(isset($result["status"]))
+			
+			if(isset($rest["status"]))
+				return false;
+			else
+				return true;
+		}
+		else{
 			return false;
-		else
-			return true;
+		}
     }
 	
 	public function getListJadwalAuditor()
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 			])
 			->get(config("app.sihalal_api_server")."/api/v1/reg_auditor?order_dir=asc&limit=500000")->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function getRefAuditor()
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 			])
 			// ->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/{map_id}")->json();
 			->get(config("app.sihalal_api_server")."/api/v1/check_auditor_list/".config("app.sihalal_lph_maped_id"))->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function postAddListJadwalAuditor($data)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
 			])
@@ -264,13 +297,18 @@ trait ServiceSihalalTrait
 					, "create_by" => $data['create_by']
 				]
 			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function deleteListJadwalAuditor($id_audit_person)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		$result = Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			$rest = Http::withHeaders([
+				'Cookie' => $login_data,
 				'Cache-Control' => 'no-cache',
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
@@ -279,27 +317,37 @@ trait ServiceSihalalTrait
 				'Access-Control-Allow-Credentials' => true,
 			])
 			->delete(config("app.sihalal_api_server")."api/v1/audit_schedule/$id_audit_person")->json();
-		
-		if(isset($result["status"]))
+			
+			if(isset($rest["status"]))
+				return false;
+			else
+				return true;
+		}
+		else{
 			return false;
-		else
-			return true;
+		}
     }
 	
 	public function getAuditResult()
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 			])
 			->get(config("app.sihalal_api_server")."/api/v1/audit_result?order_dir=asc&limit=50000")->json();
+		}
+		else{
+			return [];
+		}
     }
 	
 	public function postProsesAudit1($data)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
 			])
@@ -311,11 +359,15 @@ trait ServiceSihalalTrait
 					, "hasil_audit" => $data['hasil_audit']
 				]
 			)->json();
+		}
+		else{
+			return [];
+		}
     }
 	
-	public function getInvoice2()
+	public function getInvoice()
     {
-		$login_data = $this->postLoginGetCookie();
+		$login_data = $this->postLogin();
 		if(!is_null($login_data)){
 			return Http::withHeaders([
 				'Cookie' => $login_data,
@@ -328,25 +380,19 @@ trait ServiceSihalalTrait
 		}
     }
 	
-	// Error not result data
-	public function getInvoice()
-    {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
-			])
-			// ?order_dir=asc&limit=50000
-			->get(config("app.sihalal_api_server")."/api/v1/invoice/".config("app.sihalal_lph_maped_id"))->json();
-    }
-	
 	public function putInvoiceLunas($id_inv)
     {
-		$cookie_string = session()->get('sihalal_cookie');
-		return Http::withHeaders([
-				'Cookie' => $cookie_string,
+		$login_data = $this->postLogin();
+		if(!is_null($login_data)){
+			return Http::withHeaders([
+				'Cookie' => $login_data,
 				'Content-Type' => 'application/json',
 				'User-Agent' => 'PostmanRuntime/7.29.0',
 			])
 			->put(config("app.sihalal_api_server")."/api/v1/invoice/".$id_inv)->json();
+		}
+		else{
+			return [];
+		}
     }
 }

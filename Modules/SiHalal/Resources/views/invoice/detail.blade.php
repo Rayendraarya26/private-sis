@@ -15,92 +15,59 @@
                 <input type="hidden" name="id_inv" id="id_inv" value="">
                 <!-- Modal Body -->
                 <div class="modal-body">
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">ID. INV</span>
-						<a href="javascript:void(0)" id="id_inv_text"></a>
-					  </div>
+					<div class="form-group">
+						<label for="id_inv_text" class="col-form-label">ID. INV :</label>
+						<input class="form-control" id="id_inv_text" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">No. INV</span>
-						<a href="javascript:void(0)" id="no_inv"></a>
-					  </div>
+					<div class="form-group">
+						<label for="no_inv" class="col-form-label">No. INV :</label>
+						<input class="form-control" id="no_inv" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">NO. REF</span>
-						<a href="javascript:void(0)" id="no_ref"></a>
-					  </div>
+					<div class="form-group">
+						<label for="no_ref" class="col-form-label">NO. REF :</label>
+						<input class="form-control" id="no_ref" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">ID. REF</span>
-						<a href="javascript:void(0)" id="id_ref"></a>
-					  </div>
+					<div class="form-group">
+						<label for="id_ref" class="col-form-label">ID. REF :</label>
+						<input class="form-control" id="id_ref" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">Tanggal Invoice</span>
-						<a href="javascript:void(0)" id="tgl_inv"></a>
-					  </div>
+					<div class="form-group">
+						<label for="tgl_inv" class="col-form-label">Tanggal Invoice :</label>
+						<input class="form-control" id="tgl_inv" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">Tipe Transaksi</span>
-						<a href="javascript:void(0)" id="tipe_trans"></a>
-					  </div>
+					<div class="form-group">
+						<label for="tipe_trans" class="col-form-label">Tipe Transaksi :</label>
+						<input class="form-control" id="tipe_trans" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">Nama Pelaku Usaha</span>
-						<a href="javascript:void(0)" id="nama_pu"></a>
-					  </div>
+					<div class="form-group">
+						<label for="nama_pu" class="col-form-label">Nama Pelaku Usaha :</label>
+						<input class="form-control" id="nama_pu" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">Alamat</span>
-						<a href="javascript:void(0)" id="alamat1"></a>
-					  </div>
+					<div class="form-group">
+						<label for="alamat1" class="col-form-label">Alamat :</label>
+						<textarea class="form-control" id="alamat1" disabled></textarea>
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">No. Telp</span>
-						<a href="javascript:void(0)" id="No_telp"></a>
-					  </div>
+					<div class="form-group">
+						<label for="No_telp" class="col-form-label">No. Telp :</label>
+						<input class="form-control" id="No_telp" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">Due Date</span>
-						<a href="javascript:void(0)" id="duedate"></a>
-					  </div>
+					<div class="form-group">
+						<label for="duedate" class="col-form-label">Due Date :</label>
+						<input class="form-control" id="duedate" type="text" disabled value="">
 					</div>
 					
-					<div class="media mb-5">
-					  <i class="icon icon-link icon-xl mr-5"></i>
-					  <div class="media-body">
-						<span class="d-block text-light-gray f-12 mb-1">Total Invoice</span>
-						<a href="javascript:void(0)" id="total_inv"></a>
-					  </div>
+					<div class="form-group">
+						<label for="total_inv" class="col-form-label">Total Invoice :</label>
+						<input class="form-control" id="total_inv" type="text" disabled value="">
 					</div>
 					
 					<div class="media mb-5">
