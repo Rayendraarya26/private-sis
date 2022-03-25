@@ -200,10 +200,6 @@
                                 }
                                 @endif
                             } else if (row.jadw_setujui_temuan == "setuju") {
-                                @if(authorized("{$module}@cetak"))
-                                    btnPreview = `<a href="{{url("$url/cetak")}}/${row.jadw_id}/lks" target="_blank" class="btn btn-xs btn-danger btn-block"><i class="fas fa-file-pdf"></i>  Preview LKS</a>`
-                                @endif
-
                                 //
                                 @if(authorized("{$module}@verifikasiTemuan"))
                                 if (!row.is_close_lks) {
@@ -219,12 +215,31 @@
                                 @endif
                             }
 
+                            @if(authorized("{$module}@cetak"))
+                                btnPreview = `<a href="{{url("$url/cetak")}}/${row.jadw_id}/lks" target="_blank" class="btn btn-xs btn-danger btn-block"><i class="fas fa-file-pdf"></i>  Preview LKS</a>`
+                            @endif
+
                             return btnPreview + btnTemuan + btnVerif + btnRekomendasi;
                         },
                     },
                 ]],
                 columns: [[
-                    {field: 'jadw_id', title: 'Jadwal ID', width: 200, sortable: true},
+                    {field: 'jadw_id', title: 'Jadwal ID', width: 100, sortable: true},
+                    {
+                        field: 'status', title: 'Status', width: 200, sortable: true,
+                        formatter: function (val, row) {
+                            switch (row.jadw_setujui_temuan) {
+                                case 'none':
+                                    return "LKS dibuat"
+                                case 'diajukan':
+                                    return "LKS diajukan ke pelanggan"
+                                case 'revisi':
+                                    return "Auditor merevisi LKS dan sedang diperbaikan oleh pelanggan"
+                                case 'setuju':
+                                    return "LKS disetujui pelanggan"
+                            }
+                        }
+                    },
                     {field: 'cust_nama', title: 'Nama pelanggan', width: 200, sortable: true},
                     {field: 'jadw_jenis', title: 'Jenis Jadwal', width: 150, sortable: true},
                     {
