@@ -80,14 +80,25 @@
 
                     <!-- Form Group -->
                     {{--Password--}}
-                    <div class="input-group input-group mb-3">
+                    <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-sm">
                                 <i class="fal fa-lock-alt"></i>
                             </span>
                         </div>
-                        <input type="password" class="form-control" aria-label="password" placeholder="Masukkan kata sandi (password)"
+                        <input type="password" class="form-control" aria-label="password"
+                               placeholder="Masukkan kata sandi (password)" id="password"
                                name="password" required>
+                        <div class="input-group-append" style="cursor:pointer;">
+                            <span class="input-group-text" id="eyeOpen" onclick="passShow()">
+                                <i class="fal fa-eye-slash"></i>
+                            </span>
+                            <span class="input-group-text" id="eyeClose" onclick="passHide()" style="display: none">
+                                <i class="fal fa-eye"></i>
+                            </span>
+                        </div>
+
+
                     </div>
                     @error('password')
                     <span class="text-danger">{{$message}}</span>
@@ -123,7 +134,7 @@
                         <a href="{{route('auth.register')}}">Registrasi</a>
                     </span>
                 </form>
-                <!-- /form -->
+                    <!-- /form -->
             </div>
             <!-- /login content inner -->
         </div>
@@ -131,3 +142,21 @@
 
     </div>
 @endsection
+
+@push('javascript')
+    <script>
+        function passShow() {
+            $("#password").attr('type', 'text')
+            $("#eyeOpen").attr('style', 'display:none;')
+            $("#eyeClose").attr('style', 'display:;')
+            console.log('show password');
+        }
+
+        function passHide() {
+            $("#password").attr('type', 'password')
+            $("#eyeOpen").attr('style', 'display:;;')
+            $("#eyeClose").attr('style', 'display:none')
+            console.log('hide password');
+        }
+    </script>
+@endpush
