@@ -20,6 +20,16 @@
 
 
                     <div class="dt-card__body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-info">
+                                    <b>Note</b>
+                                    <br>
+                                    Mohon segera mengunggah scan dokumen yang telah diberi CAP dan TTD melalui halaman
+                                    <a href="{{url("/pelanggan/tahap1/persetujuan-temuan")}}">Persetujuan Temuan</a>
+                                </div>
+                            </div>
+                        </div>
                         <div id="ttData" style="width:100%; min-width: 310px"></div>
                     </div>
                 </div>
@@ -95,6 +105,32 @@
                                     </li>`
                                 })
                                 htmls += `</ul>`
+                            }
+
+                            return htmls
+                        }
+                    },
+                    {
+                        field: 'file_upload', title: 'Upload Scan', width: 300, sortable: true,
+                        formatter: function (val) {
+                            let htmls = ""
+                            if (val != undefined && val.length > 0) {
+                                htmls += `<ul>`
+                                val.map(e => {
+                                    if (e.status) {
+                                        htmls += `
+                                    <li>
+                                        <a href="${e.url}" target="_blank"><i class="fas fa-check" style="color:green"></i> ${e.name} </a>
+                                    </li>`
+                                    } else {
+                                        htmls += `
+                                    <li>
+                                        <span><i class="fas fa-close" style="color:red"></i> ${e.name}</span>
+                                    </li>`
+                                    }
+
+                                })
+                                htmls += `</ol>`
                             }
 
                             return htmls

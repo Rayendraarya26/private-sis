@@ -43,9 +43,6 @@ class Tahap1PersetujuanController extends Controller
         try {
             if ($request['status'] == 'revisi') {
                 if (empty($request['catatan'])) throw new Exception('Mohon tuliskan catatan');
-            } else if ($request['status'] == 'setuju') {
-                if (!$request->hasFile('file_surat_tugas')) throw new Exception('Mohon unggah surat tugas');
-                if (!$request->hasFile('file_notulen')) throw new Exception('Mohon unggah notulen');
             }
 
             DB::beginTransaction();
@@ -57,9 +54,8 @@ class Tahap1PersetujuanController extends Controller
             $dataTahap1->save();
 
             $timeNow         = Carbon::now();
-            $responseMessage = "";
             if ($request['status'] == "setuju") {
-                $responseMessage = sprintf("%s menyetujui temuan tahap 1", $dataTahap1->mohon_cust_nama);
+                $responseMessage = sprintf("%s menyetujui temuan tahap 1, segera lakukan perbaikan apabila auditor memiliki temuan <a href='%s'>disini</a>", $dataTahap1->mohon_cust_nama, url( '/pelanggan/tahap1/perbaikan-temuan'));
                 // Add permohonan Status
                 SisPermohonanStatus::updateOrCreate(
                     [
@@ -76,21 +72,26 @@ class Tahap1PersetujuanController extends Controller
                 // Upload Dokumens
 
                 $baseFileUpload = sprintf(config("app.path_file_tahap1"), $dataTahap1->aud_thp1_id);
-                // ======= SuratTugas ======= //
-                $fileSuratTugas     = $request->file('file_surat_tugas');
-                $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
-                $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
-                $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
-                $newUploadedPath[]                     = public_path($fileSuratTugasPath);
-                $dataTahap1->aud_thp1_file_surat_tugas = $fileSuratTugasPath;
 
-                // ======= Notulen ======= //
-                $fileNotulen     = $request->file('file_notulen');
-                $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
-                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
-                $fileNotulen->move($baseFileUpload, $fileNotulenName);
-                $newUploadedPath[]                 = public_path($fileNotulenPath);
-                $dataTahap1->aud_thp1_file_notulen = $fileNotulenPath;
+                if ($request->hasFile('file_surat_tugas')) {
+                    // ======= SuratTugas ======= //
+                    $fileSuratTugas     = $request->file('file_surat_tugas');
+                    $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
+                    $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
+                    $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
+                    $newUploadedPath[]                     = public_path($fileSuratTugasPath);
+                    $dataTahap1->aud_thp1_file_surat_tugas = $fileSuratTugasPath;
+                }
+
+                if ($request->hasFile('file_notulen')) {
+                    // ======= Notulen ======= //
+                    $fileNotulen     = $request->file('file_notulen');
+                    $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
+                    $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
+                    $fileNotulen->move($baseFileUpload, $fileNotulenName);
+                    $newUploadedPath[]                 = public_path($fileNotulenPath);
+                    $dataTahap1->aud_thp1_file_notulen = $fileNotulenPath;
+                }
 
                 // ======= Notulen ======= //
                 if ($request->hasFile('file_subkontrak')) {
@@ -258,7 +259,7 @@ class Tahap1PersetujuanController extends Controller
 
     public function cetakNotulen($tahap1Id)
     {
-        $data   = SisAuditTahap1::with([
+        $data = SisAuditTahap1::with([
             'sis_permohonan',
             'sis_permohonan_detail.master_sertifikasi',
             'sis_permohonan_detail.sis_permohonan_komoditis.master_komoditi',
@@ -267,12 +268,92 @@ class Tahap1PersetujuanController extends Controller
         ])
             ->findOrFail($tahap1Id);
 
-        $ketua = $data->sis_audit_tahap1_tims()->where('thp1_tim_posisi', 'ketua')->first();
+        $ketua  = $data->sis_audit_tahap1_tims()->where('thp1_tim_posisi', 'ketua')->first();
         $parser = ['data' => $data, 'ketua' => $ketua];
 
         $pdf = PDF::loadView("$this->view.print.notulen_rapat", $parser)
             ->setPaper('a4', 'portrait');
         return $pdf->stream();
+    }
+
+    public function uploadScan($tahap1Id)
+    {
+        try {
+            $data = SisAuditTahap1::join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
+                ->where('sis_permohonan.user_id', '=', auth()->id())
+                ->where('sis_audit_tahap1.aud_thp1_id', '=', $tahap1Id)
+                ->first();
+            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
+            if ($data->aud_thp1_status_temuan != "setuju") throw new Exception("Anda belum diperbolehkan mengakses halaman upload scan");
+
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Pelanggan'),
+                new BreadcrumbsStruct('Tahap 1', url($this->url)),
+                new BreadcrumbsStruct('Upload Scan'),
+            ];
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
+
+            return view("$this->view.upload_scan")->with($parser);
+        } catch (Exception $e) {
+            return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function processUploadScan(Request $request, $tahap1Id)
+    {
+        $newUploadedPath = [];
+        try {
+            $data = SisAuditTahap1::join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
+                ->where('sis_permohonan.user_id', '=', auth()->id())
+                ->where('sis_audit_tahap1.aud_thp1_id', '=', $tahap1Id)
+                ->first();
+            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
+            if ($data->aud_thp1_status_temuan != "setuju") throw new Exception("Anda belum diperbolehkan mengakses halaman upload scan");
+
+            DB::beginTransaction();
+            $baseFileUpload = sprintf(config("app.path_file_tahap1"), $data->aud_thp1_id);
+
+            if ($request->hasFile('file_surat_tugas')) {
+                // ======= SuratTugas ======= //
+                $fileSuratTugas     = $request->file('file_surat_tugas');
+                $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
+                $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
+                $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
+                $newUploadedPath[]               = public_path($fileSuratTugasPath);
+                $data->aud_thp1_file_surat_tugas = $fileSuratTugasPath;
+            }
+
+            if ($request->hasFile('file_notulen')) {
+                // ======= Notulen ======= //
+                $fileNotulen     = $request->file('file_notulen');
+                $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
+                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
+                $fileNotulen->move($baseFileUpload, $fileNotulenName);
+                $newUploadedPath[]           = public_path($fileNotulenPath);
+                $data->aud_thp1_file_notulen = $fileNotulenPath;
+            }
+
+            // ======= Notulen ======= //
+            if ($request->hasFile('file_subkontrak')) {
+                $fileSubkon     = $request->file('file_subkontrak');
+                $fileSubkonName = Str::slug('file-scan-subkon-' . $fileSubkon->getClientOriginalName()) . '-' . time() . '.' . $fileSubkon->getClientOriginalExtension();
+                $fileSubkonPath = sprintf("%s/%s", $baseFileUpload, $fileSubkonName);
+                $fileSubkon->move($baseFileUpload, $fileSubkonName);
+                $newUploadedPath[]          = public_path($fileSubkonPath);
+                $data->aud_thp1_file_subkon = $fileSubkonPath;
+            }
+
+            $data->save();
+            DB::commit();
+            return redirect(url($this->url))->with('message', 'Upload success');
+        } catch (Exception $e) {
+            DB::rollBack();
+            foreach ($newUploadedPath as $path) {
+                @unlink($path);
+            }
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function ajax(Request $request)
@@ -295,7 +376,7 @@ class Tahap1PersetujuanController extends Controller
             ->join('sis_permohonan', 'sis_permohonan.mohon_id', '=', 'sis_audit_tahap1.mohon_id')
             ->leftJoin('sis_jadwal_audit', 'sis_audit_tahap1.mohon_id', '=', 'sis_jadwal_audit.mohon_id')
             ->leftJoin('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_jadwal_audit.jadw_id')
-            ->where('aud_thp1_status_temuan', '=', 'diajukan')
+            ->whereIn('aud_thp1_status_temuan', ['diajukan', 'setuju'])
             ->where('sis_permohonan.user_id', '=', auth()->id());
         // Filter
         if (!empty($request->filterRules)) {
@@ -316,10 +397,12 @@ class Tahap1PersetujuanController extends Controller
             'aud_thp1_id',
             'sert_tahap1_jenis',
             'aud_thp1_status_temuan',
-            'aud_thp1_file_notulen',
-            'aud_thp1_file_daftar_hadir',
             'jadw_file_jadwal',
             'aud_thp1_tanggal_mulai',
+            'aud_thp1_file_surat_tugas',
+            'aud_thp1_file_notulen',
+            'aud_thp1_file_subkon',
+            'aud_thp1_file_daftar_hadir',
             'aud_thp1_tanggal_selesai')
             ->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'submited', 1, 0)) as total_submit");
 
@@ -342,6 +425,33 @@ class Tahap1PersetujuanController extends Controller
                     'nama'   => $tim->master_pegawai->peg_nama,
                     'posisi' => $tim->thp1_tim_posisi,
                 ];
+            }
+
+            if ($d->aud_thp1_status_temuan == "setuju") {
+                /* Reminder peserta harus mengunggah
+               1. Scan Surat Tugas
+               2. Scan Notulen
+               3. Scan Subkontrak
+               */
+                $dataFileUpload = [
+                    [
+                        'status' => !empty($d->aud_thp1_file_surat_tugas),
+                        'name'   => 'Scan Surat Tugas',
+                        'url'    => !empty($d->aud_thp1_file_surat_tugas) ? asset($d->aud_thp1_file_surat_tugas) : 'javascript:void(0)',
+                    ],
+                    [
+                        'status' => !empty($d->aud_thp1_file_notulen),
+                        'name'   => 'Scan Notulen',
+                        'url'    => !empty($d->aud_thp1_file_notulen) ? asset($d->aud_thp1_file_notulen) : 'javascript:void(0)',
+                    ],
+                    [
+                        'status' => !empty($d->aud_thp1_file_subkon),
+                        'name'   => 'Scan Subkontrak',
+                        'url'    => !empty($d->aud_thp1_file_subkon) ? asset($d->aud_thp1_file_subkon) : 'javascript:void(0)',
+                    ],
+                ];
+
+                $x['file_upload'] = $dataFileUpload;
             }
 
             $x['aud_thp1_id']                = $d->aud_thp1_id;

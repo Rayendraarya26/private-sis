@@ -14,7 +14,7 @@
                     @endif
                     @if(session('message'))
                         <div class="alert alert-success" role="alert">
-                            {{ session('message') }}
+                            {!!  session('message')  !!}
                         </div>
                     @endif
 
@@ -89,12 +89,13 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let dom        = `dropdownMenu_${row.aud_thp1_id}`;
-                            let btnDetail  = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.aud_thp1_id}'">Detail</div>`;
-                            let btnCetakLap   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/laporan', '_blank')">Laporan</div>`;
-                            let btnCetakTinjauan   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/tinjauan', '_blank')">Hasil Tinjauan</div>`;
-                            let btnCetakNotulen   = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/notulen', '_blank')">Notulen Rapat</div>`;
-                            let btnApprove = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTahap1('${row.aud_thp1_id}')">Persetujuan</div>`;
+                            let dom              = `dropdownMenu_${row.aud_thp1_id}`;
+                            let btnDetail        = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.aud_thp1_id}'">Detail</div>`;
+                            let btnCetakLap      = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/laporan', '_blank')">Laporan</div>`;
+                            let btnCetakTinjauan = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/tinjauan', '_blank')">Hasil Tinjauan</div>`;
+                            let btnCetakNotulen  = `<div data-options="iconCls:'fad fa-print'" onclick="window.open('{{url("$url/cetak")}}/${row.aud_thp1_id}/notulen', '_blank')">Notulen Rapat</div>`;
+                            let btnUploadScan    = `<div data-options="iconCls:'fad fa-upload'" onclick="window.open('{{url("$url/upload-scan")}}/${row.aud_thp1_id}', '_self')">Upload Scan</div>`;
+                            let btnApprove       = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmTahap1('${row.aud_thp1_id}')">Persetujuan</div>`;
 
                             if (row.aud_thp1_status_temuan !== "diajukan") {
                                 btnApprove = "";
@@ -107,6 +108,10 @@
                         </button>
                             <div id="${dom}" style="width:150px; display: none;">
                             @if(authorized("{$module}@detail")) ${btnDetail} @endif
+                            @if(authorized("{$module}@uploadScan")) ${btnUploadScan} @endif
+
+                            <div class="menu-sep"></div>
+
                             @if(authorized("{$module}@approveTemuan")) ${btnApprove} @endif
                             @if(authorized("{$module}@cetakLaporan")) ${btnCetakLap} @endif
                             @if(authorized("{$module}@cetakTinjauan")) ${btnCetakTinjauan} @endif
@@ -166,6 +171,32 @@
                                     </li>`
                                 })
                                 htmls += `</ul>`
+                            }
+
+                            return htmls
+                        }
+                    },
+                    {
+                        field: 'file_upload', title: 'Upload Scan', width: 300, sortable: true,
+                        formatter: function (val) {
+                            let htmls = ""
+                            if (val != undefined && val.length > 0) {
+                                htmls += `<ul>`
+                                val.map(e => {
+                                    if (e.status) {
+                                        htmls += `
+                                    <li>
+                                        <a href="${e.url}" target="_blank"><i class="fas fa-check" style="color:green"></i> ${e.name} </a>
+                                    </li>`
+                                    } else {
+                                        htmls += `
+                                    <li>
+                                        <span><i class="fas fa-close" style="color:red"></i> ${e.name}</span>
+                                    </li>`
+                                    }
+
+                                })
+                                htmls += `</ol>`
                             }
 
                             return htmls

@@ -63,6 +63,8 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::prefix("persetujuan-temuan")->group(function () {
             Route::get("/", [Tahap1PersetujuanController::class, 'index']);
             Route::any("/ajax", [Tahap1PersetujuanController::class, 'ajax']);
+            Route::get("/upload-scan/{jadw_id}", [Tahap1PersetujuanController::class, 'uploadScan']);
+            Route::post("/upload-scan/{jadw_id}", [Tahap1PersetujuanController::class, 'processUploadScan']);
             Route::get("/detail/{aud_thp1_id}", [Tahap1PersetujuanController::class, 'detail']);
             Route::get("/cetak/{aud_thp1_id}/notulen", [Tahap1PersetujuanController::class, 'cetakNotulen']);
             Route::get("/cetak/{aud_thp1_id}/tinjauan", [Tahap1PersetujuanController::class, 'cetakTinjauan']);

@@ -343,7 +343,6 @@ class Tahap2JadwalController extends Controller
 
             return view("$this->view.upload_scan")->with($parser);
         } catch (Exception $e) {
-            DB::rollBack();
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }

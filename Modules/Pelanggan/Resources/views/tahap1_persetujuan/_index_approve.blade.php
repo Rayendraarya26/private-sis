@@ -15,6 +15,9 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <div class="alert alert-info">
+                <small>Anda dapat mengunggah dokumen sekarang atau setelah melakukan persetujuan</small>
+            </div>
             <!-- /modal header -->
             <form action="{{action("$module@approveTemuan")}}" method="post" enctype="multipart/form-data"
                   onsubmit="$('#simpanApprove').attr('disabled', true)">
@@ -28,14 +31,14 @@
                         <div class="col-sm-10">
                             <div class="form-group">
                                 <label for="berkas_ket">
-                                    *Unggah <b>Scan Surat Tugas</b> yang sudah diberi TTD dan cap
+                                    Unggah <b>Scan Surat Tugas</b> yang sudah diberi TTD dan cap
                                 </label>
                                 <input type="file" class="form-control" id="file_surat_tugas" name="file_surat_tugas"
                                        accept="application/pdf">
                             </div>
                             <div class="form-group">
                                 <label for="berkas_ket">
-                                    *Unggah <b>Scan Notulen</b> yang sudah diberi TTD dan cap
+                                    Unggah <b>Scan Notulen</b> yang sudah diberi TTD dan cap
                                 </label>
                                 <input type="file" class="form-control" id="file_notulen" name="file_notulen"
                                        accept="application/pdf">
@@ -58,7 +61,7 @@
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button id="simpanApprove" type="submit" class="btn btn-primary btn-sm">
-                        <i class="fad fa-paper-plane"></i> Simpan
+                        <i class="fad fa-paper-plane"></i> Setuju
                     </button>
                 </div>
                 <!-- /modal footer -->

@@ -279,6 +279,9 @@
                     </div>
                     <!-- /modal header -->
 
+                    <div class="alert alert-info">
+                        <small>Anda dapat mengunggah dokumen sekarang atau setelah melakukan persetujuan</small>
+                    </div>
                     <!-- Modal Body -->
                     <div class="modal-body">
                         <div class="row">

@@ -27,7 +27,7 @@
                                     <br>
                                     LKS: LAPORAN KETIDAKSESUAIAN
                                     <br>
-                                    Mohon Segera Mengunggah dokumen SCAN LKS yang telah diberi CAP dan TTD melalui halaman
+                                    Mohon segera mengunggah scan dokumen yang telah diberi CAP dan TTD melalui halaman
                                     <a href="{{url("/pelanggan/tahap2/jadwal")}}">Jadwal</a>
                                 </div>
                             </div>

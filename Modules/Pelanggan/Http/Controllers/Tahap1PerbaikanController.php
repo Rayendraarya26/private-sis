@@ -151,12 +151,12 @@ class Tahap1PerbaikanController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-
         $data->select(
             'aud_thp1_id',
             'sert_tahap1_jenis',
-            'aud_thp1_status_temuan',
+            'aud_thp1_file_surat_tugas',
             'aud_thp1_file_notulen',
+            'aud_thp1_file_subkon',
             'aud_thp1_file_daftar_hadir',
             'jadw_file_jadwal',
             'aud_thp1_tanggal_mulai',
@@ -183,6 +183,32 @@ class Tahap1PerbaikanController extends Controller
                     'posisi' => $tim->thp1_tim_posisi,
                 ];
             }
+
+
+            /* Reminder peserta harus mengunggah
+           1. Scan Surat Tugas
+           2. Scan Notulen
+           3. Scan Subkontrak
+           */
+            $dataFileUpload   = [
+                [
+                    'status' => !empty($d->aud_thp1_file_surat_tugas),
+                    'name'   => 'Scan Surat Tugas',
+                    'url'    => !empty($d->aud_thp1_file_surat_tugas) ? asset($d->aud_thp1_file_surat_tugas) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->aud_thp1_file_notulen),
+                    'name'   => 'Scan Notulen',
+                    'url'    => !empty($d->aud_thp1_file_notulen) ? asset($d->aud_thp1_file_notulen) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->aud_thp1_file_subkon),
+                    'name'   => 'Scan Subkontrak',
+                    'url'    => !empty($d->aud_thp1_file_subkon) ? asset($d->aud_thp1_file_subkon) : 'javascript:void(0)',
+                ],
+            ];
+            $x['file_upload'] = $dataFileUpload;
+
 
             $x['aud_thp1_id']                = $d->aud_thp1_id;
             $x['enc_aud_thp1_id']            = encrypt($d->aud_thp1_id);
