@@ -11,6 +11,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class Tahap2JadwalController extends Controller
@@ -88,15 +90,52 @@ class Tahap2JadwalController extends Controller
                 ];
             }
 
+            /* Reminder peserta harus mengunggah
+            1. Scan LKS
+            2. Scan Laporan Ringkas
+            3. Scan Surat Tugas
+            4. Scan Notulen
+            5. Scan Subkontrak
+            */
+            $dataFileUpload = [
+                [
+                    'status' => !empty($d->jadw_file_lks),
+                    'name'   => 'Scan LKS',
+                    'url'    => !empty($d->jadw_file_lks) ? asset($d->jadw_file_lks) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_laporan_ringkas),
+                    'name'   => 'Scan Lap Ringkas',
+                    'url'    => !empty($d->jadw_file_laporan_ringkas) ? asset($d->jadw_file_laporan_ringkas) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_surat_tugas),
+                    'name'   => 'Scan Surat Tugas',
+                    'url'    => !empty($d->jadw_file_surat_tugas) ? asset($d->jadw_file_surat_tugas) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_notulen),
+                    'name'   => 'Scan Notulen',
+                    'url'    => !empty($d->jadw_file_notulen) ? asset($d->jadw_file_notulen) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_subkon),
+                    'name'   => 'Scan Subkontrak',
+                    'url'    => !empty($d->jadw_file_subkon) ? asset($d->jadw_file_subkon) : 'javascript:void(0)',
+                ],
+            ];
+
             $x['jadw_id']              = $d->jadw_id;
             $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
+            $x['jadw_setujui_temuan']  = $d->jadw_setujui_temuan;
             $x['jadw_team_status']     = $d->jadw_team_status;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_file_jadwal']     = empty($d->jadw_file_jadwal) ? "" : asset($d->jadw_file_jadwal);
             $x['enable_approval_tim']  = $d->sis_jadwal_tims->count() > 0;
             $x['logs']                 = $logs;
+            $x['file_upload']          = $dataFileUpload;
             $result[]                  = $x;
 
         }
@@ -282,6 +321,110 @@ class Tahap2JadwalController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function uploadScan(Request $request, $jadwalID)
+    {
+        try {
+            $data = SisJadwal::where('jadw_id', $jadwalID)
+                ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
+                ->first();
+            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
+            if ($data->jadw_setujui_temuan != "setuju") throw new Exception("Anda belum diperbolehkan mengakses halaman upload scan");
+
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Pelanggan'),
+                new BreadcrumbsStruct('Tahap 2', url($this->url)),
+                new BreadcrumbsStruct('Upload Scan'),
+            ];
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data];
+
+            return view("$this->view.upload_scan")->with($parser);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function processUploadScan(Request $request, $jadwalID)
+    {
+        $newUploadedPath = [];
+        try {
+            $data = SisJadwal::where('jadw_id', $jadwalID)
+                ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
+                ->first();
+            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
+
+            // process upload scan files
+            $baseFileUpload = sprintf(config("app.path_file_audit"), $data->jadw_id);
+            if (!File::exists($baseFileUpload)) {
+                File::makeDirectory($baseFileUpload, 0777, true, true);
+            }
+
+            DB::beginTransaction();
+            // ======= LKS ======= //
+            if ($request->hasFile('file_lks')) {
+                $fileLks     = $request->file('file_lks');
+                $fileLksName = Str::slug('file-scan-lks-' . $fileLks->getClientOriginalName()) . '-' . time() . '.' . $fileLks->getClientOriginalExtension();
+                $fileLksPath = sprintf("%s/%s", $baseFileUpload, $fileLksName);
+                $fileLks->move($baseFileUpload, $fileLksName);
+                $newUploadedPath[]   = public_path($fileLksPath);
+                $data->jadw_file_lks = $fileLksPath;
+            }
+
+            // ======= LapRingkas ======= //
+            if ($request->hasFile('file_lap_ringkas')) {
+                $fileLapRingkas     = $request->file('file_lap_ringkas');
+                $fileLapRingkasName = Str::slug('file-scan-lapringkas-' . $fileLapRingkas->getClientOriginalName()) . '-' . time() . '.' . $fileLapRingkas->getClientOriginalExtension();
+                $fileLapRingkasPath = sprintf("%s/%s", $baseFileUpload, $fileLapRingkasName);
+                $fileLapRingkas->move($baseFileUpload, $fileLapRingkasName);
+                $newUploadedPath[]               = public_path($fileLapRingkasPath);
+                $data->jadw_file_laporan_ringkas = $fileLapRingkasPath;
+            }
+
+            // ======= SuratTugas ======= //
+            if ($request->hasFile('file_surat_tugas')) {
+                $fileSuratTugas     = $request->file('file_surat_tugas');
+                $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
+                $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
+                $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
+                $newUploadedPath[]           = public_path($fileSuratTugasPath);
+                $data->jadw_file_surat_tugas = $fileSuratTugasPath;
+            }
+
+            // ======= Notulen ======= //
+            if ($request->hasFile('file_notulen')) {
+                $fileNotulen     = $request->file('file_notulen');
+                $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
+                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
+                $fileNotulen->move($baseFileUpload, $fileNotulenName);
+                $newUploadedPath[]       = public_path($fileNotulenPath);
+                $data->jadw_file_notulen = $fileNotulenPath;
+            }
+
+            // ======= SubKontrak ======= //
+            if ($request->hasFile('file_subkon')) {
+                $fileSubkon     = $request->file('file_subkon');
+                $fileSubkonName = Str::slug('file-scan-subkon-' . $fileSubkon->getClientOriginalName()) . '-' . time() . '.' . $fileSubkon->getClientOriginalExtension();
+                $fileSubkonPath = sprintf("%s/%s", $baseFileUpload, $fileSubkonName);
+                $fileSubkon->move($baseFileUpload, $fileSubkonName);
+                $newUploadedPath[]      = public_path($fileSubkonPath);
+                $data->jadw_file_subkon = $fileSubkonPath;
+            }
+
+            $data->save();
+
+            DB::commit();
+
+            return redirect(url($this->url))->with('message', 'Upload success');
+        } catch (Exception $e) {
+            DB::rollBack();
+            foreach ($newUploadedPath as $path) {
+                @unlink($path);
+            }
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
 
     }

@@ -163,7 +163,7 @@
 
                                         if ($lks->lks_sudah_ditutup == "ya") {
                                             $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi %d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
-                                            $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $verifKe);
+                                            $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $lks->lks_nomor);
                                         }
                                         ?>
                                         <tr>

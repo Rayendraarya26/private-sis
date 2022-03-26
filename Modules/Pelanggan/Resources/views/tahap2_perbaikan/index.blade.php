@@ -26,6 +26,9 @@
                                     <b>Note</b>
                                     <br>
                                     LKS: LAPORAN KETIDAKSESUAIAN
+                                    <br>
+                                    Mohon Segera Mengunggah dokumen SCAN LKS yang telah diberi CAP dan TTD melalui halaman
+                                    <a href="{{url("/pelanggan/tahap2/jadwal")}}">Jadwal</a>
                                 </div>
                             </div>
                         </div>
@@ -136,6 +139,32 @@
                             return htmls
                         }
                     },
+                    {
+                        field: 'file_upload', title: 'Upload Scan', width: 300, sortable: true,
+                        formatter: function (val) {
+                            let htmls = ""
+                            if (val.length > 0) {
+                                htmls += `<ul>`
+                                val.map(e => {
+                                    if (e.status) {
+                                        htmls += `
+                                    <li>
+                                        <a href="${e.url}" target="_blank"><i class="fas fa-check" style="color:green"></i> ${e.name} </a>
+                                    </li>`
+                                    } else {
+                                        htmls += `
+                                    <li>
+                                        <span><i class="fas fa-close" style="color:red"></i> ${e.name}</span>
+                                    </li>`
+                                    }
+
+                                })
+                                htmls += `</ol>`
+                            }
+
+                            return htmls
+                        }
+                    },
                 ]],
                 onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
@@ -158,6 +187,9 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'tanggal', type: 'label'},
+                    {field: 'file_upload', type: 'label'},
+                    {field: 'tims', type: 'label'},
+                    {field: 'audits', type: 'label'},
                     {
                         field: 'jadw_jenis',
                         type: 'combobox',
@@ -180,52 +212,6 @@
                             }
                         }
                     },
-
-                    // {
-                    //     field: 'lks_status',
-                    //     type: 'combobox',
-                    //     options: {
-                    //         panelHeight: 'auto',
-                    //         data: [
-                    //             {value: '', text: 'Semua'},
-                    //             {value: 'memadai', text: 'Memadai'},
-                    //             {value: 'tidak-memadai', text: 'Tidak Memadai'},
-                    //             {value: 'revisi', text: 'Revisi'},
-                    //         ],
-                    //         onChange: function (value) {
-                    //             dg.datagrid('addFilterRule', {
-                    //                 field: 'lks_status',
-                    //                 op: 'equal',
-                    //                 value: value
-                    //             });
-                    //
-                    //             dg.datagrid('doFilter');
-                    //         }
-                    //     }
-                    // },
-                    // {
-                    //     field: 'lks_kategori_ketidaksesuaian',
-                    //     type: 'combobox',
-                    //     options: {
-                    //         panelHeight: 'auto',
-                    //         data: [
-                    //             {value: '', text: 'Semua'},
-                    //             {value: 'observasi', text: 'Observasi'},
-                    //             {value: 'minor', text: 'Minor'},
-                    //             {value: 'mayor', text: 'Mayor'},
-                    //             {value: 'kritis', text: 'Kritis'},
-                    //         ],
-                    //         onChange: function (value) {
-                    //             dg.datagrid('addFilterRule', {
-                    //                 field: 'lks_status',
-                    //                 op: 'equal',
-                    //                 value: value
-                    //             });
-                    //
-                    //             dg.datagrid('doFilter');
-                    //         }
-                    //     }
-                    // },
                 ]);
         });
     </script>

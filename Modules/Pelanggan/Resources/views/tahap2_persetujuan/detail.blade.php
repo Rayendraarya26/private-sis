@@ -285,25 +285,30 @@
                             <div class="col-sm-1"></div>
                             <div class="col-sm-10">
                                 <div class="form-group">
-                                    <label for="berkas_ket">*Unggah <b>Scan LKS</b> yang sudah diberi TTD dan cap</label>
+                                    <label for="berkas_ket">Unggah <b>Scan LKS</b> yang sudah diberi TTD dan cap
+                                        <small>(optional)</small></label>
                                     <input type="file" class="form-control" id="file_lks" accept="application/pdf">
                                 </div>
                                 <div class="form-group">
-                                    <label for="berkas_ket">*Unggah <b>Scan Laporan Ringkas</b> yang sudah diberi TTD dan
-                                        cap</label>
+                                    <label for="berkas_ket">Unggah <b>Scan Laporan Ringkas</b> yang sudah diberi TTD dan
+                                        cap
+                                        <small>(optional)</small>
+                                    </label>
                                     <input type="file" class="form-control" id="file_lap_ringkas"
                                            accept="application/pdf">
                                 </div>
                                 <div class="form-group">
                                     <label for="berkas_ket">
-                                        *Unggah <b>Scan Surat Tugas</b> yang sudah diberi TTD dan cap
+                                        Unggah <b>Scan Surat Tugas</b> yang sudah diberi TTD dan cap
+                                        <small>(optional)</small>
                                     </label>
                                     <input type="file" class="form-control" id="file_surat_tugas"
                                            accept="application/pdf">
                                 </div>
                                 <div class="form-group">
                                     <label for="berkas_ket">
-                                        *Unggah <b>Scan Notulen</b> yang sudah diberi TTD dan cap
+                                        Unggah <b>Scan Notulen</b> yang sudah diberi TTD dan cap
+                                        <small>(optional)</small>
                                     </label>
                                     <input type="file" class="form-control" id="file_notulen"
                                            accept="application/pdf">
@@ -406,20 +411,28 @@
 
                 if (status == "setuju") {
                     let fileLKS = document.querySelector("#file_lks").files[0];
-                    validateBerkas(fileLKS);
-                    formData.append('file_lks', fileLKS)
+                    if (fileLKS != null) {
+                        validateBerkas(fileLKS);
+                        formData.append('file_lks', fileLKS);
+                    }
 
                     let fileLapRing = document.querySelector("#file_lap_ringkas").files[0];
-                    validateBerkas(fileLapRing);
-                    formData.append('file_lap_ringkas', fileLapRing)
+                    if (fileLapRing != null) {
+                        validateBerkas(fileLapRing);
+                        formData.append('file_lap_ringkas', fileLapRing);
+                    }
 
                     let fileSurTug = document.querySelector("#file_surat_tugas").files[0];
-                    validateBerkas(fileSurTug);
-                    formData.append('file_surat_tugas', fileSurTug)
+                    if (fileSurTug != null) {
+                        validateBerkas(fileSurTug);
+                        formData.append('file_surat_tugas', fileSurTug);
+                    }
 
                     let fileNotulen = document.querySelector("#file_notulen").files[0];
-                    validateBerkas(fileNotulen);
-                    formData.append('file_notulen', fileNotulen)
+                    if (fileNotulen != null) {
+                        validateBerkas(fileNotulen);
+                        formData.append('file_notulen', fileNotulen);
+                    }
 
                     let fileSubkon = document.querySelector("#file_subkontrak").files[0];
                     if (fileSubkon != null) {

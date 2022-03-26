@@ -59,6 +59,24 @@
                     })
 
                     htmls += '</ol>'
+                    if (row.jadw_setujui_temuan == "setuju" && row.file_upload.length > 0) {
+                        htmls += `<hr><ul>`
+                        row.file_upload.map(e => {
+                            if (e.status) {
+                                htmls += `
+                                    <li>
+                                        <a href="${e.url}" target="_blank"><i class="fas fa-check" style="color:green"></i> ${e.name} </a>
+                                    </li>`
+                            } else {
+                                htmls += `
+                                    <li>
+                                        <span><i class="fas fa-close" style="color:red"></i> ${e.name}</span>
+                                    </li>`
+                            }
+
+                        })
+                        htmls += `</ol>`
+                    }
 
                     return htmls;
                 },
@@ -71,12 +89,27 @@
                         formatter: function (val, row) {
                             let btnApproveTgl = "";
                             let btnApproveTim = "";
+                            let btnUpload     = "";
                             if (row.jadw_tanggal_status == "on-going" || row.jadw_tanggal_status == 'fixed') {
                                 btnApproveTgl = `<a href="{{url("$url/approve/tanggal")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fad fa-check"></i> Approve Tanggal</a>`
                             } else if (row.jadw_tanggal_status == 'accepted' && (row.jadw_team_status == "on-going" || row.jadw_team_status == "fixed") && row.enable_approval_tim) {
                                 btnApproveTim = `<a href="{{url("$url/approve/tim")}}/${row.jadw_id}" class="btn btn-xs btn-primary btn-block"><i class="fad fa-check"></i> Approve Tim</a>`
                             }
-                            return btnApproveTgl + btnApproveTim;
+
+                            if (row.jadw_setujui_temuan == "setuju") {
+                                let totalUploaded       = 0;
+                                let totalNotUploadedYet = 0;
+                                row.file_upload.map(e => {
+                                    e.status ? totalUploaded++ : totalNotUploadedYet++;
+                                })
+                                if (totalNotUploadedYet == 0){
+                                    btnUpload = `<button class="btn btn-xs btn-success btn-block"><i class="fas fa-check"></i> Upload Scan (${totalUploaded}/${totalNotUploadedYet + totalUploaded})</button>`
+                                }else{
+                                    btnUpload = `<a href="{{ url("$url/upload-scan") }}/${row.jadw_id}" class="btn btn-xs btn-warning btn-block"><i class="fas fa-upload"></i> Upload Scan (${totalUploaded}/${totalNotUploadedYet + totalUploaded})</a>`
+                                }
+
+                            }
+                            return btnApproveTgl + btnApproveTim + btnUpload;
                         }
                     }
                 ]],

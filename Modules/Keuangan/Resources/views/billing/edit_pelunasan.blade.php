@@ -30,7 +30,7 @@
                                     </div>
 								@endif
 
-					   
+
 								<!-- Security CSRF TOKEN -->
 								@csrf
 								<input type="hidden" name="tipe" value="pelunasan">
@@ -72,7 +72,7 @@
 												<td>:</td>
 												<td><a href="javascript:void(0)" class="btn-link">{{ number_format($data_billing->itms_bil_total, 2, ',', '.') }}</a></td>
 											</tr>
-											
+
 											<tr>
 												<td>File Invoice</th>
 												<td>:</td>
@@ -81,12 +81,12 @@
 										</tbody>
 									</table>
 								</div>
-								
+
 								<div class="form-group form-row">
 									<div id="ttData" style="width:100%; min-width: 310px"></div>
 								</div>
-								
-								
+
+
 								<div class="table-responsive">
 									<table class="table table-hover mb-0">
 										<thead>
@@ -133,8 +133,8 @@
     <script>
 		function confirmLunas() {
             const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-warning mr-2 mb-2',
                 buttonsStyling: false,
             });
 
@@ -152,8 +152,8 @@
                 }
             });
         }
-		
-        $(document).ready(function () {			
+
+        $(document).ready(function () {
 			let dg = $('#ttData').datagrid({
                 method: 'get',
                 height: 250,
@@ -172,7 +172,7 @@
 					{field: 'is_new', hidden: true},
 					{field: 'bill_id', title: '', hidden: true},
 					{field: 'itms_bil_id', title: '', hidden: true},
-                    
+
                 ]],
                 columns: [[
                     {field: 'itms_bil_tipe', title: 'Tipe', width: 100, sortable: true,},

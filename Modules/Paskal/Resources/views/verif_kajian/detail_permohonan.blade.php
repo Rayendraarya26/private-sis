@@ -32,12 +32,12 @@
                 <!-- Info -->
                 <div class="dt-avatar-info">
                   <span class="dt-avatar-name display-4 mb-2 font-weight-light">Permohonan dari "{{$dataPermohon->mohon_cust_nama}}"</span>
-                  
+
                 </div>
                 <!-- /info -->
               </div>
               <!-- /avatar wrapper -->
-			  
+
 			  <div class="ml-sm-auto">
                 <!-- List -->
                 <ul class="dt-list dt-list-bordered dt-list-one-third">
@@ -111,7 +111,7 @@
 								</tr>
 							</thead>
 						  </table>
-							
+
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
@@ -357,7 +357,7 @@
                           <!-- Media Body -->
                           <div class="media-body">
                             <span class="d-block text-light-gray f-12 mb-1">Alamat</span>
-                            <a href="javascript:void(0)">{{$dataPermohon->mohon_cust_alamat}} 
+                            <a href="javascript:void(0)">{{$dataPermohon->mohon_cust_alamat}}
 							@if($dataPermohon->cust_asing == 'ya')
 								{{$dataPermohon->negara_nama}}
 							@else
@@ -417,8 +417,8 @@
     <script>
 		function confirmVerif() {
             const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-warning mr-2 mb-2',
                 buttonsStyling: false,
             });
 

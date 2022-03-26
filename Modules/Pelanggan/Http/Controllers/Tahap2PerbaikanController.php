@@ -284,7 +284,12 @@ class Tahap2PerbaikanController extends Controller
             'sis_jadwal.jadw_jenis',
             'sis_jadwal.jadw_file_jadwal',
             'sis_jadwal.jadw_tanggal_mulai',
-            'sis_jadwal.jadw_tanggal_selesai'
+            'sis_jadwal.jadw_tanggal_selesai',
+            'sis_jadwal.jadw_file_lks',
+            'sis_jadwal.jadw_file_laporan_ringkas',
+            'sis_jadwal.jadw_file_surat_tugas',
+            'sis_jadwal.jadw_file_notulen',
+            'sis_jadwal.jadw_file_subkon',
         )->selectRaw("SUM(IF(sis_jadwal_audit.jadw_audit_status = 'on-going', 1, 0)) as total_proses");
 
         $data->where('jadw_setujui_temuan', 'setuju');
@@ -302,40 +307,76 @@ class Tahap2PerbaikanController extends Controller
         foreach ($data->get() as $d) {
             // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
             $timAudit = [];
-                foreach ($d->sis_jadwal_tims as $tim) {
-                    $timAudit[] = [
-                        "tim_nama"   => $tim->master_pegawai->peg_nama,
-                        'tim_kode'   => $tim->jadw_tim_kode,
-                        'tim_posisi' => ucwords($tim->jadw_tim_posisi),
-                    ];
-                }
-                $jadwalAudit = [];
-                foreach ($d->sis_jadwal_audits as $jadwal) {
-                    $jadwalAudit[] = [
-                        'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
-                        'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
-                        'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
-                    ];
-                }
+            foreach ($d->sis_jadwal_tims as $tim) {
+                $timAudit[] = [
+                    "tim_nama"   => $tim->master_pegawai->peg_nama,
+                    'tim_kode'   => $tim->jadw_tim_kode,
+                    'tim_posisi' => ucwords($tim->jadw_tim_posisi),
+                ];
+            }
+            $jadwalAudit = [];
+            foreach ($d->sis_jadwal_audits as $jadwal) {
+                $jadwalAudit[] = [
+                    'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
+                    'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
+                    'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
+                ];
+            }
 
-                $allowEditLks = false;
-                if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
-                    $allowEditLks = true;
-                }
+            $allowEditLks = false;
+            if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
+                $allowEditLks = true;
+            }
 
-                $x['allow_edit_lks']   = $allowEditLks;
-                $x['tims']             = $timAudit;
-                $x['audits']           = $jadwalAudit;
-                $x['jadw_id']          = $d->jadw_id;
-                $x['jadw_jenis']       = $d->jadw_jenis;
-                $x['jadw_file_jadwal'] = asset($d->jadw_file_jadwal);
-                $x['total_temuan']     = $d->sis_audit_lks->count();
-                if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
-                    $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
-                } else {
-                    $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
-                }
-                $result[] = $x;
+            /* Reminder peserta harus mengunggah
+            1. Scan LKS
+            2. Scan Laporan Ringkas
+            3. Scan Surat Tugas
+            4. Scan Notulen
+            5. Scan Subkontrak
+            */
+            $dataFileUpload = [
+                [
+                    'status' => !empty($d->jadw_file_lks),
+                    'name'   => 'Scan LKS',
+                    'url'    => !empty($d->jadw_file_lks) ? asset($d->jadw_file_lks) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_laporan_ringkas),
+                    'name'   => 'Scan Lap Ringkas',
+                    'url'    => !empty($d->jadw_file_laporan_ringkas) ? asset($d->jadw_file_laporan_ringkas) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_surat_tugas),
+                    'name'   => 'Scan Surat Tugas',
+                    'url'    => !empty($d->jadw_file_surat_tugas) ? asset($d->jadw_file_surat_tugas) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_notulen),
+                    'name'   => 'Scan Notulen',
+                    'url'    => !empty($d->jadw_file_notulen) ? asset($d->jadw_file_notulen) : 'javascript:void(0)',
+                ],
+                [
+                    'status' => !empty($d->jadw_file_subkon),
+                    'name'   => 'Scan Subkontrak',
+                    'url'    => !empty($d->jadw_file_subkon) ? asset($d->jadw_file_subkon) : 'javascript:void(0)',
+                ],
+            ];
+
+            $x['allow_edit_lks']   = $allowEditLks;
+            $x['tims']             = $timAudit;
+            $x['audits']           = $jadwalAudit;
+            $x['jadw_id']          = $d->jadw_id;
+            $x['jadw_jenis']       = $d->jadw_jenis;
+            $x['jadw_file_jadwal'] = asset($d->jadw_file_jadwal);
+            $x['total_temuan']     = $d->sis_audit_lks->count();
+            $x['file_upload']      = $dataFileUpload;
+            if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
+                $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
+            } else {
+                $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
+            }
+            $result[] = $x;
             // }
         }
 

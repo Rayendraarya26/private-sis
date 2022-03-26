@@ -288,6 +288,7 @@ class AuDaftarHadirController extends Controller
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
             ->where('sis_jadwal.cust_id', $dataJadwal->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
+            ->orderBy('lks_nomor')
             ->get();
 
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();

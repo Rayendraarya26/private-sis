@@ -216,10 +216,17 @@ class AuLksController extends Controller
             $lksID     = $request['lks_id'];
             $pegawaiID = auth()->user()->master_pegawai->peg_id;
 
-            $this->involvedAuditor($jadwalID);
+            $jadwal = $this->involvedAuditor($jadwalID);
+
+            // check apakah saya kepala auditor
+            $dataTim = $jadwal->sis_jadwal_tims()->where('peg_id', '=', $pegawaiID)->first();
+
             $dataLKS = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
-                ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
+                ->when($dataTim->jadw_tim_posisi != "ketua", function ($query, $pegawaiID) {
+                    $query->where("sis_jadwal_tim.peg_id", $pegawaiID);
+                })->find($lksID);
             if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
+
 
             $dataLKS->lks_status          = 'memadai';
             $dataLKS->lks_sudah_ditutup   = 'ya';
@@ -346,6 +353,7 @@ class AuLksController extends Controller
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
             ->where('sis_jadwal.cust_id', $dataJadwal->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
+            ->orderBy('lks_nomor')
             ->get();
 
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
@@ -500,7 +508,7 @@ class AuLksController extends Controller
 
                 if ($lks->lks_sudah_ditutup == "ya") {
                     $hasilVerif .= sprintf("<div style='text-align: center'>Verifikasi Ke-%d <br> %s </div>", $verifKe, $lks->lks_tanggal_ditutup->isoFormat("LL"));
-                    $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $verifKe);
+                    $hasilVerif .= sprintf("<br> %s <br><br> <b>LKS %d DITUTUP</b>", $lks->lks_catatan_ditutup, $lks->lks_nomor);
                 }
 
                 $result[] = [

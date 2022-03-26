@@ -89,10 +89,6 @@ class Tahap2PersetujuanController extends Controller
 
                 Session::flash("message", "Revisi diajukan ke Tim Audit");
             } else {
-                if (!$request->hasFile('file_lks')) throw new Exception("Mohon upload scan LKS yang sudah diberi TTD dan cap");
-                else if (!$request->hasFile('file_lap_ringkas')) throw new Exception("Mohon upload scan laporan ringkas yang sudah diberi TTD dan cap");
-                else if (!$request->hasFile('file_surat_tugas')) throw new Exception("Mohon upload scan surat tugas yang sudah diberi TTD dan cap");
-
                 // process upload scan files
                 $baseFileUpload = sprintf(config("app.path_file_audit"), $data->jadw_id);
                 if (!File::exists($baseFileUpload)) {
@@ -100,38 +96,46 @@ class Tahap2PersetujuanController extends Controller
                 }
 
                 // ======= LKS ======= //
-                $fileLks     = $request->file('file_lks');
-                $fileLksName = Str::slug('file-scan-lks-' . $fileLks->getClientOriginalName()) . '-' . time() . '.' . $fileLks->getClientOriginalExtension();
-                $fileLksPath = sprintf("%s/%s", $baseFileUpload, $fileLksName);
-                $fileLks->move($baseFileUpload, $fileLksName);
-                $newUploadedPath[]   = public_path($fileLksPath);
-                $data->jadw_file_lks = $fileLksPath;
+                if ($request->hasFile('file_lks')) {
+                    $fileLks     = $request->file('file_lks');
+                    $fileLksName = Str::slug('file-scan-lks-' . $fileLks->getClientOriginalName()) . '-' . time() . '.' . $fileLks->getClientOriginalExtension();
+                    $fileLksPath = sprintf("%s/%s", $baseFileUpload, $fileLksName);
+                    $fileLks->move($baseFileUpload, $fileLksName);
+                    $newUploadedPath[]   = public_path($fileLksPath);
+                    $data->jadw_file_lks = $fileLksPath;
+                }
 
                 // ======= LapRingkas ======= //
-                $fileLapRingkas     = $request->file('file_lap_ringkas');
-                $fileLapRingkasName = Str::slug('file-scan-lapringkas-' . $fileLapRingkas->getClientOriginalName()) . '-' . time() . '.' . $fileLapRingkas->getClientOriginalExtension();
-                $fileLapRingkasPath = sprintf("%s/%s", $baseFileUpload, $fileLapRingkasName);
-                $fileLapRingkas->move($baseFileUpload, $fileLapRingkasName);
-                $newUploadedPath[]               = public_path($fileLapRingkasPath);
-                $data->jadw_file_laporan_ringkas = $fileLapRingkasPath;
+                if ($request->hasFile('file_lap_ringkas')) {
+                    $fileLapRingkas     = $request->file('file_lap_ringkas');
+                    $fileLapRingkasName = Str::slug('file-scan-lapringkas-' . $fileLapRingkas->getClientOriginalName()) . '-' . time() . '.' . $fileLapRingkas->getClientOriginalExtension();
+                    $fileLapRingkasPath = sprintf("%s/%s", $baseFileUpload, $fileLapRingkasName);
+                    $fileLapRingkas->move($baseFileUpload, $fileLapRingkasName);
+                    $newUploadedPath[]               = public_path($fileLapRingkasPath);
+                    $data->jadw_file_laporan_ringkas = $fileLapRingkasPath;
+                }
 
                 // ======= SuratTugas ======= //
-                $fileSuratTugas     = $request->file('file_surat_tugas');
-                $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
-                $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
-                $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
-                $newUploadedPath[]           = public_path($fileSuratTugasPath);
-                $data->jadw_file_surat_tugas = $fileSuratTugasPath;
+                if ($request->hasFile('file_surat_tugas')) {
+                    $fileSuratTugas     = $request->file('file_surat_tugas');
+                    $fileSuratTugasName = Str::slug('file-scan-surattugas-' . $fileSuratTugas->getClientOriginalName()) . '-' . time() . '.' . $fileSuratTugas->getClientOriginalExtension();
+                    $fileSuratTugasPath = sprintf("%s/%s", $baseFileUpload, $fileSuratTugasName);
+                    $fileSuratTugas->move($baseFileUpload, $fileSuratTugasName);
+                    $newUploadedPath[]           = public_path($fileSuratTugasPath);
+                    $data->jadw_file_surat_tugas = $fileSuratTugasPath;
+                }
 
                 // ======= Notulen ======= //
-                $fileNotulen     = $request->file('file_notulen');
-                $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
-                $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
-                $fileNotulen->move($baseFileUpload, $fileNotulenName);
-                $newUploadedPath[]       = public_path($fileNotulenPath);
-                $data->jadw_file_notulen = $fileNotulenPath;
+                if ($request->hasFile('file_notulen')) {
+                    $fileNotulen     = $request->file('file_notulen');
+                    $fileNotulenName = Str::slug('file-scan-notulen-' . $fileNotulen->getClientOriginalName()) . '-' . time() . '.' . $fileNotulen->getClientOriginalExtension();
+                    $fileNotulenPath = sprintf("%s/%s", $baseFileUpload, $fileNotulenName);
+                    $fileNotulen->move($baseFileUpload, $fileNotulenName);
+                    $newUploadedPath[]       = public_path($fileNotulenPath);
+                    $data->jadw_file_notulen = $fileNotulenPath;
+                }
 
-                // ======= Notulen ======= //
+                // ======= SubKontrak ======= //
                 if ($request->hasFile('file_subkon')) {
                     $fileSubkon     = $request->file('file_subkon');
                     $fileSubkonName = Str::slug('file-scan-subkon-' . $fileSubkon->getClientOriginalName()) . '-' . time() . '.' . $fileSubkon->getClientOriginalExtension();
@@ -252,6 +256,7 @@ class Tahap2PersetujuanController extends Controller
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
             ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
+            ->orderBy('lks_nomor')
             ->get();
 
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
