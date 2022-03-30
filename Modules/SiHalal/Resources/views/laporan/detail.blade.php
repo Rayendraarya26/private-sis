@@ -106,27 +106,50 @@
 							<!-- Tab Content-->
 							<div class="tab-content mt-5">
 								<div id="paneLaporan" class="tab-pane active">
-									@if(session('message'))
-										<div class="alert alert-primary alert-dismissible fade show" role="alert">
-											{!! session('message') !!}
-											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-												<span aria-hidden="true">×</span>
-											</button>
+									@if ($errors->any())
+										<div class="alert alert-danger" role="alert">
+											{!! implode('', $errors->all('<li>:message</li>')) !!}
 										</div>
 									@endif
-									<div id="ttData" style="width:100%; min-width: 310px"></div>
-									<div id="toolbar" style="padding: 10px 0 10px 20px">
-										<div class="row">
-											@if(authorized("{$module}@prosesAudit1"))
-												<div>
-													<a href="javascript:void(0)" class="btn btn-outline-success btn-xs" onclick="addModal1()"> 
-														<i class="fas fa-plus"></i> Tambah Laporan
-													</a>
-												</div>
-												&nbsp;&nbsp;&nbsp;
-											@endif
+									@if(session('message'))
+										<div class="alert alert-success" role="alert">
+											{{ session('message') }}
 										</div>
-									</div>
+									@endif
+									<form action="{{action("$module@prosesAudit1")}}" method="post" onsubmit="$('#simpanBtnAdd1').attr('disabled', true)" enctype="multipart/form-data">
+										@csrf
+										<input type="hidden" name="id_reg" id="id_reg" value="{{$data_permohonan['id_reg']}}">
+										<div class="modal-body">
+											<div class="row">
+												<div class="col-sm-1"></div>
+												<div class="col-sm-10">
+													<div class="form-group row">
+														<label class="col-form-label col-sm-3" for="tgl_selesai">Tanggal Selesai *</label>
+														<div class="col-sm-8">
+															<input type="text" name="tgl_selesai" id="tgl_selesai" class="easyui-datebox form-control" required="required" data-options="formatter:myformatter,parser:myparser">
+														</div>
+													</div>
+													<div class="form-group row">
+														<label class="col-form-label col-sm-3" for="file_data">Dokumen Laporan *</label>
+														<div class="col-sm-8">
+															<input accept="application/pdf" class="form-control" type="file" name="file_data">
+															<small id="" class="form-text">Note: file format berupa *.pdf</small>
+														</div>
+													</div>
+													<div class="form-group">
+														<label for="keterangan">Tuliskan Keterangan *</label>
+														<textarea name="keterangan" id="keterangan" class="form-control">@if($data_pelaporan != null) {{$data_pelaporan['keterangan']}} @endif</textarea>
+													</div>
+												</div>
+												<div class="col-sm-1"></div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button id="simpanBtnAdd1" type="submit" class="btn btn-warning btn-sm">
+												<i class="fad fa-paper-plane"></i> Simpan
+											</button>
+										</div>
+									</form>
 								</div>
 								<div id="paneDokumen" class="tab-pane">
 									<div class="dt-card__body" id="panel-dokumen">
@@ -276,8 +299,6 @@
 			</div>
         </div>
     </div>
-	
-	@include("$view._detail_add1_form")
 @endsection
 
 
@@ -311,7 +332,7 @@
 
             swalWithBootstrapButtons({
                 title: `Ajukan Permohonan ?`,
-                text: `Ajukan ke tahap invoice permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
+                text: `Ajukan ke tahap "PERIKSA" permohonan dengan no pengajuan "{{$data_permohonan['id_reg']}}", fitur aksi ini bersifat permanen dan tidak dapat di kembalikan?`,
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ajukan',
@@ -346,66 +367,7 @@
         }
 		
 		$(function () {
-            let dg = $('#ttData').datagrid({
-                method: 'get',
-                height: document.documentElement.scrollHeight - 300,
-                url: `{{ url("$url/ajax?action=datagrid-hasil-audit") }}&id_reg={{$data_permohonan['id_reg']}}`,
-                toolbar: '#toolbar',
-                rownumbers: false,
-                nowrap: false,
-                singleSelect: false,
-                remoteSort: false,
-                remoteFilter: false,
-                multiSort: true,
-                pagination: false,
-                frozenColumns: [[
-                    {field: 'ck', checkbox: true, sortable: false},
-                    {
-                        field: 'action',
-                        title: "",
-                        width: 80,
-                        align: 'center',
-                        formatter: function (val, row, index) {
-							var btnAksi = ``;
-							// btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-success btn-block" onclick="editModal(${index})"><i class="fal fa-pencil"></i> Edit</a>`;
-                            return `${btnAksi}`;
-                        }
-                    }
-                ]],
-                columns: [[
-                    {
-						field: 'tgl_selesai', title: 'Tanggal Selesai', width: 150, sortable: true,
-						formatter: function (val, row, index) {
-							var date = new Date(val),
-								dformat = ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' +  ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + date.getFullYear();
-							return dformat;
-						}
-					},
-                    {field: 'keterangan', title: 'Keterangan', width: 320, sortable: true},
-                    {field: 'hasil_audit', title: 'Hasil Audit', width: 150, sortable: true},
-					{field: 'id_audit_hasil', hidden: true},
-					{field: 'id_reg', hidden: true},
-                ]],
-				onBeforeLoad: function () {
-                    
-                },
-                onLoadSuccess: function (data) {
-					var opts = $(this).datagrid('options');
-					for(var i=0; i<data.rows.length; i++){
-						
-					}
-                },
-            });
-            dg.datagrid(
-                'enableFilter', [
-                    {field: 'action', type: 'label'},
-                ]);
+            $('#tgl_selesai').datebox('setValue', `@if($data_pelaporan != null) {{$data_pelaporan['tgl_selesai']}} @endif`);	
         });
-		
-		
-        function addModal1() {
-            $("#id_biaya").val("");
-            $("#modalFormAdd1").modal('show');
-        }
     </script>
 @endpush

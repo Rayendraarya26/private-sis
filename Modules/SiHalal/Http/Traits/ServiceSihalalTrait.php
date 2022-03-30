@@ -313,6 +313,29 @@ trait ServiceSihalalTrait
 			)->json();
     }
 	
+	public function postProsesAudit2($data)
+    {
+		$cookie_string = session()->get('sihalal_cookie');
+		$file = fopen($data['file'], 'r');
+		
+		return Http::withHeaders([
+				'Cookie' => $cookie_string,
+				'User-Agent' => 'PostmanRuntime/7.29.0',
+				'Connection' => 'keep-alive',
+			])
+			->attach(
+				'file', $file, $data['nama_file']
+			)
+			->post(config("app.sihalal_api_server")."/api/v1/audit_result",  
+				[
+					"id_reg" => $data['id_reg']
+					, "tgl_selesai" => $data['tgl_selesai']
+					, "keterangan" => $data['keterangan']
+					, "hasil_audit" => $data['hasil_audit']
+				]
+			)->json();
+    }
+	
 	public function getInvoice2()
     {
 		$login_data = $this->postLoginGetCookie();

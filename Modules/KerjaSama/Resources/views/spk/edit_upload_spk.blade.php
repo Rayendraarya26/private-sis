@@ -12,7 +12,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Terima Permohonan Pengajuan Serifikasi "#{{$dataPermohon->mohon_id}}"</h3>
+                            <h3 class="dt-card__title">SPK Permohonan Pengajuan Serifikasi "#{{$dataPermohon->mohon_id}}"</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -32,18 +32,18 @@
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
 									
-									<input type="hidden" name="tipe" value="update-upload-kajian-permohonan">
+									<input type="hidden" name="tipe" value="update-upload-spk">
 									<input type="hidden" name="mohon_id" value="{{$dataPermohon->mohon_id}}">
 									<input type="hidden" name="status_tipe" value="informasi">
 									<div class="form-group row">
-										<label class="col-form-label col-sm-3" for="mohon_spk_file">Kajian Permohonan *</label>
+										<label class="col-form-label col-sm-3" for="mohon_spk_file">Dokumen SPK *</label>
 										<div class="col-sm-8">
 											<input type="hidden" id="mohon_spk_file_lama" name="mohon_spk_file_lama" class="form-control" value="@if($dataPermohon->mohon_spk_file != '') {{url($dataPermohon->mohon_spk_file)}} @endif"/>
 											<input accept="application/pdf" class="form-control" type="file" name="mohon_spk_file">
-											<small id="" class="form-text">Note: Upload file Kajian Permohonan yang sudah ditanda tangani ; file format berupa *.pdf</small>
+											<small id="" class="form-text">Note: Upload file Dokumen SPK yang sudah ditanda tangani ; file format berupa *.pdf</small>
 											@if($dataPermohon->mohon_spk_file != '')
 												<hr/>
-												<a target="_blank" href="{{url($dataPermohon->mohon_spk_file)}}"><span class="fad fa-download"></span> File Kajian Permohonan PASKAL lama</a>
+												<a target="_blank" href="{{url($dataPermohon->mohon_spk_file)}}"><span class="fad fa-download"></span> File Dokumen SPK</a>
 											@endif
 										</div>
 									</div>

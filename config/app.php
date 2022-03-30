@@ -34,6 +34,7 @@ return [
     'sihalal_password'   => env('SIHALAL_PASSWORD'),
     'sihalal_lph_id'  => env('SIHALAL_LPH_ID'),
     'sihalal_lph_maped_id'  => env('SIHALAL_LPH_MAPED_ID'),
+    'sihalal_file_upload'    => "files/sihalal/%d",
 
     /*
     |--------------------------------------------------------------------------

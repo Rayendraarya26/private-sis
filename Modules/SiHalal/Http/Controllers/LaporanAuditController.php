@@ -2,13 +2,15 @@
 
 namespace Modules\SiHalal\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Modules\SiHalal\Http\Traits\ServiceSihalalTrait;
 
 class LaporanAuditController extends Controller
@@ -44,7 +46,17 @@ class LaporanAuditController extends Controller
 			$data_permohonan = $rest_permohonan['payload'];
 		}
 		
-        $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
+		$rest_pelaporan = $this->getAuditResult();
+        $data_pelaporan = null;
+		if(isset($rest_pelaporan['payload'])){
+			foreach ($rest_pelaporan['payload'] as $d) {
+				if($d['id_reg'] == $regId){
+					$data_pelaporan = $d;
+				}
+			}
+		}
+		
+        $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan, 'data_pelaporan' => $data_pelaporan];
         return view("$this->view.detail")->with($parser);
     }
 	
@@ -53,12 +65,11 @@ class LaporanAuditController extends Controller
         $request->validate(['action' => 'required']);
         return match ($request['action']) {
             'datagrid-permohonan'                 => $this->ajax_datagrid_permohonan($request),
-            'datagrid-hasil-audit'                 => $this->ajax_datagrid_hasil_audit($request),
             default                    => responseJSON(404, null, "Invalid url"),
         };
     }
 	
-	private function ajax_datagrid_hasil_audit(Request $request)
+	private function get_data_pelaporan()
     {
 		$data = $this->getAuditResult();
 		
@@ -114,23 +125,35 @@ class LaporanAuditController extends Controller
             "id_reg"			=> 'required',
             "tgl_selesai"		=> 'required',
             "keterangan"		=> 'required',
-            "hasil_audit"			=> 'required',
+            'file_data' => 'required'
         ]);
-		
-		try {
+				
+		if ($request->hasFile("file_data")) {				
+			$file     = $request->file('file_data');
+			$namaFile = Str::slug($request->id_reg) . '_laporan_' . time() . '.' . $file->getClientOriginalExtension();
+			$path     = sprintf(config("app.sihalal_file_upload"), $request->id_reg);
+			$file->move(public_path($path), $namaFile);
+			
 			$data_save = [
 				'id_reg' => $request->id_reg
 				, 'tgl_selesai' => $request->tgl_selesai
 				, 'keterangan' => $request->keterangan
-				, 'hasil_audit' => $request->hasil_audit
+				, 'hasil_audit' => "PR005"
+				, 'file' =>  $path.'/'.$namaFile
+				, 'nama_file' => $namaFile
 			];
 			
-			$this->postProsesAudit1($data_save);
-			
-			return redirect($this->url."/detail/$request->id_reg")->with('message', "Laporan audit berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
-		} catch (Exception $e) {
-			return redirect($this->url."/detail/$request->id_reg")->with('message', $e->getMessage());
-        }
+			$rest = $this->postProsesAudit2($data_save);
+			if($rest['status_code'] != 400){
+				return redirect($this->url."/detail/$request->id_reg")->with('message', "Laporan audit berhasil disimpan untuk reg_id #" . $request->id_reg . " sudah berhasil disimpan.");
+			}
+			else{
+				return redirect($this->url."/detail/$request->id_reg")->with('message', $rest['message']);
+			}
+		}
+		else{
+			return redirect()->back($this->url."/detail/$request->id_reg")->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
+		}
     }
 	
 	public function updateStatus(Request $request)

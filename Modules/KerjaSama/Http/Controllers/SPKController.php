@@ -211,12 +211,12 @@ class SPKController extends Controller
     {
 		$request->validate(['tipe' => 'required']);
 		return match ($request['tipe']) {
-            'update-upload-kajian-permohonan' => $this->update_upload_kajian_permohonan($request),
+            'update-upload-spk' => $this->update_upload_spk($request),
             default => null,
         };
     }
 	
-	private function update_upload_kajian_permohonan( Request $request)
+	private function update_upload_spk( Request $request)
 	{
 		$request->validate([
             'mohon_id' => 'required|integer',
