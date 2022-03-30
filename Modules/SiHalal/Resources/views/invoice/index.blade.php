@@ -94,6 +94,12 @@
 			$("#total_inv").val(row.total_inv.toString().formatUang("."));
 			
 			$("#file_inv").attr("href", "http://ptsp.halal.go.id/files/"+row.file_inv);
+			if(row.status_payment != 'SB001'){
+				$("#simpanBtnLunas").hide();
+			}
+			else{
+				$("#simpanBtnLunas").show();
+			}
             $("#modalFormLunas").modal('show');
             $("#modalFormLunasTitle").html(`Detail Inv #${row.id_inv}`);
         }
