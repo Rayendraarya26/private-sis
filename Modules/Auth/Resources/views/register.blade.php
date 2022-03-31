@@ -103,8 +103,16 @@
                                 <i class="fal fa-lock-alt"></i>
                             </span>
                         </div>
-                        <input type="password" class="form-control" aria-label="password" required
+                        <input type="password" class="form-control" aria-label="password" required id="password"
                                placeholder="Masukkan kata sandi (password)..." name="password">
+                        <div class="input-group-append" style="cursor:pointer;">
+                            <span class="input-group-text" id="eyeOpen" onclick="passShow()">
+                                <i class="fal fa-eye-slash"></i>
+                            </span>
+                            <span class="input-group-text" id="eyeClose" onclick="passHide()" style="display: none">
+                                <i class="fal fa-eye"></i>
+                            </span>
+                        </div>
                     </div>
                     @error('password')
                     <span class="text-danger">{{$message}}</span>
@@ -118,7 +126,15 @@
                             </span>
                         </div>
                         <input type="password" class="form-control" aria-label="password_confirmation" required
-                               placeholder="Masukkan ulang kata sandi..." name="password_confirmation">
+                               id="password_conf" placeholder="Masukkan ulang kata sandi..." name="password_confirmation">
+                        <div class="input-group-append" style="cursor:pointer;">
+                            <span class="input-group-text" id="eyeOpenConf" onclick="passShowConf()">
+                                <i class="fal fa-eye-slash"></i>
+                            </span>
+                            <span class="input-group-text" id="eyeCloseConf" onclick="passHideConf()" style="display: none">
+                                <i class="fal fa-eye"></i>
+                            </span>
+                        </div>
                     </div>
                     @error('password_confirmation')
                     <span class="text-danger">{{$message}}</span>
@@ -147,3 +163,35 @@
 
     </div>
 @endsection
+
+
+@push('javascript')
+    <script>
+        function passShow() {
+            $("#password").attr('type', 'text')
+            $("#eyeOpen").attr('style', 'display:none;')
+            $("#eyeClose").attr('style', 'display:;')
+            console.log('show password');
+        }
+
+        function passHide() {
+            $("#password").attr('type', 'password')
+            $("#eyeOpen").attr('style', 'display:;;')
+            $("#eyeClose").attr('style', 'display:none')
+            console.log('hide password');
+        }
+        function passShowConf() {
+            $("#password_conf").attr('type', 'text')
+            $("#eyeOpenConf").attr('style', 'display:none;')
+            $("#eyeCloseConf").attr('style', 'display:;')
+            console.log('show password');
+        }
+
+        function passHideConf() {
+            $("#password_conf").attr('type', 'password')
+            $("#eyeOpenConf").attr('style', 'display:;;')
+            $("#eyeCloseConf").attr('style', 'display:none')
+            console.log('hide password');
+        }
+    </script>
+@endpush
