@@ -155,7 +155,7 @@ trait ServiceSihalalTrait
 				'Vary' => 'Origin',
 				'Access-Control-Allow-Credentials' => true,
 			])
-			->delete(config("app.sihalal_api_server")."api/v1/costs/$id_biaya")->json();
+			->delete(config("app.sihalal_api_server")."/api/v1/costs/$id_biaya")->json();
 			
 		if(isset($result["status"]))
 			return false;
@@ -222,7 +222,7 @@ trait ServiceSihalalTrait
 				'Vary' => 'Origin',
 				'Access-Control-Allow-Credentials' => true,
 			])
-			->delete(config("app.sihalal_api_server")."api/v1/audit_schedule/$id_audit")->json();
+			->delete(config("app.sihalal_api_server")."/api/v1/audit_schedule/$id_audit")->json();
 		
 		if(isset($result["status"]))
 			return false;
@@ -278,7 +278,7 @@ trait ServiceSihalalTrait
 				'Vary' => 'Origin',
 				'Access-Control-Allow-Credentials' => true,
 			])
-			->delete(config("app.sihalal_api_server")."api/v1/audit_schedule/$id_audit_person")->json();
+			->delete(config("app.sihalal_api_server")."/api/v1/audit_schedule/$id_audit_person")->json();
 		
 		if(isset($result["status"]))
 			return false;
