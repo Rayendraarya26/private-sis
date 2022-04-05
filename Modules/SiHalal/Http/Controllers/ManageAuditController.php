@@ -64,11 +64,33 @@ class ManageAuditController extends Controller
 	
 	private function ajax_datagrid_permohonan_audit(Request $request)
     {
-		$data = $this->getPermohonan('10020');
+		$data_permohonan = $this->getPermohonan('10020');
+		$data_invoice = $this->getInvoice();
 		
-        $result = [];
-		if(isset($data['payload'])){
-			foreach ($data['payload'] as $d) {
+        $result_permohonan = [];
+        $result_invoice = [];
+        $result_data = [];
+		if(isset($data_invoice['payload'])){
+			foreach ($data_invoice['payload'] as $d) {
+				if($d['status_payment'] == 'SB004'){
+					$result_invoice[$d['no_daftar']] = $d['id_inv'];
+				}
+			}
+		}
+		
+		if(isset($data_permohonan['payload'])){
+			foreach ($data_permohonan['payload'] as $d) {
+				if(!empty($result_invoice)){
+					if(isset($result_invoice[$d['no_daftar']])){
+						$result_permohonan[$d['id_reg']] = $d;
+					}
+				}
+				// $result_permohonan[$d['id_reg']] = $d;
+			}
+		}
+		
+		if(!empty($result_permohonan)){
+			foreach ($result_permohonan as $d) {
 				$x['id_reg'] = $d['id_reg'];
 				$x['nama_pu'] = $d['nama_pu'];
 				$x['nama_pu_alt'] = $d['nama_pu_alt'];
@@ -84,12 +106,12 @@ class ManageAuditController extends Controller
 				$x['no_ndpu'] = $d['no_ndpu'];
 				$x['jenis_daftar'] = $d['jenis_daftar'];
 				$x['jenis_produk'] = $d['jenis_produk'];
-				array_push($result, $x);
+				array_push($result_data, $x);
 			}
 		}
         
 
-        return response()->json(["rows" => $result]);
+        return response()->json(["rows" => $result_data]);
     }
 	
 	private function ajax_datagrid_jadwal_audit(Request $request)

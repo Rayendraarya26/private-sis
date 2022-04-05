@@ -160,7 +160,7 @@
 													  <th class="text-uppercase" scope="col">Tipe Dokumen</th>
 													  <th class="text-uppercase" scope="col">Keterangan</th>
 													  <th class="text-uppercase" scope="col">Download</th>
-													  <th class="text-uppercase" scope="col">Cek Status</th>
+													  <!-- <th class="text-uppercase" scope="col">Cek Status</th> -->
 													</tr>
 												</thead>
 												<tbody>
@@ -168,8 +168,8 @@
 													<tr>
 													  <td>{{$dpd['tipe_dok']}}</td>
 													  <td>{{$dpd['ket_lainnya']}}</td>
-													  <td><a href="https://ptsp.halal.go.id/file/{{$dpd['file_dok']}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
-													  <td>{{$dpd['ck_list']}}</td>
+													  <td><a href="{{config("app.sihalal_folder_dokumen_url")}}{{$dpd['file_dok']}}" target="_blank" class="btn btn-xs btn-primary">Download</a></td>
+													  <!-- <td>{{$dpd['ck_list']}}</td> -->
 													</tr>
 													@endforeach
 												</tbody>

@@ -30,6 +30,8 @@ return [
 
 
     'sihalal_api_server' => env('SIHALAL_SERVER'),
+    'sihalal_folder_dokumen_url' => env('SIHALAL_URL_FOLDER_DOKUMEN'),
+    'sihalal_folder_invoice_url' => env('SIHALAL_URL_FOLDER_INVOICE'),
     'sihalal_username'   => env('SIHALAL_USERNAME'),
     'sihalal_password'   => env('SIHALAL_PASSWORD'),
     'sihalal_lph_id'  => env('SIHALAL_LPH_ID'),

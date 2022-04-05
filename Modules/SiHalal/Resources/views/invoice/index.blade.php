@@ -93,12 +93,13 @@
 			$("#duedate").val(row.duedate);
 			$("#total_inv").val(row.total_inv.toString().formatUang("."));
 			
-			$("#file_inv").attr("href", "http://ptsp.halal.go.id/files/"+row.file_inv);
+			$("#file_inv").attr("href", "{{config("app.sihalal_folder_invoice_url")}}"+row.file_inv);
 			if(row.status_payment != 'SB001'){
 				$("#simpanBtnLunas").hide();
 			}
 			else{
-				$("#simpanBtnLunas").show();
+				// $("#simpanBtnLunas").show();
+				$("#simpanBtnLunas").hide();
 			}
             $("#modalFormLunas").modal('show');
             $("#modalFormLunasTitle").html(`Detail Inv #${row.id_inv}`);
@@ -127,7 +128,7 @@
                         formatter: function (val, row, index) {
                             var btnAksi = ``;
 							// btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_inv}" class="btn btn-xs btn-info btn-block"><i class="fal fa-table"></i> Detail</a>`;
-							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="detailLunas('${index}')"><i class="fal fa-table"></i> Konfirmasi Lunas</a>`;
+							btnAksi += `<a href="javascript:void(0)" class="btn btn-xs btn-info btn-block" onclick="detailLunas('${index}')"><i class="fal fa-table"></i> Detail</a>`;
                             return `${btnAksi}`;
                         },
                     },
@@ -135,7 +136,8 @@
                 columns: [[
 
 					{field: 'no_inv', title: 'NO<br>INVOICE', width: 120, sortable: true},
-                    {field: 'no_ref', title: 'NO<br/>REF', width: 120, sortable: true},
+                    // {field: 'no_ref', title: 'NO<br/>REF', width: 120, sortable: true},
+                    {field: 'no_daftar', title: 'NO<br/>DAFTAR', width: 120, sortable: true},
 					{
 						field: 'tgl_inv', title: 'Tanggal<br/>Invoice', width: 120, sortable: true,
 						formatter: function (val, row, index) {
@@ -169,7 +171,6 @@
 			dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
-                    {field: 'no_ref', type: 'label'},
                     {field: 'id_ref', type: 'label'},
                     {field: 'tgl_inv', type: 'label'},
                     {field: 'alamat1', type: 'label'},
