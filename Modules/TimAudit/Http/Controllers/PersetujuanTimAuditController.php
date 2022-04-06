@@ -54,6 +54,7 @@ class PersetujuanTimAuditController extends Controller
         $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
+        $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         // $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'none');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -175,6 +176,7 @@ class PersetujuanTimAuditController extends Controller
         $dataKomite->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataKomite->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
         $dataKomite->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        $dataKomite->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         // Filter
         $dataKomite->where('master_pegawai.user_id', '=', auth()->id());
         // $dataKomite->where('sis_audit_tim_komite.komite_kesanggupan', '=', 'none');
