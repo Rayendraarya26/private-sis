@@ -62,7 +62,9 @@ class PpcLogBookController extends Controller
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ppc');
+        $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'on-going');
+        // $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']);
         // tambah jika not null file jadwal
         $data->whereNotNull('sis_jadwal.jadw_file_jadwal');
         if (!empty($request->filterRules)) {

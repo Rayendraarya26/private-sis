@@ -166,12 +166,12 @@ class SertifikatUjiController extends Controller
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
-        $dataJadwal->join('sis_jadwal_tim', function ($join) {
+        $dataJadwal->leftJoin('sis_jadwal_tim', function ($join) {
             $join->on("sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
             $join->on('sis_jadwal_tim.jadw_tim_posisi', '=', DB::raw("'ppc'"));
         });
 
-        $dataJadwal->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
+        $dataJadwal->leftJoin('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id");
         /* 
 		$dataJadwal->leftJoin('sis_audit_logbook', function ($join) {
             $join->on("sis_audit_logbook.jadw_tim_id", "=", "sis_jadwal_tim.jadw_tim_id");

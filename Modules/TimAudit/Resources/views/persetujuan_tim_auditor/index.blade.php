@@ -90,6 +90,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'file_jadwal', type: 'label'},
                     {field: 'jadw_audit_jenis', type: 'label'},
                     {field: 'jadw_tim_kesanggupan', type: 'label'},
                     {field: 'jadw_tanggal_mulai', type: 'label'},

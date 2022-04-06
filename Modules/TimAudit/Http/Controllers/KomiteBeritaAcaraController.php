@@ -62,7 +62,7 @@ class KomiteBeritaAcaraController extends Controller
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
-        $data->whereIn('sis_audit_tim_komite.komite_posisi', ['ketua']);
+        $data->whereIn('sis_audit_tim_komite.komite_posisi', ['ketua', 'anggota']);
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
         $data->where('sis_jadwal_audit.jadw_audit_status', '!=', 'on-going');
         $data->where('sis_audit_komite_rekomendasi.rekmd_komte_status', '=', 'ditutup');
@@ -279,12 +279,15 @@ class KomiteBeritaAcaraController extends Controller
         ];
 
         $dataJadwal = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id']);
+        $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
         $dataJadwal->join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id');
         $dataJadwal->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $dataJadwal->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
         $dataJadwal->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_jadwal_audit.komodt_id");
         $dataJadwal->join('sis_audit_komite_rekomendasi', "sis_audit_komite_rekomendasi.jadw_id", "=", "sis_jadwal.jadw_id");
         $dataJadwal->leftJoin('sis_audit_komite_periksa', "sis_audit_komite_periksa.jadw_id", "=", "sis_jadwal.jadw_id");
+        $dataJadwal->join('sis_audit_tim_komite', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+        $dataJadwal->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
 		
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
@@ -349,32 +352,39 @@ class KomiteBeritaAcaraController extends Controller
 							->first();
 							
 						if ($restDataAudit !== null) {
+							DB::table('sis_jadwal_audit')
+									->where('jadw_audit_id', $key)
+									->update([
+										"jadw_audit_tanggal_berakhir" => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+										"jadw_audit_tanggal_terbit" => $val,
+									]);
+									
 							if($restDataAudit->jadw_audit_jenis == 'sertifikasi'){
 								if($restDataAudit->jadw_audit_status == 'berhak-memperoleh'){
-		// generate nomor sertifikat						
-		$counterRef = DB::table('sis_pelanggan_sertifikasi')->select(DB::raw("COUNT(cust_sert_id)+1 AS counterSert"))->where('sert_id', '=', $restDataAudit->sert_id)->get()[0];
+									// generate nomor sertifikat						
+									$counterRef = DB::table('sis_pelanggan_sertifikasi')->select(DB::raw("COUNT(cust_sert_id)+1 AS counterSert"))->where('sert_id', '=', $restDataAudit->sert_id)->get()[0];
 
-		$sert_format_nomor = explode(' ',$restDataAudit->sert_format_nomor_sertifikat);
-		$nomor_sert = '';
-		if(!empty($sert_format_nomor)){
-			$countDat = count($sert_format_nomor);
-			$jt = 0;
-			$time = strtotime($val);
-			foreach($sert_format_nomor as $dat){
-				if($dat == '{NOMOR}')
-					$nomor_sert .= $counterRef->counterSert;
-				else if($dat == '{TAHUN4}')
-					$nomor_sert .= date("Y",$time);
-				else if($dat == '{TAHUN2}')
-					$nomor_sert .= date("y",$time);
-				else
-					$nomor_sert .= $dat;
+									$sert_format_nomor = explode(' ',$restDataAudit->sert_format_nomor_sertifikat);
+									$nomor_sert = '';
+									if(!empty($sert_format_nomor)){
+										$countDat = count($sert_format_nomor);
+										$jt = 0;
+										$time = strtotime($val);
+										foreach($sert_format_nomor as $dat){
+											if($dat == '{NOMOR}')
+												$nomor_sert .= $counterRef->counterSert;
+											else if($dat == '{TAHUN4}')
+												$nomor_sert .= date("Y",$time);
+											else if($dat == '{TAHUN2}')
+												$nomor_sert .= date("y",$time);
+											else
+												$nomor_sert .= $dat;
 
-				$jt++;
-				if($countDat != $jt)
-					$nomor_sert .= ' ';
-			}
-		}
+											$jt++;
+											if($countDat != $jt)
+												$nomor_sert .= ' ';
+										}
+									}
 							
 									DB::table('sis_pelanggan_sertifikasi')
 										->insert([
@@ -459,6 +469,18 @@ class KomiteBeritaAcaraController extends Controller
 							'status_pesan'    => 'Data Permohonan anda telah selesai di-audit, silahkan cek hasil audit anda.',
 							'status_judul'    => 'Closing Pelaksanaan Audit',
 						]);
+					}
+				}
+			}
+			else{
+				if(!empty($request['tanggal_terbit'])){
+					foreach($request['tanggal_terbit'] as $key => $val){
+						DB::table('sis_jadwal_audit')
+									->where('jadw_audit_id', $key)
+									->update([
+										"jadw_audit_tanggal_berakhir" => isset($request['tanggal_berakhir'][$key]) ? $request['tanggal_berakhir'][$key] : NULL,
+										"jadw_audit_tanggal_terbit" => $val,
+									]);
 					}
 				}
 			}

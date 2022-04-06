@@ -81,6 +81,7 @@ class KomiteLembarPeriksaController extends Controller
         $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
+        $data->where('sis_audit_tim_komite.komite_kesanggupan', '=', 'ya');
         // $data->whereIn('sis_audit_tim_komite.komite_posisi', ['ketua']);
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
         $data->where('sis_audit_komite_rekomendasi.rekmd_komte_status', '=', 'ditutup');

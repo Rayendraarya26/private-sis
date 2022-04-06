@@ -185,7 +185,7 @@ class VerifKajianPermohonanController extends Controller
 			$dataUser = SysUser::whereIn('ug_group_id', ['4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
 			foreach ($dataUser->get() as $us) {
 				$notifUsr            = new NotifStruct();
-				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PASKAL) No. #' . $request['mohon_id'];
+				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
 				$notifUsr->message   = sprintf("Verifikasi Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diverifikasi, silahkan lakukan proses Tagihan Biaya.", $dataPermohon->mohon_id, $dataPermohon->mohon_cust_nama);
 				$notifUsr->user_id   = $us->user_id;
 				$notifUsr->click_url = url('/marketing/tagihan-biaya');

@@ -373,13 +373,16 @@ class UploadKajianPermohonanController extends Controller
 			$dataUser = SysUser::whereIn('ug_group_id', ['9', '10'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
 			foreach ($dataUser->get() as $us) {
 				$notifUsr            = new NotifStruct();
-				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
 				$notifUsr->message   = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diupload silahkan verifikasi.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
 				$notifUsr->user_id   = $us->user_id;
-				if($us->ug_group_id == '10')
+				if($us->ug_group_id == '10'){
+					$notifUsr->title     = 'Verifikasi Kajian Permohonan(PASKAL) No. #' . $request['mohon_id'];
 					$notifUsr->click_url = url('/paskal/verifikasi/detail/'.$request['mohon_id'].'?action=detail-permohonan');
-				else 
+				}
+				else {
+					$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
 					$notifUsr->click_url = url('/pjt/verifikasi/detail/'.$request['mohon_id'].'?action=detail-permohonan');
+				}
 				
 				sendNotification($notifUsr);
 			}

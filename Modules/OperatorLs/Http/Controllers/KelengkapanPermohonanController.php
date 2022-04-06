@@ -248,13 +248,22 @@ class KelengkapanPermohonanController extends Controller
 			
 			$dataPemohon = SisPermohonan::find($request['mohon_id']);
 
-			$dataUser = SysUser::whereIn('ug_group_id', ['4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+			$dataUser = SysUser::whereIn('ug_group_id', ['8', '7'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
 			foreach ($dataUser->get() as $us) {
-				$notifUsr            = new NotifStruct();
-				$notifUsr->title     = 'Upload SPK Permohonan No #' . $dataPemohon['mohon_id'];
-				$notifUsr->message   = sprintf("Silahkan upload SPK untuk permohonan #%s atas nama pemohon %s.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
-				$notifUsr->user_id   = $us->user_id;
-				$notifUsr->click_url = url('kerjasama/spk/detail?action=detail-permohonan&mohon_id='. $dataPemohon['mohon_id']);
+				if($us->ug_group_id == '8'){
+					$notifUsr            = new NotifStruct();
+					$notifUsr->title     = 'Upload SPK Permohonan No #' . $dataPemohon['mohon_id'];
+					$notifUsr->message   = sprintf("Silahkan upload SPK untuk permohonan #%s atas nama pemohon %s.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
+					$notifUsr->user_id   = $us->user_id;
+					$notifUsr->click_url = url('kerjasama/spk/detail?action=detail-permohonan&mohon_id='. $dataPemohon['mohon_id']);
+				}
+				else if($us->ug_group_id == '7'){
+					$notifUsr            = new NotifStruct();
+					$notifUsr->title     = 'Penerbitan Billing No #' . $dataPemohon['mohon_id'];
+					$notifUsr->message   = sprintf("Silahkan terbitkan billing untuk permohonan #%s atas nama pemohon %s.", $dataPemohon['mohon_id'], $dataPemohon['mohon_cust_nama']);
+					$notifUsr->user_id   = $us->user_id;
+					$notifUsr->click_url = url('keuangan/billing/create');
+				}
 				sendNotification($notifUsr);
 			}
 

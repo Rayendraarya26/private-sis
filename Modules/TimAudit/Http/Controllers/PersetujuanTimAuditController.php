@@ -92,7 +92,7 @@ class PersetujuanTimAuditController extends Controller
                 $x['cust_nama']                = $d->cust_nama;
                 $x['sert_nama']                = $d->sert_nama;
                 $x['jadw_jenis']               = $d->jadw_jenis;
-                $x['jadw_audit_jenis']         = $d->jadw_audit_jenis;
+                $x['jadw_audit_jenis']         = 'Tahap 2 :<br/>'. $d->jadw_audit_jenis;
                 $x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
                 $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
                 $x['is_approve']               = $isApprove;
@@ -109,7 +109,8 @@ class PersetujuanTimAuditController extends Controller
             ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
             ->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
             ->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
-            ->where('master_pegawai.user_id', '=', auth()->id());
+            ->where('master_pegawai.user_id', '=', auth()->id())
+            ->where('sis_audit_tahap1.aud_thp1_ditutup', '=','tidak');
         // ->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'none');
 
         if (!empty($request->filterRules)) {
@@ -159,7 +160,7 @@ class PersetujuanTimAuditController extends Controller
             $x['cust_nama']                = $d->cust_nama;
             $x['sert_nama']                = $d->sert_nama;
             $x['jadw_jenis']               = 'tunggal';
-            $x['jadw_audit_jenis']         = 'tahap-1';
+            $x['jadw_audit_jenis']         = 'Tahap-1';
             $x['jadw_tim_kesanggupan']     = $d->thp1_tim_kesanggupan;
             $x['jadw_tim_kesanggupan_tgl'] = $d->thp1_tim_kesanggupan_tgl;
             $x['is_approve']               = $isApprove;
@@ -203,7 +204,7 @@ class PersetujuanTimAuditController extends Controller
         $dataKomite->groupBy('sis_jadwal.jadw_id');
 
         foreach ($dataKomite->get() as $k) {
-            $isApprove = $d->komite_kesanggupan != 'none';
+            $isApprove = $k->komite_kesanggupan != 'none' ? true : false;
 
             $kx['jadw_status']              = 'komite';
             $kx['jadw_id']                  = $k->jadw_id;
@@ -212,11 +213,11 @@ class PersetujuanTimAuditController extends Controller
             $kx['cust_nama']                = $k->cust_nama;
             $kx['sert_nama']                = $k->sert_nama;
             $kx['jadw_jenis']               = $k->jadw_jenis;
-            $kx['jadw_audit_jenis']         = $k->jadw_audit_jenis;
+            $kx['jadw_audit_jenis']         = 'Komite :<br/>'. $k->jadw_audit_jenis;
             $kx['jadw_tim_kesanggupan']     = $k->komite_kesanggupan;
             $kx['jadw_tim_kesanggupan_tgl'] = $k->komite_tgl_kesanggupan;
             $kx['is_approve']               = $isApprove;
-            $x['file_jadwal']               = empty($d->jadw_file_jadwal) ? null : asset($d->jadw_file_jadwal);
+            $x['file_jadwal']               = empty($k->jadw_file_jadwal) ? null : asset($k->jadw_file_jadwal);
             // $x['komite_tgl_surat'] = $d->komite_tgl_surat;
             $result[] = $kx;
         }

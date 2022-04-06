@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisPelanggan;
@@ -217,7 +218,17 @@ class AuTahap1VerifController extends Controller
                     "updated_at"          => Carbon::now(),
                 ]);
             DB::commit();
-
+			
+			$dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+			foreach ($dataUser->get() as $us) {
+				$notifUsr            = new NotifStruct();
+				$notifUsr->title     = 'Informasi Billing';
+				$notifUsr->message   = sprintf("Tahap 1 pada jadwal No #%s, telah dinyatakan ditutup seilahkan lanjutkan penjadwalan tahap 2.", $request->aud_thp1_id);
+				$notifUsr->user_id   = $us->user_id;
+				$notifUsr->click_url = url('/operatorls/penjadwalan');
+				sendNotification($notifUsr);
+			}
+			
             $notifStruct            = new NotifStruct();
             $notifStruct->title     = 'Penutupan Tahap 1';
             $notifStruct->message   = sprintf("Tahap 1 pada jadwal No #%s, telah dinyatakan ditutup seilahkan lanjutkan ke proses tahap 2.", $request->aud_thp1_id);

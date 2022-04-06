@@ -41,7 +41,8 @@
 									</div>
 								</div>
 								<div class="form-group form-row">
-									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">Tanggal Berita Acara</label>
+									<label class="col-xl-3 col-form-label text-sm-left" id="label-form">Tanggal Berita Acara 
+									{{$dataJadwal->komite_posisi}}</label>
 									<div class="col-xl-8">
 										<input type="text"  name="jadw_berita_acara_tanggal" id="jadw_berita_acara_tanggal">
 									</div>
@@ -121,6 +122,7 @@
 									</table>
 								</div>
 								
+								@if($dataJadwal->komite_posisi == 'ketua')
 								<div class="form-group form-row" style="margin-top: 50px">
 									<label class="col-md-2 col-sm-3 text-sm-right mb-4 mb-sm-0">Simpan Draft ?</label>
 									<div class="col-md-10 col-sm-9">
@@ -148,6 +150,7 @@
 										</button>
 									</template>
 								</div>
+								@endif
 							</div>
 						</div>
 					</div>
@@ -222,7 +225,14 @@
 							editable: false,
 							formatter:myformatter,
 							parser:myparser,
-							value:`<?php echo date('Y-m-d'); ?>`,
+							value:`<?php 
+							if(!is_null($dau->jadw_audit_tanggal_terbit)){
+								echo date('Y-m-d', strtotime($dau->jadw_audit_tanggal_terbit));
+							}
+							else{
+								echo date('Y-m-d'); 
+							}
+							?>`,
 						});
 						
 						$('#tanggal_perubahan{{$dau->jadw_audit_id}}').datebox({
@@ -239,10 +249,15 @@
 							formatter:myformatter,
 							parser:myparser,
 							value:`<?php 
-							if($dau->jadw_audit_jenis != 'pencabutan')
-								echo date('Y-m-d', strtotime('+'.$dau->sert_expired.' year'));
-							else 
-								echo date('Y-m-d');
+							if(!is_null($dau->jadw_audit_tanggal_berakhir)){
+								echo date('Y-m-d', strtotime($dau->jadw_audit_tanggal_berakhir));
+							}
+							else{
+								if($dau->jadw_audit_jenis != 'pencabutan')
+									echo date('Y-m-d', strtotime('+'.$dau->sert_expired.' year'));
+								else 
+									echo date('Y-m-d');
+							}
 							?>`,
 						});
 						

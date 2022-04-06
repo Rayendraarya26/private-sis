@@ -5,6 +5,7 @@ namespace Modules\Keuangan\Http\Controllers;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
+use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SisBilling;
 use App\Models\BbkkpSis\SisBillingItems;
 use App\Models\BbkkpSis\SisPelanggan;
@@ -636,7 +637,17 @@ class BillingController extends Controller
         $notifStruct->user_id   = $data_pelanggan?->user_id;
         $notifStruct->click_url = url('/pelanggan/billing');
         sendNotification($notifStruct);
-
+		
+		$dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+		foreach ($dataUser->get() as $us) {
+			$notifUsr            = new NotifStruct();
+			$notifUsr->title     = 'Informasi Billing';
+			$notifUsr->message   = sprintf("Billing dengan nomor %s telah dinyatakan LUNAS, silahkan lakukan penjadwalan.", $request['bill_nomor_billing']);
+			$notifUsr->user_id   = $us->user_id;
+			$notifUsr->click_url = url('/operatorls/penjadwalan');
+			sendNotification($notifUsr);
+		}
+		
         // Send Email
         $structEmail          = new EmailStruct();
         $structEmail->subject = "Informasi Billing";
