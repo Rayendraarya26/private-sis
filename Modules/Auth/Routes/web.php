@@ -4,8 +4,14 @@ use Illuminate\Support\Facades\Route;
 use Modules\Auth\Http\Controllers\ForgetPasswordController;
 use Modules\Auth\Http\Controllers\LoginController;
 use Modules\Auth\Http\Controllers\RegisterController;
+use Modules\Auth\Http\Controllers\SsoController;
 
 Route::prefix('auth')->name("auth.")->group(function () {
+    Route::prefix('sso')->group(function () {
+        Route::get('login', [SsoController::class, 'login']);
+        Route::get('logout', [SsoController::class, 'logout']);
+    });
+
     Route::middleware('guest')->group(function () {
         Route::redirect("/", "auth/login");
         Route::get('login', [LoginController::class, 'index'])->name('login');

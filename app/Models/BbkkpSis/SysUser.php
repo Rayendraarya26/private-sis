@@ -85,7 +85,11 @@ class SysUser extends Authenticatable
 
     public function getImage()
     {
-        return asset($this->user_picture);
+        if (filter_var($this->user_picture, FILTER_VALIDATE_URL)) {
+            return $this->user_picture;
+        } else {
+            return asset($this->user_picture);
+        }
     }
 
     public function user_group()
