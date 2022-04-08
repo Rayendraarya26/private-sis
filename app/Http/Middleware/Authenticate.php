@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Jasny\SSO\Broker\Broker;
 use Modules\Auth\Http\Traits\SsoBrokerTrait;
@@ -17,7 +18,11 @@ class Authenticate
         if (!($broker instanceof Broker)) {
             auth()->logout();
             session()->flush();
-            return redirect()->guest(route('auth.login'));
+            if ($broker instanceof RedirectResponse) {
+                return redirect($broker->getTargetUrl());
+            } else {
+                return redirect()->guest(route('auth.login'));
+            }
         } else {
             try {
                 $data          = $broker->request("GET", "/sso/info");
@@ -27,11 +32,10 @@ class Authenticate
                     $isLoginBefore = false;
                 }
                 return $this->checkClientAuth($request, $next, $isLoginBefore);
-
             } catch (\Exception $e) {
                 auth()->logout();
                 session()->flush();
-                return redirect()->guest(route('auth.login'));
+                return redirect(url("/auth/sso/login"));
             }
         }
     }
