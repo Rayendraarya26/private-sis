@@ -47,94 +47,32 @@
         <div class="dt-login__content">
             <!-- Login Content Inner -->
             <div class="dt-login__content-inner">
-                @if(session('message'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('message') }}
-                    </div>
-                @endif
-
-                @error('status')
-                <div class="alert alert-danger">
-                    {{$message}}
-                </div>
-            @enderror
-            <!-- Form -->
-                <form action="{{route('auth.processLogin')}}" method="post"
-                      onsubmit="$('#btn-submit').attr('disabled', 'true')">
-                @csrf
-                {{--Email--}}
-                <!-- Form Group -->
-                    <div class="input-group input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="fal fa-envelope"></i>
-                            </span>
-                        </div>
-                        <input type="text" class="form-control" aria-label="Small" name="email" value="{{old('email')}}"
-                               placeholder="Masukkan surel (email)" required>
-                    </div>
-                    @error('email')
-                    <span class="text-danger">{{$message}}</span>
-                    @enderror
-                <!-- /form group -->
-
-                    <!-- Form Group -->
-                    {{--Password--}}
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">
-                                <i class="fal fa-lock-alt"></i>
-                            </span>
-                        </div>
-                        <input type="password" class="form-control" aria-label="password"
-                               placeholder="Masukkan kata sandi (password)" id="password"
-                               name="password" required>
-                        <div class="input-group-append" style="cursor:pointer;">
-                            <span class="input-group-text" id="eyeOpen" onclick="passShow()">
-                                <i class="fal fa-eye-slash"></i>
-                            </span>
-                            <span class="input-group-text" id="eyeClose" onclick="passHide()" style="display: none">
-                                <i class="fal fa-eye"></i>
-                            </span>
-                        </div>
-
-
-                    </div>
-                    @error('password')
-                    <span class="text-danger">{{$message}}</span>
-                    @enderror
-
-                <!-- /form group -->
-
-                    <!-- Form Group -->
+                <div style="margin-top:25px">
                     <div class="form-group">
-                        <button type="submit" id="btn-submit" class="btn btn-primary btn-block text-uppercase">Login
-                        </button>
+                        <a href="{{url('/auth/sso/login')}}" id="btn-submit"
+                           class="btn btn-primary btn-block text-uppercase">
+                            Login via SSO
+                        </a>
                     </div>
-                    <!-- /form group -->
-                    @if(\Illuminate\Support\Facades\Route::has("auth.google"))
-                        <div style="text-align: center; font-weight: bold;font-size: 16px">
-                            atau
-                        </div>
-                        <div class="form-group pt-4">
-                            <a href="{{route('auth.google')}}" class="btn btn-outline-primary btn-block">
-                                <i class="fab fa-google"></i> Login dengan Google
-                            </a>
-                        </div>
-                    @endif
-
-                    <div class="pb-2" style="float: right">
-                        <a href="{{route('auth.forget_password')}}" class="text-light-gray">Lupa kata sandi ?</a>
+                    <div style="text-align: center; padding-top: 5px; padding-bottom: 30px">
+                        Jika anda belum memiliki akun SSO BBKKP
                     </div>
+                    <div class="form-group">
+                        <a href="{{url(config('app.sso_server') . '/account/register')}}" id="btn-submit"
+                           class="btn btn-primary btn-block text-uppercase">
+                            Register SSO
+                        </a>
+                    </div>
+                </div>
 
-                    <div class="pb-10"></div>
-                    <div class="pb-10"></div>
-                    <hr>
-                    <span class="text-light-gray"> Klik disini untuk melakukan
-                        <a href="{{route('auth.register')}}">Registrasi</a>
+
+                <div class="pb-5"></div>
+                <hr>
+                <span class="text-light-gray">
+                        Semua pendaftaran terpusat pada laman <b>{{ config('app.sso_server') }}</b>
                     </span>
-                </form>
-                    <!-- /form -->
+
+                <!-- /form -->
             </div>
             <!-- /login content inner -->
         </div>

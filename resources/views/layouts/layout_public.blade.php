@@ -103,11 +103,6 @@
                         </li>
                     @else
                         <li>
-                            <a href="{{ url('auth/register') }}">
-                                <i class="fa fa-user-plus"></i>&nbsp;&nbsp;Daftar
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ url('auth/login') }}">
                                 <i class="fa fa-sign-in"></i>&nbsp;&nbsp;Login
                             </a>

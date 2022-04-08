@@ -17,6 +17,10 @@ return [
     'key'    => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 
+    'sso_server'        => env('SSO_SERVER', 'https://apps.bbkkp.kemenperin.go.id'),
+    'sso_broker_id'     => env('SSO_BROKER_ID'),
+    'sso_broker_secret' => env('SSO_BROKER_SECRET'),
+
     'path_file_tinymce'       => "files/uploaded_tinymce",
     'path_file_master'        => "files/master",
     'path_file_pegawai'       => "files/pegawai/%d",
