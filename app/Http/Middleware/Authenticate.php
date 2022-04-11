@@ -33,6 +33,12 @@ class Authenticate
                 }
                 return $this->checkClientAuth($request, $next, $isLoginBefore);
             } catch (\Exception $e) {
+                $errorMessage = json_decode($e->getMessage());
+                if ($errorMessage->code == 403 && $errorMessage->message == "Akun belum login") {
+                    return redirect(env("SSO_SERVER") . "/sso/login?key=" . $broker->getBearerToken());
+                }
+
+                $broker->clearToken();
                 auth()->logout();
                 session()->flush();
                 return redirect(url("/auth/sso/login"));
