@@ -30,12 +30,14 @@ class SsoController extends Controller
                         return redirect(env("SSO_SERVER") . "/sso/login?key=" . $broker->getBearerToken());
                     }
 
+                    $broker->clearToken();
                     return view("errors.custom")->with([
                         'code'    => 400,
                         'info'    => "BAD REQUEST",
                         'message' => 'Please dont worrry :D ' . $e->getMessage(),
                     ]);
                 } catch (Exception $e) {
+                    $broker->clearToken();
                     return view("errors.custom")->with([
                         'code'    => 500,
                         'info'    => "SERVER ERROR",
