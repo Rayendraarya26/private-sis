@@ -724,7 +724,8 @@ class SertifikasiPermohonanController extends Controller
     {
         $data = SisPelangganSertifikasi::with(["master_sertifikasi"])
             ->join("master_sertifikasi", "master_sertifikasi.sert_id", '=', "sis_pelanggan_sertifikasi.sert_id")
-            ->join("master_komoditi", "master_komoditi.komodt_id", '=', "sis_pelanggan_sertifikasi.komodt_id");
+            ->join("master_komoditi", "master_komoditi.komodt_id", '=', "sis_pelanggan_sertifikasi.komodt_id")
+            ->join("sis_pelanggan", "sis_pelanggan.cust_id", '=', "sis_pelanggan_sertifikasi.cust_id");
         // Filter
         if (!empty($request->q)) {
             $data->where('sert_nama', 'LIKE', '%' . $request->q . '%')
@@ -735,6 +736,8 @@ class SertifikasiPermohonanController extends Controller
                 ->orWhere('cust_sert_nomor_sni', 'LIKE', '%' . $request->q . '%')
                 ->orWhere('cust_sert_lingkup', 'LIKE', '%' . $request->q . '%');
         }
+		
+		 $data->where('sis_pelanggan.user_id', '=', auth()->id());
 
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {

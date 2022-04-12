@@ -82,7 +82,7 @@ class ManageInvoiceController extends Controller
 				$x['kategori_transaksi'] = $d['kategori_transaksi'];
 				$x['asal'] = $d['asal'];
 				$x['duedate'] = $d['duedate'];
-				$x['status_payment'] = $d['status_payment'];
+				$x['status_payment'] = $d['status_payment'] == 'SB004' ? 'Lunas' : 'Tidak Lunas';
 				$x['total_inv'] = $d['total_inv'];
 				$x['unik_id'] = $d['unik_id'];
 				$x['create_by'] = $d['create_by'];
