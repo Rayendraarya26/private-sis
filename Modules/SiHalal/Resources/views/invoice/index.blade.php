@@ -176,6 +176,26 @@
                     {field: 'alamat1', type: 'label'},
                     {field: 'total_inv', type: 'label'},
                     {field: 'duedate', type: 'label'},
+					{
+						field:'status_payment',
+						type:'combobox',
+						options:{
+							panelHeight:'auto',
+							data:[{value:'',text:'Semua'},{value:'SB004',text:'Lunas'}],
+							onChange:function(value){
+								if (value == ''){
+									dg.datagrid('removeFilterRule', 'status');
+								} else {
+									dg.datagrid('addFilterRule', {
+										field: 'status',
+										op: 'equal',
+										value: value
+									});
+								}
+								dg.datagrid('doFilter');
+							}
+						}
+					}
                 ]);
         });
     </script>
