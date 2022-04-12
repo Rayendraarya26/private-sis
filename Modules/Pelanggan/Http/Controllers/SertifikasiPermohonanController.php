@@ -765,7 +765,7 @@ class SertifikasiPermohonanController extends Controller
             $x['sert_is_product']                   = $d->sert_is_product;
             $x['cust_sert_id']                      = $d->cust_sert_id;
             $x['cust_sert_nomor_sertifikat']        = $d->cust_sert_nomor_sertifikat;
-            $x['cust_sert_expired_date']            = $d->created_at?->format("Y-m-d H:i:s");
+            $x['cust_sert_expired_date']            = $d->cust_sert_expired_date?->format("d M Y");
             $x['cust_sert_nomor_referensi']         = $d->cust_sert_nomor_referensi;
             $x['cust_sert_nomor_sni']               = $d->cust_sert_nomor_sni;
             $x['cust_sert_lingkup']                 = $d->cust_sert_lingkup;
