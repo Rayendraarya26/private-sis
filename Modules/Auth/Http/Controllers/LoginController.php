@@ -108,8 +108,9 @@ class LoginController extends Controller
     {
         if (auth()->check()) {
 			$dataUser = SysUser::where("user_email", auth()->user()->user_email)->first();
+			$token = Str::random(20);
             if ($dataUser) {
-                $dataUser->user_token = Str::random(20);
+                $dataUser->user_token = $token;
                 $dataUser->save();
 				
 				// ================ Send Email ================
@@ -118,7 +119,7 @@ class LoginController extends Controller
 				$structEmail->body    = view('auth::mails.resend_validation')
 					->with([
 						'name' => auth()->user()->user_fullname,
-						'link' => route('auth.verify', encrypt(auth()->user()->user_token))
+						'link' => route('auth.verify', encrypt($token))
 					])->render();
 				$structEmail->to      = auth()->user()->user_email;
 				sendEmail($structEmail);
