@@ -14,6 +14,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Auth\Http\Traits\AuthTraits;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -106,19 +107,30 @@ class LoginController extends Controller
     public function handleResendValidation()
     {
         if (auth()->check()) {
-            // ================ Send Email ================
-            $structEmail          = new EmailStruct();
-            $structEmail->subject = "Verifikasi Akun";
-            $structEmail->body    = view('auth::mails.resend_validation')
-                ->with([
-                    'name' => auth()->user()->user_fullname,
-                    'link' => route('auth.verify', encrypt(auth()->user()->user_token))
-                ])->render();
-            $structEmail->to      = auth()->user()->user_email;
-            sendEmail($structEmail);
-            // ================ END Send Email ================
+			$dataUser = SysUser::where("user_email", auth()->user()->user_email)->first();
+            if ($dataUser) {
+                $dataUser->user_token = Str::random(20);
+                $dataUser->save();
+				
+				// ================ Send Email ================
+				$structEmail          = new EmailStruct();
+				$structEmail->subject = "Verifikasi Akun";
+				$structEmail->body    = view('auth::mails.resend_validation')
+					->with([
+						'name' => auth()->user()->user_fullname,
+						'link' => route('auth.verify', encrypt(auth()->user()->user_token))
+					])->render();
+				$structEmail->to      = auth()->user()->user_email;
+				sendEmail($structEmail);
+				// ================ END Send Email ================
 
-            return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
+				return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
+				
+            } else {
+                return redirect(route('auth.login'))->withErrors(["status" => "Link sudah kadaluarsa"]);
+            }
+			
+            
         } else {
             abort(401);
         }
