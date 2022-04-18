@@ -255,16 +255,18 @@ class VerifikasiPermohonanController extends Controller
         sendNotification($notifStruct);
 
         // Send Push TIM LS dan Marketing
-        $dataUser = SysUser::whereIn('ug_group_id', ['6', '4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+        // $dataUser = SysUser::whereIn('ug_group_id', ['6', '4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+        $dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
         foreach ($dataUser->get() as $us) {
             $notifUsr          = new NotifStruct();
             $notifUsr->title   = 'Upload Kajian Permohonan #' . $request['mohon_id'];
             $notifUsr->message = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s ,yang telah melalui proses verifikasi dan diputuskan diterima.", $data['mohon_id'], $data['mohon_cust_nama']);
             $notifUsr->user_id = $us->user_id;
-
+			/* 
             if($us->ug_group_id == '4' )
                 $notifUsr->click_url = url('/marketing/kajian-permohonan');
             else
+			*/
                 $notifUsr->click_url = url('/operatorls/kajian-permohonan');
 
             sendNotification($notifUsr);
