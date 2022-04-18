@@ -176,9 +176,9 @@
 								<tr><th scope="row">5</th><td>Nama Pemilik</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_pemilik}}</a></td></tr>
 								<tr><th scope="row">6</th><td>Nama Pimpinan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_pimpinan}}</a></td></tr>
 								<tr><th scope="row">7</th><td>Nama Wakil Manajemen</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_wakil_manajemen}}</a></td></tr>
-								<tr><th scope="row">8</th><td>Nama Wakil Manajemen</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_nama_wakil_manajemen}}</a></td></tr>
-								<tr><th scope="row">9</th><td>Setiap hari kerja, perusahaan bekerja dalam </td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_shif_kerja}} Shift</a></td></tr>
-								<tr><th scope="row"></th><td>- Jumlah Manajemen</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_manajemen}}</a></td></tr>
+								
+								<tr><th scope="row">8</th><td>Setiap hari kerja, perusahaan bekerja dalam </td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_shif_kerja}} Shift</a></td></tr>
+								<tr><th scope="row"></th><td>- Jumlah Manajemen</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_manajemen}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Administrasi</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_administrasi}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Bagian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_bagian}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Part-time</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_part_time}} Orang</a></td></tr>
@@ -187,9 +187,9 @@
 								<tr><th scope="row"></th><td>&nbsp;&nbsp;&nbsp;&nbsp;>&nbsp;Jumlah Shift 2</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_shift_2}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>&nbsp;&nbsp;&nbsp;&nbsp;>&nbsp;Jumlah Shift 3</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_shift_3}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Non permanen di bawah kendali langsung perusahaan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_non_permanen}}</a></td></tr>
-								<tr><th scope="row">10</th><td>Status perusahaan/klien</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->jenis_perusahaan_nama}}</a></td></tr>
-								<tr><th scope="row">11</th><td>Luas Bangunan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_luas_bangunan}}</a></td></tr>
-								<tr><th scope="row">12</th><td>Luas Tanah</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_luas_tanah}}</a></td></tr>
+								<tr><th scope="row">9</th><td>Status perusahaan/klien</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->jenis_perusahaan_nama}}</a></td></tr>
+								<tr><th scope="row">10</th><td>Luas Bangunan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_luas_bangunan}}</a></td></tr>
+								<tr><th scope="row">11</th><td>Luas Tanah</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_luas_tanah}}</a></td></tr>
 								<tr>
 									<td colspan="4">
 									@foreach($dataPermohonPabrik as $dpp)
@@ -235,7 +235,7 @@
 									@endforeach
 									</td>
 								</tr>
-								<tr><th scope="row">13</th><td>Formulir Kelengkapan Permohonan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link"><a href="{{url($dataPermohon->mohon_pertanyaan_filepath)}}" target="_blank" class="btn btn-xs btn-primary">Download</a></a></td></tr>
+								<tr><th scope="row">12</th><td>Formulir Kelengkapan Permohonan</td><td>:</td><td><a href="javascript:void(0)" class="btn-link"><a href="{{url($dataPermohon->mohon_pertanyaan_filepath)}}" target="_blank" class="btn btn-xs btn-primary">Download</a></a></td></tr>
 							</tbody>
 						  </table>
 						</div>
