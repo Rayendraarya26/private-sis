@@ -162,7 +162,7 @@
 												<tr>
 												  <td class="text-uppercase" scope="col">Tanggal Daftar</td>
 												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['tgl_daftar']}}</a></td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{date('d-m-Y h:i:s', strtotime($data_permohonan['tgl_daftar']))}}</a></td>
 												</tr>
 												<tr>
 												  <td class="text-uppercase" scope="col">Jenis Usaha</td>
