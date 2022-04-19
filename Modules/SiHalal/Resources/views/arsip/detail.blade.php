@@ -127,7 +127,7 @@
 												<tr>
 												  <td class="text-uppercase" scope="col">Tanggal Selesai</td>
 												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">@if($data_pelaporan != null) {{date('Y-m-d h:i:s', strtotime($data_pelaporan['tgl_selesai']))}} @endif</a></td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">@if($data_pelaporan != null) {{date('d-m-Y h:i:s', strtotime($data_pelaporan['tgl_selesai']))}} @endif</a></td>
 												</tr>
 												<tr>
 												  <td class="text-uppercase" scope="col">Dokumen Laporan</td>
@@ -231,7 +231,7 @@
 												<tr>
 												  <td class="text-uppercase" scope="col">Tanggal Daftar</td>
 												  <td class="text-uppercase" scope="col">:</td>
-												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{$data_permohonan['tgl_daftar']}}</a></td>
+												  <td class="text-uppercase" scope="col"><a href="javascript:void(0)" class="btn-link">{{date('d-m-Y h:i:s', strtotime($data_permohonan['tgl_daftar']))}}</a></td>
 												</tr>
 												<tr>
 												  <td class="text-uppercase" scope="col">Jenis Usaha</td>
