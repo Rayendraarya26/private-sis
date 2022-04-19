@@ -8,6 +8,7 @@ use Modules\SiHalal\Http\Controllers\ManageAuditController;
 use Modules\SiHalal\Http\Controllers\LaporanAuditController;
 use Modules\SiHalal\Http\Controllers\ManageInvoiceController;
 use Modules\SiHalal\Http\Controllers\DataAuditorController;
+use Modules\SiHalal\Http\Controllers\ArsipPermohonanController;
 
 Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
     Route::get('/', [SiHalalController::class, 'index']);
@@ -48,6 +49,12 @@ Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
         Route::post("/prosesAudit1", [LaporanAuditController::class, 'prosesAudit1']);
         Route::post("/prosesAudit2", [LaporanAuditController::class, 'prosesAudit2']);
         Route::post("/updateStatus", [LaporanAuditController::class, 'updateStatus']);
+    });
+	
+	Route::prefix("arsip")->group(function () {
+        Route::get("/", [ArsipPermohonanController::class, 'index']);
+        Route::get("/ajax", [ArsipPermohonanController::class, 'ajax']);
+        Route::get("/detail/{reg_id}", [ArsipPermohonanController::class, 'detail']);
     });
 	
 	Route::prefix("invoice")->group(function () {
