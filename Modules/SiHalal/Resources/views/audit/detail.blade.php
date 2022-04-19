@@ -148,7 +148,7 @@
 												<thead>
 													<tr>
 													  <th class="text-uppercase" scope="col">Nama Produk</th>
-													  <th class="text-uppercase" scope="col">Publish Status</th>
+													  <!-- <th class="text-uppercase" scope="col">Publish Status</th> -->
 													  <th class="text-uppercase" scope="col">Foto Produk</th>
 													</tr>
 												</thead>
@@ -156,7 +156,7 @@
 													@foreach($data_permohonan['products'] as $dpp)
 													<tr>
 													  <td>{{$dpp['reg_prod_name']}}</td>
-													  <td>{{$dpp['reg_publish']}}</td>
+													  <!-- <td>{{$dpp['reg_publish']}}</td> -->
 													  <td>@if($dpp['foto_produk'] != '')<a href="https://ptsp.halal.go.id/file/{{$dpd['foto_produk']}}" target="_blank" class="btn btn-xs btn-primary">Download</a>@endif</td>
 													</tr>
 													@endforeach
