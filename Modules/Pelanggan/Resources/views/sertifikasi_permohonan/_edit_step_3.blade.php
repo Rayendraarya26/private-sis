@@ -718,18 +718,23 @@
         <h3>Petanyaan Tambahan</h3>
         <div>
             <ol :start="is_indonesia ? 23 : 20">
-                <li>Lengkapi kuesioner berikut dan upload kembali dibawah
-                    <a href="{{asset('files/requirement_pengajuan/pertanyaan.docx')}}">(unduh form kuesioner)</a>
-                    <br><br>
+                <li>Lengkapi formulir berikut dan upload kembali dibawah
                     <a href="{{asset($dataPemohon->mohon_pertanyaan_filepath)}}" target="_blank">
                         <i class="fad fa-download"></i> Unduh Formulir yang sudah anda upload
                     </a>
+                    <br>
+                    <a href="{{asset('files/requirement_pengajuan/Kondisi_Umum_Perusahaan_Informasi_Tambahan.doc')}}">
+                        (<i class="fad fa-download"></i> form 1. kondisi umum perusahaan)</a>
+                    <br>
+                    <a href="{{asset('files/requirement_pengajuan/Surat_Pernyataan_Perusahaan.docx')}}">
+                        (<i class="fad fa-download"></i> form 2. surat pernyataan perusahaan)</a>
                 </li>
-                <br/>
+                <br>
                 <input type="file" class="form-control" aria-label="Pertanyaan Tambahan"
-                       @change="validateUploadPertanyaanTambahan" accept="application/pdf"
+                       @change="validateUploadPertanyaanTambahan"
+                       accept="application/pdf"
                        name="step3_pertanyaan_tambahan" id="step3_pertanyaan_tambahan">
-                <small><span>Upload ulang jika ingin memperbarui (*format: PDF)</span></small>
+                <small><span>Upload file (Harap scan <b>form 1 dan form 2 digabung</b> dengan format <b>PDF</b>)</span></small>
             </ol>
         </div>
     </div>
