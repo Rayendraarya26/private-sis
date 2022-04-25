@@ -30,13 +30,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $cust_sert_produksi_tahunan
  * @property string|null $cust_sert_produksi_tahunan_satuan
  * @property Carbon|null $cust_sert_tgl_sertifikat_awal
+ * @property Carbon|null $cust_sert_tgl_mulai_aktif
  * @property Carbon|null $cust_sert_tgl_sertifikat_perubahan
- * @property string|null $cust_sert_status
  * @property Carbon $cust_sert_expired_date
+ * @property string|null $cust_sert_status
  * @property Carbon|null $cust_sert_survailen_date
+ * @property string|null $cust_sert_status_survailen
  * @property int|null $cust_sert_survailen_reminder_count
  * @property Carbon|null $cust_sert_survailen_reminder_at
- * @property string|null $cust_sert_status_survailen
  * @property string|null $cust_sert_filepath
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -67,6 +68,7 @@ class SisPelangganSertifikasi extends Model
 
 	protected $dates = [
 		'cust_sert_tgl_sertifikat_awal',
+		'cust_sert_tgl_mulai_aktif',
 		'cust_sert_tgl_sertifikat_perubahan',
 		'cust_sert_expired_date',
 		'cust_sert_survailen_date',
@@ -90,13 +92,14 @@ class SisPelangganSertifikasi extends Model
 		'cust_sert_produksi_tahunan',
 		'cust_sert_produksi_tahunan_satuan',
 		'cust_sert_tgl_sertifikat_awal',
+		'cust_sert_tgl_mulai_aktif',
 		'cust_sert_tgl_sertifikat_perubahan',
-		'cust_sert_status',
 		'cust_sert_expired_date',
+		'cust_sert_status',
 		'cust_sert_survailen_date',
+		'cust_sert_status_survailen',
 		'cust_sert_survailen_reminder_count',
 		'cust_sert_survailen_reminder_at',
-		'cust_sert_status_survailen',
 		'cust_sert_filepath'
 	];
 

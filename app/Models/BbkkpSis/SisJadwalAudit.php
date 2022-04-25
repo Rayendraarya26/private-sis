@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $jadw_audit_kapasitas_produksi_tahunan_satuan
  * @property string|null $jadw_audit_sertifikat_filepath
  * @property string|null $jadw_audit_sertifikat_nomor
+ * @property Carbon|null $jadw_audit_tanggal_terbit
+ * @property Carbon|null $jadw_audit_tanggal_berakhir
  * @property Carbon|null $created_at
  * @property Carbon $updated_at
  * 
@@ -62,6 +64,11 @@ class SisJadwalAudit extends Model
 		'sert_id' => 'int',
 		'komodt_id' => 'int',
 		'cust_sert_id' => 'int'
+	];
+
+	protected $dates = [
+		'jadw_audit_tanggal_terbit',
+		'jadw_audit_tanggal_berakhir'
 	];
 
 	protected $fillable = [
@@ -89,7 +96,9 @@ class SisJadwalAudit extends Model
 		'jadw_audit_kapasitas_produksi_tahunan',
 		'jadw_audit_kapasitas_produksi_tahunan_satuan',
 		'jadw_audit_sertifikat_filepath',
-		'jadw_audit_sertifikat_nomor'
+		'jadw_audit_sertifikat_nomor',
+		'jadw_audit_tanggal_terbit',
+		'jadw_audit_tanggal_berakhir'
 	];
 
 	public function sis_jadwal()

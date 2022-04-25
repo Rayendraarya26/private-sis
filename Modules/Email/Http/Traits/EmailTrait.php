@@ -10,9 +10,19 @@ trait EmailTrait
         return ['FULLNAME', 'EMAIL'];
     }
 
-    public function parse(string $text, string $parser, string $value)
+    public function parse(string $text, string $parser, $value = null)
     {
-        $regex = '/[{]' . $parser . '?[}]/';
-        return preg_replace($regex, $value, $text);
+        if (!empty($parser)) {
+            $regex = '/[{]' . $parser . '?[}]/';
+            return preg_replace($regex, $value, $text);
+        }
+        return 0;
+    }
+
+    public function findVariable(string $text)
+    {
+        $regex = '/[{][A-Z_]+[}]/';
+        preg_match_all($regex, $text, $match);
+        return array_unique($match[0]);
     }
 }
