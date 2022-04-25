@@ -138,14 +138,15 @@ class TemplateEmailController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['template_id']           = $d->template_id;
-            $x['template_uuid']         = $d->template_uuid;
-            $x['template_code']         = $d->template_code;
-            $x['template_desc']         = $d->template_desc;
-            $x['template_mail_subject'] = $d->template_mail_subject;
-            $x['template_created_at']   = $d->template_created_at?->format("Y-m-d H:i:s");
-            $x['template_updated_at']   = $d->template_updated_at?->format("Y-m-d H:i:s");
-            array_push($result, $x);
+            $x['template_id']            = $d->template_id;
+            $x['template_uuid']          = $d->template_uuid;
+            $x['template_code']          = $d->template_code;
+            $x['template_desc']          = $d->template_desc;
+            $x['template_mail_subject']  = $d->template_mail_subject;
+            $x['template_mail_variable'] = implode("<br>", $this->findVariable($d->template_mail_body));
+            $x['template_created_at']    = $d->template_created_at?->format("Y-m-d H:i:s");
+            $x['template_updated_at']    = $d->template_updated_at?->format("Y-m-d H:i:s");
+            $result[]                    = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

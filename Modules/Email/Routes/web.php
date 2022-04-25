@@ -29,5 +29,4 @@ Route::prefix('email')->middleware(['auth', 'restrict'])->group(function () {
 Route::prefix('email')->group(function () {
     Route::get("open/{uuid}", [EmailController::class, 'open']);
     Route::get("schedule/send-greeting", [SchedulerController::class, 'sendGreeting']);
-    Route::get('schedule/reminder-survailant', [SchedulerController::class, 'sendReminderSurvailant']);
 });
