@@ -391,6 +391,7 @@ class BillingController extends Controller
                 $newSisBillingItems->updated_at     = Carbon::now();
 				if($iItems == count($dataItems)){
 					$newSisBillingItems->itms_bil_total = $request['bill_total'];
+					$bil_total = $bil_total + $request['bill_total'];
 				}
 				else{
 					$newSisBillingItems->itms_bil_total = 0;
