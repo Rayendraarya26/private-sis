@@ -1,20 +1,9 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 use Illuminate\Support\Facades\Route;
+use Modules\OperatorLs\Http\Controllers\JadwalSurveilantController;
 use Modules\OperatorLs\Http\Controllers\KelengkapanPermohonanController;
 use Modules\OperatorLs\Http\Controllers\KomiteController;
-use Modules\OperatorLs\Http\Controllers\OperatorLsController;
 use Modules\OperatorLs\Http\Controllers\PenjadwalanController;
 use Modules\OperatorLs\Http\Controllers\SertifikatUjiController;
 use Modules\OperatorLs\Http\Controllers\TimController;
@@ -26,7 +15,6 @@ use Modules\OperatorLs\Http\Controllers\RekomPersetujuanController;
 use Modules\OperatorLs\Http\Controllers\DataSertifikatController;
 
 Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function () {
-    Route::get('/', [OperatorLsController::class, 'index']);
 
 	Route::prefix("data-sertifikat")->group(function () {
         Route::get("/", [DataSertifikatController::class, 'index']);
@@ -34,6 +22,12 @@ Route::prefix('operatorls')->middleware(['auth', 'restrict'])->group(function ()
         Route::get('/cetak/{sertifikat_id}', [DataSertifikatController::class, 'cetak']);
         Route::get('/upload/{sertifikat_id}', [DataSertifikatController::class, 'uploadSertifikat']);
         Route::post('/save', [DataSertifikatController::class, 'saveSertifikat']);
+    });
+
+	Route::prefix("jadwal-surveilant")->group(function () {
+        Route::get("/", [JadwalSurveilantController::class, 'index']);
+        Route::get("/ajax", [JadwalSurveilantController::class, 'ajax']);
+        Route::post('/reminder/finance', [JadwalSurveilantController::class, 'reminderFinance']);
     });
 
 	Route::prefix("rekomendasi-persetujuan")->group(function () {

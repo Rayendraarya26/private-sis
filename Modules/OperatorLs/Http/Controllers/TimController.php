@@ -59,13 +59,13 @@ class TimController extends Controller
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->whereNotIn('sis_jadwal.jadw_team_status', ['accepted', 'fixed']);
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '!=', 'submited');
-		$data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
+        $data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                if($f->field == 'jadw_id')
-					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
-				else
-					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                if ($f->field == 'jadw_id')
+                    $data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+                else
+                    $data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -73,10 +73,10 @@ class TimController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                if($sort[$i] == 'jadw_id')
-					$data->orderBy('sis_jadwal.jadw_id', $order[$i]);
-				else
-					$data->orderBy($sort[$i], $order[$i]);
+                if ($sort[$i] == 'jadw_id')
+                    $data->orderBy('sis_jadwal.jadw_id', $order[$i]);
+                else
+                    $data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total
@@ -105,10 +105,8 @@ class TimController extends Controller
             $x['jadw_team_status']     = $d->jadw_team_status;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
             $x['mohon_id']             = $d->mohon_id;
-            $x['sert_id']              = $d->sert_id;
-            $x['sert_nama']            = $d->sert_nama;
             $x['cust_sert_id']         = $d->cust_sert_id;
-            array_push($result, $x);
+            $result[]                  = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -151,7 +149,7 @@ class TimController extends Controller
             $x['jadw_tim_posisi']          = $d->jadw_tim_posisi;
             $x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
             $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl?->format("Y-m-d");
-            array_push($result, $x);
+            $result[]                      = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -159,74 +157,73 @@ class TimController extends Controller
 
     private function ajax_combogrid_pegawai(Request $request)
     {
-		$total = 0;
-		$result = [];
-		if(in_array($request->posisi, ['ketua', 'auditor', 'observer'])) {
-			$data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-			$data->join('pegawai_kompetensi_auditor', "pegawai_kompetensi_auditor.peg_id", "=", "master_pegawai.peg_id");
-			$data->join('sis_jadwal_audit', "sis_jadwal_audit.sert_id", "=", "pegawai_kompetensi_auditor.sert_id");
-			// Filter
-			if (!empty($request->q)) {
-				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
-			}
-			$data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
-			$data->where('master_pegawai.is_auditor', 'yes');
-			$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
+        $total  = 0;
+        $result = [];
+        if (in_array($request->posisi, ['ketua', 'auditor', 'observer'])) {
+            $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+            $data->join('pegawai_kompetensi_auditor', "pegawai_kompetensi_auditor.peg_id", "=", "master_pegawai.peg_id");
+            $data->join('sis_jadwal_audit', "sis_jadwal_audit.sert_id", "=", "pegawai_kompetensi_auditor.sert_id");
+            // Filter
+            if (!empty($request->q)) {
+                $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+            }
+            $data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
+            $data->where('master_pegawai.is_auditor', 'yes');
+            $data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
                 $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request->jadw_id);
             });
-			// Filter
-			if (!empty($request->q)) {
-				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
-			}
-			// Total
-			$total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
-			// Pagination
-			$data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-			$data->groupBy("master_pegawai.peg_id");
-			// Result
+            // Filter
+            if (!empty($request->q)) {
+                $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+            }
+            // Total
+            $total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
+            // Pagination
+            $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+            $data->groupBy("master_pegawai.peg_id");
+            // Result
 
-			foreach ($data->get() as $d) {
-				$x['peg_id']   = $d->peg_id;
-				$x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
-				$x['peg_nama'] = $d->peg_nama;
-				$x['peg_telp'] = $d->peg_telp;
-				$x['peg_nip']  = $d->peg_nip;
-				array_push($result, $x);
-			}
-		}
-		else if(in_array($request->posisi, ['ppc'])) {
-			$data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-			$data->join('pegawai_kompetensi_ppc', "pegawai_kompetensi_ppc.peg_id", "=", "master_pegawai.peg_id");
-			$data->join('sis_jadwal_audit', "sis_jadwal_audit.komodt_id", "=", "pegawai_kompetensi_ppc.komodt_id");
-			// Filter
-			if (!empty($request->q)) {
-				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
-			}
-			$data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
-			$data->where('master_pegawai.is_ppc', 'yes');
-			$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
+            foreach ($data->get() as $d) {
+                $x['peg_id']   = $d->peg_id;
+                $x['peg_kode'] = $d->peg_kode == '' ? '' : $d->peg_kode;
+                $x['peg_nama'] = $d->peg_nama;
+                $x['peg_telp'] = $d->peg_telp;
+                $x['peg_nip']  = $d->peg_nip;
+                $result[]      = $x;
+            }
+        } else if (in_array($request->posisi, ['ppc'])) {
+            $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+            $data->join('pegawai_kompetensi_ppc', "pegawai_kompetensi_ppc.peg_id", "=", "master_pegawai.peg_id");
+            $data->join('sis_jadwal_audit', "sis_jadwal_audit.komodt_id", "=", "pegawai_kompetensi_ppc.komodt_id");
+            // Filter
+            if (!empty($request->q)) {
+                $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+            }
+            $data->where('sis_jadwal_audit.jadw_id', $request->jadw_id);
+            $data->where('master_pegawai.is_ppc', 'yes');
+            $data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
                 $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request->jadw_id)->where('jadw_tim_posisi', '=', 'ppc');
             });
-			// Filter
-			if (!empty($request->q)) {
-				$data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
-			}
-			// Total
-			$total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
-			// Pagination
-			$data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-			$data->groupBy("master_pegawai.peg_id");
-			// Result
+            // Filter
+            if (!empty($request->q)) {
+                $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
+            }
+            // Total
+            $total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
+            // Pagination
+            $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
+            $data->groupBy("master_pegawai.peg_id");
+            // Result
 
-			foreach ($data->get() as $d) {
-				$x['peg_id']   = $d->peg_id;
-				$x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
-				$x['peg_nama'] = $d->peg_nama;
-				$x['peg_telp'] = $d->peg_telp;
-				$x['peg_nip']  = $d->peg_nip;
-				array_push($result, $x);
-			}
-		}
+            foreach ($data->get() as $d) {
+                $x['peg_id']   = $d->peg_id;
+                $x['peg_kode'] = $d->peg_kode == '' ? '' : $d->peg_kode;
+                $x['peg_nama'] = $d->peg_nama;
+                $x['peg_telp'] = $d->peg_telp;
+                $x['peg_nip']  = $d->peg_nip;
+                $result[]      = $x;
+            }
+        }
 
         return response()->json(["total" => $total, "rows" => $result]);
     }
@@ -396,10 +393,10 @@ class TimController extends Controller
     private function update_pengajuan_tim(Request $request)
     {
         $request->validate([
-            "cust_id" => 'required',
-            "jadw_tanggal_mulai" => 'required',
+            "cust_id"              => 'required',
+            "jadw_tanggal_mulai"   => 'required',
             "jadw_tanggal_selesai" => 'required',
-            "jadw_id" => 'required',
+            "jadw_id"              => 'required',
         ]);
 
 
@@ -438,50 +435,49 @@ class TimController extends Controller
             DB::commit();
 
             if ($restJadwal->jadw_team_status == 'on-going') {
-				$title = 'Penyusunan Tim Audit Tahap II';
-				$message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan , yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])) , date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])) );
+                $title   = 'Penyusunan Tim Audit Tahap II';
+                $message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan , yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])), date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])));
+            } else {
+                $title   = 'Revisi Penyusunan Tim Audit Tahap II';
+                $message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan dan direvisi, yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])), date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])));
             }
-			else {
-                $title = 'Revisi Penyusunan Tim Audit Tahap II';
-				$message = sprintf("Penyusunan Tim Audit tahap II telah diterbitkan dan direvisi, yang akan dilakukan pada tanggal %s s/d %s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($request['jadw_tanggal_mulai'])) , date("d-m-Y", strtotime($request['jadw_tanggal_selesai'])) );
-            }
 
-			$data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
-			// Send Push
-			$notifStruct            = new NotifStruct();
-			$notifStruct->title     = $title;
-			$notifStruct->message   = $message;
-			$notifStruct->user_id   = $data_pelanggan?->user_id;
-			$notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
-			sendNotification($notifStruct);
+            $data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+            // Send Push
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = $title;
+            $notifStruct->message   = $message;
+            $notifStruct->user_id   = $data_pelanggan?->user_id;
+            $notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
+            sendNotification($notifStruct);
 
-			// Send Email
-			$structEmail          = new EmailStruct();
-			$structEmail->subject = $title;
-			$structEmail->body    = view('operatorls::tim.mails.publish')
-				->with([
-					'nama'       => $data_pelanggan?->cust_nama,
-					'message'       => $message,
-					'link_verif'        => url('/pelanggan/tahap2/jadwal'),
-				])->render();
-			$structEmail->to      = $data_pelanggan?->cust_email;
-			sendEmail($structEmail);
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = $title;
+            $structEmail->body    = view('operatorls::tim.mails.publish')
+                ->with([
+                    'nama'       => $data_pelanggan?->cust_nama,
+                    'message'    => $message,
+                    'link_verif' => url('/pelanggan/tahap2/jadwal'),
+                ])->render();
+            $structEmail->to      = $data_pelanggan?->cust_email;
+            sendEmail($structEmail);
 
-			/* $data_tim = SisJadwalTim::join('sis_jadwal', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id")
-				->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
-				->select('*')
-				->where('sis_jadwal_tim.jadw_id', $request['jadw_id']);
+            /* $data_tim = SisJadwalTim::join('sis_jadwal', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id")
+                ->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+                ->select('*')
+                ->where('sis_jadwal_tim.jadw_id', $request['jadw_id']);
 
-			foreach ($data_tim->get() as $d) {
-				$d->peg_id;
-				// Send Push
-				$notifStruct            = new NotifStruct();
-				$notifStruct->title     = $title;
-				$notifStruct->message   = $message;
-				$notifStruct->user_id   = $d?->user_id;
-				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
-				sendNotification($notifStruct);
-			} */
+            foreach ($data_tim->get() as $d) {
+                $d->peg_id;
+                // Send Push
+                $notifStruct            = new NotifStruct();
+                $notifStruct->title     = $title;
+                $notifStruct->message   = $message;
+                $notifStruct->user_id   = $d?->user_id;
+                $notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+                sendNotification($notifStruct);
+            } */
 
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
@@ -512,7 +508,7 @@ class TimController extends Controller
                 }
             }
 
-            if ($status_return == TRUE) {
+            if ($status_return) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");

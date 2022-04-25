@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $cust_sert_status_survailen
  * @property int|null $cust_sert_survailen_reminder_count
  * @property Carbon|null $cust_sert_survailen_reminder_at
+ * @property int|null $cust_sert_survailen_reminder_internal_count
+ * @property Carbon|null $cust_sert_survailen_reminder_internal_at
  * @property string|null $cust_sert_filepath
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -63,7 +65,8 @@ class SisPelangganSertifikasi extends Model
 		'mohon_id' => 'int',
 		'komodt_id' => 'int',
 		'cust_sert_produksi_tahunan' => 'float',
-		'cust_sert_survailen_reminder_count' => 'int'
+		'cust_sert_survailen_reminder_count' => 'int',
+		'cust_sert_survailen_reminder_internal_count' => 'int'
 	];
 
 	protected $dates = [
@@ -72,7 +75,8 @@ class SisPelangganSertifikasi extends Model
 		'cust_sert_tgl_sertifikat_perubahan',
 		'cust_sert_expired_date',
 		'cust_sert_survailen_date',
-		'cust_sert_survailen_reminder_at'
+		'cust_sert_survailen_reminder_at',
+		'cust_sert_survailen_reminder_internal_at'
 	];
 
 	protected $fillable = [
@@ -100,6 +104,8 @@ class SisPelangganSertifikasi extends Model
 		'cust_sert_status_survailen',
 		'cust_sert_survailen_reminder_count',
 		'cust_sert_survailen_reminder_at',
+		'cust_sert_survailen_reminder_internal_count',
+		'cust_sert_survailen_reminder_internal_at',
 		'cust_sert_filepath'
 	];
 
