@@ -736,7 +736,7 @@ class SertifikasiPermohonanController extends Controller
                 ->orWhere('cust_sert_nomor_sni', 'LIKE', '%' . $request->q . '%')
                 ->orWhere('cust_sert_lingkup', 'LIKE', '%' . $request->q . '%');
         }
-		
+
 		 $data->where('sis_pelanggan.user_id', '=', auth()->id());
 
         // Sorter
@@ -1023,7 +1023,7 @@ class SertifikasiPermohonanController extends Controller
         try {
             $request->validate([
                 'sert_dok_id' => 'required|integer',
-                'file'        => 'required|mimetypes:application/pdf|max:10000', // 10MB
+                'file'        => 'required|mimetypes:application/pdf',
             ]);
 
             $dataMasterSertDok = MasterSertifikasiDokumen::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
@@ -1175,7 +1175,7 @@ class SertifikasiPermohonanController extends Controller
             $request->validate([
                 'mohon_id'    => 'required|integer',
                 'sert_dok_id' => 'required|integer',
-                'file'        => 'required|mimetypes:application/pdf|max:10000', // 10MB
+                'file'        => 'required|mimetypes:application/pdf', // 10MB
             ]);
 
             DB::beginTransaction();
