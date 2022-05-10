@@ -345,6 +345,8 @@ class BillingController extends Controller
             $newSisBilling->bill_billing_date  = $request['bill_billing_date'];
             $newSisBilling->bill_due_date      = $request['bill_due_date'];
             $newSisBilling->bill_harus_lunas   = $request['bill_harus_lunas'];
+            $newSisBilling->bill_payment_date   = ($request['bill_total'] == 0) ? Carbon::now() : null;
+            $newSisBilling->bill_payment_status   = ($request['bill_total'] == 0) ? 'lunas' : 'menunggu pembayaran';
             $newSisBilling->created_at         = Carbon::now();
             $newSisBilling->updated_at         = Carbon::now();
             $newSisBilling->save();
@@ -547,6 +549,8 @@ class BillingController extends Controller
             'bill_billing_date'  => $request->bill_billing_date,
             'bill_due_date'      => $request->bill_due_date,
             'bill_harus_lunas'   => $request->bill_harus_lunas == 'ya' ? 'ya' : 'tidak',
+            'bill_payment_date'   => $request->bill_total == 0 ? Carbon::now() : null,
+            'bill_payment_status'   => $request->bill_total == 0 ? 'lunas' : 'menunggu pembayaran',
         ];
 		
 		try {

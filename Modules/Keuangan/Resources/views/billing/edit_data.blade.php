@@ -37,7 +37,7 @@
                                     url(): mengarah ke lokasi url
                                     route(): mengarah ke nama route
                                 -->
-                                <form method="post" action="{{action("$module@update")}}">
+                                <form action="{{action("$module@update")}}" method="post" enctype="multipart/form-data">
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
                                     <input type="hidden" name="tipe" value="data">
@@ -168,6 +168,9 @@
 				formatter:myformatter,
 				parser:myparser,
 				value:`{{old('bill_due_date') ?? $data_billing->bill_due_date?->format('Y-m-d')}}`,
+				onSelect: async function(date){					
+					
+				}
 			});
 			
 			$('#bill_billing_date').datebox({
@@ -175,6 +178,12 @@
 				formatter:myformatter,
 				parser:myparser,
 				value:`{{old('bill_billing_date') ?? $data_billing->bill_billing_date?->format('Y-m-d')}}`,
+				onSelect: async function(date){
+					var dates = new Date();
+					dates.setDate(date.getDate() + 7);
+					
+					$('#bill_due_date').datebox('setValue', dates.getFullYear()+"-"+(dates.getMonth()+1)+"-"+dates.getDate());
+				}
 			});
 			
 			let dg = $('#ttData').edatagrid({
