@@ -30,6 +30,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('cron:reminder-survailant-internal')
             ->appendOutputTo(storage_path('logs/cron-reminder-internal.log'))
             ->mondays()->at("06:00");
+        $schedule->command('cron:reminder-invoice-expired-finance')
+            ->appendOutputTo(storage_path('logs/cron-reminder-invoice-expired-finance.log'))
+            ->everyMinute();
     }
 
     /**
