@@ -3,8 +3,21 @@
 @section('title', 'Upload Kuitansi')
 
 @push('css')
-    {{--    <link rel="stylesheet" href="{{asset('assets/plugins/datepicker/bootstrap-datepicker3.min.css')}}">--}}
-    <link rel="stylesheet" href="{{asset('assets/plugins/datetimepicker/tempusdominus-bootstrap-4.min.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/plugins/datetimepicker/css/tempus-dominus.min.css')}}">
+    <style>
+        .tempus-dominus-widget {
+            width: 30rem;
+        }
+
+        .picker-switch {
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        .next, .previous {
+            padding-top: 10px;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -70,9 +83,9 @@
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan tanggal pembayaran..."
                                                    data-toggle="datetimepicker" type="text" name="bill_payment_date"
-                                                   id="bill_payment_date"
-                                                   value="{{$data->bill_payment_date ?? old('bill_payment_date')}}">
-                                            <small style="float: right">Klik kolom untuk menampilkan/menghilangkan tanggal</small>
+                                                   id="bill_payment_date">
+                                            <small style="float: right">Klik kolom untuk menampilkan/menghilangkan
+                                                tanggal</small>
                                         </div>
                                     </div>
 
@@ -105,24 +118,17 @@
 @endsection
 
 @push("javascript")
-{{--    <script src="{{asset('assets/plugins/datepicker/bootstrap-datepicker.min.js')}}"></script>--}}
-    <script src="{{asset('assets/plugins/datetimepicker/tempusdominus-bootstrap-4.min.js')}}"></script>
+    <script src="{{asset('assets/plugins/datetimepicker/js/popper.min.js')}}"></script>
+    <script src="{{asset('assets/plugins/datetimepicker/js/tempus-dominus.min.js')}}"></script>
     <script>
         $(document).ready(function () {
-            // $('#bill_payment_date').datepicker({
-            //     autoclose: true,
-            //     format: 'yyyy-mm-dd',
-            //     todayHighlight: true,
-            // });
-
-
-            $('#bill_payment_date').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm:ss',
-                showClose: true,
-                todayHighlight: true,
-                autoclose: true,
-                useCurrent: false,
-                keepOpen: false,
+            new tempusDominus.TempusDominus(document.getElementById('bill_payment_date'), {
+                display: {
+                    buttons: {
+                        today: true,
+                        close: true
+                    }
+                }
             });
         });
     </script>
