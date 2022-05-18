@@ -76,11 +76,13 @@
                             let btnTrack  = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
                             let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}', ${row.mohon_harga_permohonan})">Approve Harga</div>`;
 
-                            if (row.mohon_approved_status !== "on-progress") {
+                            if (row.mohon_approved_status !== "on-progress" &&
+                                row.mohon_approved_status !== 'revisi' &&
+                                row.mohon_approved_status !== 'fix' ) {
                                 btnDelete = "";
-                                if (row.mohon_approved_status !== "revisi") {
-                                    btnEdit = "";
-                                }
+                            }
+                            if (row.mohon_approved_status !== "revisi") {
+                                btnEdit = "";
                             }
 
                             if (row.mohon_tagihan_biaya_status == "proses" && (row.mohon_harga_permohonan == 0 || row.mohon_harga_permohonan == null)) {
