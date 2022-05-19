@@ -91,6 +91,10 @@ class JadwalSurveilantController extends Controller
             ->join('sis_pelanggan', 'sis_pelanggan.cust_id', 'sis_pelanggan_sertifikasi.cust_id')
             ->join('master_sertifikasi', 'master_sertifikasi.sert_id', 'sis_pelanggan_sertifikasi.sert_id')
             ->leftJoin('sis_billing_items', 'sis_billing_items.cust_sert_id', '=', 'sis_pelanggan_sertifikasi.cust_sert_id')
+			->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_pelanggan.negara_id')
+			->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_pelanggan.kab_id')
+			->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_pelanggan.kec_id')
+			->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_pelanggan.prov_id')
             ->where("cust_sert_survailen_date", '>=', date("Y-m-d H:i:s"))
             ->where('cust_sert_status_survailen', '=', 'passed');
 
@@ -125,13 +129,14 @@ class JadwalSurveilantController extends Controller
             sis_pelanggan_sertifikasi.*,
             master_sertifikasi.sert_nama,
             sis_billing_items.itms_bil_id,
-            sis_pelanggan.cust_nama
+            sis_pelanggan.*
             "))
             ->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['cust_alamat']                                = $d->cust_alamat;
             $x['cust_sert_id']                                = $d->cust_sert_id;
             $x['cust_id']                                     = $d->cust_id;
             $x['cust_nama']                                   = $d->cust_nama;

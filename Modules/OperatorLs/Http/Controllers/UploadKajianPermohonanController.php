@@ -96,6 +96,7 @@ class UploadKajianPermohonanController extends Controller
                 $x['status_step'] = 're-upload';
             }
 
+            $x['mohon_kajian_permohonan_pjt_file'] = (!is_null($d->mohon_kajian_permohonan_pjt_file)) ? url($d->mohon_kajian_permohonan_pjt_file) : '';
             $x['mohon_id']           = $d->mohon_id;
             $x['cust_id']            = $d->cust_id;
             $x['user_id']            = $d->user_id;

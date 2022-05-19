@@ -147,17 +147,25 @@ class PenjadwalanTahap1Controller extends Controller
     private function ajax_combogrid_pelanggan(Request $request)
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
-			->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
+			// ->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+			->whereIn('sis_billing.bill_id', function ($query) use ($request) {
                 $query->select('sis_billing.bill_id')->from('sis_billing')
 				->join('sis_billing_items', "sis_billing_items.bill_id", "=", "sis_billing.bill_id")
-				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_billing_items.mohon_det_id")
+				->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
+				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 				->where('mohon_det_perlu_tahap1', '=', 'ya')
-				->whereNotNull('sis_billing.bill_id')->groupBy('sis_billing.bill_id');
-            })
+				->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+					$query->select('bill_id')->from('sis_audit_tahap1');
+				})
+				// ->whereNotNull('sis_billing.bill_id')
+				->groupBy('sis_billing.bill_id');
+            });
+			/* 
 			->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
             });
-
+			*/
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {

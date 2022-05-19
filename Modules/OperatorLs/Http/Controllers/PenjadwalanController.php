@@ -214,9 +214,27 @@ class PenjadwalanController extends Controller
     private function ajax_combogrid_pelanggan(Request $request)
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
+			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
             ->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
-            });
+            })
+			->whereNotIn('bill_id', function ($query) use ($request) {
+                $query->select('sis_billing.bill_id')->from('sis_billing')
+				->join('sis_billing_items', "sis_billing_items.bill_id", "=", "sis_billing.bill_id")
+				->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
+				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+				// ->leftJoin('sis_audit_tahap1', "sis_audit_tahap1.sis_billing", "=", "sis_billing.sis_billing")
+				->where('mohon_det_perlu_tahap1', '=', 'ya')
+				->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+					$query->select('bill_id')->from('sis_audit_tahap1')->where('aud_thp1_ditutup', 'ya');
+				})
+				 
+				// ->whereNotNull('sis_billing.bill_id')
+				->groupBy('sis_billing.bill_id');
+            })
+			->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+				$query->select('bill_id')->from('sis_audit_tahap1')->where('aud_thp1_ditutup', 'tidak');
+			});
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {
@@ -224,29 +242,18 @@ class PenjadwalanController extends Controller
         }
 
         // Total
-        $total = $data->select(DB::raw('count(*) as total'))->first()->total;
+        $total = $data->select(DB::raw('count(distinct sis_billing.bill_id) as total'))->first()->total;
         // Pagination
         $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
 
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            if($d->bill_harus_lunas == 'tidak'){
-                $x['cust_id']            = $d->cust_id;
-                $x['cust_nama']          = $d->cust_nama;
-                $x['bill_nomor_billing'] = $d->bill_nomor_billing;
-                $x['bill_id']            = $d->bill_id;
-                $result[] = $x;
-            } else{
-                if($d->bill_payment_status == 'lunas'){
-                    $x['cust_id']            = $d->cust_id;
-                    $x['cust_nama']          = $d->cust_nama;
-                    $x['bill_nomor_billing'] = $d->bill_nomor_billing;
-                    $x['bill_id']            = $d->bill_id;
-                    $result[] = $x;
-                }
-            }
-
+            $x['cust_id']            = $d->cust_id;
+			$x['cust_nama']          = $d->cust_nama;
+			$x['bill_nomor_billing'] = $d->bill_nomor_billing;
+			$x['bill_id']            = $d->bill_id;
+			$result[] = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

@@ -50,12 +50,13 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 80,
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
 							let btnDetail = '';
 							if(row.status_step == 're-upload'){
-								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
+								btnDetail += `<a class="btn btn-info btn-xs btn-block" target="_blank" href="${row.mohon_kajian_permohonan_pjt_file}"><span class="fad fa-download"></span> Download</a>`;
+								btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
 							}
 							else{
 								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
