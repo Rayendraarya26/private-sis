@@ -7,6 +7,7 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUserGroup;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -225,9 +226,9 @@ class UploadTagihanBiayaController extends Controller
 
         $dataInsert = [
             'mohon_id' => $request->mohon_id,
-            'mohon_det_harga_permohonan' => $request->mohon_det_harga_permohonan
-            'mohon_tagihan_biaya_status' => ($request->mohon_det_harga_permohonan == 0) ? 'setuju' : 'proses',
-            'mohon_harus_lunas_status' => 'ya',
+            'mohon_det_harga_permohonan' => $request->mohon_det_harga_permohonan,
+            'mohon_tagihan_biaya_status' => ($request->mohon_det_harga_permohonan > 0) ? 'proses' : 'setuju',
+            'mohon_harus_lunas_status' => 'tidak',
         ];
 
         if ($request->hasFile("mohon_tagihan_biaya_file")) {
@@ -255,11 +256,13 @@ class UploadTagihanBiayaController extends Controller
 				*/
 				
 				 SisPermohonan::findOrFail($request['mohon_id'])->update([
+                    'mohon_harus_lunas_status'  => $dataInsert['mohon_harus_lunas_status'],
+                    'mohon_tagihan_biaya_status'  => $dataInsert['mohon_tagihan_biaya_status'],
                     'mohon_tagihan_biaya_file'  => $dataInsert['mohon_tagihan_biaya_file'],
                     'mohon_harga_permohonan'  => $dataInsert['mohon_det_harga_permohonan'],
                 ]);
             });
-			
+			$timeNow    = Carbon::now();
 			if($request->mohon_det_harga_permohonan > 0){
 				$notifCust           = new NotifStruct();
 				$notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
@@ -292,7 +295,7 @@ class UploadTagihanBiayaController extends Controller
                 ]);
 				
 				$groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 6, 7])->get();
-				$timeNow    = Carbon::now();
+				
 				if ($groupUsers) {
 					foreach ($groupUsers as $user) {
 						$notifStruct = new NotifStruct();
@@ -310,9 +313,13 @@ class UploadTagihanBiayaController extends Controller
 				}
 			}
 			
-
-            return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
-        } else {
+			if($request->mohon_det_harga_permohonan > 0){
+				return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
+			}
+			else{
+				return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan.");
+			}
+		} else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
         }
     }
