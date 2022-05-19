@@ -431,7 +431,7 @@ class DashboardController extends Controller
 
                     foreach ($audits->get() as $row) {
                         $row->master_sertifikasi;
-                        $row?->sis_permohonan?->sis_pelanggan;
+                        $row?->sis_jadwal?->sis_pelanggan;
                         foreach ($row?->sis_jadwal?->sis_jadwal_tims ?? [] as $r) {
                             $r?->master_pegawai;
                         }
