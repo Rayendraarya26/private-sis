@@ -269,9 +269,9 @@
                 confirmButtonText: 'Ajukan',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
-            }).then((result) => {
-				$.messager.progress(); 
+            }).then((result) => { 
                 if (result.value) {
+					$.messager.progress();
                     $.ajax({
                         url: `{{url("$url/update")}}`,
 						data: { 

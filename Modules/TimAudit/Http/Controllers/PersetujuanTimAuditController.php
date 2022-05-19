@@ -244,7 +244,8 @@ class PersetujuanTimAuditController extends Controller
         if ($request['jenis'] == 'tahap-1') {
             $dataJadwal    = SisAuditTahap1::with(['sis_permohonan'])->find($request['jadw_id']);
             $dataPemohon[] = $dataJadwal->sis_permohonan;
-        } else if ($request['jenis'] == 'tahap-2' || $request['jenis'] == 'komite') {
+        } 
+		else if ($request['jenis'] == 'tahap-2' || $request['jenis'] == 'komite') {
             $dataJadwal = SisJadwal::with(['sis_billing.sis_billing_items.sis_permohonan'])->find($request['jadw_id']);
             foreach ($dataJadwal?->sis_billing?->sis_billing_items as $billing_item) {
                 $dataPemohon[] = $billing_item->sis_permohonan;

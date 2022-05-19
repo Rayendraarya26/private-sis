@@ -56,11 +56,11 @@
                             if (!row.is_approve) {
                                 btnEdit += `<a class="btn btn-success btn-block btn-xs" href="{{ url("$url/edit") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-handshake"></i> Persetujuan</a>`;
                             }
-                            btnDetail = `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/detail") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-info"></i> Detail Audit</a>`;
+                            btnDetail += `<a class="btn btn-info btn-block btn-xs" href="{{ url("$url/detail") }}?tipe=kesanggupan-tim&jadw_id=${row.jadw_id}&jenis=${row.jadw_status}"><i class="fas fa-book"></i> Detail Data</a>`;
 
                             return `
                             @if(authorized("{$module}@edit")) ${btnEdit} @endif
-                            @if(authorized("{$module}@detail")) ${btnDetail} @endif
+							@if(authorized("{$module}@detail")) ${btnDetail} @endif
                             `
                         }
                     }
