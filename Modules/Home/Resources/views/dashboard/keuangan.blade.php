@@ -299,7 +299,7 @@
                             rows += `
         				<tr>
         					<td>${i + 1}</td>
-        					<td>${r?.sis_permohonan?.sis_pelanggan?.cust_nama ?? '-'}</td>
+        					<td>${r?.sis_jadwal?.sis_pelanggan?.cust_nama ?? '-'}</td>
         					<td>
         						<b>(${r.jadw_audit_jenis.toUpperCase()})</b>
         						<br>${r?.master_sertifikasi?.sert_nama ?? '-'}
