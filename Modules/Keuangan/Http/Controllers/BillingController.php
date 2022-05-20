@@ -720,21 +720,51 @@ class BillingController extends Controller
     {
         try {
             $status_return = TRUE;
-            foreach ($request->ids as $id) {
-                $data = SisBillingItems::where("itms_bil_id", $id)->firstOrFail();
-                if ($data->delete()) {
+			
+			$data = SisBilling::where("sis_billing.bill_id", $request->bill_id);
+			$data->join('sis_billing_items', "sis_billing.bill_id", "=", "sis_billing_items.bill_id");
+			
+			$total_data = 0;
+			$harga_total = 0;
+			$item = [];
+			foreach ($data->get() as $d) {
+				$total_data++;
+				if($d->itms_bil_total > 0){
+					$harga_total = $d->itms_bil_total;
+				}
+				$item[] = $d->itms_bil_id;
+			}
+			
+			if($total_data > 1){
+				foreach ($request->ids as $id) {
+					if (($key = array_search($id, $item)) !== false) {
+						unset($item[$key]);
+					}
 
-                } else {
-                    $status_return = FALSE;
-                    break;
-                }
-            }
+					$dataItems = SisBillingItems::where("itms_bil_id", $id)->firstOrFail();
+					if ($dataItems->delete()) {
 
-            if ($status_return == TRUE) {
-                return responseJSON(200, [], "Berhasil menghapus data");
-            } else {
-                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
-            }
+					} else {
+						$status_return = FALSE;
+						break;
+					}
+				}
+				
+				if ($status_return == TRUE) {
+					SisBillingItems::where("bill_id", $request['bill_id'])->update(['itms_bil_total' => 0]);
+					
+					$k = array_rand($item);
+					$v = $item[$k];
+
+					SisBillingItems::where("itms_bil_id", $v)->firstOrFail()->update(['itms_bil_total' => $harga_total]);
+					return responseJSON(200, [], "Berhasil menghapus data");
+				} else {
+					return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
+				}
+			}
+			else{
+				return responseJSON(500, [], "Data items billing harus lebih dari 1.");
+			}
         } catch (Exception $e) {
             return responseJSON(500, [], $e->getMessage());
         }
