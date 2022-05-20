@@ -49,21 +49,34 @@ class KelengkapanPermohonanController extends Controller
     private function ajax_datagrid_permohonan(Request $request)
     {
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
+			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+			->leftJoin('sis_billing_items', "sis_billing_items.mohon_id", "=", "sis_permohonan.mohon_id")
+			;
         // Filter
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
         $data->whereIn('mohon_tagihan_biaya_status', ['setuju']);
-        $data->whereNull('mohon_pernyataan_persetujuan_file');
+        // $data->whereNull('mohon_pernyataan_persetujuan_file');
 		if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-				if($f->field == 'mohon_id')
+				if($f->field == 'mohon_id'){
 					$data->where('sis_permohonan.mohon_id', 'LIKE', '%' . $f->value . '%');
-				else if($f->field == 'created_at')
+				}
+				else if($f->field == 'created_at'){
 					$data->where('sis_permohonan.created_at', 'LIKE', '%' . $f->value . '%');
-				else
+				}
+				else if($f->field == 'status_pernyataan'){
+					if($f->value == 'ya'){
+						$data->whereNotNull('mohon_pernyataan_persetujuan_file');
+					}
+					else{
+						$data->whereNull('mohon_pernyataan_persetujuan_file');
+					}
+				}
+				else{
 					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				}
             }
         }
         // Sorter
@@ -83,14 +96,22 @@ class KelengkapanPermohonanController extends Controller
         $total = $data->select(DB::raw('count(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
 		$data->groupBy('sis_permohonan.mohon_id');
-        $data->select("*", "sis_permohonan.created_at AS created_at", "sis_permohonan.updated_at AS updated_at", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("*", "sis_billing_items.bill_id AS bill_id", "sis_permohonan.created_at AS created_at", "sis_permohonan.updated_at AS updated_at", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
 		
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['status_step'] = '';
-            if (is_null($d->mohon_pernyataan_persetujuan_file) && is_null($d->mohon_spk_file)) {
-                $x['status_step'] = 'verifikasi';
+            $x['status_step'] = 'upload';
+            $x['status_pernyataan'] = 'Proses';
+            if (!is_null($d->mohon_pernyataan_persetujuan_file)) {
+				if($d->bill_id != ''){
+					$x['status_step'] = 'done';
+				}
+				else{
+					$x['status_step'] = 're-upload';
+				}
+				
+				$x['status_pernyataan'] = '<span style="color:blue;">Ter-Upload</span>';
             }
 
             $x['cust_sert_id']       = $d->cust_sert_id;
@@ -99,6 +120,7 @@ class KelengkapanPermohonanController extends Controller
             $x['user_id']            = $d->user_id;
             $x['sert_id']            = $d->sert_id;
             $x['sert_nama']          = $d->sert_nama;
+            $x['mohon_pernyataan_persetujuan_file'] = url($d->mohon_pernyataan_persetujuan_file);
             $x['mohon_cust_nama']    = $d->mohon_cust_nama;
             $x['mohon_jenis_status'] = $d->mohon_jenis_status;
             $x['created_at']         = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)

@@ -58,7 +58,7 @@ class UploadKajianPermohonanController extends Controller
 			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->whereIn('mohon_approved_status', ['accepted']);
-        $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['proses']);
+        // $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['proses']);
 		if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				if($f->field == 'mohon_id')
@@ -91,12 +91,19 @@ class UploadKajianPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
-            $x['status_step'] = 'upload';
-            if (!is_null($d->mohon_kajian_permohonan_pjt_file)) {
-                $x['status_step'] = 're-upload';
-            }
+			if($d->mohon_verif_kajian_permohonan_pjt == 'proses'){
+				$x['status_step'] = 'upload';
+				if (!is_null($d->mohon_kajian_permohonan_pjt_file)) {
+					$x['status_step'] = 're-upload';
+				}
+			}
+			else{
+				$x['status_step'] = 'done';
+			}
+            
 
             $x['mohon_kajian_permohonan_pjt_file'] = (!is_null($d->mohon_kajian_permohonan_pjt_file)) ? url($d->mohon_kajian_permohonan_pjt_file) : '';
+            $x['mohon_verif_kajian_permohonan_pjt'] = ($d->mohon_verif_kajian_permohonan_pjt == 'proses') ? "Proses" : '<span style="color:blue;">Ter-Verifikasi</span>';
             $x['mohon_id']           = $d->mohon_id;
             $x['cust_id']            = $d->cust_id;
             $x['user_id']            = $d->user_id;
