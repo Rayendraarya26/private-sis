@@ -80,9 +80,11 @@ class ManageAuditController extends Controller
 		
 		if(isset($data_permohonan['payload'])){
 			foreach ($data_permohonan['payload'] as $d) {
+				$result_permohonan[$d['id_reg']] = $d;
+				$result_permohonan[$d['id_reg']]['status'] = 'nota';
 				if(!empty($result_invoice)){
 					if(isset($result_invoice[$d['no_daftar']])){
-						$result_permohonan[$d['id_reg']] = $d;
+						$result_permohonan[$d['id_reg']]['status'] = 'audit';
 					}
 				}
 				// $result_permohonan[$d['id_reg']] = $d;
@@ -98,7 +100,7 @@ class ManageAuditController extends Controller
 				$x['tgl_daftar'] = $d['tgl_daftar'];
 				$x['nama_jenis_daftar'] = $d['nama_jenis_daftar'];
 				$x['nama_jenis_produk'] = $d['nama_jenis_produk'];
-				$x['nama_status_reg'] = $d['nama_status_reg'];
+				$x['nama_status_reg'] = ($d['nama_status_reg'] == 'audit') ? $d['nama_status_reg'] : 'Faktur Belum Terbit';
 				$x['jml_produk'] = $d['jml_produk'];
 				$x['nama_jenis_usaha'] = $d['nama_jenis_usaha'];
 				$x['nama_lph'] = $d['nama_lph'];
