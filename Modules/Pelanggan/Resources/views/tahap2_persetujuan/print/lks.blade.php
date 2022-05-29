@@ -12,6 +12,9 @@
             justify-content: center;
         }
 
+        table.print-friendly tr td, table.print-friendly tr th {
+            page-break-inside: avoid;
+        }
 
         section, span, table, tr, th, td, #rekomen-lks {
             font-size: 12px;
@@ -70,7 +73,7 @@
 </div>
 
 <section style="margin-top: 20px; margin-right: 20px; margin-left: 20px">
-    <table>
+    <table class="print-friendly">
         <tr>
             <td>1.</td>
             <td>Jenis Kegiatan</td>
@@ -174,16 +177,14 @@
             ?>
             <tr>
                 <td style="text-align: center">{{$lks->lks_nomor}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
-                <td style="padding: 5px">
-                    {{--{!! $lks->lks_uraian_ketidaksesuaian !!}--}}
-                    {{ strip_tags($lks->lks_uraian_ketidaksesuaian) }}
+                <td style="padding: 5px;word-wrap:break-word">
+                    {!! $lks->lks_uraian_ketidaksesuaian !!}
                     <br>
                     <br>
                     <b>Kategori ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                     <br>
                     <br>
-                    {{--Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
-                    <b>Klausul ketidak sesuaian</b>: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
+                    <b>Klausul ketidak sesuaian</b>: {!! $lks->lks_klausul_ketidaksesuaian !!}
                 </td>
 
                 <td>
