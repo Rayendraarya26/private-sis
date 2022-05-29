@@ -135,7 +135,7 @@
                             return text
                         },
                         styler: function (val, row) {
-                            if(row.is_bill_expired){
+                            if(row.is_bill_expired && row.bill_payment_status != 'lunas'){
                                 return 'color:white;background-color:#D41818;';
                             }
                         }
