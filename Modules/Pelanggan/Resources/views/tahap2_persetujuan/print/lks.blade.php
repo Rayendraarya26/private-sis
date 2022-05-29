@@ -62,7 +62,7 @@
 <header>
     <div style="float: left; padding-left: 40px">
         <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
-             style="max-width: 150px; margin-top: -20px">
+             style="max-width: 150px; margin-top: -60px">
     </div>
 </header>
 
