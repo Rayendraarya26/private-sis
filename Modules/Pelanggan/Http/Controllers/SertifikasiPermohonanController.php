@@ -621,6 +621,65 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
+    public function cancel()
+    {
+
+    }
+
+    public function processCancel(Request $request)
+    {
+        $request->validate([
+            'mohon_id'            => 'required',
+            'mohon_cancel_reason' => 'required',
+            'mohon_cancel_file'   => 'required|mimetypes:application/pdf'
+        ]);
+
+        $uploadedPath = [];
+        try {
+            $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $request['mohon_id'])->first();
+            if (empty($dataPemohon)) throw new Exception('Data permohonan tidak ditemukan');
+
+            // Process Upload File
+            $baseFileUpload = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
+            $fileCancel     = $request->file('mohon_cancel_file');
+            $fileCancelName = Str::slug('pembatalan-' . fileName($fileCancel)) . '-' . time() . '.' . $fileCancel->getClientOriginalExtension();
+            $fileCancelPath = sprintf("%s/%s", $baseFileUpload, $fileCancelName);
+            $uploadedPath[] = $fileCancelPath;
+            $fileCancel->move($baseFileUpload, $fileCancelName);
+
+            // Update DB
+            $dataPemohon->mohon_cancel_file   = $fileCancelPath;
+            $dataPemohon->mohon_cancel_at     = Carbon::now();
+            $dataPemohon->mohon_cancel_reason = $request['mohon_cancel_reason'];
+            $dataPemohon->mohon_cancel_status = 'process';
+            $dataPemohon->save();
+
+            // Send Notification to Operator LS
+            $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [6])->get();
+            if ($groupUsers) {
+                foreach ($groupUsers as $user) {
+                    $notifStruct = new NotifStruct();
+                    $notifStruct->title     = sprintf("#%d Pembatalan permohonan sertifikasi", $dataPemohon->mohon_id);
+                    $notifStruct->message   = sprintf("%s memohon pembatalan sertifikasi dikarenakan %s", $dataPemohon->mohon_cust_nama, $dataPemohon->mohon_cancel_reason);
+                    $notifStruct->user_id   = $user?->ug_user_id;
+                    $notifStruct->click_url = url('/operatorls/XXX');
+
+                    $notifStruct->message = $notifStruct->message . ' Operator LS harap segera membuat surat pernyataan persetujuan.';
+
+                    sendNotification($notifStruct);
+
+                }
+            }
+
+            return redirect()->back()->with('message', "Proses pembatalan berhasil diajukan, mohon menunggu approval pihak BBKKP");
+        } catch (Exception $e) {
+            foreach ($uploadedPath as $delPath) { // delete uploaded file
+                @unlink($delPath);
+            }
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
     public function ajax(Request $request)
     {
         $request->validate(['action' => 'required']);
@@ -1065,7 +1124,7 @@ class SertifikasiPermohonanController extends Controller
         try {
             $request->validate(["parameter" => "required", "value" => "required"]);
             $parameter = $request['parameter'];
-            $value     = $request['value'] == '--' ? NULL : $request['value'];
+            $value     = $request['value'] == '--' ? null : $request['value'];
 
             $dataPemohon                          = auth()->user()?->sis_pelanggan;
             $dataPemohon->$parameter              = $value;
@@ -1118,7 +1177,7 @@ class SertifikasiPermohonanController extends Controller
         try {
             $request->validate(['pabrik_id' => 'required|integer', "parameter" => "required", "value" => "required"]);
             $parameter = $request['parameter'];
-            $value     = $request['value'] == '--' ? NULL : $request['value'];
+            $value     = $request['value'] == '--' ? null : $request['value'];
 
             $dataPabrik             = SisPelangganPabrik::findOrFail($request['pabrik_id']);
             $dataPabrik->$parameter = $value;
@@ -1242,7 +1301,7 @@ class SertifikasiPermohonanController extends Controller
             $request->validate(["parameter_main" => "required", "parameter_permohonan" => "required", "value" => "required", 'mohon_id' => 'required']);
             $parameterPelanggan = $request['parameter_main'];
             $parameterPemohon   = $request['parameter_permohonan'];
-            $value              = $request['value'] == '--' ? NULL : $request['value'];
+            $value              = $request['value'] == '--' ? null : $request['value'];
 
             DB::beginTransaction();
 
@@ -1338,7 +1397,7 @@ class SertifikasiPermohonanController extends Controller
             DB::beginTransaction();
             $parameterPermohonan = $request['parameter_permohonan'];
             $parameterPelanggan  = $request['parameter_pelanggan'];
-            $value               = $request['value'] == '--' ? NULL : $request['value'];
+            $value               = $request['value'] == '--' ? null : $request['value'];
             // Update Permohonan Pabrik
             $dataPabrikPermohonan                       = SisPermohonanPabrik::where('mohon_id', $request['mohon_id'])->findOrFail($request['mohon_pabrik_id']);
             $namaPabrik                                 = $dataPabrikPermohonan->mohon_pabrik_nama;
