@@ -178,6 +178,7 @@ class BillingController extends Controller
             ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
         $data->where('mohon_approved_status', '=', 'accepted')
+            ->where('mohon_cancel_status', '=', 'no')
             ->where('mohon_verif_kajian_permohonan_pjt', '=', 'ya')
             ->where('mohon_verif_kajian_permohonan_paskal', '=', 'ya')
             ->where('mohon_tagihan_biaya_status', '=', 'setuju')

@@ -31,7 +31,7 @@ class PembatalanPermohonanController extends Controller
     {
         $breadcrumbs = [
             new BreadcrumbsStruct('PJT'),
-            new BreadcrumbsStruct('Verifikasi Kajian Permohonan'),
+            new BreadcrumbsStruct('Verifikasi Pembatalan Permohonan', url($this->url)),
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
@@ -52,9 +52,8 @@ class PembatalanPermohonanController extends Controller
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
-        $data->whereIn('mohon_approved_status', ['accepted']);
-        $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['proses']);
-        $data->whereNotNull('mohon_kajian_permohonan_pjt_file');
+        $data->whereIn('mohon_cancel_status', ['process']); // , 'yes'
+		
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				if($f->field == 'mohon_id')
@@ -87,13 +86,15 @@ class PembatalanPermohonanController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $x['mohon_cancel_file']           = ($d->mohon_cancel_file != '') ? '<a href="'.url($d->mohon_cancel_file).'" target="_blank">Download</a>' : '-';
+            $x['mohon_cancel_reason']           = $d->mohon_cancel_reason;
             $x['mohon_id']           = $d->mohon_id;
             $x['cust_id']            = $d->cust_id;
             $x['user_id']            = $d->user_id;
             $x['sert_nama']          = $d->sert_nama;
             $x['mohon_cust_nama']    = $d->mohon_cust_nama;
             $x['created_at']         = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-           $x['updated_at']              = $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+			$x['updated_at']			= $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
         }
 
@@ -142,7 +143,7 @@ class PembatalanPermohonanController extends Controller
 
         $breadcrumbs = [
             new BreadcrumbsStruct('PJT'),
-            new BreadcrumbsStruct('Verifikasi Kajian Permohonan', url($this->url)),
+            new BreadcrumbsStruct('Verifikasi Pembatalan Permohonan', url($this->url)),
             new BreadcrumbsStruct('Detail Permohonan "#' . $mohonID . '"'),
         ];
 
@@ -160,40 +161,28 @@ class PembatalanPermohonanController extends Controller
         return view("$this->view.detail_permohonan")->with($parser);
     }
 
-    public function edit(Request $request) // menerima parameter ID dari Modules\Master\Routes\web.php
+    public function procesCancel(Request $request, $mohonID) // menerima parameter ID dari Modules\Master\Routes\web.php
     {
-        $request->validate(['action' => 'required']);
-        return match ($request['action']) { // Match fitur mirip switch case tetapi lebih simple (PHP 8 keatas)
-            'edit-accepted' => $this->edit_accepted($request),
-            default         => null,
-        };
-    }
-
-    private function edit_accepted(Request $request)
-    {
-        $dataInsert = [
+		$dataInsert = [
             'mohon_id' => $request->mohon_id,
         ];
 
         DB::transaction(function () use ($request, $dataInsert) {
             SisPermohonan::findOrFail($request['mohon_id'])->update([
-                'mohon_verif_kajian_permohonan_pjt' => 'ya',
+                'mohon_cancel_status' => 'yes',
             ]);
         });
 		
 		$dataPermohon = SisPermohonan::where('mohon_id', $request['mohon_id'])->select('*')->get()[0];
-		if($dataPermohon->mohon_verif_kajian_permohonan_paskal == 'ya' && $dataPermohon->mohon_verif_kajian_permohonan_pjt == 'ya'){
-			$dataUser = SysUser::whereIn('ug_group_id', ['4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
-			foreach ($dataUser->get() as $us) {
-				$notifUsr            = new NotifStruct();
-				$notifUsr->title     = 'Verifikasi Kajian Permohonan(PJT) No. #' . $request['mohon_id'];
-				$notifUsr->message   = sprintf("Verifikasi Kajian Permohonan untuk permohonan nomor #%s untuk %s telah diverifikasi, silahkan lakukan proses Tagihan Biaya.", $dataPermohon->mohon_id, $dataPermohon->mohon_cust_nama);
-				$notifUsr->user_id   = $us->user_id;
-				$notifUsr->click_url = url('/marketing/tagihan-biaya');
-				sendNotification($notifUsr);
-			}
+		if($dataPermohon->mohon_cancel_status == 'yes'){
+			$notifUsr            = new NotifStruct();
+			$notifUsr->title     = 'Persetujuan Pembatalan Permohonan No. #' . $request['mohon_id'];
+			$notifUsr->message   = sprintf("Persetujuan Pembatalan Permohonan untuk permohonan nomor #%s untuk %s telah di-setujui, silahkan lakukan proses Tagihan Biaya.", $dataPermohon->mohon_id, $dataPermohon->mohon_cust_nama);
+			$notifUsr->user_id   = $dataPermohon->user_id;
+			$notifUsr->click_url = url('/pelanggan/sertifikasi/permohonan');
+			sendNotification($notifUsr);
 		}
 		
-        return redirect($this->url)->with('message', "Verifikasi Kajian Permohonan #" . $request->mohon_id . " telah diterima.");
+        return redirect($this->url)->with('message', "Persetujuan Pembatalan Permohonan #" . $request->mohon_id . " telah diterima.");
     }
 }

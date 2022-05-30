@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Verifikasi Kajian Permohonan PJT')
+@section('title', 'Persetujuan Pembatalan Permohonan')
 
 @section('content')
 <style>
@@ -12,8 +12,8 @@
         <div class="row">
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
-				@if(authorized("{$module}@edit"))
-                <a class="btn btn-sm btn-info" href="#" onClick="confirmVerif()" style="margin-bottom: 20px"> <i class="fas fa-badge-check"></i> Verifikasi?</a>
+				@if(authorized("{$module}@procesCancel"))
+                <a class="btn btn-sm btn-danger" href="#" onClick="confirmVerif()" style="margin-bottom: 20px"> <i class="fas fa-badge-check"></i> Setujui Pembatalan Permohonan?</a>
 				@endif
 			</div>
 		</div>
@@ -45,12 +45,6 @@
                   <li class="dt-list__item text-center">
                     <h4 class="font-weight-medium mb-4 text-white">#{{$dataPermohon->mohon_id}}</h4>
                     <span class="d-inline-block f-12">No. Pengajuan</span>
-                  </li>
-                  <!-- /list item -->
-                  <!-- List Item -->
-                  <li class="dt-list__item text-center">
-                    <h4 class="font-weight-medium mb-4 text-white">{{$dataPermohon->mohon_approved_status}}</h4>
-                    <span class="d-inline-block f-12">Status Pengajuan</span>
                   </li>
                   <!-- /list item -->
                 </ul>
@@ -93,25 +87,28 @@
                     <div class="tab-content mt-5">
                       <!-- Tab panel -->
                       <div id="pane1" class="tab-pane active">
-                        <!-- List -->
-						<div class="table-responsive">
-						  <table class="table table-hover mb-0">
+						<table class="table table-hover mb-0">
 							<thead>
-							<!--
 								<tr>
-								  <th class="text-uppercase" scope="col">File Kajian Permohonan(PASKAL)</th>
-								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_paskal_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_paskal_file)}}" target="_blank" class="btn btn-xs btn-primary">Download</a> @endif </th>
+								  <th class="" scope="col">File Permohonan Pembatalan</th>
+								  <th class="" scope="col">:</th>
+								  <th class="" scope="col">@if($dataPermohon->mohon_cancel_file != '') <a href="{{url($dataPermohon->mohon_cancel_file)}}" target="_blank">Download</a> @endif </th>
 								</tr>
-							-->
 								<tr>
-								  <th class="text-uppercase" scope="col">File Kajian Permohonan</th>
-								  <th class="text-uppercase" scope="col">:</th>
-								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_kajian_permohonan_pjt_file != '') <a href="{{url($dataPermohon->mohon_kajian_permohonan_pjt_file)}}" target="_blank" class="btn btn-xs btn-primary">Download</a> @endif </th>
+								  <th class="" scope="col">Alasan Pembatalan</th>
+								  <th class="" scope="col">:</th>
+								  <th class="" scope="col">@if($dataPermohon->mohon_cancel_reason != '') <p>{{$dataPermohon->mohon_cancel_reason}}</p> @endif </th>
+								</tr>
+								<tr>
+								  <th class="" scope="col">Tanggal Pembatalan</th>
+								  <th class="" scope="col">:</th>
+								  <th class="" scope="col">@if($dataPermohon->mohon_cancel_at != '') <p>{{$dataPermohon->mohon_cancel_at?->format("Y-m-d H:i:s")}}</p> @endif </th>
 								</tr>
 							</thead>
-						  </table>
-
+						</table>
+						  
+                        <!-- List -->
+						<div class="table-responsive">
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
@@ -423,16 +420,16 @@
             });
 
             swalWithBootstrapButtons({
-                title: `Verifikasi Kajian Permohonan PJT?`,
-                text: `Apakah anda ingin mem-verifikasi kajian permohonan PJT untuk permohonan ini? (NB: Mengubah status verifikasi menjadi 'Diterima' bersifat permanen dan tidak dapat di kembalikan)`,
+                title: `Detail Permohonan?`,
+                text: `Apakah anda ingin men-setujui pembatalan permohonan untuk permohonan ini? (NB: Mengubah status menjadi 'Setuju Pembatalan' bersifat permanen dan tidak dapat di kembalikan)`,
                 type: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Diterima',
+                confirmButtonText: 'Setujui?',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-					window.location.href = `{{url("$url")}}/edit?action=edit-accepted&mohon_id={{$dataPermohon->mohon_id}}`;
+					window.location.href = `{{url("$url")}}/proses_cancel/{{$dataPermohon->mohon_id}}`;
                 }
             });
         }

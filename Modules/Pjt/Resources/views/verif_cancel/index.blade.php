@@ -1,6 +1,6 @@
 @extends('layouts.layout_app')
 
-@section('title', 'Verifikasi Kajian Permohonan PJT')
+@section('title', 'Persetujuan Pembatalan Permohonan')
 
 @section('content')
     <div class="dt-content">
@@ -17,7 +17,7 @@
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
-                            <h3 class="dt-card__title">Data Permohonan Sertifikasi</h3>
+                            <h3 class="dt-card__title">Data Permohonan Sertifikasi yang Diajukan Pelanggan untuk Dibatalkan</h3>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -30,6 +30,7 @@
 @endsection
 
 @push("javascript")
+    <script src="{{asset('assets/plugins/easyui/datagrid-detailview.js')}}"></script>
     <script>
         $(function () {
             let dg = $('#ttData').datagrid({
@@ -46,15 +47,25 @@
                 pagination: true,
                 pageSize: 50,
                 clientPaging: false,
+                detailFormatter: function (index, row) {
+                    let htmls = `<div style="padding: 20px 0 20px 0"><h4>Keterangan Pembatalan</h4><ul>`;
+                    htmls += `<li><p>Keterangan : ${row.mohon_cancel_reason}</p></li>`;
+                    htmls += `<li><p>File : ${row.mohon_cancel_file}</p></li>`;
+
+                    htmls += "</ul></div>"
+
+                    return htmls
+                },
+				view: detailview,
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
+                        title: "",
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
 							let btnDetail = '';
-							btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-primary btn-xs btn-block"><i class="fas fa-badge-check"></i> Verifikasi</a>`;
+							btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-primary btn-xs btn-block"><i class="fas fa-badge-check"></i> Detail</a>`;
 							
                             return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
                         }
@@ -73,5 +84,27 @@
                     {field: 'sert_nama', type: 'textbox'},
                 ]);
         });
+		
+		function confirmVerif(mohon_id) {
+            const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success mb-2',
+                cancelButtonClass: 'btn btn-warning mr-2 mb-2',
+                buttonsStyling: false,
+            });
+
+            swalWithBootstrapButtons({
+                title: `Detail Permohonan?`,
+                text: `Apakah anda ingin men-setujui pembatalan permohonan untuk permohonan ini? (NB: Mengubah status menjadi 'Setuju Pembatalan' bersifat permanen dan tidak dapat di kembalikan)`,
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Diterima',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.value) {
+					window.location.href = `{{url("$url")}}/proses_cancel/${mohon_id}`;
+                }
+            });
+        }
     </script>
 @endpush

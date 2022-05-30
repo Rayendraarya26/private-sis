@@ -97,6 +97,33 @@
                       <div id="pane1" class="tab-pane active">
                         <!-- List -->
 						<div class="table-responsive">
+						@if($dataPermohon->mohon_cancel_status != 'no')
+							<table class="table table-hover mb-0">
+								<thead>
+									<tr>
+									  <th class="" scope="col">Status Permohonan Pembatalan</th>
+									  <th class="" scope="col">:</th>
+									  <th class="text-uppercase" scope="col">{{$dataPermohon->mohon_cancel_status}}</th>
+									</tr>
+									<tr>
+									  <th class="" scope="col">File Permohonan Pembatalan</th>
+									  <th class="" scope="col">:</th>
+									  <th class="" scope="col">@if($dataPermohon->mohon_cancel_file != '') <a href="{{url($dataPermohon->mohon_cancel_file)}}" target="_blank">Download</a> @endif </th>
+									</tr>
+									<tr>
+									  <th class="" scope="col">Alasan Pembatalan</th>
+									  <th class="" scope="col">:</th>
+									  <th class="" scope="col">@if($dataPermohon->mohon_cancel_reason != '') <p>{{$dataPermohon->mohon_cancel_reason}}</p> @endif </th>
+									</tr>
+									<tr>
+									  <th class="" scope="col">Tanggal Pembatalan</th>
+									  <th class="" scope="col">:</th>
+									  <th class="" scope="col">@if($dataPermohon->mohon_cancel_at != '') <p>{{$dataPermohon->mohon_cancel_at?->format("Y-m-d H:i:s")}}</p> @endif </th>
+									</tr>
+								</thead>
+							</table>
+						  @endif
+						   
 						  <table class="table table-hover mb-0">
 							<thead>
 								<tr>
