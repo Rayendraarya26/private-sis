@@ -92,12 +92,10 @@
                                 btnApproveHarga = "";
                             }
 
-                            if (btnDelete != ""){
+                            if (btnDelete != "" && row.allow_cancel){
                                 btnCancel = ""
                             }
-
-                            console.log(btnCancel);
-
+                            
                             return `
                         <div>
                         <button class="btn-action btn-info" data-index="${row.mohon_id}" title="Aksi">
