@@ -14,6 +14,8 @@ use App\Models\BbkkpSis\MasterNegara;
 use App\Models\BbkkpSis\MasterProvinsi;
 use App\Models\BbkkpSis\MasterSertifikasi;
 use App\Models\BbkkpSis\MasterSertifikasiDokumen;
+use App\Models\BbkkpSis\SisBillingItems;
+use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganDokumen;
 use App\Models\BbkkpSis\SisPelangganPabrik;
@@ -33,10 +35,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Modules\Pelanggan\Http\Traits\PermohonanTrait;
 
 class SertifikasiPermohonanController extends Controller
 {
+    use PermohonanTrait;
+
     public $module = self::class;
+    private $view = 'pelanggan::sertifikasi_permohonan';
     private $url = 'pelanggan/sertifikasi/permohonan';
 
     public function index()
@@ -47,7 +53,7 @@ class SertifikasiPermohonanController extends Controller
         ];
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
-        return view('pelanggan::sertifikasi_permohonan.index')->with($parser);
+        return view("$this->view.index")->with($parser);
     }
 
     public function create()
@@ -68,7 +74,7 @@ class SertifikasiPermohonanController extends Controller
             'masterJenisPerusahaan' => $masterJenisPerusahaan,
             'breadcrumbs'           => $breadcrumbs
         ];
-        return view('pelanggan::sertifikasi_permohonan.create')->with($parser);
+        return view("$this->view.create")->with($parser);
     }
 
     public function store(Request $request)
@@ -345,7 +351,7 @@ class SertifikasiPermohonanController extends Controller
             'masterJenisPerusahaan' => $masterJenisPerusahaan,
         ];
         // dd($parser);
-        return view('pelanggan::sertifikasi_permohonan.edit')->with($parser);
+        return view("$this->view.edit")->with($parser);
     }
 
     public function update(Request $request)
@@ -504,7 +510,7 @@ class SertifikasiPermohonanController extends Controller
             'url'         => $this->url,
             'dataPemohon' => $dataPemohon,
         ];
-        return view('pelanggan::sertifikasi_permohonan.detail')->with($parser);
+        return view("$this->view.detail")->with($parser);
     }
 
     public function track($mohonID)
@@ -522,7 +528,7 @@ class SertifikasiPermohonanController extends Controller
             'url'         => $this->url,
             'dataPemohon' => $dataPemohon,
         ];
-        return view('pelanggan::sertifikasi_permohonan.track')->with($parser);
+        return view("$this->view.track")->with($parser);
     }
 
     public function destroy(Request $request)
@@ -621,23 +627,44 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
-    public function cancel()
+    public function cancel($mohonId)
     {
+        try {
+            $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $mohonId)->first();
+            if (empty($dataPemohon)) throw new Exception('Data permohonan tidak ditemukan');
 
+            $breadcrumbs = [
+                new BreadcrumbsStruct('Pelanggan'),
+                new BreadcrumbsStruct('Permohonan Sertifikasi', url($this->url)),
+                new BreadcrumbsStruct('Batal'),
+            ];
+
+            $parser = [
+                'module'      => $this->module,
+                'url'         => $this->url,
+                'data'        => $dataPemohon,
+                'breadcrumbs' => $breadcrumbs
+            ];
+            return view("$this->view/cancel")->with($parser);
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
-    public function processCancel(Request $request)
+    public function processCancel(Request $request, $mohonId)
     {
         $request->validate([
-            'mohon_id'            => 'required',
             'mohon_cancel_reason' => 'required',
             'mohon_cancel_file'   => 'required|mimetypes:application/pdf'
         ]);
 
         $uploadedPath = [];
         try {
-            $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $request['mohon_id'])->first();
+            $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $mohonId)->first();
             if (empty($dataPemohon)) throw new Exception('Data permohonan tidak ditemukan');
+
+            $allowCancel = $this->allowCancel($dataPemohon);
+            if (!$allowCancel) throw new Exception('Permohonan tidak dapat dibatalkan karena telah masuk dalam Penjadwalan');
 
             // Process Upload File
             $baseFileUpload = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
@@ -654,11 +681,11 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon->mohon_cancel_status = 'process';
             $dataPemohon->save();
 
-            // Send Notification to Operator LS
-            $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [6])->get();
+            // Send Notification to PJT
+            $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [9])->get();
             if ($groupUsers) {
                 foreach ($groupUsers as $user) {
-                    $notifStruct = new NotifStruct();
+                    $notifStruct            = new NotifStruct();
                     $notifStruct->title     = sprintf("#%d Pembatalan permohonan sertifikasi", $dataPemohon->mohon_id);
                     $notifStruct->message   = sprintf("%s memohon pembatalan sertifikasi dikarenakan %s", $dataPemohon->mohon_cust_nama, $dataPemohon->mohon_cancel_reason);
                     $notifStruct->user_id   = $user?->ug_user_id;
@@ -760,6 +787,9 @@ class SertifikasiPermohonanController extends Controller
                 ];
             }
 
+            $allowCancel       = $this->allowCancel(SisPermohonan::find($d->mohon_id));
+            $x['allow_cancel'] = $allowCancel;
+
             $x['cust_sert_id']               = $d->cust_sert_id;
             $x['mohon_id']                   = $d->mohon_id;
             $x['cust_id']                    = $d->cust_id;
@@ -770,6 +800,8 @@ class SertifikasiPermohonanController extends Controller
             $x['mohon_jenis_status']         = $d->mohon_jenis_status;
             $x['mohon_tagihan_biaya_status'] = $d->mohon_tagihan_biaya_status;
             $x['mohon_harga_permohonan']     = $d->mohon_harga_permohonan;
+            $x['mohon_cancel_status']        = $d->mohon_cancel_status;
+            $x['mohon_cancel_at']            = $d->mohon_cancel_at;
             $x['created_at']                 = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']                  = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['revisi']                     = $dtRevisi;

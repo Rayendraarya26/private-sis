@@ -34,8 +34,8 @@ Route::prefix('pelanggan')->middleware(['auth', 'restrict'])->group(function () 
         Route::post('/create', [SertifikasiPermohonanController::class, 'store']);
         Route::delete('/delete', [SertifikasiPermohonanController::class, 'destroy']);
         Route::post('/approve-harga', [SertifikasiPermohonanController::class, 'approveHarga']);
-        Route::get('/cancel', [SertifikasiPermohonanController::class, 'cancel']);
-        Route::post('/cancel', [SertifikasiPermohonanController::class, 'processCancel']);
+        Route::get('/cancel/{mohon_id}', [SertifikasiPermohonanController::class, 'cancel']);
+        Route::post('/cancel/{mohon_id}', [SertifikasiPermohonanController::class, 'processCancel']);
     });
 
     Route::prefix("billing")->group(function () {
