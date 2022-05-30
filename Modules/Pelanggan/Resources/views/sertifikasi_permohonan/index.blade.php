@@ -75,6 +75,7 @@
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.mohon_id}', '${row.sert_nama}')">Delete</div>`;
                             let btnTrack  = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
                             let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}', ${row.mohon_harga_permohonan})">Approve Harga</div>`;
+                            let btnCancel = `<div data-options="iconCls:'fad fa-cancel'" onclick="location.href = '{{url("$url/cancel")}}/${row.mohon_id}'">Pembatalan</div>`;
 
                             if (row.mohon_approved_status !== "on-progress" &&
                                 row.mohon_approved_status !== 'revisi' &&
@@ -91,6 +92,10 @@
                                 btnApproveHarga = "";
                             }
 
+                            if (btnDelete != "" && row.allow_cancel){
+                                btnCancel = ""
+                            }
+                            
                             return `
                         <div>
                         <button class="btn-action btn-info" data-index="${row.mohon_id}" title="Aksi">
@@ -102,6 +107,7 @@
                             @if(authorized("{$module}@edit")) ${btnEdit} @endif
                             @if(authorized("{$module}@track")) ${btnTrack} @endif
                             <!-- <div class="menu-sep"></div> -->
+                                @if(authorized("{$module}@cancel")) ${btnCancel} @endif
                                 @if(authorized("{$module}@destroy")) ${btnDelete} @endif
                             </div>
                         </div>`;
@@ -191,7 +197,7 @@
                     {
                         field: 'mohon_harga_permohonan',
                         title: 'Biaya Sertifikasi',
-                        width: 220,
+                        width: 150,
                         sortable: true,
                         align: 'right',
                         formatter: function (val, row) {
@@ -213,7 +219,31 @@
                             }
                         }
                     },
-                    {field: 'created_at', title: 'Tgl Pengajuan', width: 220, sortable: true},
+                    {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
+                    {
+                        field: 'mohon_cancel_status',
+                        title: 'Status <br> Pembatalan',
+                        width: 120,
+                        sortable: true,
+                        formatter: function (val) {
+                            switch (val) {
+                                case 'process':
+                                    return "Proses Pengajuan";
+                                case 'no':
+                                    return "Tidak";
+                                case 'yes':
+                                    return "Disetujui";
+                            }
+                        },
+                        styler: function (val) {
+                            switch (val) {
+                                case 'process':
+                                    return 'color:black;background-color:#f57f17;';
+                                case 'yes':
+                                    return 'color:white;background-color:#2e7d32;';
+                            }
+                        }
+                    },
                 ]],
                 onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {
