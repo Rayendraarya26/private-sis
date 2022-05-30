@@ -95,7 +95,7 @@
                             if (btnDelete != "" && row.allow_cancel){
                                 btnCancel = ""
                             }
-                            
+
                             return `
                         <div>
                         <button class="btn-action btn-info" data-index="${row.mohon_id}" title="Aksi">
@@ -106,7 +106,7 @@
                             @if(authorized("{$module}@approveHarga")) ${btnApproveHarga} @endif
                             @if(authorized("{$module}@edit")) ${btnEdit} @endif
                             @if(authorized("{$module}@track")) ${btnTrack} @endif
-                            <!-- <div class="menu-sep"></div> -->
+                            <div class="menu-sep"></div>
                                 @if(authorized("{$module}@cancel")) ${btnCancel} @endif
                                 @if(authorized("{$module}@destroy")) ${btnDelete} @endif
                             </div>

@@ -698,6 +698,16 @@ class SertifikasiPermohonanController extends Controller
                 }
             }
 
+            // Add Log Permohonan
+            SisPermohonanStatus::create([
+                "status_mohon_id" => $dataPemohon->mohon_id,
+                "status_tipe"     => "informasi",
+                "status_judul"    => sprintf("Pengajuan Pembatalan Permohonan #%d", $dataPemohon->mohon_id),
+                "status_pesan"    => sprintf("%s mengajukan pembatalan sertifikasi dikarenakan %s", $dataPemohon->mohon_cust_nama, $dataPemohon->mohon_cancel_reason),
+                "created_at"      => Carbon::now(),
+                "updated_at"      => Carbon::now(),
+            ]);
+
             return redirect()->back()->with('message', "Proses pembatalan berhasil diajukan, mohon menunggu approval pihak BBKKP");
         } catch (Exception $e) {
             foreach ($uploadedPath as $delPath) { // delete uploaded file
