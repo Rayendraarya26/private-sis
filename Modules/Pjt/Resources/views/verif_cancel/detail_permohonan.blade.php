@@ -1,6 +1,6 @@
 @extends("layouts.layout_app")
 
-@section('title', 'Detail Permohonan Sertifikasi ')
+@section('title', 'Persetujuan Pembatalan Permohonan')
 
 @section('content')
     <style>
@@ -13,16 +13,9 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i
                             class="fad fa-arrow-left"></i> Kembali</a>
-                @if(authorized("{$module}@edit"))
-                    <a class="btn btn-sm btn-warning"
-                       href="{{url("$url/edit?status=revisi&mohon_id=$dataPermohon->mohon_id")}}"
-                       style="margin-bottom: 20px"> <i class="icon icon-chat-new"></i> Revisi</a>
-                    <button class="btn btn-sm btn-success" style="margin-bottom: 20px" onClick="confirmAccepted()"><i
-                                class="icon icon-list-select-o"></i> Terima Pengajuan ?
-                    </button>
-                    <button class="btn btn-sm btn-danger" style="margin-bottom: 20px" onClick="confirmRejected()"><i
-                                class="icon icon-exclamation"></i> Tolak Pengajuan ?
-                    </button>
+                @if(authorized("{$module}@procesCancel"))
+                    <a class="btn btn-sm btn-danger" href="#" onClick="confirmVerif()" style="margin-bottom: 20px"> <i
+                                class="fas fa-badge-check"></i> Setujui Pembatalan Permohonan?</a>
                 @endif
             </div>
         </div>
@@ -54,12 +47,6 @@
                                 <li class="dt-list__item text-center">
                                     <h4 class="font-weight-medium mb-4 text-white">#{{$dataPermohon->mohon_id}}</h4>
                                     <span class="d-inline-block f-12">No. Pengajuan</span>
-                                </li>
-                                <!-- /list item -->
-                                <!-- List Item -->
-                                <li class="dt-list__item text-center">
-                                    <h4 class="font-weight-medium mb-4 text-white">{{$dataPermohon->mohon_approved_status}}</h4>
-                                    <span class="d-inline-block f-12">Status Pengajuan</span>
                                 </li>
                                 <!-- /list item -->
                             </ul>
@@ -105,46 +92,36 @@
                                     <div class="tab-content mt-5">
                                         <!-- Tab panel -->
                                         <div id="pane1" class="tab-pane active">
+                                            <table class="table table-hover mb-0">
+                                                <thead>
+                                                <tr>
+                                                    <th class="" scope="col">File Permohonan Pembatalan</th>
+                                                    <th class="" scope="col">:</th>
+                                                    <th class="" scope="col">@if($dataPermohon->mohon_cancel_file != '')
+                                                            <a href="{{url($dataPermohon->mohon_cancel_file)}}"
+                                                               target="_blank">Download</a>
+                                                        @endif </th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="" scope="col">Alasan Pembatalan</th>
+                                                    <th class="" scope="col">:</th>
+                                                    <th class=""
+                                                        scope="col">@if($dataPermohon->mohon_cancel_reason != '')
+                                                            <p>{{$dataPermohon->mohon_cancel_reason}}</p>
+                                                        @endif </th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="" scope="col">Tanggal Pembatalan</th>
+                                                    <th class="" scope="col">:</th>
+                                                    <th class="" scope="col">@if($dataPermohon->mohon_cancel_at != '')
+                                                            <p>{{$dataPermohon->mohon_cancel_at?->format("Y-m-d H:i:s")}}</p>
+                                                        @endif </th>
+                                                </tr>
+                                                </thead>
+                                            </table>
+
                                             <!-- List -->
                                             <div class="table-responsive">
-                                                @if($dataPermohon->mohon_cancel_status != 'no')
-                                                    <table class="table table-hover mb-0">
-                                                        <thead>
-                                                        <tr>
-                                                            <th class="" scope="col">Status Permohonan Pembatalan</th>
-                                                            <th class="" scope="col">:</th>
-                                                            <th class="text-uppercase"
-                                                                scope="col">{{$dataPermohon->mohon_cancel_status}}</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th class="" scope="col">File Permohonan Pembatalan</th>
-                                                            <th class="" scope="col">:</th>
-                                                            <th class=""
-                                                                scope="col">@if($dataPermohon->mohon_cancel_file != '')
-                                                                    <a href="{{url($dataPermohon->mohon_cancel_file)}}"
-                                                                       target="_blank">Download</a>
-                                                                @endif </th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th class="" scope="col">Alasan Pembatalan</th>
-                                                            <th class="" scope="col">:</th>
-                                                            <th class=""
-                                                                scope="col">@if($dataPermohon->mohon_cancel_reason != '')
-                                                                    <p>{{$dataPermohon->mohon_cancel_reason}}</p>
-                                                                @endif </th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th class="" scope="col">Tanggal Pembatalan</th>
-                                                            <th class="" scope="col">:</th>
-                                                            <th class=""
-                                                                scope="col">@if($dataPermohon->mohon_cancel_at != '')
-                                                                    <p>{{$dataPermohon->mohon_cancel_at?->format("Y-m-d H:i:s")}}</p>
-                                                                @endif </th>
-                                                        </tr>
-                                                        </thead>
-                                                    </table>
-                                                @endif
-
                                                 <table class="table table-hover mb-0">
                                                     <thead>
                                                     <tr>
@@ -275,6 +252,7 @@
                                                                class="btn-link">{{$dataPermohon->mohon_cust_nama_wakil_manajemen}}</a>
                                                         </td>
                                                     </tr>
+
                                                     <tr>
                                                         <th scope="row">8</th>
                                                         <td>Setiap hari kerja, perusahaan bekerja dalam</td>
@@ -473,8 +451,8 @@
                                                                 <td>{{$dpd->jenis_dok_perusahaan_text}}</td>
                                                                 <td>{{$dpd->mohon_dok_deskripsi}}</td>
                                                                 <td><a href="{{url($dpd->mohon_dok_filepath)}}"
-                                                                       target="_blank"
-                                                                       class="btn btn-primary">Download</a></td>
+                                                                       target="_blank" class="btn btn-xs btn-primary">Download</a>
+                                                                </td>
                                                             </tr>
                                                         @endforeach
                                                         </tbody>
@@ -499,7 +477,7 @@
                                                             <div class="card-body py-sm-0 px-0 px-sm-6 px-md-8">
 
                                                                 <!-- Badges -->
-                                                                <span class="badge bg-teal text-white text-uppercase mb-2">Revisi Pengajuan</span>
+                                                                <span class="badge bg-teal text-white text-uppercase mb-2">{{$dps->status_tipe}}</span>
                                                                 <!-- /badges -->
 
                                                                 <!-- Card Title-->
@@ -628,29 +606,7 @@
 @endsection
 @push("javascript")
     <script>
-        function confirmRejected() {
-            const swalWithBootstrapButtons = swal.mixin({
-                confirmButtonClass: 'btn btn-danger mb-2',
-                cancelButtonClass: 'btn btn-success mr-2 mb-2',
-                buttonsStyling: false,
-            });
-
-            swalWithBootstrapButtons({
-                title: `Tolak Permintaan Permohonan?`,
-                text: "Mengubah status permintaan permohonan menjadi 'Tidak Diterima/Rejected' bersifat permanen dan tidak dapat di kembalikan",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Tolak',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.value) {
-                    window.location.href = `{{url("$url")}}/edit?status=rejected&mohon_id={{$dataPermohon->mohon_id}}`;
-                }
-            });
-        }
-
-        function confirmAccepted() {
+        function confirmVerif() {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-success mb-2',
                 cancelButtonClass: 'btn btn-warning mr-2 mb-2',
@@ -658,16 +614,16 @@
             });
 
             swalWithBootstrapButtons({
-                title: `Terima Permintaan Permohonan?`,
-                text: "Mengubah status permintaan permohonan menjadi 'Diterima/Accepted' bersifat permanen dan tidak dapat di kembalikan",
+                title: `Detail Permohonan?`,
+                text: `Apakah anda ingin men-setujui pembatalan permohonan untuk permohonan ini? (NB: Mengubah status menjadi 'Setuju Pembatalan' bersifat permanen dan tidak dapat di kembalikan)`,
                 type: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Terima',
+                confirmButtonText: 'Setujui?',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-                    window.location.href = `{{url("$url")}}/edit?status=accepted&mohon_id={{$dataPermohon->mohon_id}}`;
+                    window.location.href = `{{url("$url")}}/proses_cancel/{{$dataPermohon->mohon_id}}`;
                 }
             });
         }

@@ -83,60 +83,66 @@ class LogPendaftaranController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['step_pengajuan'] = '';
-            if (in_array($d->mohon_approved_status, ['accepted', 'rejected'])) {
-                if($d->mohon_verif_kajian_permohonan_paskal == 'ya' && $d->mohon_verif_kajian_permohonan_pjt == 'ya' && $d->mohon_kajian_permohonan_paskal_file != ''){
-					if($d->mohon_tagihan_biaya_status == 'setuju' && $d->mohon_tagihan_biaya_file != ''){
-						if($d->mohon_pernyataan_persetujuan_file != ''){
-							if($d->bill_id != ''){
-								if($d->bill_payment_status == 'lunas'){
-									if($d->jadw_id != ''){
-										if($d->jadw_is_tutup == 'tidak'){
-											if($d->jadw_tanggal_status == 'accepted'){
-												if($d->jadw_team_status == 'accepted'){
-													$x['step_pengajuan'] = 'Proses Audit';
+			if($d->mohon_cancel_status == 'no'){
+				if (in_array($d->mohon_approved_status, ['accepted', 'rejected'])) {
+					if($d->mohon_verif_kajian_permohonan_paskal == 'ya' && $d->mohon_verif_kajian_permohonan_pjt == 'ya' && $d->mohon_kajian_permohonan_paskal_file != ''){
+						if($d->mohon_tagihan_biaya_status == 'setuju' && $d->mohon_tagihan_biaya_file != ''){
+							if($d->mohon_pernyataan_persetujuan_file != ''){
+								if($d->bill_id != ''){
+									if($d->bill_payment_status == 'lunas'){
+										if($d->jadw_id != ''){
+											if($d->jadw_is_tutup == 'tidak'){
+												if($d->jadw_tanggal_status == 'accepted'){
+													if($d->jadw_team_status == 'accepted'){
+														$x['step_pengajuan'] = 'Proses Audit';
+													}
+													else
+													{
+														$x['step_pengajuan'] = 'Persetujuan<br/>Team Audit';
+													}
 												}
 												else
 												{
-													$x['step_pengajuan'] = 'Persetujuan<br/>Team Audit';
+													$x['step_pengajuan'] = 'Persetujuan<br/>Tanggal Audit';
 												}
+												
 											}
-											else
-											{
-												$x['step_pengajuan'] = 'Persetujuan<br/>Tanggal Audit';
+											else{
+												$x['step_pengajuan'] = 'Selesai';
 											}
-											
 										}
 										else{
-											$x['step_pengajuan'] = 'Selesai';
+											$x['step_pengajuan'] = 'Proses Penjadwalan';
 										}
 									}
 									else{
-										$x['step_pengajuan'] = 'Proses Penjadwalan';
+										$x['step_pengajuan'] = 'Biling Menunggu Pelunasan';
 									}
 								}
 								else{
-									$x['step_pengajuan'] = 'Biling Menunggu Pelunasan';
+									$x['step_pengajuan'] = 'Biling Belum<br/>Ter-Entry';
 								}
 							}
 							else{
-								$x['step_pengajuan'] = 'Biling Belum<br/>Ter-Entry';
+								$x['step_pengajuan'] = 'Pernyataan Persetujuan - LS';
 							}
 						}
 						else{
-							$x['step_pengajuan'] = 'Pernyataan Persetujuan - LS';
+							$x['step_pengajuan'] = 'Proses Persetujuan Biaya';
 						}
 					}
 					else{
-						$x['step_pengajuan'] = 'Proses Persetujuan Biaya';
+						$x['step_pengajuan'] = 'Proses Kajian Permohonan';
 					}
 				}
 				else{
-					$x['step_pengajuan'] = 'Proses Kajian Permohonan';
+					$x['step_pengajuan'] = 'Verifikasi - Marketing';
 				}
-            }
-			else{
-				$x['step_pengajuan'] = 'Verifikasi - Marketing';
 			}
+			else{
+				$x['step_pengajuan'] = 'Pembatalan Permohonan';
+			}
+            
 
             $x['mohon_approved_status']           = $d->mohon_approved_status;
             $x['cust_sert_id']           = $d->cust_sert_id;

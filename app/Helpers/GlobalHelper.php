@@ -22,6 +22,14 @@ if (!function_exists('moneyFormat')) {
     }
 }
 
+if (!function_exists('fileName')) {
+    function fileName($fileFromRequest)
+    {
+        $file = $fileFromRequest->getClientOriginalName();
+        return pathinfo($file,PATHINFO_FILENAME);
+    }
+}
+
 if (!function_exists('responseJSON')) {
     function responseJSON($code = 200, $result = [], $message = "")
     {
