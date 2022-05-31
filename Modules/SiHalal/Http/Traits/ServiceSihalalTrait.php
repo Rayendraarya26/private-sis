@@ -278,7 +278,7 @@ trait ServiceSihalalTrait
 				'Vary' => 'Origin',
 				'Access-Control-Allow-Credentials' => true,
 			])
-			->delete(config("app.sihalal_api_server")."/api/v1/audit_schedule/$id_audit_person")->json();
+			->delete(config("app.sihalal_api_server")."/api/v1/reg_auditor/$id_audit_person")->json();
 		
 		if(isset($result["status"]))
 			return false;

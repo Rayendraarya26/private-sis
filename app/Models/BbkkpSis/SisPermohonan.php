@@ -22,6 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $mohon_verif_kajian_permohonan_paskal
  * @property string|null $mohon_kajian_permohonan_paskal_file
  * @property string|null $mohon_pernyataan_persetujuan_file
+ * @property string|null $mohon_cancel_status
+ * @property string|null $mohon_cancel_reason
+ * @property string|null $mohon_cancel_file
+ * @property Carbon|null $mohon_cancel_at
  * @property string|null $mohon_spk_file
  * @property string|null $mohon_tagihan_biaya_file
  * @property string|null $mohon_tagihan_biaya_status
@@ -108,6 +112,10 @@ class SisPermohonan extends Model
 		'mohon_cust_shif_kerja' => 'int'
 	];
 
+	protected $dates = [
+		'mohon_cancel_at'
+	];
+
 	protected $fillable = [
 		'cust_id',
 		'user_id',
@@ -117,6 +125,10 @@ class SisPermohonan extends Model
 		'mohon_verif_kajian_permohonan_paskal',
 		'mohon_kajian_permohonan_paskal_file',
 		'mohon_pernyataan_persetujuan_file',
+		'mohon_cancel_status',
+		'mohon_cancel_reason',
+		'mohon_cancel_file',
+		'mohon_cancel_at',
 		'mohon_spk_file',
 		'mohon_tagihan_biaya_file',
 		'mohon_tagihan_biaya_status',
