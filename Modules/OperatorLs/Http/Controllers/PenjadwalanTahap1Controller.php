@@ -155,6 +155,7 @@ class PenjadwalanTahap1Controller extends Controller
 				->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
 				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 				->where('mohon_det_perlu_tahap1', '=', 'ya')
+				->where('mohon_cancel_status', '=', 'no')
 				->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
 					$query->select('bill_id')->from('sis_audit_tahap1');
 				})

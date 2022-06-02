@@ -633,6 +633,9 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $mohonId)->first();
             if (empty($dataPemohon)) throw new Exception('Data permohonan tidak ditemukan');
 
+            $allowCancel = $this->allowCancel($dataPemohon);
+            if (!$allowCancel) throw new Exception('Permohonan tidak dapat dibatalkan karena telah masuk dalam Penjadwalan');
+
             $breadcrumbs = [
                 new BreadcrumbsStruct('Pelanggan'),
                 new BreadcrumbsStruct('Permohonan Sertifikasi', url($this->url)),
@@ -689,7 +692,7 @@ class SertifikasiPermohonanController extends Controller
                     $notifStruct->title     = sprintf("#%d Pembatalan permohonan sertifikasi", $dataPemohon->mohon_id);
                     $notifStruct->message   = sprintf("%s memohon pembatalan sertifikasi dikarenakan %s", $dataPemohon->mohon_cust_nama, $dataPemohon->mohon_cancel_reason);
                     $notifStruct->user_id   = $user?->ug_user_id;
-                    $notifStruct->click_url = url('/operatorls/XXX');
+                    $notifStruct->click_url = url('/pjt/verif_cancel/detail/' . $dataPemohon->mohon_id);
 
                     $notifStruct->message = $notifStruct->message . ' Operator LS harap segera membuat surat pernyataan persetujuan.';
 

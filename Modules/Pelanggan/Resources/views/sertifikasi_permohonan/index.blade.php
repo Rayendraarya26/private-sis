@@ -48,7 +48,7 @@
                 // fitColumns: true,
                 toolbar: '#toolbar',
                 pagination: true,
-                pageSize: 50,
+                pageSize: 10,
                 clientPaging: false,
                 detailFormatter: function (index, row) {
                     let htmls = `<div style="padding: 20px 0 20px 0"><h4>Revisi</h4><ul>`;
@@ -69,17 +69,17 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let dom       = `dropdownMenu_${row.mohon_id}`;
+                            let dom = `dropdownMenu_${row.mohon_id}`;
                             let btnDetail = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.mohon_id}'">Detail</div>`;
-                            let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
+                            let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.mohon_id}', '${row.sert_nama}')">Delete</div>`;
-                            let btnTrack  = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
+                            let btnTrack = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
                             let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}', ${row.mohon_harga_permohonan})">Approve Harga</div>`;
                             let btnCancel = `<div data-options="iconCls:'fad fa-cancel'" onclick="location.href = '{{url("$url/cancel")}}/${row.mohon_id}'">Pembatalan</div>`;
 
                             if (row.mohon_approved_status !== "on-progress" &&
                                 row.mohon_approved_status !== 'revisi' &&
-                                row.mohon_approved_status !== 'fix' ) {
+                                row.mohon_approved_status !== 'fix') {
                                 btnDelete = "";
                             }
                             if (row.mohon_approved_status !== "revisi") {
@@ -92,7 +92,8 @@
                                 btnApproveHarga = "";
                             }
 
-                            if (btnDelete != "" && row.allow_cancel){
+
+                            if (!(row.mohon_approved_status == 'accepted' && row.allow_cancel)) {
                                 btnCancel = ""
                             }
 
@@ -108,7 +109,7 @@
                             @if(authorized("{$module}@track")) ${btnTrack} @endif
                             <div class="menu-sep"></div>
                                 @if(authorized("{$module}@cancel")) ${btnCancel} @endif
-                                @if(authorized("{$module}@destroy")) ${btnDelete} @endif
+                            @if(authorized("{$module}@destroy")) ${btnDelete} @endif
                             </div>
                         </div>`;
                         }

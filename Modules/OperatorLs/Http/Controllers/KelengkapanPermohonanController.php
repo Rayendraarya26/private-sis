@@ -53,6 +53,8 @@ class KelengkapanPermohonanController extends Controller
 			->leftJoin('sis_billing_items', "sis_billing_items.mohon_id", "=", "sis_permohonan.mohon_id")
 			;
         // Filter
+		
+        $data->where('mohon_cancel_status', '=', 'no');
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);

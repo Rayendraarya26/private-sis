@@ -53,6 +53,8 @@ class VerifikasiPermohonanController extends Controller
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
             ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
+		
+        $data->where('mohon_cancel_status', '=', 'no');
         $data->whereIn('mohon_approved_status', ['on-progress', 'fix']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
