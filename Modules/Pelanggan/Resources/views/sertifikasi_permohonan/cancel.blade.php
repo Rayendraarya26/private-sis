@@ -81,7 +81,7 @@
                                 @else
                                     <div class="form-group row">
                                         <label class="col-form-label col-sm-3" for="mohon_cancel_reason">
-                                            Keterangan*
+                                            Alasan Pembatalan*
                                         </label>
                                         <div class="col-sm-8">
                                             <textarea class="form-control" readonly

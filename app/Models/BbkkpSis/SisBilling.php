@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $bill_payment_file
  * @property string|null $bill_payment_note
  * @property int|null $bill_notif_count_finance
+ * @property string|null $bill_status
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -66,7 +67,8 @@ class SisBilling extends Model
 		'bill_payment_date',
 		'bill_payment_file',
 		'bill_payment_note',
-		'bill_notif_count_finance'
+		'bill_notif_count_finance',
+		'bill_status'
 	];
 
 	public function sis_pelanggan()

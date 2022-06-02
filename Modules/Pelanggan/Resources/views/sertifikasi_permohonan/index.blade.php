@@ -93,7 +93,7 @@
                             }
 
 
-                            if (!(row.mohon_approved_status == 'accepted' && row.allow_cancel)) {
+                            if (!(row.mohon_approved_status == 'accepted' && row.allow_cancel) && row.mohon_cancel_status == "yes") {
                                 btnCancel = ""
                             }
 
