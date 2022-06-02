@@ -6,14 +6,14 @@
     <div class="dt-content">
         <div class="row">
             <div class="col-md-12">
-				@if(session('message'))
-					<div class="alert alert-primary alert-dismissible fade show" role="alert">
-						{!! session('message') !!}
-						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-				@endif
+                @if(session('message'))
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                        {!! session('message') !!}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                @endif
                 <div class="dt-card">
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
@@ -50,16 +50,36 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 80,
+                        width: 100,
                         align: 'center',
                         formatter: function (val, row) {
-							let btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-primary btn-xs btn-block"><i class="fad fa-info-circle"></i> Verifikasi</a>`;
+                            let btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-primary btn-xs btn-block"><i class="fad fa-info-circle"></i> Verifikasi</a>`;
+                            if (row.status_process == "lampau" || row.mohon_approved_status == 'revisi') {
+                                btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-xs btn-block btn-outline-success"><i class="fas fa-check-circle"></i> Detail</a>`;
+                            }
                             return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
                         }
                     }
                 ]],
                 columns: [[
                     {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
+                    {
+                        field: 'mohon_approved_status', title: 'Status<br/>Permohonan', width: 220, sortable: false,
+                        formatter: function (value) {
+                            switch (value) {
+                                case 'on-progress':
+                                    return 'Menunggu verifikasi marketing';
+                                case 'fix':
+                                    return 'Revisi telah diperbaiki, menunggu verifikasi marketing';
+                                case 'revisi':
+                                    return 'Sedang proses revisi oleh client';
+                                case 'accepted':
+                                    return 'Verifikasi berhasil';
+                                case 'rejected':
+                                    return 'Verifikasi ditolak';
+                            }
+                        }
+                    },
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
                     {field: 'mohon_cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                     {field: 'sert_nama', title: 'Pengajuan Sertifikasi', width: 320, sortable: true},
@@ -68,6 +88,7 @@
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
+                    {field: 'mohon_approved_status', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
                 ]);
         });
