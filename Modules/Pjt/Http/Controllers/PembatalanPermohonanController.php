@@ -168,14 +168,29 @@ class PembatalanPermohonanController extends Controller
         return view("$this->view.detail_permohonan")->with($parser);
     }
 
-    public function procesCancel($mohonID) // menerima parameter ID dari Modules\Master\Routes\web.php
+    public function procesCancel(Request $request, $mohonID) // menerima parameter ID dari Modules\Master\Routes\web.php
     {
-        $dataInsert = ['mohon_id' => $mohonID];
-
-        DB::transaction(function () use ($dataInsert) {
-            SisPermohonan::findOrFail($dataInsert['mohon_id'])->update([
+        $dataInsert = [
+			'mohon_id' => $mohonID		
+		];
+		
+        DB::transaction(function () use ($request, $dataInsert) {
+            SisPermohonan::findOrFail($request['mohon_id'])->update([
                 'mohon_cancel_status' => 'yes',
             ]);
+			
+			$dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*')
+						->join('sis_billing_items', 'sis_billing_items.mohon_id', '=', 'sis_permohonan.mohon_id')
+						->groupBy('sis_permohonan.mohon_id');
+						
+			if(isset($dataPermohon->get()[0])){
+				$dataMohon = $dataPermohon->get()[0];
+				if(isset($dataMohon->bill_id)){
+					/* SisBilling::findOrFail($dataMohon->bill_id)->update([
+						'bill_status' => 'non-aktif',
+					]); */
+				}
+			}
         });
 
         $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->select('*')->get()[0];
