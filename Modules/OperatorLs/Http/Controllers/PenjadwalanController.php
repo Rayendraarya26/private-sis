@@ -104,6 +104,7 @@ class PenjadwalanController extends Controller
 
         // Filter
         $data->where('jadw_tanggal_status', '!=', 'accepted');
+		$data->where('bill_status', '=', 'aktif');
         $data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -214,6 +215,7 @@ class PenjadwalanController extends Controller
     private function ajax_combogrid_pelanggan(Request $request)
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
+			->where('bill_status', '=', 'aktif')
 			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
             ->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');

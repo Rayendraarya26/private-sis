@@ -186,9 +186,9 @@ class PembatalanPermohonanController extends Controller
 			if(isset($dataPermohon->get()[0])){
 				$dataMohon = $dataPermohon->get()[0];
 				if(isset($dataMohon->bill_id)){
-					/* SisBilling::findOrFail($dataMohon->bill_id)->update([
+					SisBilling::findOrFail($dataMohon->bill_id)->update([
 						'bill_status' => 'non-aktif',
-					]); */
+					]);
 				}
 			}
         });
