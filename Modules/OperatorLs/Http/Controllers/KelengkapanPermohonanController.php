@@ -98,7 +98,7 @@ class KelengkapanPermohonanController extends Controller
         $total = $data->select(DB::raw('count(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
 		$data->groupBy('sis_permohonan.mohon_id');
-        $data->select("*", "sis_billing_items.bill_id AS bill_id", "sis_permohonan.created_at AS created_at", "sis_permohonan.updated_at AS updated_at", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
+        $data->select("*",'sis_permohonan.mohon_id AS mohon_id', "sis_billing_items.bill_id AS bill_id", "sis_permohonan.created_at AS created_at", "sis_permohonan.updated_at AS updated_at", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
 		
         // Result
         $result = [];
