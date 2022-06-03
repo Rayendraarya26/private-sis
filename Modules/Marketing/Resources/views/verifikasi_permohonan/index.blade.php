@@ -54,8 +54,10 @@
                         align: 'center',
                         formatter: function (val, row) {
                             let btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-primary btn-xs btn-block"><i class="fad fa-info-circle"></i> Verifikasi</a>`;
-                            if (row.status_process == "lampau" || row.mohon_approved_status == 'revisi') {
+                            if (row.status_process == "lampau") {
                                 btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-xs btn-block btn-outline-success"><i class="fas fa-check-circle"></i> Detail</a>`;
+                            }else if (row.mohon_approved_status == 'revisi') {
+                                btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=verifikasi" class="btn btn-xs btn-block btn-outline-warning"><i class="fas fa-wrench"></i> Perbaikan</a>`;
                             }
                             return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
                         }
