@@ -7,7 +7,9 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-curl": "*",
+        "ext-imagick": "*",
         "barryvdh/laravel-dompdf": "^0.9.0",
+        "barryvdh/laravel-snappy": "^1.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -16,8 +18,7 @@
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.5",
         "nwidart/laravel-modules": "^8.2",
-        "simplesoftwareio/simple-qrcode": "^4.2",
-        "ext-imagick": "*"
+        "simplesoftwareio/simple-qrcode": "^4.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",

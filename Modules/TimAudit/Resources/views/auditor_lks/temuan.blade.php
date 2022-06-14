@@ -164,7 +164,7 @@
                                         </tr>
                                         </thead>
                                         <tbody id="tbody-lks">
-                                        @foreach($data->sis_audit_lks()->orderBy('lks_nomor')->get() as $lks)
+                                        @foreach($data->sis_audit_lks()->orderBy(DB::raw('CONVERT(lks_nomor,UNSIGNED INTEGER)'))->get() as $lks)
                                             @php($lksIDs[] = $lks->lks_id)
                                             <tr>
                                                 <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
