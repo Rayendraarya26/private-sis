@@ -166,6 +166,7 @@ class BillingController extends Controller
         foreach ($data->get() as $d) {
             $x['cust_id']   = $d->cust_id;
             $x['cust_nama'] = $d->cust_nama;
+            $x['cust_alamat'] = $d->cust_alamat;
             array_push($result, $x);
         }
 

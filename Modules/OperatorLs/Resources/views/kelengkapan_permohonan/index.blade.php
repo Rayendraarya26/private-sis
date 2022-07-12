@@ -54,15 +54,18 @@
                         align: 'center',
                         formatter: function (val, row) {
 							let btnDetail = '';
-							if(row.status_step == 're-upload'){
-								btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
-							}
-							else if(row.status_step == 'upload'){
-								btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
-							}
-							
-							if(row.status_step != 'upload'){
-								btnDetail += `<a class="btn btn-info btn-xs btn-block" target="_blank" href="${row.mohon_pernyataan_persetujuan_file}"><span class="fad fa-download"></span> Download</a>`;
+							if(row.mohon_id != ''){
+								
+								if(row.status_step == 're-upload'){
+									btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
+								}
+								else if(row.status_step == 'upload'){
+									btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
+								}
+								
+								if(row.status_step != 'upload'){
+									btnDetail += `<a class="btn btn-info btn-xs btn-block" target="_blank" href="${row.mohon_pernyataan_persetujuan_file}"><span class="fad fa-download"></span> Download</a>`;
+								}
 							}
 							
 							return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;

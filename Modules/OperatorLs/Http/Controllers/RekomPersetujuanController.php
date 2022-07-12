@@ -53,14 +53,17 @@ class RekomPersetujuanController extends Controller
             ->where('jadw_id', $request['jadw_id'])->first();
 
         $results = [];
-        foreach ($dataRekom->sis_audit_komite_rekomendasi_files as $file) {
-            $results[] = [
-                'file_id'   => encrypt($file->rekmdfile_id),
-                'file_name' => $file->rekmdfile_name,
-                'file_url'  => asset($file->rekmdfile_path),
-                'file_size' => $file->rekmdfile_size_byte,
-            ];
-        }
+		if(isset($dataRekom->sis_audit_komite_rekomendasi_files)){
+			foreach ($dataRekom->sis_audit_komite_rekomendasi_files as $file) {
+				$results[] = [
+					'file_id'   => encrypt($file->rekmdfile_id),
+					'file_name' => $file->rekmdfile_name,
+					'file_url'  => asset($file->rekmdfile_path),
+					'file_size' => $file->rekmdfile_size_byte,
+				];
+			}
+		}
+        
 
         return responseJSON(200, $results, "Data ditemukan");
     }
@@ -246,7 +249,7 @@ class RekomPersetujuanController extends Controller
 			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_tujuan_audit) AS jadw_audit_tujuan_audit");
 			$dataJadwal->selectRaw("GROUP_CONCAT(distinct komite_posisi) AS komite_posisi");
 			$dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_kegiatan) AS jadw_audit_kegiatan");
-			$dataJadwal->selectRaw("MAX(lks_expired_date_perbaikan) AS lks_expired_date_perbaikan");
+			$dataJadwal->selectRaw("MAX(lks_tanggal_ditutup) AS lks_tanggal_ditutup");
 			$dataJadwal->groupBy('sis_jadwal.jadw_id');
 
 			$dataMohon = SisJadwalAudit::where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
@@ -452,13 +455,23 @@ class RekomPersetujuanController extends Controller
                     'rekmd_komte_status' => $request['rekmd_komte_status'],
                 ]
             ]); */
-			
-			DB::table('sis_audit_komite_rekomendasi')
-										->where('jadw_id', $request->jadw_id)
-										->update([
-											'rekmd_komte_isi'    => $request['rekmd_komte_isi'],
-											'rekmd_komte_status' => $request['rekmd_komte_status'],
-										]);
+			$data_rekomendasi = SisAuditKomiteRekomendasi::where('jadw_id', $request->jadw_id)->select('jadw_id')->first();
+			if($data_rekomendasi?->jadw_id){
+				DB::table('sis_audit_komite_rekomendasi')
+											->where('jadw_id', $request->jadw_id)
+											->update([
+												'rekmd_komte_isi'    => $request['rekmd_komte_isi'],
+												'rekmd_komte_status' => $request['rekmd_komte_status'],
+											]);
+			}
+			else{
+				DB::table('sis_audit_komite_rekomendasi')
+											->insert([
+												'jadw_id'    => $request['jadw_id'],
+												'rekmd_komte_isi'    => $request['rekmd_komte_isi'],
+												'rekmd_komte_status' => $request['rekmd_komte_status'],
+											]);
+			}
 
             // Notifikasi
             /*

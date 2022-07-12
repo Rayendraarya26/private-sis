@@ -48,8 +48,8 @@ class KelengkapanPermohonanController extends Controller
 
     private function ajax_datagrid_permohonan(Request $request)
     {
-        $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+        $data = SisPermohonan::leftJoin('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+			->leftJoin('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
 			->leftJoin('sis_billing_items', "sis_billing_items.mohon_id", "=", "sis_permohonan.mohon_id")
 			;
         // Filter
@@ -117,7 +117,7 @@ class KelengkapanPermohonanController extends Controller
             }
 
             $x['cust_sert_id']       = $d->cust_sert_id;
-            $x['mohon_id']           = $d->mohon_id;
+            $x['mohon_id']           = !is_null($d->mohon_id) || $d->mohon_id != ''  ? $d->mohon_id : '';
             $x['cust_id']            = $d->cust_id;
             $x['user_id']            = $d->user_id;
             $x['sert_id']            = $d->sert_id;

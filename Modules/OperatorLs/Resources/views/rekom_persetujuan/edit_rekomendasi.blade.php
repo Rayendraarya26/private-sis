@@ -188,8 +188,8 @@
                                             <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
                                                     data-target="#collapse-tree" aria-expanded="false"
                                                     aria-controls="collapse-two">3. LKS ditutup
-                                                tanggal @if($dataJadwal->lks_expired_date_perbaikan != '')
-                                                    {{ date('d M Y', strtotime($dataJadwal->lks_expired_date_perbaikan)) }}
+                                                tanggal @if($dataJadwal->lks_tanggal_ditutup != '')
+                                                    {{ date('d M Y', strtotime($dataJadwal->lks_tanggal_ditutup)) }}
                                                 @endif</button>
                                         </h5>
                                     </div>
