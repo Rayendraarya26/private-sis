@@ -115,7 +115,13 @@
 				onAfterEdit: function (index, row) {
 					/* row.editing = false;
 					$(this).datagrid('refreshRow', index); */
-					$('#ttData').datagrid('reload');
+					// $('#ttData').datagrid('reload');
+					row.editing = false;
+					$.messager.progress();
+					setTimeout(function() { 
+						$('#ttData').datagrid('reload');
+						$.messager.progress('close');
+					}, 750);
 				},
 				onCancelEdit: function (index, row) {
 					row.editing = false;
@@ -181,7 +187,7 @@
                     {
                         field: 'action',
                         title: "",
-                        width: 110,
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
 							if (row.editing) {
