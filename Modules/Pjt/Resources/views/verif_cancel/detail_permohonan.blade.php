@@ -283,7 +283,7 @@
                                                         <td>:</td>
                                                         <td><a href="javascript:void(0)"
                                                                class="btn-link">{{$dataPermohon->mohon_cust_jumlah_bagian}}
-                                                                Orang</a></td>
+                                                                Bagian</a></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"></th>

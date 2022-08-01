@@ -180,7 +180,7 @@
 								<tr><th scope="row">8</th><td>Setiap hari kerja, perusahaan bekerja dalam </td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_shif_kerja}} Shift</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Manajemen</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_manajemen}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Administrasi</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_administrasi}} Orang</a></td></tr>
-								<tr><th scope="row"></th><td>- Jumlah Bagian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_bagian}} Orang</a></td></tr>
+								<tr><th scope="row"></th><td>- Jumlah Bagian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_bagian}} Bagian</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Part-time</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_part_time}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Operasional</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_operasional}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>&nbsp;&nbsp;&nbsp;&nbsp;>&nbsp;Jumlah Shift 1</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_shift_1}} Orang</a></td></tr>

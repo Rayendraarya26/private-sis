@@ -13,7 +13,9 @@
             <div class="col-xl-12">
                 <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"> <i class="fad fa-arrow-left"></i> Kembali</a>
 				@if(authorized("{$module}@edit"))
+					@if($dataPermohon->mohon_tagihan_biaya_status == 'proses')
                 <a class="btn btn-sm btn-info" href="{{url("$url/edit?status=upload-kajian-permohonan&mohon_id=$dataPermohon->mohon_id")}}" style="margin-bottom: 20px"> <i class="fad fa-upload"></i> Upload Surat Tagihan Biaya</a>
+					@endif
 				@endif
 			</div>
 		</div>
@@ -119,6 +121,13 @@
 								  <th class="text-uppercase" scope="col">:</th>
 								  <th class="text-uppercase" scope="col">@if($dataPermohon->mohon_tagihan_biaya_file != '') <?=number_format($dataPermohon->mohon_harga_permohonan, 2, ',', '.');?> @endif </th>
 								</tr>
+								@if($dataPermohon->mohon_tagihan_biaya_status != 'proses')
+								<tr>
+								  <th class="text-uppercase" scope="col">Status Persetujuan</th>
+								  <th class="text-uppercase" scope="col">:</th>
+								  <th class="text-uppercase" scope="col">{{$dataPermohon->mohon_tagihan_biaya_status}} </th>
+								</tr>
+								@endif
 							</thead>
 						  </table>
 							
@@ -195,7 +204,7 @@
 								<tr><th scope="row">8</th><td>Setiap hari kerja, perusahaan bekerja dalam </td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_shif_kerja}} Shift</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Manajemen</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_manajemen}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Administrasi</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_administrasi}} Orang</a></td></tr>
-								<tr><th scope="row"></th><td>- Jumlah Bagian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_bagian}} Orang</a></td></tr>
+								<tr><th scope="row"></th><td>- Jumlah Bagian</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_bagian}} Bagian</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Part-time</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_part_time}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>- Jumlah Operasional</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_operasional}} Orang</a></td></tr>
 								<tr><th scope="row"></th><td>&nbsp;&nbsp;&nbsp;&nbsp;>&nbsp;Jumlah Shift 1</td><td>:</td><td><a href="javascript:void(0)" class="btn-link">{{$dataPermohon->mohon_cust_jumlah_shift_1}} Orang</a></td></tr>

@@ -56,7 +56,7 @@ class UploadTagihanBiayaController extends Controller
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
-        $data->whereIn('mohon_tagihan_biaya_status', ['proses']);
+        // $data->whereIn('mohon_tagihan_biaya_status', ['proses']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
 				if($f->field == 'mohon_id')
@@ -80,6 +80,9 @@ class UploadTagihanBiayaController extends Controller
 					$data->orderBy($sort[$i], $order[$i]);
             }
         }
+		else{
+			$data->orderBy('sis_permohonan.created_at', 'desc');
+		}
         // Total
         $total = $data->select(DB::raw('count(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
@@ -94,6 +97,7 @@ class UploadTagihanBiayaController extends Controller
                 $x['status_step'] = 're-upload';
             }
             $x['mohon_id']           = $d->mohon_id;
+            $x['mohon_tagihan_biaya_status']           = $d->mohon_tagihan_biaya_status;
             $x['cust_id']            = $d->cust_id;
             $x['user_id']            = $d->user_id;
             $x['sert_nama']          = $d->sert_nama;
