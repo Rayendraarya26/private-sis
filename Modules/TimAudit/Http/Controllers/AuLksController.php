@@ -13,11 +13,13 @@ use App\Models\BbkkpSis\SisJadwalAudit;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SysUserGroup;
 use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\TimAudit\Http\Traits\AuditorTraits;
 use Modules\TimAudit\Http\Traits\LksTrait;
@@ -162,7 +164,7 @@ class AuLksController extends Controller
                     $notifStruct->title     = sprintf("Proses Audit #%d telah selesai", $dataJadwal->jadw_id);
                     $notifStruct->message   = sprintf("Proses audit pada %s tanggal %s telah selesai, segera inputkan rekomendasi persetujuan. ", $dataJadwal->sis_pelanggan->cust_nama, $dataJadwal->jadw_tanggal_mulai->isoFormat("LL"));
                     $notifStruct->user_id   = $user?->ug_user_id;
-                    $notifStruct->click_url = url('/operatorls/rekomendasi-persetujuan/edit?tipe=rekomendasi&jadw_id='.$request['jadw_id']);
+                    $notifStruct->click_url = url('/operatorls/rekomendasi-persetujuan/edit?tipe=rekomendasi&jadw_id=' . $request['jadw_id']);
                     sendNotification($notifStruct);
                 }
             }
@@ -339,12 +341,18 @@ class AuLksController extends Controller
             if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
-                'lks'   => $this->cetak_lks($request, $data),
-                default => throw new Exception("Invalid URL"),
+                'lks'        => $this->cetak_lks($request, $data),
+                'lks-header' => $this->cetak_lks_header(),
+                default      => throw new Exception("Invalid URL"),
             };
         } catch (Exception $e) {
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
+    }
+
+    private function cetak_lks_header()
+    {
+        return view("pelanggan::tahap2_persetujuan.print.lks-header");
     }
 
     private function cetak_lks(Request $request, SisJadwal $dataJadwal)
@@ -353,16 +361,28 @@ class AuLksController extends Controller
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
             ->where('sis_jadwal.cust_id', $dataJadwal->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
-            ->orderBy('lks_nomor')
+            ->orderBy(DB::raw('CONVERT(lks_nomor,UNSIGNED INTEGER)'))
             ->get();
 
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
 
         $parser = ['dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS, 'dataKetua' => $dataKetua];
 
-        $pdf = PDF::loadView("pelanggan::tahap2_persetujuan.print.lks", $parser)
-            ->setPaper('a4', 'landscape');
-        return $pdf->stream();
+        $headerPath = base_path('Modules/Pelanggan/Resources/views/tahap2_persetujuan/print/lks-header.html');
+        $pdf        = SnappyPdf::loadView('pelanggan::tahap2_persetujuan.print.lks', $parser);
+        $pdf->setPaper('a4');
+        $pdf->setOrientation('landscape');
+        $pdf->setOptions([
+            'margin-top'               => 20,
+            'enable-local-file-access' => true,
+            'header-html'              => $headerPath,
+            'header-spacing'           => 12,
+            'footer-left'              => 'F-TA-9     Rev. 2.0        Tanggal Berlaku Sejak: 25 Mei 2022',
+            'footer-right'             => "[page] dari [topage]",
+            'footer-font-size'         => 8,
+            'footer-spacing'           => 2,
+        ]);
+        return $pdf->inline('LKS-' . Str::of($dataJadwal->sis_pelanggan->cust_nama)->slug()->upper() . '-' . Str::of($dataJadwal->jadw_tanggal_mulai->isoFormat('LL'))->slug()->upper() . '.pdf');
     }
 
     public function ajax(Request $request)

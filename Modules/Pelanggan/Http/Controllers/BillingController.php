@@ -56,6 +56,7 @@ class BillingController extends Controller
             'bill_payment_date' => 'required',
             'bill_payment_file' => 'required|mimetypes:application/pdf,image/png,image/jpeg|max:2048000',
         ]);
+
         $billing = SisBilling::with('sis_billing_items')
             ->where("bill_id", $billing_id)
             ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
@@ -67,8 +68,9 @@ class BillingController extends Controller
         }
 
         try {
-            $oldPath = [];
-            $newPath = [];
+            $oldPath     = [];
+            $newPath     = [];
+            $paymentDate = Carbon::createFromFormat('m/d/Y, g:i A', $request['bill_payment_date']);
 
             $filePath = sprintf(config("app.path_file_billing"), $billing->bill_id);
             if (!File::exists($filePath)) {
@@ -87,7 +89,7 @@ class BillingController extends Controller
 
             $billing->bill_payment_status = 'menunggu konfirmasi';
             $billing->bill_payment_note   = $request['bill_payment_note'];
-            $billing->bill_payment_date   = $request['bill_payment_date'];
+            $billing->bill_payment_date   = $paymentDate->format('Y-m-d H:i:s');
             $billing->bill_payment_tipe   = 'transfer';
             $billing->bill_payment_file   = $kuitansiPath;
             $billing->save();
@@ -173,6 +175,9 @@ class BillingController extends Controller
         // Result
         $result = [];
         foreach ($data->get() as $d) {
+            $isExpired                = Carbon::now()->isAfter($d->bill_due_date);
+            $x['cust_nama']           = auth()->user()->sis_pelanggan->cust_nama;
+            $x['is_bill_expired']     = $isExpired;
             $x['bill_id']             = $d->bill_id;
             $x['bill_nomor_billing']  = $d->bill_nomor_billing;
             $x['bill_due_date']       = $d->bill_due_date->format("Y-m-d");
@@ -183,7 +188,7 @@ class BillingController extends Controller
             $x['bill_payment_note']   = $d->bill_payment_note;
             $x['bill_invoice_file']   = asset($d->bill_invoice_file);
             $x['bill_items']          = $d->sis_billing_items;
-            array_push($result, $x);
+            $result[]                 = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);

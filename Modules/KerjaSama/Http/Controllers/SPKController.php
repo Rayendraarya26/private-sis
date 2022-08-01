@@ -50,6 +50,7 @@ class SPKController extends Controller
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
+        $data->where('mohon_cancel_status', '=', 'no');
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);

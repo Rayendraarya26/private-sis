@@ -48,7 +48,7 @@
                 // fitColumns: true,
                 toolbar: '#toolbar',
                 pagination: true,
-                pageSize: 50,
+                pageSize: 10,
                 clientPaging: false,
                 detailFormatter: function (index, row) {
                     let htmls = `<div style="padding: 20px 0 20px 0"><h4>Revisi</h4><ul>`;
@@ -69,24 +69,32 @@
                         width: 80,
                         align: 'center',
                         formatter: function (val, row) {
-                            let dom       = `dropdownMenu_${row.mohon_id}`;
+                            let dom = `dropdownMenu_${row.mohon_id}`;
                             let btnDetail = `<div data-options="iconCls:'fad fa-info-circle'" onclick="location.href = '{{url("$url/detail")}}/${row.mohon_id}'">Detail</div>`;
-                            let btnEdit   = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
+                            let btnEdit = `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{url("$url/edit")}}/${row.mohon_id}'">Edit</div>`;
                             let btnDelete = `<div data-options="iconCls:'fad fa-trash'" onclick="confirmDelete('${row.mohon_id}', '${row.sert_nama}')">Delete</div>`;
-                            let btnTrack  = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
+                            let btnTrack = `<div data-options="iconCls:'fad fa-flag-checkered'" onclick="location.href = '{{url("$url/track")}}/${row.mohon_id}'">Lacak</div>`;
                             let btnApproveHarga = `<div data-options="iconCls:'fad fa-check-circle'" onclick="confirmHarga('${row.mohon_id}', ${row.mohon_harga_permohonan})">Approve Harga</div>`;
+                            let btnCancel = `<div data-options="iconCls:'fad fa-cancel'" onclick="location.href = '{{url("$url/cancel")}}/${row.mohon_id}'">Pembatalan</div>`;
 
-                            if (row.mohon_approved_status !== "on-progress") {
+                            if (row.mohon_approved_status !== "on-progress" &&
+                                row.mohon_approved_status !== 'revisi' &&
+                                row.mohon_approved_status !== 'fix') {
                                 btnDelete = "";
-                                if (row.mohon_approved_status !== "revisi") {
-                                    btnEdit = "";
-                                }
+                            }
+                            if (row.mohon_approved_status !== "revisi") {
+                                btnEdit = "";
                             }
 
                             if (row.mohon_tagihan_biaya_status == "proses" && (row.mohon_harga_permohonan == 0 || row.mohon_harga_permohonan == null)) {
                                 btnApproveHarga = "";
                             } else if (row.mohon_tagihan_biaya_status != "proses") {
                                 btnApproveHarga = "";
+                            }
+
+
+                            if (!(row.mohon_approved_status == 'accepted' && row.allow_cancel) && row.mohon_cancel_status == "yes") {
+                                btnCancel = ""
                             }
 
                             return `
@@ -99,8 +107,9 @@
                             @if(authorized("{$module}@approveHarga")) ${btnApproveHarga} @endif
                             @if(authorized("{$module}@edit")) ${btnEdit} @endif
                             @if(authorized("{$module}@track")) ${btnTrack} @endif
-                            <!-- <div class="menu-sep"></div> -->
-                                @if(authorized("{$module}@destroy")) ${btnDelete} @endif
+                            <div class="menu-sep"></div>
+                                @if(authorized("{$module}@cancel")) ${btnCancel} @endif
+                            @if(authorized("{$module}@destroy")) ${btnDelete} @endif
                             </div>
                         </div>`;
                         }
@@ -189,7 +198,7 @@
                     {
                         field: 'mohon_harga_permohonan',
                         title: 'Biaya Sertifikasi',
-                        width: 220,
+                        width: 150,
                         sortable: true,
                         align: 'right',
                         formatter: function (val, row) {
@@ -211,7 +220,31 @@
                             }
                         }
                     },
-                    {field: 'created_at', title: 'Tgl Pengajuan', width: 220, sortable: true},
+                    {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
+                    {
+                        field: 'mohon_cancel_status',
+                        title: 'Status <br> Pembatalan',
+                        width: 120,
+                        sortable: true,
+                        formatter: function (val) {
+                            switch (val) {
+                                case 'process':
+                                    return "Proses Pengajuan";
+                                case 'no':
+                                    return "Tidak";
+                                case 'yes':
+                                    return "Disetujui";
+                            }
+                        },
+                        styler: function (val) {
+                            switch (val) {
+                                case 'process':
+                                    return 'color:black;background-color:#f57f17;';
+                                case 'yes':
+                                    return 'color:white;background-color:#2e7d32;';
+                            }
+                        }
+                    },
                 ]],
                 onBeforeLoad: function () {
                     $(this).datagrid('getPanel').find('.btn-action').each(function (idx, row) {

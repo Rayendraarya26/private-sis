@@ -175,7 +175,7 @@
 
                         $('#cust_id').combogrid({
                             pageSize: '50',
-                            panelWidth: 400,
+                            panelWidth: 510,
                             pagination: true,
                             nowrap: false,
                             idField: 'cust_id',
@@ -190,7 +190,8 @@
                             required: true,
                             columns: [[
                                 {field: 'cust_id', hidden: true},
-                                {field: 'cust_nama', title: 'Nama Pelanggan', width: 390, sortable: true,},
+                                {field: 'cust_nama', title: 'Nama', width: 250, sortable: true,},
+                                {field: 'cust_alamat', title: 'Alamat', width: 450, sortable: true,},
                             ]],
                             onSelect: async function (index, row) {
                                 self.setCustId(row.cust_id);

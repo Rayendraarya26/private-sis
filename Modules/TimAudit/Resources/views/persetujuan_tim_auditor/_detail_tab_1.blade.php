@@ -17,18 +17,20 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($pemohon->sis_permohonan_dokumens as $dok)
-                        <tr>
-                            <td>{{$loop->iteration}}</td>
-                            <td>{{$dok->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text}}</td>
-                            <td>
-                                <a target="_blank" href="{{asset($dok->mohon_dok_filepath)}}">
-                                    <i class="fad fa-download"></i>
-                                    Unduh
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
+                    @if(!empty($pemohon->sis_permohonan_dokumens))
+                        @foreach($pemohon->sis_permohonan_dokumens as $dok)
+                            <tr>
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{$dok->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text}}</td>
+                                <td>
+                                    <a target="_blank" href="{{asset($dok->mohon_dok_filepath)}}">
+                                        <i class="fad fa-download"></i>
+                                        Unduh
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
                     </tbody>
                 </table>
             @endforeach

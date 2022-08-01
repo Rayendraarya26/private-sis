@@ -6,7 +6,7 @@
     <div class="dt-content">
         <div class="col-xl-12">
             <a class="btn btn-sm btn-default" href="{{url("$url")}}" style="margin-bottom: 20px"><i
-                    class="fad fa-arrow-left"></i> Kembali</a>
+                        class="fad fa-arrow-left"></i> Kembali</a>
             <div class="row">
                 <div class="col-xl-12">
                     <div class="dt-card">
@@ -131,7 +131,7 @@
                                                                     <div class="col-md-12">
                                                                         <div class="table-responsive">
                                                                             <table
-                                                                                class="table table-bordered mb-0 p-0 no-margin">
+                                                                                    class="table table-bordered mb-0 p-0 no-margin">
                                                                                 <thead>
                                                                                 <tr>
                                                                                     <th scope="col">Status LKS :</th>
@@ -188,7 +188,9 @@
                                             <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
                                                     data-target="#collapse-tree" aria-expanded="false"
                                                     aria-controls="collapse-two">3. LKS ditutup
-                                                tanggal @if($dataJadwal->lks_expired_date_perbaikan != '') {{ date('d M Y', strtotime($dataJadwal->lks_expired_date_perbaikan)) }} @endif</button>
+                                                tanggal @if($dataJadwal->lks_tanggal_ditutup != '')
+                                                    {{ date('d M Y', strtotime($dataJadwal->lks_tanggal_ditutup)) }}
+                                                @endif</button>
                                         </h5>
                                     </div>
                                     <div id="collapse-tree" class="collapse" aria-labelledby="heading3"
@@ -235,55 +237,73 @@
                                                         <tr>
                                                             <td>Scan LKS</td>
                                                             <td>
-                                                                <a href="{{ url($dataJadwal->jadw_file_lks) }}"
-                                                                   target="_blank">
-                                                                    <i class="fad fa-download"></i>
-                                                                    Download
-                                                                </a>
+                                                                @if($dataJadwal->jadw_file_lks)
+                                                                    <a href="{{ url($dataJadwal->jadw_file_lks) }}"
+                                                                       target="_blank">
+                                                                        <i class="fad fa-download"></i>
+                                                                        Download
+                                                                    </a>
+                                                                @else
+                                                                    Belum Tersedia
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>Scan Laporan Ringkas</td>
                                                             <td>
-                                                                <a href="{{ url($dataJadwal->jadw_file_laporan_ringkas) }}"
-                                                                   target="_blank">
-                                                                    <i class="fad fa-download"></i>
-                                                                    Download
-                                                                </a>
+                                                                @if($dataJadwal->jadw_file_laporan_ringkas)
+                                                                    <a href="{{ url($dataJadwal->jadw_file_laporan_ringkas) }}"
+                                                                       target="_blank">
+                                                                        <i class="fad fa-download"></i>
+                                                                        Download
+                                                                    </a>
+                                                                @else
+                                                                    Belum Tersedia
+                                                                @endif
+
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>Scan Surat Tugas</td>
                                                             <td>
-                                                                <a href="{{ url($dataJadwal->jadw_file_surat_tugas) }}"
-                                                                   target="_blank">
-                                                                    <i class="fad fa-download"></i>
-                                                                    Download
-                                                                </a>
+                                                                @if($dataJadwal->jadw_file_surat_tugas)
+                                                                    <a href="{{ url($dataJadwal->jadw_file_surat_tugas) }}"
+                                                                       target="_blank">
+                                                                        <i class="fad fa-download"></i>
+                                                                        Download
+                                                                    </a>
+                                                                @else
+                                                                    Belum Tersedia
+                                                                @endif
+
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>Scan Notulen</td>
                                                             <td>
-                                                                <a href="{{ url($dataJadwal->jadw_file_notulen) }}"
-                                                                   target="_blank">
-                                                                    <i class="fad fa-download"></i>
-                                                                    Download
-                                                                </a>
+                                                                @if($dataJadwal->jadw_file_notulen)
+                                                                    <a href="{{ url($dataJadwal->jadw_file_notulen) }}"
+                                                                       target="_blank">
+                                                                        <i class="fad fa-download"></i>
+                                                                        Download
+                                                                    </a>
+                                                                @else
+                                                                    Belum Tersedia
+                                                                @endif
                                                             </td>
                                                         </tr>
-														@if($dataJadwal->jadw_file_subkon != '')
-                                                        <tr>
-                                                            <td>Scan Subkontrak</td>
-                                                            <td>
-                                                                <a href="{{ url($dataJadwal->jadw_file_subkon) }}"
-                                                                   target="_blank">
-                                                                    <i class="fad fa-download"></i>
-                                                                    Download
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-														@endif
+                                                        @if($dataJadwal->jadw_file_subkon != '')
+                                                            <tr>
+                                                                <td>Scan Subkontrak</td>
+                                                                <td>
+                                                                    <a href="{{ url($dataJadwal->jadw_file_subkon) }}"
+                                                                       target="_blank">
+                                                                        <i class="fad fa-download"></i>
+                                                                        Download
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     </table>
                                                 </div>
                                             </div>
@@ -324,10 +344,13 @@
                                                             <tr>
                                                                 <td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
                                                                 <td>{{ucwords($tim->jadw_tim_posisi)}}</td>
-                                                                <td>@if($tim->dftr_periksa_file != '')<a
-                                                                        href="{{ url($tim->dftr_periksa_file) }}"
-                                                                        target="_blank"><i class="fad fa-download"></i>
-                                                                        Download</a>@endif</td>
+                                                                <td>@if($tim->dftr_periksa_file != '')
+                                                                        <a
+                                                                                href="{{ url($tim->dftr_periksa_file) }}"
+                                                                                target="_blank"><i
+                                                                                    class="fad fa-download"></i>
+                                                                            Download</a>
+                                                                    @endif</td>
                                                             </tr>
                                                         @endforeach
                                                     </table>
@@ -348,10 +371,13 @@
                                                             <tr>
                                                                 <td>{{$tim->peg_nama}} ({{$tim->jadw_tim_kode}})</td>
                                                                 <td>{{ucwords($tim->jadw_tim_posisi)}}</td>
-                                                                <td>@if($tim->logbook_filepath != '')<a
-                                                                        href="{{ url($tim->logbook_filepath) }}"
-                                                                        target="_blank"><i class="fad fa-download"></i>
-                                                                        Download</a>@endif</td>
+                                                                <td>@if($tim->logbook_filepath != '')
+                                                                        <a
+                                                                                href="{{ url($tim->logbook_filepath) }}"
+                                                                                target="_blank"><i
+                                                                                    class="fad fa-download"></i>
+                                                                            Download</a>
+                                                                    @endif</td>
                                                             </tr>
                                                         @endforeach
                                                     </table>
@@ -379,15 +405,17 @@
                                                                             21. LABEL CONTOH UJI
                                                                         @elseif($ppc->audit_ppc_jenis_file == '22')
                                                                             22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
-																		@else
+                                                                        @else
                                                                             22. LAPORAN KEGIATAN PENGAMBILAN CONTOH
                                                                         @endif
                                                                     </td>
-                                                                    <td>@if($ppc->audit_ppc_filepath != '')<a
-                                                                            href="{{ url($ppc->audit_ppc_filepath) }}"
-                                                                            target="_blank"><i
-                                                                                class="fad fa-download"></i>
-                                                                            Download</a>@endif</td>
+                                                                    <td>@if($ppc->audit_ppc_filepath != '')
+                                                                            <a
+                                                                                    href="{{ url($ppc->audit_ppc_filepath) }}"
+                                                                                    target="_blank"><i
+                                                                                        class="fad fa-download"></i>
+                                                                                Download</a>
+                                                                        @endif</td>
                                                                 </tr>
                                                             @endforeach
                                                         </table>
@@ -417,7 +445,9 @@
                                             <div class="col-md-10 col-sm-9">
                                         <textarea class="form-control" @keyup="validateSertifikat"
                                                   name="rekmd_komte_isi"
-                                                  id="rekmd_komte_isi">@if(isset($dataJadwal->rekmd_komte_isi)) {{$dataJadwal->rekmd_komte_isi}} @endif</textarea>
+                                                  id="rekmd_komte_isi">@if(isset($dataJadwal->rekmd_komte_isi))
+                                                {{$dataJadwal->rekmd_komte_isi}}
+                                            @endif</textarea>
                                             </div>
                                         </div>
                                         <div class="form-group form-row">
@@ -500,8 +530,8 @@
     <script src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/tinymce.min.js"
             referrerpolicy="origin"></script>
     <script
-        src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js"
-        referrerpolicy="origin"></script>
+            src="https://cdn.tiny.cloud/1/hb65btdze8ubxfoabqu7fqjpuzpmx0c4k0je5f883m4l9ajf/tinymce/5/jquery.tinymce.min.js"
+            referrerpolicy="origin"></script>
 
     <script src="{{asset('/node_modules/dropzone/dist/min/dropzone.min.js')}}"></script>
     <script>
@@ -591,7 +621,7 @@
                     },
                     setTutup(val) {
                         this.rekmd_komte_status = `${val}`;
-                        this.status_submit      = true;
+                        this.status_submit = true;
                     },
                     submitRekomendasi() {
                         tinyMCE.triggerSave();
@@ -619,7 +649,7 @@
                                     formData.append("rekmd_komte_status", this.rekmd_komte_status)
 
                                     this.loading_submit = true;
-                                    let self            = this;
+                                    let self = this;
                                     $.ajax({
                                         url: `{{action("$module@update")}}`,
                                         type: 'post',

@@ -7,6 +7,7 @@ use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
+use App\Models\BbkkpSis\SysUserGroup;
 
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -50,6 +51,8 @@ class UploadTagihanBiayaController extends Controller
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
+		
+        $data->where('mohon_cancel_status', '=', 'no');
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
@@ -226,6 +229,8 @@ class UploadTagihanBiayaController extends Controller
         $dataInsert = [
             'mohon_id' => $request->mohon_id,
             'mohon_det_harga_permohonan' => $request->mohon_det_harga_permohonan,
+            'mohon_tagihan_biaya_status' => ($request->mohon_det_harga_permohonan > 0) ? 'proses' : 'setuju',
+            'mohon_harus_lunas_status' => 'tidak',
         ];
 
         if ($request->hasFile("mohon_tagihan_biaya_file")) {
@@ -253,32 +258,70 @@ class UploadTagihanBiayaController extends Controller
 				*/
 				
 				 SisPermohonan::findOrFail($request['mohon_id'])->update([
+                    'mohon_harus_lunas_status'  => $dataInsert['mohon_harus_lunas_status'],
+                    'mohon_tagihan_biaya_status'  => $dataInsert['mohon_tagihan_biaya_status'],
                     'mohon_tagihan_biaya_file'  => $dataInsert['mohon_tagihan_biaya_file'],
                     'mohon_harga_permohonan'  => $dataInsert['mohon_det_harga_permohonan'],
                 ]);
             });
-			
-			$notifCust           = new NotifStruct();
-			$notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
-			$notifCust->message   = sprintf("Silahkan lakukan persetujuan Biaya untuk permohonan nomor #%s untuk %s yang telah ditentukan.", $request['mohon_id'], $request['mohon_cust_nama']);
-			$notifCust->user_id   =  $request['user_id'];
-			$notifCust->click_url = url('/pelanggan/sertifikasi/permohonan');
-			sendNotification($notifCust);
-			
-			// Send Email
-			$structEmail          = new EmailStruct();
-			$structEmail->subject = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
-			$structEmail->body    = view('marketing::tagihan_biaya.mails.publish')
-				->with([
-					'pemohonNama'       => $request['mohon_cust_nama'],
-					'pemohonSertifNama' => $request['sert_nama'],
-					'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
-				])->render();
-			$structEmail->to      = $request['mohon_cust_email'];
-			sendEmail($structEmail);
+			$timeNow    = Carbon::now();
+			if($request->mohon_det_harga_permohonan > 0){
+				$notifCust           = new NotifStruct();
+				$notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
+				$notifCust->message   = sprintf("Silahkan lakukan persetujuan Biaya untuk permohonan nomor #%s untuk %s yang telah ditentukan.", $request['mohon_id'], $request['mohon_cust_nama']);
+				$notifCust->user_id   =  $request['user_id'];
+				$notifCust->click_url = url('/pelanggan/sertifikasi/permohonan');
+				sendNotification($notifCust);
+				
+				// Send Email
+				$structEmail          = new EmailStruct();
+				$structEmail->subject = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
+				$structEmail->body    = view('marketing::tagihan_biaya.mails.publish')
+					->with([
+						'pemohonNama'       => $request['mohon_cust_nama'],
+						'pemohonSertifNama' => $request['sert_nama'],
+						'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
+					])->render();
+				$structEmail->to      = $request['mohon_cust_email'];
+				sendEmail($structEmail);
+			} 
+			else {
+				SisPermohonanStatus::updateOrCreate([
+                    "status_mohon_id" => $request->mohon_id,
+                    "status_tipe"     => "informasi",
+                    "status_judul"    => "Pemohon menyetujui harga sertifikasi",
+                    "status_pesan"    => sprintf("%s menyetujui sertifikasi dengan harga Rp %s", $request->mohon_cust_nama, moneyFormat($request->mohon_det_harga_permohonan)),
+                    "created_at"      => $timeNow,
+                ], [
+                    "updated_at" => $timeNow,
+                ]);
+				
+				$groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 6, 7])->get();
+				
+				if ($groupUsers) {
+					foreach ($groupUsers as $user) {
+						$notifStruct = new NotifStruct();
+						if ($user->ug_group_id == 6) {
+							$notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $request->mohon_id);
+							$notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $request->mohon_cust_nama, moneyFormat($request->mohon_harga_permohonan));
+							$notifStruct->user_id   = $user?->ug_user_id;
+							$notifStruct->click_url = url('/operatorls/kelengkapan-permohonan');
 
-            return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
-        } else {
+							if ($user->ug_group_id == 6) $notifStruct->message = $notifStruct->message . ' Operator LS harap segera membuat surat pernyataan persetujuan.';
+
+							sendNotification($notifStruct);
+						}
+					}
+				}
+			}
+			
+			if($request->mohon_det_harga_permohonan > 0){
+				return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
+			}
+			else{
+				return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan.");
+			}
+		} else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
         }
     }

@@ -63,8 +63,6 @@ class AuLapRingkasController extends Controller
             'lap_ringkas_rekomendasi' => 'required',
         ]);
 
-        $newFilePath = [];
-        $oldFilePath = [];
         try {
             $dataJadwal                                = $this->isKepalaAudit($jadwalID);
             $where                                     = ['jadw_id' => $dataJadwal->jadw_id];
@@ -80,14 +78,8 @@ class AuLapRingkasController extends Controller
                     'jadw_setujui_nama'    => $request['jadw_setujui_nama'],
                 ]);
 
-            foreach ($oldFilePath as $path) { // remove old file
-                @unlink($path);
-            }
             return redirect(url($this->url))->with('message', "Laporan ringkas berhasil ditambahkan");
         } catch (Exception $e) {
-            foreach ($newFilePath as $path) { // remove new file uploaded
-                @unlink($path);
-            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

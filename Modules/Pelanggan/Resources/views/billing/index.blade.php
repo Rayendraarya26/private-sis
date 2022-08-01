@@ -17,10 +17,15 @@
                             {{ session('message') }}
                         </div>
                     @endif
-
                     <div class="dt-card__header">
                         <div class="dt-card__heading">
                             <h3 class="dt-card__title">Tagihan Pembayaran Sertifikasi</h3>
+                            <br>
+                            <div class="alert alert-info pt-1" role="alert" id="noteInvoiceExpired" style="display: none">
+                                Jika invoice telah kadaluarsa dan anda <b>sudah membayar</b>, silakan <b>upload bukti pembayaran</b>
+                                <br>
+                                Jika invoice telah kadaluarsa dan anda <b>belum membayar</b>, silakan <b>chat admin untuk meminta Invoice Baru</b>
+                            </div>
                         </div>
                     </div>
                     <div class="dt-card__body">
@@ -52,13 +57,13 @@
                 clientPaging: false,
                 detailFormatter: function (index, row) {
                     let tgl_bayar = "-";
-                    let kuitansi  = "<span style='color: orange'>Menunggu Pembayaran</span>";
-                    let note      = "-";
+                    let kuitansi = "<span style='color: orange'>Menunggu Pembayaran</span>";
+                    let note = "-";
 
                     if (row.bill_payment_date != null) {
                         tgl_bayar = row.bill_payment_date
-                        kuitansi  = `<a target="_blank" href='${row.bill_payment_file}'><i class='fad fa-download'></i> Unduh Bukti Pembayaran</a>`;
-                        note      = row.bill_payment_note;
+                        kuitansi = `<a target="_blank" href='${row.bill_payment_file}'><i class='fad fa-download'></i> Unduh Bukti Pembayaran</a>`;
+                        note = row.bill_payment_note;
                     }
 
                     return `
@@ -75,15 +80,20 @@
                     {
                         field: 'action',
                         title: "Aksi",
-                        width: 100,
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
                             if (row.bill_payment_status != 'lunas') {
                                 let btnColor = 'btn-success';
-                                if (row.bill_payment_file != null){
+                                if (row.bill_payment_file != null) {
                                     btnColor = "btn-warning"
                                 }
-                                return `<a href="{{url("$url/upload")}}/${row.bill_id}" class="btn btn-xs ${btnColor}"><i class="fad fa-upload"></i> Bukti Pembayaran </a>`
+                                let btnUpload = `<a href="{{url("$url/upload")}}/${row.bill_id}" class="btn btn-xs ${btnColor} btn-block"><i class="fad fa-upload"></i> Bukti Pembayaran </a>`
+                                let btnChatAdmin = '';
+                                if (row.is_bill_expired && row.bill_payment_status == "menunggu pembayaran") {
+                                    btnChatAdmin = `<a target="_blank" href="https://api.whatsapp.com/send?phone=628112827821&text=Selamat Siang Admin BBKKP, saya dari ${row.cust_nama} invoice saya untuk pembayaran dengan nomor ${row.bill_nomor_billing} telah expired, apakah saya bisa mendapatkan invoice yang baru ?" class="btn btn-xs btn-success btn-block"><i class="fab fa-whatsapp"></i> Chat Admin (Inv Expired)</a>`;
+                                }
+                                return btnUpload + btnChatAdmin
                             }
                         }
                     }
@@ -114,8 +124,22 @@
                             return `<a href="${val}" target="_blank"><i class="fad fa-download"></i> Invoice</a>`
                         }
                     },
-                    {field: 'bill_billing_date', title: 'Tgl Billing', width: 220, sortable: true},
-                    {field: 'bill_due_date', title: 'Tgl Jatuh Tempo', width: 220, sortable: true},
+                    {field: 'bill_billing_date', title: 'Tgl<br>Billing', width: 100, sortable: true},
+                    {
+                        field: 'bill_due_date', title: 'Tgl<br>Jatuh Tempo', width: 140, sortable: true,
+                        formatter: function (val, row){
+                            let text = val;
+                            if(row.is_bill_expired){
+                                text += '<br> Invoice Kadaluarsa'
+                            }
+                            return text
+                        },
+                        styler: function (val, row) {
+                            if(row.is_bill_expired && row.bill_payment_status != 'lunas'){
+                                return 'color:white;background-color:#D41818;';
+                            }
+                        }
+                    },
                     {
                         field: 'bill_items', title: 'Items', width: 400, sortable: false,
                         formatter: function (val) {
@@ -123,7 +147,7 @@
                                 let items = "<ul>";
                                 val.map(e => {
                                     items += `<li>${e.itms_bil_tipe.toUpperCase()} <br>${e.itms_bil_desc}</li>`
-									/* <br> <i>Rp${e.itms_bil_total.toString().formatUang('.')}</i> */
+                                    /* <br> <i>Rp${e.itms_bil_total.toString().formatUang('.')}</i> */
                                 })
                                 items += "</ul>";
 
@@ -133,6 +157,15 @@
                     },
                     {field: 'bill_nomor_billing', title: 'Nomor Billing', width: 150, sortable: true},
                 ]],
+                onLoadSuccess: function (data) {
+                    if(data.rows.length > 0){
+                        data.rows.map(e => {
+                            if (e.is_bill_expired){
+                                $("#noteInvoiceExpired").removeAttr('style')
+                            }
+                        })
+                    }
+                },
             });
             dg.datagrid(
                 'enableFilter', [

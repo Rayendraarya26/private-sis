@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $bill_payment_date
  * @property string|null $bill_payment_file
  * @property string|null $bill_payment_note
+ * @property int|null $bill_notif_count_finance
+ * @property string|null $bill_status
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * 
@@ -42,7 +44,8 @@ class SisBilling extends Model
 	protected $primaryKey = 'bill_id';
 
 	protected $casts = [
-		'cust_id' => 'int'
+		'cust_id' => 'int',
+		'bill_notif_count_finance' => 'int'
 	];
 
 	protected $dates = [
@@ -63,7 +66,9 @@ class SisBilling extends Model
 		'bill_payment_status',
 		'bill_payment_date',
 		'bill_payment_file',
-		'bill_payment_note'
+		'bill_payment_note',
+		'bill_notif_count_finance',
+		'bill_status'
 	];
 
 	public function sis_pelanggan()

@@ -12,12 +12,22 @@
             justify-content: center;
         }
 
+        thead {
+            display: table-row-group;
+        }
+        tfoot {
+            display: table-row-group;
+        }
+        tr {
+            page-break-inside: avoid;
+        }
 
         section, span, table, tr, th, td, #rekomen-lks {
             font-size: 12px;
         }
 
         #rekomen-lks {
+            table-layout: fixed;
             font-family: Arial, Helvetica, sans-serif;
             border-collapse: collapse;
             width: 100%;
@@ -55,22 +65,22 @@
         }
     </style>
 </head>
-<body style="margin-top: 50px">
-<header>
-    <div style="float: left; padding-left: 40px">
-        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"
-             style="max-width: 150px; margin-top: -20px">
-    </div>
-</header>
+<body>
+{{--<header>--}}
+{{--    <div style="float: left; padding-left: 40px">--}}
+{{--        <img src="{{public_path('/images/logos/sis_ls_bbkkp.png')}}" alt="Logo"--}}
+{{--             style="max-width: 150px;">--}}
+{{--    </div>--}}
+{{--</header>--}}
 
 <div class="text-center" >
-    <div style="font-weight: bold; font-size: 16px; margin-top: -20px">
+    <div style="font-weight: bold; font-size: 16px;">
         LAPORAN KETIDAKSESUAIAN dan LAPORAN VERIFIKASI
     </div>
 </div>
 
 <section style="margin-top: 20px; margin-right: 20px; margin-left: 20px">
-    <table>
+    <table class="print-friendly">
         <tr>
             <td>1.</td>
             <td>Jenis Kegiatan</td>
@@ -141,7 +151,7 @@
     </table>
     <br>
 
-    <table id="rekomen-lks">
+    <table id="rekomen-lks" class="rekomen-lks">
         <thead>
         <tr>
             <th style="width: 10%">No. <br>(Inisial Auditor)</th>
@@ -174,31 +184,29 @@
             ?>
             <tr>
                 <td style="text-align: center">{{$lks->lks_nomor}} <br> ({{$lks->sis_jadwal_tim->jadw_tim_kode}})</td>
-                <td style="padding: 5px">
-                    {{--{!! $lks->lks_uraian_ketidaksesuaian !!}--}}
-                    {{ strip_tags($lks->lks_uraian_ketidaksesuaian) }}
+                <td style="padding: 5px;word-wrap:break-word">
+                    <p style="page-break-inside: revert">{!! $lks->lks_uraian_ketidaksesuaian !!}</p>
                     <br>
                     <br>
                     <b>Kategori ketidaksesuaian</b>: {{ucwords($lks->lks_kategori_ketidaksesuaian)}}
                     <br>
                     <br>
-                    {{--Klausul ketidak sesuaian: {!! $lks->lks_klausul_ketidaksesuaian !!}--}}
-                    <b>Klausul ketidak sesuaian</b>: {{ strip_tags($lks->lks_klausul_ketidaksesuaian) }}
+                    <b>Klausul ketidak sesuaian</b>: {!! $lks->lks_klausul_ketidaksesuaian !!}
                 </td>
 
                 <td>
                     Analisa Penyebab:
-                    {!! strip_tags($lks->lks_perbaikan_analisa) !!}
+                    {!! $lks->lks_perbaikan_analisa !!}
                     <br><br>
                     Koreksi
-                    {!! strip_tags($lks->lks_perbaikan_koreksi) !!}
+                    {!! $lks->lks_perbaikan_koreksi !!}
                     <br><br>
                     Tindakan Korektif
-                    {!! strip_tags($lks->lks_perbaikan_tindakan) !!}
+                    {!! $lks->lks_perbaikan_tindakan !!}
                 </td>
-                <td>{!! strip_tags($lks->lks_bagian_pendamping) !!}</td>
+                <td>{!! $lks->lks_bagian_pendamping !!}</td>
                 <td>
-                    {!! strip_tags($lks->lks_bukti_tindakan_perbaikan) !!}
+                    {!! $lks->lks_bukti_tindakan_perbaikan !!}
 
                     @foreach($lks->sis_audit_lks_files as $file)
                         <br>
@@ -282,44 +290,46 @@
                 </td>
             </tr>
 
-            <tr>
-                <td></td>
-                <td></td>
-                <td>
-                    <table style="WIDTH: 300px; padding-top: 50px">
-                        <tbody>
-                        <tr>
-                            <td style="font-size: 11pt; text-align: center">
-                                <strong>Yogyakarta, {{\Carbon\Carbon::now()->isoFormat('LL')}}</strong>
-                                <br>
-                                <strong>Diverifikasi oleh,</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center;">
-                                @if(!empty($dataKetua->master_pegawai->peg_ttd_base64))
-                                    <img src="{{ $dataKetua->master_pegawai->peg_ttd_base64 }}" alt="ttd ketua"
-                                         style="max-height: 100px;">
-                                @elseif(!empty($dataKetua->master_pegawai->peg_ttd_file))
-                                    <img src="{{public_path($dataKetua->master_pegawai->peg_ttd_file)}}" alt="ttd ketua"
-                                         style="max-height: 100px;">
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-size: 11pt; text-align: center">
-                                <b><u>{{$dataKetua->master_pegawai->peg_nama}}</u></b>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="FONT-SIZE: 11pt; text-align: center">
-                                <b>Ketua Tim</b>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
+            @if(!empty($dataJadwal->jadw_tanggal_rapat_akhir))
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <table style="WIDTH: 300px; padding-top: 50px">
+                            <tbody>
+                            <tr>
+                                <td style="font-size: 11pt; text-align: center">
+                                    <strong>Yogyakarta, {{$dataJadwal->jadw_tanggal_rapat_akhir->isoFormat('LL')}}</strong>
+                                    <br>
+                                    <strong>Diverifikasi oleh,</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">
+                                    @if(!empty($dataKetua->master_pegawai->peg_ttd_base64))
+                                        <img src="{{ $dataKetua->master_pegawai->peg_ttd_base64 }}" alt="ttd ketua"
+                                             style="max-height: 100px;">
+                                    @elseif(!empty($dataKetua->master_pegawai->peg_ttd_file))
+                                        <img src="{{public_path($dataKetua->master_pegawai->peg_ttd_file)}}" alt="ttd ketua"
+                                             style="max-height: 100px;">
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 11pt; text-align: center">
+                                    <b><u>{{$dataKetua->master_pegawai->peg_nama}}</u></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="FONT-SIZE: 11pt; text-align: center">
+                                    <b>Ketua Tim</b>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            @endif
         </table>
     </div>
 </section>

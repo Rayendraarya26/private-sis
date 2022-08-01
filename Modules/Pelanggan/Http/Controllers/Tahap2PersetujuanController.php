@@ -9,6 +9,7 @@ use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SysUserGroup;
 use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -256,16 +257,28 @@ class Tahap2PersetujuanController extends Controller
             ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
             ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
             ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
-            ->orderBy('lks_nomor')
+            ->orderBy(DB::raw('CONVERT(lks_nomor,UNSIGNED INTEGER)'))
             ->get();
 
         $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
 
         $parser = ['dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS, 'dataKetua' => $dataKetua];
 
-        $pdf = PDF::loadView("$this->view.print.lks", $parser)
-            ->setPaper('a4', 'landscape');
-        return $pdf->stream();
+        $headerPath = base_path('Modules/Pelanggan/Resources/views/tahap2_persetujuan/print/lks-header.html');
+        $pdf        = SnappyPdf::loadView('pelanggan::tahap2_persetujuan.print.lks', $parser);
+        $pdf->setPaper('a4');
+        $pdf->setOrientation('landscape');
+        $pdf->setOptions([
+            'margin-top'               => 20,
+            'enable-local-file-access' => true,
+            'header-html'              => $headerPath,
+            'header-spacing'           => 12,
+            'footer-left'              => 'F-TA-9     Rev. 2.0        Tanggal Berlaku Sejak: 25 Mei 2022',
+            'footer-right'             => "[page] dari [topage]",
+            'footer-font-size'         => 8,
+            'footer-spacing'           => 2,
+        ]);
+        return $pdf->inline('LKS-' . Str::of($dataJadwal->sis_pelanggan->cust_nama)->slug()->upper() . '-' . Str::of($dataJadwal->jadw_tanggal_mulai->isoFormat('LL'))->slug()->upper() . '.pdf');
     }
 
     public function ajax(Request $request)

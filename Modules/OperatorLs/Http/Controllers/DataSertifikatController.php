@@ -202,7 +202,10 @@ class DataSertifikatController extends Controller
 
     private function ajax_datagrid(Request $request)
     {
-        $data = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi', 'sis_pelanggan']);
+        // $data = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi', 'sis_pelanggan']);
+		$data = SisPelangganSertifikasi::join('sis_pelanggan', "sis_pelanggan_sertifikasi.cust_id", "=", "sis_pelanggan.cust_id");
+		$data->join('master_sertifikasi', "sis_pelanggan_sertifikasi.sert_id", "=", "master_sertifikasi.sert_id");
+		$data->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_pelanggan_sertifikasi.komodt_id");
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -213,7 +216,8 @@ class DataSertifikatController extends Controller
                         } else {
                             $data->whereNull('cust_sert_filepath');
                         }
-                    } else {
+                    }
+					else {
                         $data->where($f->field, 'LIKE', '%' . $f->value . '%');
                     }
                 }

@@ -93,7 +93,7 @@ class PersetujuanTimAuditController extends Controller
                 $x['cust_nama']                = $d->cust_nama;
                 $x['sert_nama']                = $d->sert_nama;
                 $x['jadw_jenis']               = $d->jadw_jenis;
-                $x['jadw_audit_jenis']         = 'Tahap 2 :<br/>'. $d->jadw_audit_jenis;
+                $x['jadw_audit_jenis']         = 'Tahap 2 :<br/>' . $d->jadw_audit_jenis;
                 $x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
                 $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
                 $x['is_approve']               = $isApprove;
@@ -111,7 +111,7 @@ class PersetujuanTimAuditController extends Controller
             ->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
             ->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
             ->where('master_pegawai.user_id', '=', auth()->id())
-            ->where('sis_audit_tahap1.aud_thp1_ditutup', '=','tidak');
+            ->where('sis_audit_tahap1.aud_thp1_ditutup', '=', 'tidak');
         // ->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'none');
 
         if (!empty($request->filterRules)) {
@@ -156,8 +156,8 @@ class PersetujuanTimAuditController extends Controller
 
             $x['jadw_status']              = 'tahap-1';
             $x['jadw_id']                  = $d->jadw_id;
-            $x['jadw_tanggal_mulai']       = $d->aud_thp1_tanggal_mulai?->format("Y-m-d");
-            $x['jadw_tanggal_selesai']     = $d->aud_thp1_tanggal_selesai?->format("Y-m-d");
+            $x['jadw_tanggal_mulai']       = $d->jadw_tanggal_mulai;
+            $x['jadw_tanggal_selesai']     = $d->jadw_tanggal_selesai;
             $x['cust_nama']                = $d->cust_nama;
             $x['sert_nama']                = $d->sert_nama;
             $x['jadw_jenis']               = 'tunggal';
@@ -215,7 +215,7 @@ class PersetujuanTimAuditController extends Controller
             $kx['cust_nama']                = $k->cust_nama;
             $kx['sert_nama']                = $k->sert_nama;
             $kx['jadw_jenis']               = $k->jadw_jenis;
-            $kx['jadw_audit_jenis']         = 'Komite :<br/>'. $k->jadw_audit_jenis;
+            $kx['jadw_audit_jenis']         = 'Komite :<br/>' . $k->jadw_audit_jenis;
             $kx['jadw_tim_kesanggupan']     = $k->komite_kesanggupan;
             $kx['jadw_tim_kesanggupan_tgl'] = $k->komite_tgl_kesanggupan;
             $kx['is_approve']               = $isApprove;
@@ -244,7 +244,8 @@ class PersetujuanTimAuditController extends Controller
         if ($request['jenis'] == 'tahap-1') {
             $dataJadwal    = SisAuditTahap1::with(['sis_permohonan'])->find($request['jadw_id']);
             $dataPemohon[] = $dataJadwal->sis_permohonan;
-        } else if ($request['jenis'] == 'tahap-2' || $request['jenis'] == 'komite') {
+        } 
+		else if ($request['jenis'] == 'tahap-2' || $request['jenis'] == 'komite') {
             $dataJadwal = SisJadwal::with(['sis_billing.sis_billing_items.sis_permohonan'])->find($request['jadw_id']);
             foreach ($dataJadwal?->sis_billing?->sis_billing_items as $billing_item) {
                 $dataPemohon[] = $billing_item->sis_permohonan;
@@ -290,6 +291,8 @@ class PersetujuanTimAuditController extends Controller
                 DB::raw("sis_audit_tahap1.aud_thp1_id as jadw_id"),
                 DB::raw("sis_audit_tahap1.aud_thp1_tujuan as jadw_audit_tujuan_audit"),
                 DB::raw("sis_audit_tahap1.aud_thp1_standart_acuan as jadw_audit_standart_acuan"),
+                DB::raw('sis_audit_tahap1.aud_thp1_tanggal_mulai AS jadw_tanggal_mulai'),
+                DB::raw('sis_audit_tahap1.aud_thp1_tanggal_selesai AS jadw_tanggal_selesai'),
                 DB::raw('GROUP_CONCAT(DISTINCT sis_permohonan_detail.mohon_det_no_referensi) as jadw_audit_nomor_referensi'),
                 DB::raw('GROUP_CONCAT(DISTINCT master_komoditi.komodt_nama) as komodt_nama'),
                 DB::raw('GROUP_CONCAT(distinct sis_permohonan_komoditi.mohon_kmditi_nace) as jadw_audit_kode_nace'),
@@ -364,8 +367,13 @@ class PersetujuanTimAuditController extends Controller
             $dataJadwal->groupBy('sis_jadwal.jadw_id');
         }
 
+        $data = $dataJadwal->first();
+        if ($request['jenis'] == 'tahap-1') {
+            $data->jadw_tanggal_mulai   = Carbon::createFromFormat("Y-m-d", $data->jadw_tanggal_mulai);
+            $data->jadw_tanggal_selesai = Carbon::createFromFormat("Y-m-d", $data->jadw_tanggal_selesai);
+        }
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'jenis' => $request['jenis'], 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0]];
+        $parser = ['module' => $this->module, 'url' => $this->url, 'jenis' => $request['jenis'], 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $data];
         return view("$this->view.edit_kesanggupan_tim")->with($parser);
     }
 

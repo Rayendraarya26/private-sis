@@ -164,7 +164,7 @@
                                         </tr>
                                         </thead>
                                         <tbody id="tbody-lks">
-                                        @foreach($data->sis_audit_lks()->orderBy('lks_nomor')->get() as $lks)
+                                        @foreach($data->sis_audit_lks()->orderBy(DB::raw('CONVERT(lks_nomor,UNSIGNED INTEGER)'))->get() as $lks)
                                             @php($lksIDs[] = $lks->lks_id)
                                             <tr>
                                                 <td>{{$lks->sis_jadwal_tim->jadw_tim_kode}}</td>
@@ -405,7 +405,7 @@
                         autosave_ask_before_unload: false,
                         invalid_elements: "script",
                         selector: '.editor_uraian',
-                        plugins: 'autosave link image lists',
+                        plugins: 'autosave link image lists advlist',
                         relative_urls: false,
                         height: 300,
                         width: '100%',
@@ -431,7 +431,7 @@
                         autosave_ask_before_unload: false,
                         invalid_elements: "script",
                         selector: '.editor_klausul',
-                        plugins: 'autosave link image lists',
+                        plugins: 'autosave link image lists advlist',
                         relative_urls: false,
                         height: 300,
                         width: '100%',

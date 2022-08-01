@@ -61,6 +61,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id");
         $data->leftJoin('sis_audit_tahap1_detail', "sis_audit_tahap1_detail.aud_thp1_id", "=", "sis_audit_tahap1.aud_thp1_id");
         $data->where('aud_thp1_ditutup', '=', 'tidak');
+        $data->where('bill_status', '=', 'aktif');
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -147,17 +148,27 @@ class PenjadwalanTahap1Controller extends Controller
     private function ajax_combogrid_pelanggan(Request $request)
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
-			->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+			->where('bill_status', '=', 'aktif')
+			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
+			// ->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+			->whereIn('sis_billing.bill_id', function ($query) use ($request) {
                 $query->select('sis_billing.bill_id')->from('sis_billing')
 				->join('sis_billing_items', "sis_billing_items.bill_id", "=", "sis_billing.bill_id")
-				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_billing_items.mohon_det_id")
+				->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
+				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 				->where('mohon_det_perlu_tahap1', '=', 'ya')
-				->whereNotNull('sis_billing.bill_id')->groupBy('sis_billing.bill_id');
-            })
+				->where('mohon_cancel_status', '=', 'no')
+				->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+					$query->select('bill_id')->from('sis_audit_tahap1');
+				})
+				// ->whereNotNull('sis_billing.bill_id')
+				->groupBy('sis_billing.bill_id');
+            });
+			/* 
 			->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
             });
-
+			*/
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {
@@ -187,6 +198,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
 			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
+        $data->where('mohon_cancel_status', '=', 'no');
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_pjt', ['ya']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
@@ -194,7 +206,7 @@ class PenjadwalanTahap1Controller extends Controller
         $data->whereNotNull('mohon_pernyataan_persetujuan_file');
         $data->where('mohon_det_perlu_tahap1', '=', 'ya');
         $data->where('sis_permohonan.cust_id', '=', $request->cust_id);
-        $data->whereIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
+        /* $data->whereIn('sis_permohonan_detail.mohon_det_id', function ($query) use ($request) {
                 $query->select('sis_permohonan_detail.mohon_det_id')->from('sis_billing_items')->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_billing_items.mohon_id")->where("sis_billing_items.bill_id", "=", $request->bill_id);
             });;
         $cust_id = $request->cust_id;
@@ -205,7 +217,7 @@ class PenjadwalanTahap1Controller extends Controller
                 ->whereNotNull('sis_audit_tahap1.mohon_det_id')
                 ->where('sis_permohonan.cust_id', '=', $cust_id);
         });
-
+ */
         if (!empty($request->q)) {
             $data->where('master_sertifikasi.sert_nama', 'LIKE', '%' . $request->q . '%');
         }

@@ -49,32 +49,58 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
-                        width: 80,
+                        title: "",
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
 							let btnDetail = '';
 							if(row.status_step == 're-upload'){
-								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
+								btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
 							}
-							else{
+							else if(row.status_step == 'upload'){
 								btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=detail-permohonan" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
+							}
+							
+							if(row.mohon_kajian_permohonan_pjt_file != ''){
+								btnDetail += `<a class="btn btn-info btn-xs btn-block" target="_blank" href="${row.mohon_kajian_permohonan_pjt_file}"><span class="fad fa-download"></span> Download</a>`;
 							}
                             return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
                         }
                     }
                 ]],
                 columns: [[
+                    {field: 'mohon_verif_kajian_permohonan_pjt', title: 'Status<br/>Verifikasi', width: 100, sortable: true},
                     {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
                     {field: 'mohon_cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
                     {field: 'sert_nama', title: 'Nama Sertifikasi', width: 320, sortable: true},
                 ]],
             });
+			
             dg.datagrid(
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
+					{
+						field:'mohon_verif_kajian_permohonan_pjt',
+						type:'combobox',
+						options:{
+							panelHeight:'auto',
+							data:[{value:'',text:'Semua'},{value:'proses',text:'Proses'},{value:'ya',text:'Ter-Verifikasi'}],
+							onChange:function(value){
+								if (value == ''){
+									dg.datagrid('removeFilterRule', 'mohon_verif_kajian_permohonan_pjt');
+								} else {
+									dg.datagrid('addFilterRule', {
+										field: 'mohon_verif_kajian_permohonan_pjt',
+										op: 'equal',
+										value: value
+									});
+								}
+								dg.datagrid('doFilter');
+							}
+						}
+					}
                 ]);
         });
     </script>

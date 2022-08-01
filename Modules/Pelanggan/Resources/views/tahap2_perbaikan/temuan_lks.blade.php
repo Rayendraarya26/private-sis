@@ -222,7 +222,7 @@
                                                         <textarea class="form-control editor_perbaikan_tindakan"
                                                                   placeholder="Masukkaan deskripsi..."
                                                                   name="editor_perbaikan_tindakan"
-                                                                  id="editor_perbaikan_tindakan_{{$lks->lks_id}}"
+                                                                  id="editor_perbaikan_korektif_{{$lks->lks_id}}"
                                                                   aria-label="editor revisi tindakan">{!! $lks->lks_perbaikan_koreksi !!}</textarea>
                                                     @else
                                                         <br>
@@ -235,7 +235,7 @@
                                                         <textarea class="form-control editor_perbaikan_korektif"
                                                                   placeholder="Masukkaan deskripsi..."
                                                                   name="editor_perbaikan_korektif"
-                                                                  id="editor_perbaikan_korektif_{{$lks->lks_id}}"
+                                                                  id="editor_perbaikan_tindakan_{{$lks->lks_id}}"
                                                                   aria-label="editor revisi korektif">{!! $lks->lks_perbaikan_tindakan !!}</textarea>
                                                     @else
                                                         <br>

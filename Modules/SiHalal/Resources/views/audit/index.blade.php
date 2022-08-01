@@ -51,8 +51,11 @@
                         align: 'center',
                         formatter: function (val, row) {
 							var btnAksi = ``;
-							btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail</a>`;
-                            return `${btnAksi}`;
+							if(row.status == 'audit'){
+								btnAksi += `<a href="{{ url("$url/detail") }}/${row.id_reg}" class="btn btn-xs btn-success btn-block"><i class="fal fa-table"></i> Detail</a>`;
+							}
+							
+							return `${btnAksi}`;
                         },
                     },
                 ]],

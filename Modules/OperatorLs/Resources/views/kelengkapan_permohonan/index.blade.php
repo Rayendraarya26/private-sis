@@ -49,16 +49,31 @@
                 frozenColumns: [[
                     {
                         field: 'action',
-                        title: "Aksi",
-                        width: 80,
+                        title: "",
+                        width: 120,
                         align: 'center',
                         formatter: function (val, row) {
-							let btnDetail = `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-primary btn-xs btn-block"><i class="icon icon-upload"></i> Upload File</a>`;
-                            return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
+							let btnDetail = '';
+							if(row.mohon_id != ''){
+								
+								if(row.status_step == 're-upload'){
+									btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-warning btn-xs btn-block"><i class="fad fa-upload"></i> Upload Ulang</a>`;
+								}
+								else if(row.status_step == 'upload'){
+									btnDetail += `<a href="{{url("$url/detail")}}/${row.mohon_id}?action=upload_file" class="btn btn-primary btn-xs btn-block"><i class="fad fa-upload"></i> Upload Baru</a>`;
+								}
+								
+								if(row.status_step != 'upload'){
+									btnDetail += `<a class="btn btn-info btn-xs btn-block" target="_blank" href="${row.mohon_pernyataan_persetujuan_file}"><span class="fad fa-download"></span> Download</a>`;
+								}
+							}
+							
+							return `@if(authorized("{$module}@detail")) ${btnDetail} @endif`;
                         }
                     }
                 ]],
                 columns: [[
+                    {field: 'status_pernyataan', title: 'Status<br/>Data', width: 100, sortable: true},
                     {field: 'mohon_id', title: 'No.<br/>Permohonan', width: 120, sortable: true},
                     {field: 'created_at', title: 'Tgl Pengajuan', width: 150, sortable: true},
                     {field: 'mohon_cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
@@ -69,6 +84,26 @@
                 'enableFilter', [
                     {field: 'action', type: 'label'},
                     {field: 'sert_nama', type: 'textbox'},
+					{
+						field:'status_pernyataan',
+						type:'combobox',
+						options:{
+							panelHeight:'auto',
+							data:[{value:'',text:'Semua'},{value:'proses',text:'Proses'},{value:'ya',text:'Ter-Upload'}],
+							onChange:function(value){
+								if (value == ''){
+									dg.datagrid('removeFilterRule', 'status_pernyataan');
+								} else {
+									dg.datagrid('addFilterRule', {
+										field: 'status_pernyataan',
+										op: 'equal',
+										value: value
+									});
+								}
+								dg.datagrid('doFilter');
+							}
+						}
+					}
                 ]);
         });
     </script>

@@ -53,12 +53,15 @@ class VerifikasiPermohonanController extends Controller
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
             ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
-        $data->whereIn('mohon_approved_status', ['on-progress', 'fix']);
+
+        $data->where('mohon_cancel_status', '=', 'no');
+        $data->orderBy(DB::raw("FIELD(mohon_approved_status, 'on-progress','fix','revisi','accepted','rejected')"));
+        //$data->whereIn('mohon_approved_status', ['on-progress', 'fix']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                if($f->field == 'mohon_id')
+                if ($f->field == 'mohon_id')
                     $data->where('sis_permohonan.mohon_id', 'LIKE', '%' . $f->value . '%');
-                else if($f->field == 'created_at')
+                else if ($f->field == 'created_at')
                     $data->where('sis_permohonan.created_at', 'LIKE', '%' . $f->value . '%');
                 else
                     $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -69,9 +72,9 @@ class VerifikasiPermohonanController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                if($sort[$i] == 'mohon_id')
+                if ($sort[$i] == 'mohon_id')
                     $data->orderBy('sis_permohonan.mohon_id', $order[$i]);
-                else if($sort[$i] == 'created_at')
+                else if ($sort[$i] == 'created_at')
                     $data->orderBy('sis_permohonan.created_at', $order[$i]);
                 else
                     $data->orderBy($sort[$i], $order[$i]);
@@ -90,16 +93,18 @@ class VerifikasiPermohonanController extends Controller
                 $x['status_step'] = 'verifikasi';
             }
 
+            $x['status_process']         = in_array($d->mohon_approved_status, ['on-progress', 'fix', 'revisi']) ? 'proses' : 'lampau';
             $x['cust_sert_id']           = $d->cust_sert_id;
             $x['mohon_id']               = $d->mohon_id;
             $x['cust_id']                = $d->cust_id;
             $x['user_id']                = $d->user_id;
             $x['sert_nama']              = $d->sert_nama;
             $x['mohon_cust_nama']        = $d->mohon_cust_nama;
+            $x['mohon_approved_status']  = $d->mohon_approved_status;
             $x['mohon_det_jenis_status'] = $d->mohon_det_jenis_status;
-            $x['created_at']             = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $x['updated_at']              = $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            array_push($result, $x);
+            $x['created_at']             = $d->created_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['updated_at']             = $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $result[]                    = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -256,18 +261,18 @@ class VerifikasiPermohonanController extends Controller
 
         // Send Push TIM LS dan Marketing
         // $dataUser = SysUser::whereIn('ug_group_id', ['6', '4'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
-        $dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=','user_id');
+        $dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=', 'user_id');
         foreach ($dataUser->get() as $us) {
             $notifUsr          = new NotifStruct();
             $notifUsr->title   = 'Upload Kajian Permohonan #' . $request['mohon_id'];
             $notifUsr->message = sprintf("Upload Kajian Permohonan untuk permohonan nomor #%s untuk %s ,yang telah melalui proses verifikasi dan diputuskan diterima.", $data['mohon_id'], $data['mohon_cust_nama']);
             $notifUsr->user_id = $us->user_id;
-			/* 
+            /*
             if($us->ug_group_id == '4' )
                 $notifUsr->click_url = url('/marketing/kajian-permohonan');
             else
-			*/
-                $notifUsr->click_url = url('/operatorls/kajian-permohonan');
+            */
+            $notifUsr->click_url = url('/operatorls/kajian-permohonan');
 
             sendNotification($notifUsr);
         }

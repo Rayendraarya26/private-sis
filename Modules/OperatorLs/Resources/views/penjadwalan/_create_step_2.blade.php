@@ -492,7 +492,8 @@
 									columns: [[
 										{field: 'id', hidden: true},
 										{field: 'nama', title: 'Nama Sertifikat', width: 250, sortable: true,},
-										{field: 'nomor_referensi', title: 'No. Referensi', width: 250, sortable: true,},
+										{field: 'nomor_referensi', title: 'No. Referensi', width: 100, sortable: true,},
+										{field: 'nomor_sertifikat', title: 'No. Sertifikat', width: 100, sortable: true,},
 										{field: 'cust_sert_tgl_sertifikat_awal', title: 'Tgl. Awal', width: 100, sortable: true,},
 										{field: 'cust_sert_tgl_sertifikat_perubahan', title: 'Tgl. Perubahan', width: 100, sortable: true,},
 									]],

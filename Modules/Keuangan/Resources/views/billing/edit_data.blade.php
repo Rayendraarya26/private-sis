@@ -37,7 +37,7 @@
                                     url(): mengarah ke lokasi url
                                     route(): mengarah ke nama route
                                 -->
-                                <form method="post" action="{{action("$module@update")}}">
+                                <form action="{{action("$module@update")}}" method="post" enctype="multipart/form-data">
                                     <!-- Security CSRF TOKEN -->
                                     @csrf
                                     <input type="hidden" name="tipe" value="data">
@@ -168,6 +168,9 @@
 				formatter:myformatter,
 				parser:myparser,
 				value:`{{old('bill_due_date') ?? $data_billing->bill_due_date?->format('Y-m-d')}}`,
+				onSelect: async function(date){					
+					
+				}
 			});
 			
 			$('#bill_billing_date').datebox({
@@ -175,6 +178,12 @@
 				formatter:myformatter,
 				parser:myparser,
 				value:`{{old('bill_billing_date') ?? $data_billing->bill_billing_date?->format('Y-m-d')}}`,
+				onSelect: async function(date){
+					var dates = new Date();
+					dates.setDate(date.getDate() + 7);
+					
+					$('#bill_due_date').datebox('setValue', dates.getFullYear()+"-"+(dates.getMonth()+1)+"-"+dates.getDate());
+				}
 			});
 			
 			let dg = $('#ttData').edatagrid({
@@ -349,7 +358,8 @@
 							} else {
 								@if(authorized("{$module}@edit"))
 								var e = `<a  onclick="editrow(this)" href="javascript:void(0)" class="btn btn-xs btn-primary btn-block">Edit</a>`;
-								return e;
+								var d = `<a  onclick="deleterow(this)" href="javascript:void(0)" class="btn btn-xs btn-danger btn-block">Hapus</a>`;
+								return e + d;
 								@endif
 							}
                         }
@@ -431,7 +441,7 @@
                 ]);
         });
 		
-		function confirmDelete() {
+		function confirmDelete(itms_bil_id, bill_id) {
             const swalWithBootstrapButtons = swal.mixin({
                 confirmButtonClass: 'btn btn-danger mb-2',
                 cancelButtonClass: 'btn btn-success mr-2 mb-2',
@@ -449,18 +459,10 @@
             }).then((result) => {
                 if (result.value) {
 					var idData = []; 
-					var data = $('#ttData').datagrid('getData');
-					var opts = $('#ttData').datagrid('options');
-					for (var i = 0; i < data.rows.length; i++) {
-						var tr = opts.finder.getTr($('#ttData')[0],i);
-						var atLeastOneIsChecked = tr.find('input[type=checkbox]:checked').length > 0;
-						if(atLeastOneIsChecked == true){
-							idData.push(data.rows[i].itms_bil_id);
-						}
-					}
+					idData.push(itms_bil_id);
                     $.ajax({
                         url: `{{url("$url/delete")}}`,
-						data: { 'ids[]': idData, 'tipe': 'data_items' },
+						data: { 'ids[]': idData, 'bill_id': bill_id, 'tipe': 'data_items' },
 						type: 'DELETE',
                         success: function (response) {
                             toastCenter({
@@ -488,7 +490,12 @@
 			var tr = $(target).closest('tr.datagrid-row');
 			return parseInt(tr.attr('datagrid-row-index'));
 		}
-
+		
+		function deleterow(target) {
+			var row = $('#ttData').datagrid('getRows')[getRowIndex(target)];
+			confirmDelete(row.itms_bil_id, row.bill_id );
+		}
+		
 		function editrow(target) {
 			$('#ttData').datagrid('beginEdit', getRowIndex(target));
 		}

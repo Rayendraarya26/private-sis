@@ -129,6 +129,7 @@
                     {field: 'cust_nama', title: 'Nama Perusahaan', width: 320, sortable: false},
                     {field: 'sert_nama', title: 'Sertifikasi', width: 320, sortable: false},
                     {field: 'cust_sert_survailen_date', title: 'Tgl Surveilant', width: 150, sortable: true},
+                    {field: 'cust_alamat', title: 'Alamat Perusahaan', width: 320, sortable: false},
                 ]],
             });
             dg.datagrid(

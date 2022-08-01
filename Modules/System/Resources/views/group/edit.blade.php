@@ -91,6 +91,17 @@
 
 @push('javascript')
     <script>
+        function setCheckedNode() {
+            // Get checked and setengah check
+            let menuIds = []
+            let n1 = $('#treegrid').treegrid('getCheckedNodes');	// get checked nodes
+            let n2 = $('#treegrid').treegrid('getCheckedNodes', 'indeterminate');	// get indeterminate nodes
+            let nodes = n1.concat(n2);
+
+            if (nodes.length > 0) nodes.map(e => menuIds.push(e.menu_id));
+            $("#permission").val(menuIds);
+        }
+
         $(function () {
             $('#group_is_active').val('{{$data->group_is_active}}')
 
@@ -110,20 +121,12 @@
                     {field: 'menu_is_active', title: 'Aktif?', width: 100},
                     {field: 'menu_controller', title: 'Controller', width: 600},
                 ]],
+                onLoadSuccess: function () {
+                    setCheckedNode();
+                },
                 onCheckNode: function () {
-                    // Gaet checked nodes only
-                    // const nodes = $('#treegrid').treegrid('getCheckedNodes');
-                    // console.log(nodes);
-
                     // Get checked and setengah check
-                    let menuIds = []
-                    let n1 = $('#treegrid').treegrid('getCheckedNodes');	// get checked nodes
-                    let n2 = $('#treegrid').treegrid('getCheckedNodes', 'indeterminate');	// get indeterminate nodes
-                    let nodes = n1.concat(n2);
-
-                    if (nodes.length > 0) nodes.map(e => menuIds.push(e.menu_id));
-                    console.log(menuIds);
-                    $("#permission").val(menuIds);
+                    setCheckedNode();
                 }
             });
         });

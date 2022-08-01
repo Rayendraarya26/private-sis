@@ -56,7 +56,7 @@ class TimController extends Controller
         $data->leftJoin('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
 
         // Filter
-        $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
+        // $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->whereNotIn('sis_jadwal.jadw_team_status', ['accepted', 'fixed']);
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '!=', 'submited');
         $data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
