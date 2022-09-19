@@ -41,7 +41,7 @@ class Authenticate
                 $broker->clearToken();
                 auth()->logout();
                 session()->flush();
-                return redirect(url("/auth/sso/login"));
+                return redirect(url("/auth/sso/redirect"));
             }
         }
     }

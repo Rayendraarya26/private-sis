@@ -179,6 +179,6 @@ class LoginController extends Controller
         SysUserFbToken::where('fbtoken_user_id', auth()->id())->where("fbtoken_agent", $request->userAgent())->delete();
         session()->flush();
         Auth::logout();
-        return redirect(route("auth.login"));
+        return redirect('/auth/sso/logout');
     }
 }
