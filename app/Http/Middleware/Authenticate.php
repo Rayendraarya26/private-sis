@@ -12,7 +12,33 @@ class Authenticate
 {
     use SsoBrokerTrait;
 
+
     public function handle(Request $request, Closure $next)
+    {
+        if (config('app.sso_is_enabled')) {
+            return $this->ssoMiddleware($request, $next);
+        } else {
+            return $this->normalMiddleware($request, $next);
+        }
+    }
+
+    private function normalMiddleware(Request $request, Closure $next)
+    {
+        if (auth()->check()) {
+            if (auth()->user()->user_is_banned == "yes") {
+                auth()->logout();
+                return redirect(route('auth.login'))->withErrors(['status' => "Akun anda telah di blokir oleh admin"]);
+            } else if (auth()->user()->user_is_active == "yes") {
+                return $next($request);
+            } else {
+                return redirect(route('auth.resend_validation'));
+            }
+        } else {
+            return redirect()->guest(route('auth.login'));
+        }
+    }
+
+    private function ssoMiddleware(Request $request, Closure $next)
     {
         $broker = $this->attach();
         if (!($broker instanceof Broker)) {
