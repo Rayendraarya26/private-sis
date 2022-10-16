@@ -14,8 +14,6 @@ use App\Models\BbkkpSis\MasterNegara;
 use App\Models\BbkkpSis\MasterProvinsi;
 use App\Models\BbkkpSis\MasterSertifikasi;
 use App\Models\BbkkpSis\MasterSertifikasiDokumen;
-use App\Models\BbkkpSis\SisBillingItems;
-use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganDokumen;
 use App\Models\BbkkpSis\SisPelangganPabrik;
@@ -189,7 +187,7 @@ class SertifikasiPermohonanController extends Controller
                         $newSisPermohonanKomoditas->mohon_kmditi_merk                              = $komoditi->merk;
                         $newSisPermohonanKomoditas->mohon_kmditi_tipe                              = $komoditi->tipe;
                         $newSisPermohonanKomoditas->mohon_kmditi_ukuran                            = $komoditi->ukuran;
-                        $newSisPermohonanKomoditas->mohon_kmditi_keterangan                        = $komoditi->keterangan;
+                        $newSisPermohonanKomoditas->mohon_kmditi_keterangan                        = $komoditi?->keterangan;
                         $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditi->produksi_tahunan;
                         $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditi->satuan_produksi;
                         $newSisPermohonanKomoditas->created_at                                     = Carbon::now();
@@ -403,7 +401,7 @@ class SertifikasiPermohonanController extends Controller
                     $newKomoditi->mohon_kmditi_sni                               = $komoditas->sni;
                     $newKomoditi->mohon_kmditi_merk                              = $komoditas->merk;
                     $newKomoditi->mohon_kmditi_tipe                              = $komoditas->tipe;
-                    $newKomoditi->mohon_kmditi_keterangan                        = $komoditas->keterangan;
+                    $newKomoditi->mohon_kmditi_keterangan                        = $komoditas?->keterangan;
                     $newKomoditi->mohon_kmditi_ukuran                            = $komoditas->ukuran;
                     $newKomoditi->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditas->produksi_tahunan;
                     $newKomoditi->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditas->satuan_produksi;
