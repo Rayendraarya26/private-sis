@@ -718,18 +718,21 @@
             <ol :start="is_indonesia ? 23 : 20">
                 <li>Lengkapi formulir berikut dan upload kembali dibawah
                     <br>
-                    <a href="{{asset('files/requirement_pengajuan/Kondisi_Umum_Perusahaan_Informasi_Tambahan.doc')}}">
-                        (<i class="fad fa-download"></i> form 1. kondisi umum perusahaan)</a>
+                    <a href="{{asset('files/requirement_pengajuan/F MHN 1 Permohonan Sertifikasi.docx')}}">
+                        (<i class="fad fa-download"></i>Form 1 Permohonan Sertifikasi)</a>
                     <br>
-                    <a href="{{asset('files/requirement_pengajuan/Surat_Pernyataan_Perusahaan.docx')}}">
-                        (<i class="fad fa-download"></i> form 2. surat pernyataan perusahaan)</a>
+                    <a href="{{asset('files/requirement_pengajuan/F MHN 2 Kondisi Umum Perusahaan.doc')}}">
+                        (<i class="fad fa-download"></i>Form 2 Kondisi Umum Perusahaan)</a>
+                    <br>
+                    <a href="{{asset('files/requirement_pengajuan/F MHN 3 Surat Pernyataan Perusahaan.docx')}}">
+                        (<i class="fad fa-download"></i>Form 3 Surat Pernyataan Perusahaan)</a>
                 </li>
                 <br>
                 <input type="file" class="form-control" aria-label="Pertanyaan Tambahan"
                        @change="validateUploadPertanyaanTambahan"
                        accept="application/pdf"
                        name="step3_pertanyaan_tambahan" id="step3_pertanyaan_tambahan">
-                <small><span>Upload file (Harap scan <b>form 1 dan form 2 digabung</b> dengan format <b>PDF</b>)</span></small>
+                <small><span>Upload file (Harap scan <b>form 1, form 2, dan form 3 digabung</b> dengan format <b>PDF</b>)</span></small>
             </ol>
         </div>
     </div>
