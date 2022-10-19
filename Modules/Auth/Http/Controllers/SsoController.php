@@ -66,4 +66,11 @@ class SsoController extends Controller
             }
         }
     }
+
+    public function redirect()
+    {
+        $url = url('/auth/sso/login');
+
+        echo "<script>window.location.href = '$url'</script>";
+    }
 }

@@ -17,6 +17,7 @@ return [
     'key'    => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 
+    'sso_is_enabled'    => (bool)env('SSO_IS_ENABLED', false),
     'sso_server'        => env('SSO_SERVER', 'https://apps.bbkkp.kemenperin.go.id'),
     'sso_broker_id'     => env('SSO_BROKER_ID'),
     'sso_broker_secret' => env('SSO_BROKER_SECRET'),
@@ -33,14 +34,14 @@ return [
     'path_file_sertifikat'    => "files/sertifikat/%d",
 
 
-    'sihalal_api_server' => env('SIHALAL_SERVER'),
+    'sihalal_api_server'         => env('SIHALAL_SERVER'),
     'sihalal_folder_dokumen_url' => env('SIHALAL_URL_FOLDER_DOKUMEN'),
     'sihalal_folder_invoice_url' => env('SIHALAL_URL_FOLDER_INVOICE'),
-    'sihalal_username'   => env('SIHALAL_USERNAME'),
-    'sihalal_password'   => env('SIHALAL_PASSWORD'),
-    'sihalal_lph_id'  => env('SIHALAL_LPH_ID'),
-    'sihalal_lph_maped_id'  => env('SIHALAL_LPH_MAPED_ID'),
-    'sihalal_file_upload'    => "files/sihalal/%d",
+    'sihalal_username'           => env('SIHALAL_USERNAME'),
+    'sihalal_password'           => env('SIHALAL_PASSWORD'),
+    'sihalal_lph_id'             => env('SIHALAL_LPH_ID'),
+    'sihalal_lph_maped_id'       => env('SIHALAL_LPH_MAPED_ID'),
+    'sihalal_file_upload'        => "files/sihalal/%d",
 
     /*
     |--------------------------------------------------------------------------

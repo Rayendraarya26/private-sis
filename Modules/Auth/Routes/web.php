@@ -10,6 +10,7 @@ Route::prefix('auth')->name("auth.")->group(function () {
     Route::prefix('sso')->group(function () {
         Route::get('login', [SsoController::class, 'login']);
         Route::get('logout', [SsoController::class, 'logout']);
+        Route::get('redirect', [SsoController::class, 'redirect']);
     });
 
     Route::middleware('guest')->group(function () {

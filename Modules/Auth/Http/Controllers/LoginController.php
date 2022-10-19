@@ -12,9 +12,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Auth\Http\Traits\AuthTraits;
-use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -22,6 +22,9 @@ class LoginController extends Controller
 
     public function index()
     {
+        if (config('app.sso_is_enabled')) {
+            return view('auth::login_with_sso');
+        }
         return view('auth::login');
     }
 
@@ -107,31 +110,31 @@ class LoginController extends Controller
     public function handleResendValidation()
     {
         if (auth()->check()) {
-			$dataUser = SysUser::where("user_email", auth()->user()->user_email)->first();
-			$token = Str::random(20);
+            $dataUser = SysUser::where("user_email", auth()->user()->user_email)->first();
+            $token    = Str::random(20);
             if ($dataUser) {
                 $dataUser->user_token = $token;
                 $dataUser->save();
-				
-				// ================ Send Email ================
-				$structEmail          = new EmailStruct();
-				$structEmail->subject = "Verifikasi Akun";
-				$structEmail->body    = view('auth::mails.resend_validation')
-					->with([
-						'name' => auth()->user()->user_fullname,
-						'link' => route('auth.verify', encrypt($token))
-					])->render();
-				$structEmail->to      = auth()->user()->user_email;
-				sendEmail($structEmail);
-				// ================ END Send Email ================
 
-				return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
-				
+                // ================ Send Email ================
+                $structEmail          = new EmailStruct();
+                $structEmail->subject = "Verifikasi Akun";
+                $structEmail->body    = view('auth::mails.resend_validation')
+                    ->with([
+                        'name' => auth()->user()->user_fullname,
+                        'link' => route('auth.verify', encrypt($token))
+                    ])->render();
+                $structEmail->to      = auth()->user()->user_email;
+                sendEmail($structEmail);
+                // ================ END Send Email ================
+
+                return redirect()->back()->with("message", "Email telah dikirim, silakan cek email anda (inbox/promotion/spam)");
+
             } else {
                 return redirect(route('auth.login'))->withErrors(["status" => "Link sudah kadaluarsa"]);
             }
-			
-            
+
+
         } else {
             abort(401);
         }
@@ -179,6 +182,9 @@ class LoginController extends Controller
         SysUserFbToken::where('fbtoken_user_id', auth()->id())->where("fbtoken_agent", $request->userAgent())->delete();
         session()->flush();
         Auth::logout();
-        return redirect(route("auth.login"));
+        if (config('app.sso_is_enabled')) {
+            return redirect('/auth/sso/logout');
+        }
+        return redirect('/auth/login');
     }
 }
