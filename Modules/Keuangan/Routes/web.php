@@ -13,8 +13,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Keuangan\Http\Controllers\BillingController;
-// , 'restrict'
-Route::prefix('keuangan')->middleware(['auth'])->group(function() {
+
+Route::prefix('keuangan')->middleware(['auth', 'restrict'])->group(function() {
     Route::prefix("billing")->group(function () {
         Route::get('/', [BillingController::class, 'index']);
         Route::get('/detail', [BillingController::class, 'detail']);
