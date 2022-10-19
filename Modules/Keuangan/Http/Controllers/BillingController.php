@@ -17,6 +17,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class BillingController extends Controller
@@ -33,6 +34,121 @@ class BillingController extends Controller
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs];
         return view("keuangan::billing.index")->with($parser);
+    }
+	
+	public function upload(Request $request, $billing_id)
+    {
+        $breadcrumbs = [
+            new BreadcrumbsStruct('Keuangan'),
+            new BreadcrumbsStruct('Billing', url($this->url)),
+            new BreadcrumbsStruct('Upload'),
+        ];
+
+        $data = SisBilling::with('sis_billing_items')
+            ->where("bill_id", $billing_id)
+           //  ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
+            ->firstOrFail();
+
+        $totalBiling = $data->sis_billing_items->sum('itms_bil_total');
+
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $data, 'total_billing' => $totalBiling];
+        return view("keuangan::billing.upload")->with($parser);
+    }
+
+    public function processUpload(Request $request, $billing_id)
+    {
+        $request->validate([
+            'bill_payment_date' => 'required',
+            'bill_payment_file' => 'required|mimetypes:application/pdf,image/png,image/jpeg|max:2048000',
+        ]);
+
+        $billing = SisBilling::with('sis_billing_items')
+            ->where("bill_id", $billing_id)
+           // ->where("cust_id", auth()->user()->sis_pelanggan->cust_id)
+            ->firstOrFail();
+
+        $totalBilling = 0;
+        foreach ($billing->sis_billing_items as $det) {
+            $totalBilling += $det->itms_bil_total;
+        }
+
+        try {
+
+            $oldPath     = [];
+            $newPath     = [];
+			
+			$paymentDate = str_replace('/', '-', $request['bill_payment_date']);
+
+			// $paymentDate = Carbon::createFromFormat('m/d/Y g:i A', $request['bill_payment_date']);
+            $filePath = sprintf(config("app.path_file_billing"), $billing_id);
+            if (!File::exists($filePath)) {
+                File::makeDirectory($filePath, 0777, true, true);
+            }
+            if (!empty($billing->bill_payment_file)) {
+                array_push($oldPath, public_path($billing->bill_payment_file));
+            }
+			
+			
+            DB::beginTransaction();
+            $dataKuitansi = $request->file("bill_payment_file");
+            $kuitansiName = Str::slug("bukti-pembayaran" . $dataKuitansi->getClientOriginalName()) . '-' . time() . '.' . $dataKuitansi->getClientOriginalExtension();
+            $kuitansiPath = sprintf("%s/%s", $filePath, $kuitansiName);
+            $dataKuitansi->move($filePath, $kuitansiName);
+            $newPath[] = $kuitansiPath;
+
+            $billing->bill_payment_status = $request['bill_payment_status'] == 'ya' ? 'lunas' : 'menunggu konfirmasi';
+            $billing->bill_payment_note   = $request['bill_payment_note'];
+            $billing->bill_payment_date   = $paymentDate;
+            $billing->bill_payment_tipe   = 'transfer';
+            $billing->bill_payment_file   = $kuitansiPath;
+            $billing->save();
+
+            // Notif ke finance
+			if($request['bill_payment_status'] != 'ya'){
+				$groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [7])->get();
+				$timeNow    = Carbon::now();
+				if ($groupUsers) {
+					foreach ($groupUsers as $user) {
+						$notifStruct = new NotifStruct();
+						// Send Push
+						$notifStruct->title     = sprintf("Billing #%d Lunas", $billing->bill_nomor_billing);
+						$notifStruct->message   = sprintf("%s telah membayar sebesar Rp %s", $billing->sis_pelanggan->cust_nama, moneyFormat($totalBilling));
+						$notifStruct->user_id   = $user?->ug_user_id;
+						$notifStruct->click_url = url(sprintf('/keuangan/billing/edit?tipe=pelunasan&bill_id=%d', $billing->bill_id));
+						sendNotification($notifStruct);
+
+						// Add Pengajuan Status
+						foreach ($billing->sis_billing_items as $det) {
+							SisPermohonanStatus::updateOrCreate([
+								"status_mohon_id" => $det->mohon_id,
+								"status_tipe"     => "informasi",
+								"status_judul"    => "Pemohon melakukan pelunasan pembayaran",
+								"status_pesan"    => sprintf("%s telah membayar biaya sertifikasi sebesar Rp %s", $billing->sis_pelanggan->cust_nama, moneyFormat($totalBilling)),
+								"created_at"      => $timeNow,
+							], [
+								"updated_at" => $timeNow,
+							]);
+						}
+					}
+				}
+			}
+            
+            DB::commit();
+            if (count($oldPath) > 0) {
+                foreach ($oldPath as $path) {
+                    @unlink($path);
+                }
+            }
+            return redirect($this->url)->with('message', "Upload bukti pembayaran berhasil");
+        } catch (Exception $e) {
+            DB::rollBack();
+            if (count($newPath) > 0) {
+                foreach ($newPath as $path) {
+                    @unlink($path);
+                }
+            }
+            return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function ajax(Request $request)

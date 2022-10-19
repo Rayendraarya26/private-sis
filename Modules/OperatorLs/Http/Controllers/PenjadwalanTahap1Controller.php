@@ -149,9 +149,9 @@ class PenjadwalanTahap1Controller extends Controller
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
 			->where('bill_status', '=', 'aktif')
-			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
+			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)");
 			// ->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
-			->whereIn('sis_billing.bill_id', function ($query) use ($request) {
+			/* ->whereIn('sis_billing.bill_id', function ($query) use ($request) {
                 $query->select('sis_billing.bill_id')->from('sis_billing')
 				->join('sis_billing_items', "sis_billing_items.bill_id", "=", "sis_billing.bill_id")
 				->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
@@ -163,7 +163,7 @@ class PenjadwalanTahap1Controller extends Controller
 				})
 				// ->whereNotNull('sis_billing.bill_id')
 				->groupBy('sis_billing.bill_id');
-            });
+            }); */
 			/* 
 			->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');

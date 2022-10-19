@@ -13,8 +13,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Keuangan\Http\Controllers\BillingController;
-
-Route::prefix('keuangan')->middleware(['auth', 'restrict'])->group(function() {
+// , 'restrict'
+Route::prefix('keuangan')->middleware(['auth'])->group(function() {
     Route::prefix("billing")->group(function () {
         Route::get('/', [BillingController::class, 'index']);
         Route::get('/detail', [BillingController::class, 'detail']);
@@ -24,5 +24,9 @@ Route::prefix('keuangan')->middleware(['auth', 'restrict'])->group(function() {
         Route::get('/edit', [BillingController::class, 'edit']);
         Route::post('/update', [BillingController::class, 'update']);
         Route::delete('/delete', [BillingController::class, 'destroy']);
+		
+		
+        Route::get('upload/{billing_id}', [BillingController::class, 'upload']);
+        Route::post('upload/{billing_id}', [BillingController::class, 'processUpload']);
     });
 });

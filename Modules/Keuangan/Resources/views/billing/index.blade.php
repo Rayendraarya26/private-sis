@@ -90,6 +90,7 @@
 							if(row.bill_payment_status != 'lunas'){
 								if(row.status_payment != 'ya'){
 									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=data&bill_id=${row.bill_id}'">Edit</div>`;
+									btnEdit += `<div data-options="iconCls:'fad fa-upload'" onclick="location.href = '{{ url("$url/upload") }}/${row.bill_id}'">Upload Bukti Bayar</div>`;
 								}
 								else{
 									btnEdit += `<div data-options="iconCls:'fad fa-edit'" onclick="location.href = '{{ url("$url/edit") }}?tipe=pelunasan&bill_id=${row.bill_id}'">Pelunasan</div>`;
@@ -109,7 +110,7 @@
 									<button class="btn-action btn-info btn-block" data-index="${row.bill_id}" title="Aksi">
 										<i class="fa fa-setting"></i> Aksi
 									</button>
-									<div id="${dom}" style="width:150px; display: none;">
+									<div id="${dom}" style="width:170px; display: none;">
 										@if(authorized("{$module}@edit")) ${btnEdit} @endif
 										@if(authorized("{$module}@detail")) ${btnDetail} @endif
 								</div>

@@ -108,7 +108,12 @@ class PenjadwalanController extends Controller
         $data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				if($f->field == 'jadw_id'){
+					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+				}
+				else{
+					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+				}
             }
         }
         // Sorter
