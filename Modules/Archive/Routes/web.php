@@ -2,11 +2,12 @@
 
 
 use Illuminate\Support\Facades\Route;
+use Modules\Archive\Http\Controllers\ArchiveController;
 use Modules\Archive\Http\Controllers\LogPendaftaranController;
 
 Route::prefix('archive')->middleware(['auth', 'restrict'])->group(function () {
 	
-	Route::get('/', 'ArchiveController@index');
+	Route::get('/', [ArchiveController::class, 'index']);
 	
 	Route::prefix("log_pendaftaran")->group(function () {
         Route::get("/", [LogPendaftaranController::class, 'index']);
