@@ -1,14 +1,15 @@
 <?php
-    use App\Models\BbkkpSis\PublicProfilPerusahaan;
-    use App\Models\BbkkpSis\PublicSop;
-    use App\Models\BbkkpSis\PublicSocialMedia;
 
-    $company        = PublicProfilPerusahaan::first();
-    $sop_rows       = PublicSop::all();
-    $socmed_rows    = PublicSocialMedia::all();
+use App\Models\BbkkpSis\PublicProfilPerusahaan;
+use App\Models\BbkkpSis\PublicSop;
+use App\Models\BbkkpSis\PublicSocialMedia;
+
+$company     = PublicProfilPerusahaan::first();
+$sop_rows    = PublicSop::all();
+$socmed_rows = PublicSocialMedia::all();
 ?>
 
-<!doctype html>
+        <!doctype html>
 <html lang="en">
 
 <head>
@@ -26,13 +27,13 @@
     <link rel="shortcut icon" href="{{ asset('images/icon/favicon-16x16-manifest-31222.png') }}">
     <!-- /site favicon -->
 
-    <link href="{{ asset('assets/landing/css/bootstrap.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/landing/css/bootstrap.css') }}" rel="stylesheet"/>
     <link href="{{ asset('assets/landing/css/landing-page.css') }}" rel="stylesheet"/>
 
     <!--     Fonts and icons     -->
     <link rel="stylesheet" href="{{ asset('assets/fontawesome/css/all.min.css') }}">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400,300' rel='stylesheet' type='text/css'>
-    <link href="{{ asset('assets/landing/css/pe-icon-7-stroke.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/landing/css/pe-icon-7-stroke.css') }}" rel="stylesheet"/>
 
     <style>
         /*.table-responsive {*/
@@ -62,115 +63,118 @@
 </head>
 
 <body class="landing-page landing-page1">
-    <nav class="navbar navbar-transparent navbar-top" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button id="menu-toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example">
+<nav class="navbar navbar-transparent navbar-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button id="menu-toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar bar1"></span>
                 <span class="icon-bar bar2"></span>
                 <span class="icon-bar bar3"></span>
-                </button>
-                <a href="#">
-                    <div class="logo-container">
-                        <div class="">
-                            <img height="80" width="auto" style="margin-bottom: 10px; margin-left: 10px;" src="{{$company?->profil_app_icon ?? asset('images/logos/sis_logo.png')}}" alt="Logo {{env('app_name')}}">
-                        </div>
+            </button>
+            <a href="#">
+                <div class="logo-container">
+                    <div class="">
+                        <img height="80" width="auto" style="margin-bottom: 10px; margin-left: 10px;"
+                             src="{{$company?->profil_app_icon ?? asset('images/logos/sis_logo.png')}}"
+                             alt="Logo {{env('app_name')}}">
                     </div>
-                </a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="example" >
-                <ul class="nav navbar-nav navbar-right">
-                    @if($sop_rows->count() > 0)
-                        <li>
-                            <a href="#sop">
-                                <i class="fa fa-book"></i>&nbsp;&nbsp;SOP Sertifikasi
-                            </a>
-                        </li>
-                    @endif
+                </div>
+            </a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="example">
+            <ul class="nav navbar-nav navbar-right">
+                @if($sop_rows->count() > 0)
                     <li>
-                        <a href="{{ url('track/certificate') }}">
-                            <i class="fa fa-file-alt"></i>&nbsp;&nbsp;Verifikasi Sertifikat
+                        <a href="#sop">
+                            <i class="fa fa-book"></i>&nbsp;&nbsp;SOP Sertifikasi
                         </a>
                     </li>
-                    @if(auth()->check())
-                        <li>
-                            <a href="{{ url('dashboard') }}">
-                                <i class="fa fa-sign-in"></i>&nbsp;&nbsp;Dashboard
-                            </a>
-                        </li>
-                    @else
-                        <li>
-                            <a href="{{ url('auth/login') }}">
-                                <i class="fa fa-sign-in"></i>&nbsp;&nbsp;Login
-                            </a>
-                        </li>
-                    @endif
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
+                @endif
+                <li>
+                    <a href="{{ url('track/certificate') }}">
+                        <i class="fa fa-file-alt"></i>&nbsp;&nbsp;Verifikasi Sertifikat
+                    </a>
+                </li>
+                @if(auth()->check())
+                    <li>
+                        <a href="{{ url('dashboard') }}">
+                            <i class="fa fa-sign-in"></i>&nbsp;&nbsp;Dashboard
+                        </a>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ config('app.sso_is_enabled') ? url('auth/sso/login') : url('auth/login') }}">
+                            <i class="fa fa-sign-in"></i>&nbsp;&nbsp;Login
+                        </a>
+                    </li>
+                @endif
+            </ul>
         </div>
-    </nav>
-    <div class="wrapper" id="app">
-        @yield('content')
-        <div class="section section-clients" style="padding-top: 20px; padding-bottom: 20px;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div>
-                            <i class="fa fa-building"></i>&nbsp;
-                            {{$company?->profil_alamat_perusahaan}}
-                        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</nav>
+<div class="wrapper" id="app">
+    @yield('content')
+    <div class="section section-clients" style="padding-top: 20px; padding-bottom: 20px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div>
+                        <i class="fa fa-building"></i>&nbsp;
+                        {{$company?->profil_alamat_perusahaan}}
                     </div>
-                    <div class="col-sm-6">
-                        <ul style="list-style-type: none;">
-                            @if($company?->profil_email_perusahaan)
-                                <li style="margin-bottom: 8px;">
-                                    <i class="fa fa-envelope"></i>&nbsp;
-                                    {{$company?->profil_email_perusahaan}}
-                                </li>
-                            @endif
-                            @if($company?->profil_telp_perusahaan)
-                                <li style="margin-bottom: 8px;">
-                                    <i class="fa fa-phone"></i>&nbsp;
-                                    {{$company?->profil_telp_perusahaan}}
-                                </li>
-                            @endif
-                            @if($company?->profil_fax_perusahaan)
-                                <li style="margin-bottom: 8px;">
-                                    <i class="fa fa-print"></i>&nbsp;
-                                    {{$company?->profil_fax_perusahaan}}
-                                </li>
-                            @endif
-                            @if($company?->profil_whatsapp_perusahaan)
-                                <li style="margin-bottom: 8px;">
-                                    <i class="fab fa-whatsapp"></i>&nbsp;
-                                    {{$company?->profil_whatsapp_perusahaan}}
-                                </li>
-                            @endif
-                        </ul>
-                    </div>
-                    <div class="col-sm-12">
-                        <hr>
-                    </div>
-                    <div class="col-sm-8">
-                        © Hak Cipta {{$company?->profil_fullname_perusahaan}} {{ date('Y') }}
-                    </div>
-                    @if($socmed_rows->count() > 0)
-                        <div class="col-sm-4 text-right">
-                            @foreach($socmed_rows as $row)
-                                <a target="_blank" rel="noopener noreferrer" style="font-size: 24px; margin-left: 8px;" href="{{$row?->socmed_link}}">
-                                    <i class="{{$row?->socmed_icon_cls}}"></i>
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
                 </div>
+                <div class="col-sm-6">
+                    <ul style="list-style-type: none;">
+                        @if($company?->profil_email_perusahaan)
+                            <li style="margin-bottom: 8px;">
+                                <i class="fa fa-envelope"></i>&nbsp;
+                                {{$company?->profil_email_perusahaan}}
+                            </li>
+                        @endif
+                        @if($company?->profil_telp_perusahaan)
+                            <li style="margin-bottom: 8px;">
+                                <i class="fa fa-phone"></i>&nbsp;
+                                {{$company?->profil_telp_perusahaan}}
+                            </li>
+                        @endif
+                        @if($company?->profil_fax_perusahaan)
+                            <li style="margin-bottom: 8px;">
+                                <i class="fa fa-print"></i>&nbsp;
+                                {{$company?->profil_fax_perusahaan}}
+                            </li>
+                        @endif
+                        @if($company?->profil_whatsapp_perusahaan)
+                            <li style="margin-bottom: 8px;">
+                                <i class="fab fa-whatsapp"></i>&nbsp;
+                                {{$company?->profil_whatsapp_perusahaan}}
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+                <div class="col-sm-12">
+                    <hr>
+                </div>
+                <div class="col-sm-8">
+                    © Hak Cipta {{$company?->profil_fullname_perusahaan}} {{ date('Y') }}
+                </div>
+                @if($socmed_rows->count() > 0)
+                    <div class="col-sm-4 text-right">
+                        @foreach($socmed_rows as $row)
+                            <a target="_blank" rel="noopener noreferrer" style="font-size: 24px; margin-left: 8px;"
+                               href="{{$row?->socmed_link}}">
+                                <i class="{{$row?->socmed_icon_cls}}"></i>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
     </div>
+</div>
 
 </body>
 
