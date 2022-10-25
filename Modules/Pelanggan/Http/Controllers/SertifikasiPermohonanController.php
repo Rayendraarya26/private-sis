@@ -302,11 +302,10 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Permohonan berhasil dan sedang tahap verifikasi");
         } catch (Exception $e) {
             DB::rollBack();
-
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-
+            log_error($e, $request->all());
             return responseJSON(500, null, $e->getMessage() . ' | line:' . $e->getLine());
         }
     }
@@ -473,6 +472,7 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
+            log_error($e, $request->all());
             return responseJSON(500, null, $e->getMessage() . ' | ' . $e->getLine());
         }
 
@@ -648,6 +648,7 @@ class SertifikasiPermohonanController extends Controller
             ];
             return view("$this->view/cancel")->with($parser);
         } catch (Exception $e) {
+            log_error($e, $request->all());
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -714,6 +715,7 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
+            log_error($e, $request->all());
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
