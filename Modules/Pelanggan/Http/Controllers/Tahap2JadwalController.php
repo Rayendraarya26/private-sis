@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisJadwal;
@@ -190,7 +191,7 @@ class Tahap2JadwalController extends Controller
                 ->firstOrFail();
 
             if ($request['jadw_tanggal_status'] == "revisi") {
-                if (strip_tags($request['editor_revisi']) == "") throw new Exception("Anda harus mengisikan keterangan revisi");
+                if (strip_tags($request['editor_revisi']) == "") throw new ExpectedException("Anda harus mengisikan keterangan revisi");
 
                 SisJadwalLog::create([
                     'jadw_id'    => $data->jadw_id,
@@ -228,6 +229,9 @@ class Tahap2JadwalController extends Controller
             return redirect(url($this->url))->with("message", sprintf("Persetujuan berhasil dikirim (%s)", $request['jadw_tanggal_status']));
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
 
@@ -270,7 +274,7 @@ class Tahap2JadwalController extends Controller
                 ->firstOrFail();
 
             if ($request['jadw_team_status'] == "revisi") {
-                if (strip_tags($request['editor_revisi']) == "") throw new Exception("Anda harus mengisikan keterangan revisi");
+                if (strip_tags($request['editor_revisi']) == "") throw new ExpectedException("Anda harus mengisikan keterangan revisi");
 
                 SisJadwalLog::create([
                     'jadw_id'    => $data->jadw_id,
@@ -320,6 +324,9 @@ class Tahap2JadwalController extends Controller
             return redirect(url($this->url))->with("message", sprintf("Persetujuan berhasil dikirim (%s)", $request['jadw_team_status']));
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -330,8 +337,8 @@ class Tahap2JadwalController extends Controller
             $data = SisJadwal::where('jadw_id', $jadwalID)
                 ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
                 ->first();
-            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
-            if ($data->jadw_setujui_temuan != "setuju") throw new Exception("Anda belum diperbolehkan mengakses halaman upload scan");
+            if (empty($data)) throw new ExpectedException("Jadwal tidak ditemukan");
+            if ($data->jadw_setujui_temuan != "setuju") throw new ExpectedException("Anda belum diperbolehkan mengakses halaman upload scan");
 
             $breadcrumbs = [
                 new BreadcrumbsStruct('Pelanggan'),
@@ -343,6 +350,9 @@ class Tahap2JadwalController extends Controller
 
             return view("$this->view.upload_scan")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -354,7 +364,7 @@ class Tahap2JadwalController extends Controller
             $data = SisJadwal::where('jadw_id', $jadwalID)
                 ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
                 ->first();
-            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
+            if (empty($data)) throw new ExpectedException("Jadwal tidak ditemukan");
 
             // process upload scan files
             $baseFileUpload = sprintf(config("app.path_file_audit"), $data->jadw_id);
@@ -422,6 +432,9 @@ class Tahap2JadwalController extends Controller
             DB::rollBack();
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
+            }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
             }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }

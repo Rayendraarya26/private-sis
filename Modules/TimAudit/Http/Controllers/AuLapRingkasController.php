@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditLapRingkas;
 use App\Models\BbkkpSis\SisJadwal;
@@ -50,6 +51,9 @@ class AuLapRingkasController extends Controller
 
             return view("$this->view.add_or_update_lap_ringkas")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -80,6 +84,9 @@ class AuLapRingkasController extends Controller
 
             return redirect(url($this->url))->with('message', "Laporan ringkas berhasil ditambahkan");
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

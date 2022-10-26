@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditLks;
@@ -196,7 +197,7 @@ class Tahap2PersetujuanController extends Controller
             $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
                 ->where('sis_pelanggan.user_id', auth()->id())
                 ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
-            if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
+            if (empty($data)) throw new ExpectedException('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
                 'notulen'      => $this->cetak_notulen($request, $data),
@@ -204,9 +205,12 @@ class Tahap2PersetujuanController extends Controller
                 'daftar-hadir' => $this->cetak_daftar_hadir($request, $data),
                 'logbook'      => $this->cetak_logbook($request, $data),
                 'lks'          => $this->cetak_lks($request, $data),
-                default        => throw new Exception("Invalid URL"),
+                default        => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 
@@ -253,32 +257,41 @@ class Tahap2PersetujuanController extends Controller
 
     private function cetak_lks(Request $request, SisJadwal $dataJadwal)
     {
-        $dataLKS = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
-            ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
-            ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
-            ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
-            ->orderBy(DB::raw('CONVERT(lks_nomor,UNSIGNED INTEGER)'))
-            ->get();
+        try {
+            $dataLKS = SisAuditLks::with(['sis_jadwal_tim', 'sis_audit_lks_files'])
+                ->join("sis_jadwal", "sis_jadwal.jadw_id", "=", "sis_audit_lks.jadw_id")
+                ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
+                ->where('sis_jadwal.jadw_id', $dataJadwal->jadw_id)
+                ->orderBy(DB::raw('CONVERT(lks_nomor,UNSIGNED INTEGER)'))
+                ->get();
 
-        $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
+            $dataKetua = $dataJadwal->sis_jadwal_tims->where('jadw_tim_posisi', 'ketua')->first();
 
-        $parser = ['dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS, 'dataKetua' => $dataKetua];
+            $parser = ['dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS, 'dataKetua' => $dataKetua];
 
-        $headerPath = base_path('Modules/Pelanggan/Resources/views/tahap2_persetujuan/print/lks-header.html');
-        $pdf        = SnappyPdf::loadView('pelanggan::tahap2_persetujuan.print.lks', $parser);
-        $pdf->setPaper('a4');
-        $pdf->setOrientation('landscape');
-        $pdf->setOptions([
-            'margin-top'               => 20,
-            'enable-local-file-access' => true,
-            'header-html'              => $headerPath,
-            'header-spacing'           => 12,
-            'footer-left'              => 'F-TA-9     Rev. 2.0        Tanggal Berlaku Sejak: 25 Mei 2022',
-            'footer-right'             => "[page] dari [topage]",
-            'footer-font-size'         => 8,
-            'footer-spacing'           => 2,
-        ]);
-        return $pdf->inline('LKS-' . Str::of($dataJadwal->sis_pelanggan->cust_nama)->slug()->upper() . '-' . Str::of($dataJadwal->jadw_tanggal_mulai->isoFormat('LL'))->slug()->upper() . '.pdf');
+            $headerPath = base_path('Modules/Pelanggan/Resources/views/tahap2_persetujuan/print/lks-header.html');
+            $pdf        = SnappyPdf::loadView('pelanggan::tahap2_persetujuan.print.lks', $parser);
+            $pdf->setPaper('a4');
+            $pdf->setOrientation('landscape');
+            $pdf->setOptions([
+                'margin-top'               => 20,
+                'enable-local-file-access' => true,
+                'header-html'              => $headerPath,
+                'header-spacing'           => 12,
+                'footer-left'              => 'F-TA-9     Rev. 2.0        Tanggal Berlaku Sejak: 25 Mei 2022',
+                'footer-right'             => "[page] dari [topage]",
+                'footer-font-size'         => 8,
+                'footer-spacing'           => 2,
+            ]);
+            return $pdf->inline('LKS-' . Str::of($dataJadwal->sis_pelanggan->cust_nama)->slug()->upper() . '-' . Str::of($dataJadwal->jadw_tanggal_mulai->isoFormat('LL'))->slug()->upper() . '.pdf');
+        } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
+            return view('errors.custom')->with([
+                'code'    => 400,
+                'info'    => "BAD REQUEST",
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function ajax(Request $request)
@@ -328,48 +341,48 @@ class Tahap2PersetujuanController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             // if ($d->sis_jadwal_audits()->where('jadw_audit_status_komite', 'on-going')->count() > 0) {
-                $timAudit = [];
-                foreach ($d->sis_jadwal_tims as $tim) {
-                    $timAudit[] = [
-                        "tim_nama"   => $tim->master_pegawai->peg_nama,
-                        'tim_kode'   => $tim->jadw_tim_kode,
-                        'tim_posisi' => ucwords($tim->jadw_tim_posisi),
-                    ];
-                }
-                $jadwalAudit = [];
-                foreach ($d->sis_jadwal_audits as $jadwal) {
-                    $jadwalAudit[] = [
-                        'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
-                        'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
-                        'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
-                    ];
-                }
-                $dataRevisi = [];
-                foreach ($d->sis_jadwal_logs as $log) {
-                    $dataRevisi[] = [
-                        'title'   => $log->jlog_judul,
-                        'message' => $log->jlog_pesan,
-                        'time'    => $log->created_at?->isoFormat("LLLL")
-                    ];
-                }
+            $timAudit = [];
+            foreach ($d->sis_jadwal_tims as $tim) {
+                $timAudit[] = [
+                    "tim_nama"   => $tim->master_pegawai->peg_nama,
+                    'tim_kode'   => $tim->jadw_tim_kode,
+                    'tim_posisi' => ucwords($tim->jadw_tim_posisi),
+                ];
+            }
+            $jadwalAudit = [];
+            foreach ($d->sis_jadwal_audits as $jadwal) {
+                $jadwalAudit[] = [
+                    'jadw_audit_jenis'            => ucwords($jadwal->jadw_audit_jenis),
+                    'jadw_audit_nomor_sertifikat' => $jadwal->jadw_audit_nomor_sertifikat,
+                    'jadw_audit_nomor_referensi'  => $jadwal->jadw_audit_nomor_referensi,
+                ];
+            }
+            $dataRevisi = [];
+            foreach ($d->sis_jadwal_logs as $log) {
+                $dataRevisi[] = [
+                    'title'   => $log->jlog_judul,
+                    'message' => $log->jlog_pesan,
+                    'time'    => $log->created_at?->isoFormat("LLLL")
+                ];
+            }
 
-                $totalTemuanLKS = $d->sis_audit_lks->count();
+            $totalTemuanLKS = $d->sis_audit_lks->count();
 
-                $x['tims']                = $timAudit;
-                $x['audits']              = $jadwalAudit;
-                $x['revisi']              = $dataRevisi;
-                $x['jadw_id']             = $d->jadw_id;
-                $x['jadw_jenis']          = $d->jadw_jenis;
-                $x['jadw_setujui_temuan'] = $d->jadw_setujui_temuan;
-                $x['jadw_file_jadwal']    = asset($d->jadw_file_jadwal);
-                $x['total_temuan']        = $totalTemuanLKS;
+            $x['tims']                = $timAudit;
+            $x['audits']              = $jadwalAudit;
+            $x['revisi']              = $dataRevisi;
+            $x['jadw_id']             = $d->jadw_id;
+            $x['jadw_jenis']          = $d->jadw_jenis;
+            $x['jadw_setujui_temuan'] = $d->jadw_setujui_temuan;
+            $x['jadw_file_jadwal']    = asset($d->jadw_file_jadwal);
+            $x['total_temuan']        = $totalTemuanLKS;
 
-                if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
-                    $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
-                } else {
-                    $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
-                }
-                $result[] = $x;
+            if ($d->jadw_tanggal_mulai == $d->jadw_tanggal_selesai) {
+                $x['tanggal'] = sprintf("%s", $d->jadw_tanggal_mulai->isoFormat("LL"));
+            } else {
+                $x['tanggal'] = sprintf("%s s/d %s", $d->jadw_tanggal_mulai->isoFormat("LL"), $d->jadw_tanggal_selesai->isoFormat("LL"));
+            }
+            $result[] = $x;
             // }
         }
 

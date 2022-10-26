@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditLks;
@@ -96,7 +97,7 @@ class Tahap2PerbaikanController extends Controller
                 ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
                 ->where('sis_audit_lks.lks_id', $lksID)
                 ->first();
-            if (empty($data)) throw new Exception("Data Audit tidak ditemukan");
+            if (empty($data)) throw new ExpectedException("Data Audit tidak ditemukan");
 
             DB::beginTransaction();
 
@@ -109,6 +110,9 @@ class Tahap2PerbaikanController extends Controller
             return responseJSON(200, [], "Perbaikan LKS berhasil disimpan");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -117,7 +121,7 @@ class Tahap2PerbaikanController extends Controller
     {
         // $failedDeletedPath = [];
         try {
-            if (!$request->hasFile("files")) throw new Exception("File tidak dapat kosong");
+            if (!$request->hasFile("files")) throw new ExpectedException("File tidak dapat kosong");
 
             $data = SisAuditLks::with(['sis_jadwal', 'sis_audit_lks_files'])
                 ->join('sis_jadwal', 'sis_jadwal.jadw_id', '=', 'sis_audit_lks.jadw_id')
@@ -125,7 +129,7 @@ class Tahap2PerbaikanController extends Controller
                 ->where('sis_jadwal.cust_id', auth()->user()->sis_pelanggan->cust_id)
                 ->where('sis_audit_lks.lks_id', $lksID)
                 ->first();
-            if (empty($data)) throw new Exception("Data Audit tidak ditemukan");
+            if (empty($data)) throw new ExpectedException("Data Audit tidak ditemukan");
             DB::beginTransaction();
 
             if (count($data->sis_audit_lks_files) > 0) {
@@ -161,6 +165,9 @@ class Tahap2PerbaikanController extends Controller
             // foreach ($failedDeletedPath as $del) {
             //     @unlink($del);
             // }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -171,7 +178,7 @@ class Tahap2PerbaikanController extends Controller
             $submittedIDs = $request->get('ids');
 
             $dataJadwal = $this->lksMustBeApprove($jadwalID);
-            if (empty($dataJadwal)) throw new Exception("Data Audit tidak ditemukan");
+            if (empty($dataJadwal)) throw new ExpectedException("Data Audit tidak ditemukan");
 
             DB::beginTransaction();
             foreach ($dataJadwal->sis_audit_lks as $lks) {
@@ -195,6 +202,9 @@ class Tahap2PerbaikanController extends Controller
             return responseJSON(200, ['redirect' => url($this->url)], "LKS berhasil diajukan ke Auditor");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -215,13 +225,16 @@ class Tahap2PerbaikanController extends Controller
             $data = SisJadwal::join('sis_pelanggan', 'sis_pelanggan.cust_id', '=', 'sis_jadwal.cust_id')
                 ->where('sis_pelanggan.user_id', auth()->id())
                 ->with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims', 'sis_audit_lap_ringkas'])->find($jadwalID);
-            if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
+            if (empty($data)) throw new ExpectedException('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
                 'lks'          => $this->cetak_lks($request, $data),
-                default        => throw new Exception("Invalid URL"),
+                default        => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 

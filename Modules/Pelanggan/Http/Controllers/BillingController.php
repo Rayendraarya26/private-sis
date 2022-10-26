@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisBilling;
@@ -77,7 +78,7 @@ class BillingController extends Controller
                 File::makeDirectory($filePath, 0777, true, true);
             }
             if (!empty($billing->bill_payment_file)) {
-                array_push($oldPath, public_path($billing->bill_payment_file));
+                $oldPath[] = public_path($billing->bill_payment_file);
             }
 
             DB::beginTransaction();
@@ -135,6 +136,9 @@ class BillingController extends Controller
                 foreach ($newPath as $path) {
                     @unlink($path);
                 }
+            }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
             }
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }

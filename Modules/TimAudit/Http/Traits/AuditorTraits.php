@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Traits;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use Exception;
@@ -19,20 +20,20 @@ trait AuditorTraits
         $data      = SisJadwal::with(['sis_jadwal_audits', 'sis_pelanggan', 'sis_jadwal_tims.master_pegawai', 'sis_audit_lks'])
             ->where('jadw_id', $jadwalID)->first();
 
-        if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+        if (empty($data)) throw new ExpectedException("Data jadwal tidak ditemukan");
 
         $involved = false;
         foreach ($data->sis_jadwal_tims as $tim) {
             if ($tim->peg_id == $pegawaiID && in_array($tim->jadw_tim_posisi, ['ketua', 'auditor'])) $involved = true;
         }
-        if (!$involved) throw new Exception("Anda tidak bergabung dalam Tim Auditor sebagai ketua/auditor");
+        if (!$involved) throw new ExpectedException("Anda tidak bergabung dalam Tim Auditor sebagai ketua/auditor");
 
         $open = false;
         foreach ($data->sis_jadwal_audits as $ja) {
             if ($ja->jadw_audit_status_komite == 'on-going') $open = true;
         }
 
-        if (!$open) throw new Exception("Proses audit sudah diajukan ke Komite");
+        if (!$open) throw new ExpectedException("Proses audit sudah diajukan ke Komite");
 
         return $data;
     }
@@ -64,20 +65,20 @@ trait AuditorTraits
         
         $data = $data->first();
 
-        if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+        if (empty($data)) throw new ExpectedException("Data jadwal tidak ditemukan");
 
         $involved = false;
         foreach ($data->sis_jadwal_tims as $tim) {
             if ($tim->peg_id == $pegawaiID && in_array($tim->jadw_tim_posisi, ['ketua', 'auditor'])) $involved = true;
         }
-        if (!$involved) throw new Exception("Anda tidak bergabung dalam Tim Auditor sebagai ketua/auditor");
+        if (!$involved) throw new ExpectedException("Anda tidak bergabung dalam Tim Auditor sebagai ketua/auditor");
 
         $open = false;
         foreach ($data->sis_jadwal_audits as $ja) {
             if ($ja->jadw_audit_status_komite == 'on-going') $open = true;
         }
 
-        if (!$open) throw new Exception("Proses audit sudah diajukan ke Komite");
+        if (!$open) throw new ExpectedException("Proses audit sudah diajukan ke Komite");
 
         return $data;
     }
@@ -102,20 +103,20 @@ trait AuditorTraits
         ])
             ->where('jadw_id', $jadwalID)->first();
 
-        if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+        if (empty($data)) throw new ExpectedException("Data jadwal tidak ditemukan");
 
         $involved = false;
         foreach ($data->sis_jadwal_tims as $tim) {
             if ($tim->peg_id == $pegawaiID && in_array($tim->jadw_tim_posisi, ['ketua'])) $involved = true;
         }
-        if (!$involved) throw new Exception("Anda bukan Kepala Auditor");
+        if (!$involved) throw new ExpectedException("Anda bukan Kepala Auditor");
 
         $open = false;
         foreach ($data->sis_jadwal_audits as $ja) {
             if ($ja->jadw_audit_status_komite == 'on-going') $open = true;
         }
 
-        if (!$open) throw new Exception("Proses audit sudah diajukan ke Komite");
+        if (!$open) throw new ExpectedException("Proses audit sudah diajukan ke Komite");
 
         return $data;
     }
@@ -140,13 +141,13 @@ trait AuditorTraits
         ])
             ->where('jadw_id', $jadwalID)->first();
 
-        if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+        if (empty($data)) throw new ExpectedException("Data jadwal tidak ditemukan");
 
         $involved = false;
         foreach ($data->sis_jadwal_tims as $tim) {
             if ($tim->peg_id == $pegawaiID && in_array($tim->jadw_tim_posisi, ['ketua'])) $involved = true;
         }
-        if (!$involved) throw new Exception("Anda bukan Kepala Auditor");
+        if (!$involved) throw new ExpectedException("Anda bukan Kepala Auditor");
 
         return $data;
     }
@@ -169,20 +170,20 @@ trait AuditorTraits
         ])
             ->where('jadw_id', $jadwalID)->first();
 
-        if (empty($data)) throw new Exception("Data jadwal tidak ditemukan");
+        if (empty($data)) throw new ExpectedException("Data jadwal tidak ditemukan");
 
         $involved = false;
         foreach ($data->sis_audit_tim_komites as $tim) {
             if ($tim->peg_id == $pegawaiID && in_array($tim->komite_posisi, ['ketua'])) $involved = true;
         }
-        if (!$involved) throw new Exception("Anda bukan Kepala Auditor");
+        if (!$involved) throw new ExpectedException("Anda bukan Kepala Auditor");
 
         $open = false;
         foreach ($data->sis_jadwal_audits as $ja) {
             if ($ja->jadw_audit_status_komite == 'submited') $open = true;
         }
 
-        if (!$open) throw new Exception("Proses audit belum diajukan ke Komite");
+        if (!$open) throw new ExpectedException("Proses audit belum diajukan ke Komite");
 
         return $data;
     }

@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditTahap1;
@@ -110,6 +111,9 @@ class Tahap1PerbaikanController extends Controller
             DB::rollBack();
             foreach ($uploadedPath as $path) {
                 @unlink($path);
+            }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
             }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }

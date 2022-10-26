@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use Exception;
@@ -45,6 +46,9 @@ class KomiteDaftarHadirController extends Controller
 
             return view("$this->view.unggah")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -65,7 +69,7 @@ class KomiteDaftarHadirController extends Controller
                 $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
 
                 $dataJadwal->jadw_file_kehadiran_komite = $fileKehadiranPath;
-                array_push($newFilePath, public_path($fileKehadiranPath));
+                $newFilePath[]                          = public_path($fileKehadiranPath);
             }
 
             $dataJadwal->save();
@@ -77,6 +81,9 @@ class KomiteDaftarHadirController extends Controller
         } catch (Exception $e) {
             foreach ($newFilePath as $path) { // remove new file uploaded
                 @unlink($path);
+            }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
             }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
@@ -150,7 +157,7 @@ class KomiteDaftarHadirController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = ucwords($d->jadw_jenis);
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
-            array_push($result, $x);
+            $result[] = $x;
         }
 
 

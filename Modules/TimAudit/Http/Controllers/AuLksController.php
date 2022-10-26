@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -80,7 +81,7 @@ class AuLksController extends Controller
     {
         $request->validate(['total' => 'required']);
         try {
-            if ($request['total'] <= 0) throw new Exception("Total harus lebih dari 0");
+            if ($request['total'] <= 0) throw new ExpectedException("Total harus lebih dari 0");
 
             $pegawaiID  = auth()->user()->master_pegawai->peg_id;
             $dataJadwal = $this->involvedAuditor($jadwalID);
@@ -106,6 +107,9 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Generate berhasil");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -143,7 +147,7 @@ class AuLksController extends Controller
     {
         try {
             $request->validate(['jadw_id' => 'required', 'rekomendasi' => 'required']);
-            if (!$request->ajax()) throw new Exception("Endopoint ini utuk ajax");
+            if (!$request->ajax()) throw new ExpectedException("Endopoint ini utuk ajax");
 
             DB::beginTransaction();
             $dataJadwal                       = $this->isKepalaAuditDetail($request['jadw_id']);
@@ -181,6 +185,9 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Rekomendasi berhasil ditambahkan");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -201,6 +208,9 @@ class AuLksController extends Controller
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
             return view("$this->view.verifikasi")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -227,7 +237,7 @@ class AuLksController extends Controller
                 ->when($dataTim->jadw_tim_posisi != "ketua", function ($query, $pegawaiID) {
                     $query->where("sis_jadwal_tim.peg_id", $pegawaiID);
                 })->find($lksID);
-            if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
+            if (empty($dataLKS)) throw new ExpectedException("Anda tidak dapat mengubah LKS auditor lain");
 
 
             $dataLKS->lks_status          = 'memadai';
@@ -239,6 +249,9 @@ class AuLksController extends Controller
             $this->sendNotifToLeadAuditorIfAllClose($jadwalID);
             return responseJSON(200, [], "Verifikasi berhasil");
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -259,7 +272,7 @@ class AuLksController extends Controller
             $dataJadwal = $this->involvedAuditor($jadwalID);
             $dataLKS    = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
                 ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
-            if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
+            if (empty($dataLKS)) throw new ExpectedException("Anda tidak dapat mengubah LKS auditor lain");
 
             $dataLKS->lks_status        = 'revisi';
             $dataLKS->lks_sudah_ditutup = 'tidak';
@@ -306,6 +319,9 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Revisi berhasil");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -313,7 +329,7 @@ class AuLksController extends Controller
     public function deleteTemuan(Request $request, $jadwalID, $lksID)
     {
         try {
-            if (!$request->ajax()) throw new Exception("Endopoint ini utuk ajax");
+            if (!$request->ajax()) throw new ExpectedException("Endopoint ini utuk ajax");
 
             DB::beginTransaction();
             // 1.
@@ -322,7 +338,7 @@ class AuLksController extends Controller
             $this->involvedAuditor($jadwalID);
             $dataLKS = SisAuditLks::join("sis_jadwal_tim", "sis_jadwal_tim.jadw_tim_id", '=', 'sis_audit_lks.jadw_tim_id')
                 ->where("sis_jadwal_tim.peg_id", $pegawaiID)->find($lksID);
-            if (empty($dataLKS)) throw new Exception("Anda tidak dapat mengubah LKS auditor lain");
+            if (empty($dataLKS)) throw new ExpectedException("Anda tidak dapat mengubah LKS auditor lain");
             $dataLKS->delete();
 
             $this->syncNomorLKS($jadwalID);
@@ -330,6 +346,9 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Delete berhasil");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -338,14 +357,17 @@ class AuLksController extends Controller
     {
         try {
             $data = $this->involvedAuditor($jadwalID);
-            if (empty($data)) throw new Exception('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
+            if (empty($data)) throw new ExpectedException('Data jadwal tidak ditemukan atau anda tidak mendapatkan akses');
 
             return match ($type) {
                 'lks'        => $this->cetak_lks($request, $data),
                 'lks-header' => $this->cetak_lks_header(),
-                default      => throw new Exception("Invalid URL"),
+                default      => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditTahap1;
@@ -42,7 +43,7 @@ class Tahap1PersetujuanController extends Controller
         $newUploadedPath = [];
         try {
             if ($request['status'] == 'revisi') {
-                if (empty($request['catatan'])) throw new Exception('Mohon tuliskan catatan');
+                if (empty($request['catatan'])) throw new ExpectedException('Mohon tuliskan catatan');
             }
 
             DB::beginTransaction();
@@ -158,6 +159,9 @@ class Tahap1PersetujuanController extends Controller
             DB::rollBack();
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
+            }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
             }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
@@ -283,8 +287,8 @@ class Tahap1PersetujuanController extends Controller
                 ->where('sis_permohonan.user_id', '=', auth()->id())
                 ->where('sis_audit_tahap1.aud_thp1_id', '=', $tahap1Id)
                 ->first();
-            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
-            if ($data->aud_thp1_status_temuan != "setuju") throw new Exception("Anda belum diperbolehkan mengakses halaman upload scan");
+            if (empty($data)) throw new ExpectedException("Jadwal tidak ditemukan");
+            if ($data->aud_thp1_status_temuan != "setuju") throw new ExpectedException("Anda belum diperbolehkan mengakses halaman upload scan");
 
             $breadcrumbs = [
                 new BreadcrumbsStruct('Pelanggan'),
@@ -296,6 +300,9 @@ class Tahap1PersetujuanController extends Controller
 
             return view("$this->view.upload_scan")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -308,8 +315,8 @@ class Tahap1PersetujuanController extends Controller
                 ->where('sis_permohonan.user_id', '=', auth()->id())
                 ->where('sis_audit_tahap1.aud_thp1_id', '=', $tahap1Id)
                 ->first();
-            if (empty($data)) throw new Exception("Jadwal tidak ditemukan");
-            if ($data->aud_thp1_status_temuan != "setuju") throw new Exception("Anda belum diperbolehkan mengakses halaman upload scan");
+            if (empty($data)) throw new ExpectedException("Jadwal tidak ditemukan");
+            if ($data->aud_thp1_status_temuan != "setuju") throw new ExpectedException("Anda belum diperbolehkan mengakses halaman upload scan");
 
             DB::beginTransaction();
             $baseFileUpload = sprintf(config("app.path_file_tahap1"), $data->aud_thp1_id);
@@ -351,6 +358,9 @@ class Tahap1PersetujuanController extends Controller
             DB::rollBack();
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
+            }
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
             }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }

@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -98,7 +99,7 @@ class SertifikasiPermohonanController extends Controller
         $uploadedPath = [];
         $custID       = auth()->user()?->sis_pelanggan->cust_id;
         try {
-            if (!$request->hasFile('pertanyaan_tambahan')) throw new Exception("Mohon unggah pertanyaan tambahan", 400);
+            if (!$request->hasFile('pertanyaan_tambahan')) throw new ExpectedException("Mohon unggah pertanyaan tambahan", 400);
             /* TODO:
              * 1. FIND: data sis_pelanggan, sis_pelanggan_dokumens, sis_pelanggan_pabrik
              * 2. FIND: master_sertifikasi dan dukumen yang dibutuhkan master_sertifikasi_dokumens (cek juga apakah semua dokumen sudah terupload)
@@ -123,10 +124,10 @@ class SertifikasiPermohonanController extends Controller
                 }
                 foreach ($dataMasterSertifiaksi->master_sertifikasi_dokumens as $dms) {
                     $requiredDocID[] = $dms->jenis_dok_perusahaan_id;
-                    if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new Exception(sprintf("Dokumen %s belum di unggah", $dms->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
+                    if (!in_array($dms->jenis_dok_perusahaan_id, $uploadedDocID)) throw new ExpectedException(sprintf("Dokumen %s belum di unggah", $dms->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text), 400);
                 }
 
-                if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($submission['sertifikat']->komoditas)) throw new Exception("Data komoditas belum di inputkan", 400);
+                if ($dataMasterSertifiaksi->sert_is_product == "ya" && empty($submission['sertifikat']->komoditas)) throw new ExpectedException("Data komoditas belum di inputkan", 400);
             }
 
 
@@ -305,7 +306,9 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, null, $e->getMessage() . ' | line:' . $e->getLine());
         }
     }
@@ -390,7 +393,7 @@ class SertifikasiPermohonanController extends Controller
                     ->where('mohon_id', $request['mohon_id'])->findOrFail($submission['sertifikat']->mohon_det_id);
 
                 if ($mohonDetail->master_sertifikasi->sert_is_product == "ya" &&
-                    count($submission['sertifikat']->komoditas) == 0) throw new Exception("Data komoditas dibutuhkan", 500);
+                    count($submission['sertifikat']->komoditas) == 0) throw new ExpectedException("Data komoditas dibutuhkan", 500);
 
                 SisPermohonanKomoditi::where('mohon_det_id', $mohonDetail->mohon_det_id)->delete(); // Delete ROW
                 foreach ($submission['sertifikat']->komoditas as $komoditas) {
@@ -472,7 +475,9 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, null, $e->getMessage() . ' | ' . $e->getLine());
         }
 
@@ -537,7 +542,7 @@ class SertifikasiPermohonanController extends Controller
             DB::beginTransaction();
             $dataPemohon = SisPermohonan::where('user_id', auth()->id())->findOrFail($request['mohon_id']);
             if (in_array($dataPemohon->mohon_approved_status, ['accepted', 'rejected'])) {
-                throw new Exception("Permohonan tidak dapat dihapus karena telah di setujui/ditolak");
+                throw new ExpectedException("Permohonan tidak dapat dihapus karena telah di setujui/ditolak");
             }
             $deletedPath = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
             $dataPemohon->delete();
@@ -547,6 +552,9 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Data berhasil dihapus");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -625,14 +633,14 @@ class SertifikasiPermohonanController extends Controller
         }
     }
 
-    public function cancel($mohonId)
+    public function cancel(Request $request, $mohonId)
     {
         try {
             $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $mohonId)->first();
-            if (empty($dataPemohon)) throw new Exception('Data permohonan tidak ditemukan');
+            if (empty($dataPemohon)) throw new ExpectedException('Data permohonan tidak ditemukan');
 
             $allowCancel = $this->allowCancel($dataPemohon);
-            if (!$allowCancel) throw new Exception('Permohonan tidak dapat dibatalkan karena telah masuk dalam Penjadwalan');
+            if (!$allowCancel) throw new ExpectedException('Permohonan tidak dapat dibatalkan karena telah masuk dalam Penjadwalan');
 
             $breadcrumbs = [
                 new BreadcrumbsStruct('Pelanggan'),
@@ -648,7 +656,9 @@ class SertifikasiPermohonanController extends Controller
             ];
             return view("$this->view/cancel")->with($parser);
         } catch (Exception $e) {
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -663,10 +673,10 @@ class SertifikasiPermohonanController extends Controller
         $uploadedPath = [];
         try {
             $dataPemohon = SisPermohonan::where('user_id', auth()->id())->where('mohon_id', $mohonId)->first();
-            if (empty($dataPemohon)) throw new Exception('Data permohonan tidak ditemukan');
+            if (empty($dataPemohon)) throw new ExpectedException('Data permohonan tidak ditemukan');
 
             $allowCancel = $this->allowCancel($dataPemohon);
-            if (!$allowCancel) throw new Exception('Permohonan tidak dapat dibatalkan karena telah masuk dalam Penjadwalan');
+            if (!$allowCancel) throw new ExpectedException('Permohonan tidak dapat dibatalkan karena telah masuk dalam Penjadwalan');
 
             // Process Upload File
             $baseFileUpload = sprintf(config("app.path_file_pengajuan"), $dataPemohon->mohon_id);
@@ -715,7 +725,9 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) {
+                log_error($e, $request->except("_token"));
+            }
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -1119,6 +1131,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $results, "data ditemukan");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1148,6 +1161,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $dokumen, "Dokumen berhasil di unggah");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1160,6 +1174,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $dataPelanggan, "Data ditemukan");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1177,6 +1192,7 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon->save();
             return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1190,6 +1206,7 @@ class SertifikasiPermohonanController extends Controller
             }
             return responseJSON(200, $dataPabrik, "Data ditemukan");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1213,6 +1230,7 @@ class SertifikasiPermohonanController extends Controller
             $newPabrik->save();
             return responseJSON(200, $newPabrik, "Data pabrik ditambahkan");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1229,6 +1247,7 @@ class SertifikasiPermohonanController extends Controller
             $dataPabrik->save();
             return responseJSON(200, null, "Data pabrik diperbarui");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1242,6 +1261,7 @@ class SertifikasiPermohonanController extends Controller
             $dataPabrik->delete();
             return responseJSON(200, null, "Data pabrik dihapus");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1323,6 +1343,7 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1336,6 +1357,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $dataPemohon, "Data ditemukan");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1379,6 +1401,7 @@ class SertifikasiPermohonanController extends Controller
             }
             return responseJSON(200, $dataPabrik, "Data ditemukan");
         } catch (Exception $e) {
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1425,6 +1448,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, $newPabrik, "Data pabrik ditambahkan");
         } catch (Exception $e) {
             DB::rollBack();
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1457,6 +1481,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Data pabrik diperbarui");
         } catch (Exception $e) {
             DB::rollBack();
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1483,6 +1508,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Data pabrik dihapus");
         } catch (Exception $e) {
             DB::rollBack();
+            log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
