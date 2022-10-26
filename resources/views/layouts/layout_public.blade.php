@@ -106,7 +106,7 @@ $socmed_rows = PublicSocialMedia::all();
                     </li>
                 @else
                     <li>
-                        <a href="{{ config('app.sso_is_enabled') ? url('auth/sso/login') : url('auth/login') }}">
+                        <a href="{{ url('auth/login') }}">
                             <i class="fa fa-sign-in"></i>&nbsp;&nbsp;Login
                         </a>
                     </li>
