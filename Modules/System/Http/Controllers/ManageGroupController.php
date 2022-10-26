@@ -193,7 +193,7 @@ class ManageGroupController extends Controller
             ->orderBy("menu_parent_id")
             ->orderBy("menu_order")
             ->orderBy("menu_name")
-            ->with('action')
+            ->with('action.group_permissions')
             ->get();
         $menu = $this->buildTree($data, 0, $groupId);
 

@@ -4,7 +4,8 @@ namespace Modules\System\Http\Traits;
 
 use App\Models\BbkkpSis\SysGroupPermission;
 
-trait GroupTraits{
+trait GroupTraits
+{
     function buildTree($elements, $parentId = 0, $groupId = 0)
     {
         $branch = array();
@@ -21,22 +22,21 @@ trait GroupTraits{
                     $children = [];
                     foreach ($element->action as $action) {
                         $x = [
-                            'menu_id' => $element->menu_id . '-' . $action->action_id,
-                            'menu_parent_id' => $element->menu_parent_id,
-                            'menu_name' => $action->action_name,
+                            'menu_id'         => $element->menu_id . '-' . $action->action_id,
+                            'menu_parent_id'  => $element->menu_parent_id,
+                            'menu_name'       => $action->action_name,
                             'menu_controller' => $action->action_controller,
-                            'action_id' => $action->action_id,
+                            'action_id'       => $action->action_id,
                         ];
                         if ($groupId != 0) {
-                            $exist = SysGroupPermission::where("group_id", $groupId)->where("action_id", $action->action_id)->first();
-                            //dump($exist);
+                            $exist = $this->searchPermission($action->group_permissions, $groupId);
                             if ($exist) {
                                 $x['checked'] = true;
                             }
                         }
-                        array_push($children, $x);
+                        $children[] = $x;
                     }
-                    $element->state = 'closed';
+                    $element->state    = 'closed';
                     $element->children = $children;
                 }
                 $branch[] = $element;
@@ -44,5 +44,16 @@ trait GroupTraits{
         }
 
         return $branch;
+    }
+
+    private function searchPermission($groupPermissions, $groupId): bool
+    {
+        if (empty($groupPermissions)) return false;
+        foreach ($groupPermissions as $gp) {
+            if ($gp->group_id == $groupId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -37,4 +37,9 @@ class SysMenuAction extends Model
     {
         return $this->belongsTo(SysMenu::class, "action_menu_id", "menu_id");
     }
+
+    public function group_permissions()
+    {
+        return $this->hasMany(SysGroupPermission::class, 'action_id', 'action_id');
+    }
 }
