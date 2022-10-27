@@ -130,7 +130,7 @@ class HistoriPenugasanController extends Controller
                 $x['jadw_audit_jenis']         = $d->jadw_audit_jenis;
                 $x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
                 $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl;
-                $result[] = $x;
+                $result[]                      = $x;
             }
         }
 

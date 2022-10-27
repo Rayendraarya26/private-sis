@@ -2,23 +2,21 @@
 
 namespace Modules\Marketing\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\EmailStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
 use App\Models\BbkkpSis\SysUserGroup;
-
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class UploadTagihanBiayaController extends Controller
@@ -49,9 +47,9 @@ class UploadTagihanBiayaController extends Controller
     private function ajax_datagrid_permohonan(Request $request)
     {
         $data = SisPermohonan::join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
         // Filter
-		
+
         $data->where('mohon_cancel_status', '=', 'no');
         $data->whereIn('mohon_approved_status', ['accepted']);
         $data->whereIn('mohon_verif_kajian_permohonan_paskal', ['ya']);
@@ -59,12 +57,12 @@ class UploadTagihanBiayaController extends Controller
         // $data->whereIn('mohon_tagihan_biaya_status', ['proses']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-				if($f->field == 'mohon_id')
-					$data->where('sis_permohonan.mohon_id', 'LIKE', '%' . $f->value . '%');
-				else if($f->field == 'created_at')
-					$data->where('sis_permohonan.created_at', 'LIKE', '%' . $f->value . '%');
-				else
-					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                if ($f->field == 'mohon_id')
+                    $data->where('sis_permohonan.mohon_id', 'LIKE', '%' . $f->value . '%');
+                else if ($f->field == 'created_at')
+                    $data->where('sis_permohonan.created_at', 'LIKE', '%' . $f->value . '%');
+                else
+                    $data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -72,23 +70,22 @@ class UploadTagihanBiayaController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-				if($sort[$i] == 'mohon_id')
-					$data->orderBy('sis_permohonan.mohon_id', $order[$i]);
-				else if($sort[$i] == 'created_at')
-					$data->orderBy('sis_permohonan.created_at', $order[$i]);
-				else
-					$data->orderBy($sort[$i], $order[$i]);
+                if ($sort[$i] == 'mohon_id')
+                    $data->orderBy('sis_permohonan.mohon_id', $order[$i]);
+                else if ($sort[$i] == 'created_at')
+                    $data->orderBy('sis_permohonan.created_at', $order[$i]);
+                else
+                    $data->orderBy($sort[$i], $order[$i]);
             }
+        } else {
+            $data->orderBy('sis_permohonan.created_at', 'desc');
         }
-		else{
-			$data->orderBy('sis_permohonan.created_at', 'desc');
-		}
         // Total
         $total = $data->select(DB::raw('count(DISTINCT sis_permohonan.mohon_id) as total'))->first()->total;
         // Pagination
-		$data->groupBy('sis_permohonan.mohon_id');
+        $data->groupBy('sis_permohonan.mohon_id');
         $data->select("*", "sis_permohonan.created_at AS created_at", "sis_permohonan.updated_at AS updated_at", DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))->skip(($request->page - 1) * $request->rows)->take($request->rows);
-		
+
         // Result
         $result = [];
         foreach ($data->get() as $d) {
@@ -96,14 +93,14 @@ class UploadTagihanBiayaController extends Controller
             if (!is_null($d->mohon_tagihan_biaya_file)) {
                 $x['status_step'] = 're-upload';
             }
-            $x['mohon_id']           = $d->mohon_id;
-            $x['mohon_tagihan_biaya_status']           = $d->mohon_tagihan_biaya_status;
-            $x['cust_id']            = $d->cust_id;
-            $x['user_id']            = $d->user_id;
-            $x['sert_nama']          = $d->sert_nama;
-            $x['mohon_cust_nama']    = $d->mohon_cust_nama;
-            $x['created_at']         = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-           $x['updated_at']              = $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['mohon_id']                   = $d->mohon_id;
+            $x['mohon_tagihan_biaya_status'] = $d->mohon_tagihan_biaya_status;
+            $x['cust_id']                    = $d->cust_id;
+            $x['user_id']                    = $d->user_id;
+            $x['sert_nama']                  = $d->sert_nama;
+            $x['mohon_cust_nama']            = $d->mohon_cust_nama;
+            $x['created_at']                 = $d->created_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
+            $x['updated_at']                 = $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             array_push($result, $x);
         }
 
@@ -122,31 +119,31 @@ class UploadTagihanBiayaController extends Controller
     private function detail_permohonan(Request $request, $mohonID)
     {
         $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->select('*')
-						->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id')
-						->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id')
-						->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id')
-						->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id')
-						->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
-						
-        
-		$dataPermohonSertifikasi = SisPermohonan::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
-								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
-								
+            ->join('master_jenis_perusahaan', 'master_jenis_perusahaan.jenis_perusahaan_id', '=', 'sis_permohonan.jenis_perusahaan_id')
+            ->leftJoin('master_negara', 'master_negara.negara_id', '=', 'sis_permohonan.negara_id')
+            ->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan.kab_id')
+            ->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan.kec_id')
+            ->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan.prov_id');
+
+
+        $dataPermohonSertifikasi = SisPermohonan::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id");
+
         $dataPermohonKomoditi = SisPermohonanKomoditi::where('sis_permohonan_detail.mohon_id', $mohonID)->select('*')
-								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-								->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id');
 
 
         $dataPermohonPabrik = SisPermohonanPabrik::where('mohon_id', $mohonID)->select('*')
-			->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id')
-			->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id')
-			->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
+            ->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_permohonan_pabrik.kab_id')
+            ->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_permohonan_pabrik.kec_id')
+            ->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_permohonan_pabrik.prov_id');
 
         $dataPermohonanDokumen = SisPermohonanDokumen::where('mohon_id', $mohonID)->select('*')
-							->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
-							
+            ->join('master_jenis_dok_perusahaan', 'master_jenis_dok_perusahaan.jenis_dok_perusahaan_id', '=', 'sis_permohonan_dokumen.jenis_dok_perusahaan_id');
+
 
         $dataPermohonanStatus = SisPermohonanStatus::where('status_mohon_id', $mohonID)->where('status_tipe', 'revisi')->select('*');
 
@@ -157,15 +154,15 @@ class UploadTagihanBiayaController extends Controller
         ];
 
         $parser = [
-            'module'                => $this->module,
-            'url'                   => $this->url,
-            'dataPermohon'          => $dataPermohon->get()[0],
-            'dataPermohonKomoditi'  => $dataPermohonKomoditi->get(),
-            'dataPermohonPabrik'    => $dataPermohonPabrik->get(),
-            'dataPermohonanDokumen' => $dataPermohonanDokumen->get(),
-            'dataPermohonanStatus'  => $dataPermohonanStatus->get(),
-            'dataPermohonSertifikasi'  => $dataPermohonSertifikasi->get(),
-            'breadcrumbs'           => $breadcrumbs
+            'module'                  => $this->module,
+            'url'                     => $this->url,
+            'dataPermohon'            => $dataPermohon->get()[0],
+            'dataPermohonKomoditi'    => $dataPermohonKomoditi->get(),
+            'dataPermohonPabrik'      => $dataPermohonPabrik->get(),
+            'dataPermohonanDokumen'   => $dataPermohonanDokumen->get(),
+            'dataPermohonanStatus'    => $dataPermohonanStatus->get(),
+            'dataPermohonSertifikasi' => $dataPermohonSertifikasi->get(),
+            'breadcrumbs'             => $breadcrumbs
         ];
         return view('marketing::tagihan_biaya.detail_permohonan')->with($parser);
     }
@@ -188,22 +185,22 @@ class UploadTagihanBiayaController extends Controller
             new BreadcrumbsStruct('Upload Surat Tagihan Biaya "#' . $request['mohon_id'] . '"'),
         ];
 
-		$dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->groupBy('sis_permohonan.mohon_id');
-		
-		$dataPermohonKomoditi = SisPermohonanKomoditi::where('sis_permohonan_detail.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(komodt_nama) SEPARATOR ',<br/>') as komodt_nama"))
-								->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-								->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-								->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id')
-								->groupBy('sis_permohonan_detail.mohon_det_id');
-        $parser = [
-            'module'       => $this->module,
-            'url'          => $this->url,
-            'dataPermohon' => $dataPermohon->get()[0],
+        $dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->groupBy('sis_permohonan.mohon_id');
+
+        $dataPermohonKomoditi = SisPermohonanKomoditi::where('sis_permohonan_detail.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(komodt_nama) SEPARATOR ',<br/>') as komodt_nama"))
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('master_komoditi', 'master_komoditi.komodt_id', '=', 'sis_permohonan_komoditi.komodt_id')
+            ->groupBy('sis_permohonan_detail.mohon_det_id');
+        $parser               = [
+            'module'               => $this->module,
+            'url'                  => $this->url,
+            'dataPermohon'         => $dataPermohon->get()[0],
             'dataPermohonKomoditi' => $dataPermohonKomoditi->get(),
-            'breadcrumbs'  => $breadcrumbs
+            'breadcrumbs'          => $breadcrumbs
         ];
         return view("marketing::tagihan_biaya.edit_upload_tagihan_biaya")->with($parser);
     }
@@ -213,33 +210,33 @@ class UploadTagihanBiayaController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'update-upload-tagihan-biaya' => $this->update_upload_tagihan_biaya($request),
-            default                           => null,
+            default                       => null,
         };
     }
 
     private function update_upload_tagihan_biaya(Request $request)
     {
         $request->validate([
-            'mohon_id' => 'required|integer',
-            'user_id' => 'required',
-            'cust_id' => 'required',
-            'mohon_cust_nama' => 'required',
-            'mohon_cust_email' => 'required',
-            'mohon_det_harga_permohonan' => 'required',
+            'mohon_id'                      => 'required|integer',
+            'user_id'                       => 'required',
+            'cust_id'                       => 'required',
+            'mohon_cust_nama'               => 'required',
+            'mohon_cust_email'              => 'required',
+            'mohon_det_harga_permohonan'    => 'required',
             'mohon_tagihan_biaya_file_lama' => 'nullable|string',
-            'mohon_tagihan_biaya_file' => 'required|mimes:pdf'
+            'mohon_tagihan_biaya_file'      => 'required|mimes:pdf'
         ]);
 
-        $dataInsert = [
-            'mohon_id' => $request->mohon_id,
-            'mohon_det_harga_permohonan' => $request->mohon_det_harga_permohonan,
-            'mohon_tagihan_biaya_status' => ($request->mohon_det_harga_permohonan > 0) ? 'proses' : 'setuju',
-            'mohon_harus_lunas_status' => 'tidak',
-        ];
+        try {
+            $dataInsert = [
+                'mohon_id'                   => $request->mohon_id,
+                'mohon_det_harga_permohonan' => $request->mohon_det_harga_permohonan,
+                'mohon_tagihan_biaya_status' => ($request->mohon_det_harga_permohonan > 0) ? 'proses' : 'setuju',
+                'mohon_harus_lunas_status'   => 'tidak',
+            ];
 
-        if ($request->hasFile("mohon_tagihan_biaya_file")) {
-            if ($request["mohon_tagihan_biaya_file_lama"] != '')
-                @unlink($request["mohon_tagihan_biaya_file_lama"]);
+            if ($request->hasFile("mohon_tagihan_biaya_file")) throw new ExpectedException('File belum diunggah');
+            if ($request["mohon_tagihan_biaya_file_lama"] != '') @unlink($request["mohon_tagihan_biaya_file_lama"]);
 
             $file     = $request->file('mohon_tagihan_biaya_file');
             $namaFile = Str::slug($request->mohon_id) . '_tagihan_biaya_file_' . time() . '.' . $file->getClientOriginalExtension();
@@ -248,49 +245,48 @@ class UploadTagihanBiayaController extends Controller
             $dataInsert['mohon_tagihan_biaya_file'] = $path . '/' . $namaFile;
 
             DB::transaction(function () use ($request, $dataInsert) {
-				/* $total_biaya = 0;
-				if (!empty($dataInsert['mohon_det_harga_permohonan'])) {
+                /* $total_biaya = 0;
+                if (!empty($dataInsert['mohon_det_harga_permohonan'])) {
                     foreach ($dataInsert['mohon_det_harga_permohonan'] as $key => $val) {
                         DB::table('sis_permohonan_detail')
                             ->where('mohon_det_id', $key)
                             ->update([
                                 "mohon_det_harga_permohonan" => $val,
                             ]);
-						$total_biaya = $total_biaya +  $val;
+                        $total_biaya = $total_biaya +  $val;
                     }
                 }
-				*/
-				
-				 SisPermohonan::findOrFail($request['mohon_id'])->update([
-                    'mohon_harus_lunas_status'  => $dataInsert['mohon_harus_lunas_status'],
-                    'mohon_tagihan_biaya_status'  => $dataInsert['mohon_tagihan_biaya_status'],
-                    'mohon_tagihan_biaya_file'  => $dataInsert['mohon_tagihan_biaya_file'],
-                    'mohon_harga_permohonan'  => $dataInsert['mohon_det_harga_permohonan'],
+                */
+
+                SisPermohonan::findOrFail($request['mohon_id'])->update([
+                    'mohon_harus_lunas_status'   => $dataInsert['mohon_harus_lunas_status'],
+                    'mohon_tagihan_biaya_status' => $dataInsert['mohon_tagihan_biaya_status'],
+                    'mohon_tagihan_biaya_file'   => $dataInsert['mohon_tagihan_biaya_file'],
+                    'mohon_harga_permohonan'     => $dataInsert['mohon_det_harga_permohonan'],
                 ]);
             });
-			$timeNow    = Carbon::now();
-			if($request->mohon_det_harga_permohonan > 0){
-				$notifCust           = new NotifStruct();
-				$notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
-				$notifCust->message   = sprintf("Silahkan lakukan persetujuan Biaya untuk permohonan nomor #%s untuk %s yang telah ditentukan.", $request['mohon_id'], $request['mohon_cust_nama']);
-				$notifCust->user_id   =  $request['user_id'];
-				$notifCust->click_url = url('/pelanggan/sertifikasi/permohonan');
-				sendNotification($notifCust);
-				
-				// Send Email
-				$structEmail          = new EmailStruct();
-				$structEmail->subject = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
-				$structEmail->body    = view('marketing::tagihan_biaya.mails.publish')
-					->with([
-						'pemohonNama'       => $request['mohon_cust_nama'],
-						'pemohonSertifNama' => $request['sert_nama'],
-						'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
-					])->render();
-				$structEmail->to      = $request['mohon_cust_email'];
-				sendEmail($structEmail);
-			} 
-			else {
-				SisPermohonanStatus::updateOrCreate([
+            $timeNow = Carbon::now();
+            if ($request->mohon_det_harga_permohonan > 0) {
+                $notifCust            = new NotifStruct();
+                $notifCust->title     = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
+                $notifCust->message   = sprintf("Silahkan lakukan persetujuan Biaya untuk permohonan nomor #%s untuk %s yang telah ditentukan.", $request['mohon_id'], $request['mohon_cust_nama']);
+                $notifCust->user_id   = $request['user_id'];
+                $notifCust->click_url = url('/pelanggan/sertifikasi/permohonan');
+                sendNotification($notifCust);
+
+                // Send Email
+                $structEmail          = new EmailStruct();
+                $structEmail->subject = 'Persetujuan Biaya Permohonan No. #' . $request['mohon_id'];
+                $structEmail->body    = view('marketing::tagihan_biaya.mails.publish')
+                    ->with([
+                        'pemohonNama'       => $request['mohon_cust_nama'],
+                        'pemohonSertifNama' => $request['sert_nama'],
+                        'link_verif'        => url('/pelanggan/sertifikasi/permohonan'),
+                    ])->render();
+                $structEmail->to      = $request['mohon_cust_email'];
+                sendEmail($structEmail);
+            } else {
+                SisPermohonanStatus::updateOrCreate([
                     "status_mohon_id" => $request->mohon_id,
                     "status_tipe"     => "informasi",
                     "status_judul"    => "Pemohon menyetujui harga sertifikasi",
@@ -299,34 +295,37 @@ class UploadTagihanBiayaController extends Controller
                 ], [
                     "updated_at" => $timeNow,
                 ]);
-				
-				$groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 6, 7])->get();
-				
-				if ($groupUsers) {
-					foreach ($groupUsers as $user) {
-						$notifStruct = new NotifStruct();
-						if ($user->ug_group_id == 6) {
-							$notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $request->mohon_id);
-							$notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $request->mohon_cust_nama, moneyFormat($request->mohon_harga_permohonan));
-							$notifStruct->user_id   = $user?->ug_user_id;
-							$notifStruct->click_url = url('/operatorls/kelengkapan-permohonan');
 
-							if ($user->ug_group_id == 6) $notifStruct->message = $notifStruct->message . ' Operator LS harap segera membuat surat pernyataan persetujuan.';
+                $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 6, 7])->get();
 
-							sendNotification($notifStruct);
-						}
-					}
-				}
-			}
-			
-			if($request->mohon_det_harga_permohonan > 0){
-				return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
-			}
-			else{
-				return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan.");
-			}
-		} else {
-            return redirect()->back()->withInput($request->all())->withErrors(['message' => 'File tidak dapat di upload.']);
+                if ($groupUsers) {
+                    foreach ($groupUsers as $user) {
+                        $notifStruct = new NotifStruct();
+                        if ($user->ug_group_id == 6) {
+                            $notifStruct->title     = sprintf("#%d Pemohon menyetujui harga", $request->mohon_id);
+                            $notifStruct->message   = sprintf("%s memberikan persetujuan harga sebesar Rp %s", $request->mohon_cust_nama, moneyFormat($request->mohon_harga_permohonan));
+                            $notifStruct->user_id   = $user?->ug_user_id;
+                            $notifStruct->click_url = url('/operatorls/kelengkapan-permohonan');
+
+                            if ($user->ug_group_id == 6) $notifStruct->message = $notifStruct->message . ' Operator LS harap segera membuat surat pernyataan persetujuan.';
+
+                            sendNotification($notifStruct);
+                        }
+                    }
+                }
+            }
+
+            if ($request->mohon_det_harga_permohonan > 0) {
+                return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan, silahkan menunggu konfirmasi dari pelanggan untuk menyetujui atau tidak.");
+            } else {
+                return redirect($this->url)->with('message', "Upload Surat Tagihan Biaya #" . $request->mohon_id . " telah disimpan.");
+            }
+
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
+            return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
+
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Models\BbkkpSis\SisJadwal;
-
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Models\BbkkpSis\SisJadwal;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -106,8 +106,8 @@ class AuLogBookController extends Controller
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
 
             $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a target="_blank" href = "' . url($d->logbook_filepath) . '"><i class="fas fa-download"></i> Download</a>' : '';
-            $x['status_upload'] = ($d->logbook_filepath != '') ? 're-upload' : 'upload';
-            array_push($result, $x);
+            $x['status_upload']    = ($d->logbook_filepath != '') ? 're-upload' : 'upload';
+            $result[]              = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -148,7 +148,7 @@ class AuLogBookController extends Controller
 
         $dataJadwal->where('master_pegawai.user_id', '=', auth()->id());
         $dataJadwal->whereIn('sis_jadwal_tim.jadw_tim_posisi', ['ketua', 'auditor']);
-		
+
         $dataJadwal->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct komodt_nama) AS komodt_nama");
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct jadw_audit_nomor_referensi) AS jadw_audit_nomor_referensi");
@@ -191,19 +191,19 @@ class AuLogBookController extends Controller
 
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file logbook", 400);
+            if (!$request->hasFile('logbook_filepath')) throw new ExpectedException("Mohon unggah file logbook", 400);
 
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
 
-            $restJadwal = $dataJadwal->get()[0];
+            $restJadwal = $dataJadwal->first();
             // DEFINE BASE UPLOAD AND UPDATE logbook_filepath
             $baseFileUpload  = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
             $fileLogbook     = $request->file('logbook_filepath');
             $fileLogbookName = Str::slug('file-logbook-auditor-' . $request['jadw_tim_id'] . '-' . $fileLogbook->getClientOriginalName()) . '-' . time() . '.' . $fileLogbook->getClientOriginalExtension();
             $fileLogbookPath = sprintf("%s/%s", $baseFileUpload, $fileLogbookName);
             $fileLogbook->move($baseFileUpload, $fileLogbookName);
-            array_push($uploadedPath, $fileLogbookPath);
+            $uploadedPath[] = $fileLogbookPath;
             DB::beginTransaction();
             if (DB::table('sis_audit_logbook')->where('jadw_tim_id', $request['jadw_tim_id'])->where('logbook_jenis', 'auditor')->exists()) {
                 DB::table('sis_audit_logbook')
@@ -228,6 +228,10 @@ class AuLogBookController extends Controller
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            foreach ($uploadedPath as $path) {
+                @unlink(public_path($path));
+            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

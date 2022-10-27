@@ -2,24 +2,19 @@
 
 namespace Modules\Pjt\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
+use App\Models\BbkkpSis\SisBilling;
 use App\Models\BbkkpSis\SisPermohonan;
 use App\Models\BbkkpSis\SisPermohonanDokumen;
 use App\Models\BbkkpSis\SisPermohonanKomoditi;
 use App\Models\BbkkpSis\SisPermohonanPabrik;
 use App\Models\BbkkpSis\SisPermohonanStatus;
-use App\Models\BbkkpSis\SysUser;
-
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class PembatalanPermohonanController extends Controller
 {
@@ -102,7 +97,7 @@ class PembatalanPermohonanController extends Controller
             $x['mohon_cust_nama']     = $d->mohon_cust_nama;
             $x['created_at']          = $d->created_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['updated_at']          = $d->updated_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $result[] = $x;
+            $result[]                 = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -170,39 +165,38 @@ class PembatalanPermohonanController extends Controller
 
     public function procesCancel(Request $request, $mohonID) // menerima parameter ID dari Modules\Master\Routes\web.php
     {
-        $dataInsert = [
-			'mohon_id' => $mohonID		
-		];
-		
-        DB::transaction(function () use ($request, $dataInsert) {
-            SisPermohonan::findOrFail($request['mohon_id'])->update([
-                'mohon_cancel_status' => 'yes',
-            ]);
-			
-			$dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*')
-						->join('sis_billing_items', 'sis_billing_items.mohon_id', '=', 'sis_permohonan.mohon_id')
-						->groupBy('sis_permohonan.mohon_id');
-						
-			if(isset($dataPermohon->get()[0])){
-				$dataMohon = $dataPermohon->get()[0];
-				if(isset($dataMohon->bill_id)){
-					SisBilling::findOrFail($dataMohon->bill_id)->update([
-						'bill_status' => 'non-aktif',
-					]);
-				}
-			}
-        });
+        try {
+            DB::transaction(function () use ($request) {
+                SisPermohonan::findOrFail($request['mohon_id'])->update([
+                    'mohon_cancel_status' => 'yes',
+                ]);
 
-        $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->select('*')->get()[0];
-        if ($dataPermohon->mohon_cancel_status == 'yes') {
-            $notifUsr            = new NotifStruct();
-            $notifUsr->title     = 'Persetujuan Pembatalan Permohonan No. #' . $mohonID;
-            $notifUsr->message   = sprintf("Persetujuan Pembatalan Permohonan untuk permohonan nomor #%s untuk %s telah di-setujui, silahkan lakukan proses Tagihan Biaya.", $dataPermohon->mohon_id, $dataPermohon->mohon_cust_nama);
-            $notifUsr->user_id   = $dataPermohon->user_id;
-            $notifUsr->click_url = url('/pelanggan/sertifikasi/permohonan');
-            sendNotification($notifUsr);
+                $dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*')
+                    ->join('sis_billing_items', 'sis_billing_items.mohon_id', '=', 'sis_permohonan.mohon_id')
+                    ->groupBy('sis_permohonan.mohon_id')->first();
+
+                if (empty($dataPermohon)) throw new ExpectedException('Data permohonan tidak ditemukan');
+                if (isset($dataPermohon->bill_id)) {
+                    SisBilling::findOrFail($dataPermohon->bill_id)->update([
+                        'bill_status' => 'non-aktif',
+                    ]);
+                }
+            });
+
+            $dataPermohon = SisPermohonan::where('mohon_id', $mohonID)->select('*')->first();
+            if ($dataPermohon->mohon_cancel_status == 'yes') {
+                $notifUsr            = new NotifStruct();
+                $notifUsr->title     = 'Persetujuan Pembatalan Permohonan No. #' . $mohonID;
+                $notifUsr->message   = sprintf("Persetujuan Pembatalan Permohonan untuk permohonan nomor #%s untuk %s telah di-setujui, silahkan lakukan proses Tagihan Biaya.", $dataPermohon->mohon_id, $dataPermohon->mohon_cust_nama);
+                $notifUsr->user_id   = $dataPermohon->user_id;
+                $notifUsr->click_url = url('/pelanggan/sertifikasi/permohonan');
+                sendNotification($notifUsr);
+            }
+
+            return redirect($this->url)->with('message', "Persetujuan Pembatalan Permohonan #" . $mohonID . " telah diterima.");
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
-
-        return redirect($this->url)->with('message', "Persetujuan Pembatalan Permohonan #" . $mohonID . " telah diterima.");
     }
 }

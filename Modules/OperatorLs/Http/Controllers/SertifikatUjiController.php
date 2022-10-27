@@ -2,11 +2,13 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisPelangganPabrik;
 use App\Models\BbkkpSis\SisAuditSertifikatProduk;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -230,7 +232,7 @@ class SertifikatUjiController extends Controller
         ]);
 		
         try {
-            if (!$request->hasFile('prod_sert_filepath')) throw new Exception("Mohon unggah file", 400);
+            if (!$request->hasFile('prod_sert_filepath')) throw new ExpectedException("Mohon unggah file", 400);
 
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
@@ -258,6 +260,8 @@ class SertifikatUjiController extends Controller
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, [], $e->getMessage());
         }
     }

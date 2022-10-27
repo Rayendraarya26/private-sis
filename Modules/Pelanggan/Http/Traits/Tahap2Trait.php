@@ -2,6 +2,7 @@
 
 namespace Modules\Pelanggan\Http\Traits;
 
+use App\Exceptions\ExpectedException;
 use App\Models\BbkkpSis\SisJadwal;
 use Exception;
 
@@ -22,7 +23,7 @@ trait Tahap2Trait
         ])->findOrFail($jadwalID);
 
         if ($dataJadwal->jadw_setujui_temuan != "setuju") {
-            throw new Exception("Anda tidak bisa mengakses halaman ini sekarang");
+            throw new ExpectedException("Anda tidak bisa mengakses halaman ini sekarang");
         }
         return $dataJadwal;
     }

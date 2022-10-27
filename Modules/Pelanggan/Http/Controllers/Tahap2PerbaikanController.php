@@ -79,6 +79,7 @@ class Tahap2PerbaikanController extends Controller
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal, 'dataLks' => $dataLKS];
             return view("$this->view.detail_all_lks")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage() . ' | ' . $e->getLine()]);
         }
     }
@@ -110,9 +111,7 @@ class Tahap2PerbaikanController extends Controller
             return responseJSON(200, [], "Perbaikan LKS berhasil disimpan");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -165,9 +164,7 @@ class Tahap2PerbaikanController extends Controller
             // foreach ($failedDeletedPath as $del) {
             //     @unlink($del);
             // }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -202,9 +199,7 @@ class Tahap2PerbaikanController extends Controller
             return responseJSON(200, ['redirect' => url($this->url)], "LKS berhasil diajukan ke Auditor");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage() . '|err:' . $e->getLine());
         }
     }
@@ -232,9 +227,7 @@ class Tahap2PerbaikanController extends Controller
                 default        => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 

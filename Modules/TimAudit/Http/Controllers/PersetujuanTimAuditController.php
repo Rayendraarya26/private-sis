@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
@@ -244,8 +245,7 @@ class PersetujuanTimAuditController extends Controller
         if ($request['jenis'] == 'tahap-1') {
             $dataJadwal    = SisAuditTahap1::with(['sis_permohonan'])->find($request['jadw_id']);
             $dataPemohon[] = $dataJadwal->sis_permohonan;
-        } 
-		else if ($request['jenis'] == 'tahap-2' || $request['jenis'] == 'komite') {
+        } else if ($request['jenis'] == 'tahap-2' || $request['jenis'] == 'komite') {
             $dataJadwal = SisJadwal::with(['sis_billing.sis_billing_items.sis_permohonan'])->find($request['jadw_id']);
             foreach ($dataJadwal?->sis_billing?->sis_billing_items as $billing_item) {
                 $dataPemohon[] = $billing_item->sis_permohonan;
@@ -396,51 +396,38 @@ class PersetujuanTimAuditController extends Controller
 
 
         try {
+            DB::beginTransaction();
             if ($request['jenis'] == 'tahap-1') {
-                $dataJadwal = SisAuditTahap1::where('aud_thp1_id', $request['jadw_id']);
-                $dataJadwal->select('*');
-
-                $restJadwal = $dataJadwal->get()[0];
-
-                DB::beginTransaction();
+                $dataJadwal = SisAuditTahap1::where('aud_thp1_id', $request['jadw_id'])->first();
+                if (empty($dataJadwal)) throw new ExpectedException('Jadwal tidak ditemukan');
 
                 DB::table('sis_audit_tahap1_tim')
                     ->where('aud_thp1_id', $request['jadw_id'])
                     ->where('peg_id', $request['peg_id'])
                     ->update(['thp1_tim_kesanggupan' => 'ya', 'thp1_tim_kesanggupan_tgl' => Carbon::now()]);
-                DB::commit();
             } else if ($request['jenis'] == 'komite') {
-                $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
-                $dataJadwal->select('*');
-
-                $restJadwal = $dataJadwal->get()[0];
-
-                DB::beginTransaction();
+                $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id'])->first();
+                if (empty($dataJadwal)) throw new ExpectedException('Jadwal tidak ditemukan');
 
                 DB::table('sis_audit_tim_komite')
                     ->where('jadw_id', $request['jadw_id'])
                     ->where('peg_id', $request['peg_id'])
                     ->update(['komite_kesanggupan' => 'ya', 'komite_tgl_kesanggupan' => Carbon::now()]);
-
-                DB::commit();
             } else {
-                $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
-                $dataJadwal->select('*');
-
-                $restJadwal = $dataJadwal->get()[0];
-
-                DB::beginTransaction();
+                $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id'])->first();
+                if (empty($dataJadwal)) throw new ExpectedException('Jadwal tidak ditemukan');
 
                 DB::table('sis_jadwal_tim')
                     ->where('jadw_id', $request['jadw_id'])
                     ->where('peg_id', $request['peg_id'])
                     ->update(['jadw_tim_kesanggupan' => 'ya', 'jadw_tim_kesanggupan_tgl' => Carbon::now()]);
-
-                DB::commit();
             }
 
+            DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Models\BbkkpSis\MasterPegawai;
 use App\Models\BbkkpSis\SisJadwal;
 use App\Models\BbkkpSis\SisJadwalLog;
@@ -378,7 +379,7 @@ class TimController extends Controller
                     'jadw_tim_kode'            => $request->jadw_tim_kode,
                     'jadw_tim_posisi'          => $request->jadw_tim_posisi,
                     'jadw_tim_kesanggupan'     => 'none',
-                    'jadw_tim_kesanggupan_tgl' => NULL,
+                    'jadw_tim_kesanggupan_tgl' => null,
                     'created_at'               => Carbon::now(),
                     'updated_at'               => Carbon::now(),
                 ];
@@ -386,6 +387,7 @@ class TimController extends Controller
             }
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -481,6 +483,7 @@ class TimController extends Controller
 
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -497,13 +500,13 @@ class TimController extends Controller
     private function delete_data_tim(Request $request)
     {
         try {
-            $status_return = TRUE;
+            $status_return = true;
             foreach ($request->ids as $id) {
                 $data = SisJadwalTim::where("jadw_tim_id", $id)->firstOrFail();
                 if ($data->delete()) {
 
                 } else {
-                    $status_return = FALSE;
+                    $status_return = false;
                     break;
                 }
             }
@@ -514,6 +517,7 @@ class TimController extends Controller
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

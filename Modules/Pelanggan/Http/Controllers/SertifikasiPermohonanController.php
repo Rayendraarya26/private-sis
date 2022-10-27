@@ -306,9 +306,9 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, null, $e->getMessage() . ' | line:' . $e->getLine());
         }
     }
@@ -475,9 +475,9 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, null, $e->getMessage() . ' | ' . $e->getLine());
         }
 
@@ -552,9 +552,9 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Data berhasil dihapus");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -629,6 +629,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Approval berhasil " . $request['status'] == "Tidak" ? "ditolak" : "disetujui");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -656,9 +657,8 @@ class SertifikasiPermohonanController extends Controller
             ];
             return view("$this->view/cancel")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -725,9 +725,9 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -1131,7 +1131,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $results, "data ditemukan");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1161,7 +1161,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $dokumen, "Dokumen berhasil di unggah");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1174,7 +1174,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $dataPelanggan, "Data ditemukan");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1192,7 +1192,7 @@ class SertifikasiPermohonanController extends Controller
             $dataPemohon->save();
             return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1206,7 +1206,7 @@ class SertifikasiPermohonanController extends Controller
             }
             return responseJSON(200, $dataPabrik, "Data ditemukan");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1230,7 +1230,7 @@ class SertifikasiPermohonanController extends Controller
             $newPabrik->save();
             return responseJSON(200, $newPabrik, "Data pabrik ditambahkan");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1247,7 +1247,7 @@ class SertifikasiPermohonanController extends Controller
             $dataPabrik->save();
             return responseJSON(200, null, "Data pabrik diperbarui");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1261,7 +1261,7 @@ class SertifikasiPermohonanController extends Controller
             $dataPabrik->delete();
             return responseJSON(200, null, "Data pabrik dihapus");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1343,7 +1343,7 @@ class SertifikasiPermohonanController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1357,7 +1357,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $dataPemohon, "Data ditemukan");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1401,7 +1401,7 @@ class SertifikasiPermohonanController extends Controller
             }
             return responseJSON(200, $dataPabrik, "Data ditemukan");
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1448,7 +1448,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, $newPabrik, "Data pabrik ditambahkan");
         } catch (Exception $e) {
             DB::rollBack();
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1481,7 +1481,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Data pabrik diperbarui");
         } catch (Exception $e) {
             DB::rollBack();
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1508,7 +1508,7 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, null, "Data pabrik dihapus");
         } catch (Exception $e) {
             DB::rollBack();
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Modules\Marketing\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -226,10 +227,10 @@ class VerifikasiPermohonanController extends Controller
 
     private function edit_accepted(Request $request)
     {
-        $data = $dataPermohon = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))
-                                    ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-                                    ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-                                    ->groupBy('sis_permohonan.mohon_id')->get()[0];
+        $data = SisPermohonan::where('sis_permohonan.mohon_id', $request['mohon_id'])->select('*', DB::raw("GROUP_CONCAT(DISTINCT CONCAT(sert_nama, IF(mohon_det_jenis_status = 'baru', '(Baru)', '(Perpanjang)')) SEPARATOR ',<br/>') as sert_nama"))
+                    ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+                    ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+                    ->groupBy('sis_permohonan.mohon_id')->get()[0];
 
         $dataInsert = [
             'mohon_id'        => $request['mohon_id'],
@@ -393,6 +394,8 @@ class VerifikasiPermohonanController extends Controller
 
             return redirect($this->url)->with('message', "Tambah informasi revisi berhasil");
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }

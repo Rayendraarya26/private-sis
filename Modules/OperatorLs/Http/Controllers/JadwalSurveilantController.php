@@ -2,12 +2,14 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +36,7 @@ class JadwalSurveilantController extends Controller
         $request->validate(['cust_sert_id' => 'required|int']);
         try {
             $data = SisPelangganSertifikasi::with(['sis_pelanggan.sys_user', 'master_sertifikasi'])->find($request['cust_sert_id']);
-            if (empty($data)) throw new \Exception("Data sertifikat tidak ditemukan");
+            if (empty($data)) throw new ExpectedException("Data sertifikat tidak ditemukan");
 
             // Send Notification to Keuangan
             $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [7])->get();
@@ -71,7 +73,9 @@ class JadwalSurveilantController extends Controller
             $data->cust_sert_survailen_reminder_internal_at    = Carbon::now();
             $data->save();
             return responseJSON(200, [], 'Notifikasi ke Finance berhasil dikirim');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, [], $e->getMessage());
         }
     }

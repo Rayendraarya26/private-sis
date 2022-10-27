@@ -2,23 +2,17 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\MasterPegawai;
 use App\Models\BbkkpSis\SisJadwal;
-use App\Models\BbkkpSis\SisJadwalLog;
 use App\Models\BbkkpSis\SisJadwalTim;
-use App\Models\BbkkpSis\SisPelanggan;
-
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class PenjadwalanUlangTimController extends Controller
 {
@@ -54,22 +48,22 @@ class PenjadwalanUlangTimController extends Controller
         $data = SisJadwal::join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_jadwal.cust_id");
         $data->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id");
         $data->join('master_sertifikasi', "master_sertifikasi.sert_id", "=", "sis_jadwal_audit.sert_id");
-		
+
         $data->leftJoin('sis_jadwal_tim', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id");
-		
+
 
         // Filter
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->whereIn('sis_jadwal.jadw_team_status', ['accepted']);
         //$data->where('sis_jadwal_audit.jadw_audit_status_komite', '!=', 'submited');
-		$data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
-		$data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
+        $data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
+        $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                if($f->field == 'jadw_id')
-					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
-				else
-					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                if ($f->field == 'jadw_id')
+                    $data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+                else
+                    $data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -77,10 +71,10 @@ class PenjadwalanUlangTimController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                if($sort[$i] == 'jadw_id')
-					$data->orderBy('sis_jadwal.jadw_id', $order[$i]);
-				else
-					$data->orderBy($sort[$i], $order[$i]);
+                if ($sort[$i] == 'jadw_id')
+                    $data->orderBy('sis_jadwal.jadw_id', $order[$i]);
+                else
+                    $data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total
@@ -103,8 +97,6 @@ class PenjadwalanUlangTimController extends Controller
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
             $x['cust_nama']            = $d->cust_nama;
-            $x['sert_id']              = $d->sert_id;
-            $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_team_status']     = $d->jadw_team_status;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
@@ -112,7 +104,7 @@ class PenjadwalanUlangTimController extends Controller
             $x['sert_id']              = $d->sert_id;
             $x['sert_nama']            = $d->sert_nama;
             $x['cust_sert_id']         = $d->cust_sert_id;
-            array_push($result, $x);
+            $result[]                  = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -155,11 +147,11 @@ class PenjadwalanUlangTimController extends Controller
             $x['jadw_tim_posisi']          = $d->jadw_tim_posisi;
             $x['jadw_tim_kesanggupan']     = $d->jadw_tim_kesanggupan;
             $x['jadw_tim_kesanggupan_tgl'] = $d->jadw_tim_kesanggupan_tgl?->format("Y-m-d");
-            $x['can_delete']          = 'false';
-			if($d->jadw_tim_jenis == 'penambahan'){
-				$x['can_delete']          = 'true';
-			}
-            array_push($result, $x);
+            $x['can_delete']               = 'false';
+            if ($d->jadw_tim_jenis == 'penambahan') {
+                $x['can_delete'] = 'true';
+            }
+            $result[] = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -181,11 +173,11 @@ class PenjadwalanUlangTimController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['peg_id']   = $d->peg_id;
-            $x['peg_kode']   = $d->peg_kode == '' ? '' : $d->peg_kode ;
+            $x['peg_kode'] = $d->peg_kode == '' ? '' : $d->peg_kode;
             $x['peg_nama'] = $d->peg_nama;
             $x['peg_telp'] = $d->peg_telp;
             $x['peg_nip']  = $d->peg_nip;
-            array_push($result, $x);
+            $result[]      = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -207,8 +199,8 @@ class PenjadwalanUlangTimController extends Controller
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
-            'edit-tim'   => $this->edit_tim($request),
-            default      => null,
+            'edit-tim' => $this->edit_tim($request),
+            default    => null,
         };
     }
 
@@ -278,17 +270,18 @@ class PenjadwalanUlangTimController extends Controller
                     'peg_id'                   => $request->peg_id,
                     'jadw_tim_kode'            => $request->jadw_tim_kode,
                     'jadw_tim_posisi'          => $request->jadw_tim_posisi,
-                    'jadw_tim_jenis'     => 'penambahan',
+                    'jadw_tim_jenis'           => 'penambahan',
                     'jadw_tim_kesanggupan'     => 'none',
-                    'jadw_tim_kesanggupan_tgl' => NULL,
+                    'jadw_tim_kesanggupan_tgl' => null,
                     'created_at'               => Carbon::now(),
                     'updated_at'               => Carbon::now(),
                 ];
                 SisJadwalTim::create($dataInsert);
             }
-			
+
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -296,32 +289,33 @@ class PenjadwalanUlangTimController extends Controller
     private function update_pengajuan_tim(Request $request)
     {
         $request->validate([
-            "cust_id" => 'required',
-            "jadw_tanggal_mulai" => 'required',
+            "cust_id"              => 'required',
+            "jadw_tanggal_mulai"   => 'required',
             "jadw_tanggal_selesai" => 'required',
-            "jadw_id" => 'required',
+            "jadw_id"              => 'required',
         ]);
 
 
         try {
-			$data_tim = SisJadwalTim::join('sis_jadwal', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id")
-				->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
-				->select('*')
-				->where('sis_jadwal_tim.jadw_id', $request['jadw_id'])
-				->where('sis_jadwal_tim.jadw_tim_jenis', 'penambahan');
-			
-			foreach ($data_tim->get() as $d) {
-				$notifStruct            = new NotifStruct();
-				$notifStruct->title     = 'Penyusunan Ulang Tim Audit Tahap II';
-				$notifStruct->message   = sprintf("Anda telah ditunjuk untuk melakukan Audit tahap II pada nomor jadwal #%s sebagai ",  $request->jadw_id, $request->jadw_tim_posisi);
-				$notifStruct->user_id   = $d?->user_id;
-				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
-				sendNotification($notifStruct);
-				
-			}
-			
+            $data_tim = SisJadwalTim::join('sis_jadwal', "sis_jadwal_tim.jadw_id", "=", "sis_jadwal.jadw_id")
+                ->join('master_pegawai', "sis_jadwal_tim.peg_id", "=", "master_pegawai.peg_id")
+                ->select('*')
+                ->where('sis_jadwal_tim.jadw_id', $request['jadw_id'])
+                ->where('sis_jadwal_tim.jadw_tim_jenis', 'penambahan');
+
+            foreach ($data_tim->get() as $d) {
+                $notifStruct            = new NotifStruct();
+                $notifStruct->title     = 'Penyusunan Ulang Tim Audit Tahap II';
+                $notifStruct->message   = sprintf("Anda telah ditunjuk untuk melakukan Audit tahap II pada nomor jadwal #%s sebagai ", $request->jadw_id, $request->jadw_tim_posisi);
+                $notifStruct->user_id   = $d?->user_id;
+                $notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+                sendNotification($notifStruct);
+
+            }
+
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -338,23 +332,24 @@ class PenjadwalanUlangTimController extends Controller
     private function delete_data_tim(Request $request)
     {
         try {
-            $status_return = TRUE;
+            $status_return = true;
             foreach ($request->ids as $id) {
                 $data = SisJadwalTim::where("jadw_tim_id", $id)->firstOrFail();
                 if ($data->delete()) {
 
                 } else {
-                    $status_return = FALSE;
+                    $status_return = false;
                     break;
                 }
             }
 
-            if ($status_return == TRUE) {
+            if ($status_return) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

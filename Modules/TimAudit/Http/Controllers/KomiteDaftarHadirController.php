@@ -46,9 +46,7 @@ class KomiteDaftarHadirController extends Controller
 
             return view("$this->view.unggah")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -59,12 +57,12 @@ class KomiteDaftarHadirController extends Controller
         $oldFilePath = [];
         try {
             $dataJadwal = $this->isKepalaKomite($request['jadw_id']);
-            if (!empty($dataJadwal->jadw_file_kehadiran_komite)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran_komite);
+            if (!empty($dataJadwal->jadw_file_kehadiran_komite)) $oldFilePath[] = $dataJadwal->jadw_file_kehadiran_komite;
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
             if ($request->hasFile('jadw_file_kehadiran_komite')) {
                 $fileKehadiran     = $request->file('jadw_file_kehadiran_komite');
-                $fileKehadiranName = Str::slug('file-kehadiran-komite-'. $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
+                $fileKehadiranName = Str::slug('file-kehadiran-komite-' . $fileKehadiran->getClientOriginalName()) . '-' . time() . '.' . $fileKehadiran->getClientOriginalExtension();
                 $fileKehadiranPath = sprintf("%s/%s", $baseFileUpload, $fileKehadiranName);
                 $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
 
@@ -82,9 +80,7 @@ class KomiteDaftarHadirController extends Controller
             foreach ($newFilePath as $path) { // remove new file uploaded
                 @unlink($path);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -116,10 +112,10 @@ class KomiteDaftarHadirController extends Controller
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', "=", "submited");
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                if($f->field == 'jadw_id')
-					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
-				else
-					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                if ($f->field == 'jadw_id')
+                    $data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+                else
+                    $data->where($f->field, 'LIKE', '%' . $f->value . '%');
             }
         }
         // Sorter
@@ -127,15 +123,14 @@ class KomiteDaftarHadirController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                if($sort[$i] == 'jadw_id')
-					$data->orderBy('sis_jadwal.jadw_id', $order[$i]);
-				else
-					$data->orderBy($sort[$i], $order[$i]);
+                if ($sort[$i] == 'jadw_id')
+                    $data->orderBy('sis_jadwal.jadw_id', $order[$i]);
+                else
+                    $data->orderBy($sort[$i], $order[$i]);
             }
         }
         // Total
         $total = $data->select(DB::raw('count(distinct sis_jadwal.jadw_id) as total'))->first()->total;
-
 
         // Pagination
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
@@ -157,9 +152,8 @@ class KomiteDaftarHadirController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = ucwords($d->jadw_jenis);
             $x['total_jadwal']         = $d->sis_jadwal_audits->count();
-            $result[] = $x;
+            $result[]                  = $x;
         }
-
 
         return response()->json(["total" => $total, "rows" => $result]);
     }

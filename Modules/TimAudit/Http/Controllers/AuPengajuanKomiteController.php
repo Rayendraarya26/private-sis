@@ -50,9 +50,7 @@ class AuPengajuanKomiteController extends Controller
                 default        => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -99,9 +97,7 @@ class AuPengajuanKomiteController extends Controller
 
             return view("$this->view.detail_audit")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -242,8 +238,8 @@ class AuPengajuanKomiteController extends Controller
             $dataJadwal->select('*');
 
             $restJadwal = $dataJadwal->get()[0];
-            if (!empty($restJadwal->jadw_file_laporan_ringkas)) array_push($oldFilePath, $restJadwal->jadw_file_laporan_ringkas);
-            if (!empty($restJadwal->jadw_file_lks)) array_push($oldFilePath, $restJadwal->jadw_file_lks);
+            if (!empty($restJadwal->jadw_file_laporan_ringkas)) $oldFilePath[] = $restJadwal->jadw_file_laporan_ringkas;
+            if (!empty($restJadwal->jadw_file_lks)) $oldFilePath[] = $restJadwal->jadw_file_lks;
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $restJadwal->jadw_id);
             if ($request->hasFile('jadw_file_laporan_ringkas')) {
@@ -253,7 +249,7 @@ class AuPengajuanKomiteController extends Controller
                 $fileLks->move($baseFileUpload, $fileLksName);
 
                 $updateData['jadw_file_laporan_ringkas'] = $fileLksPath;
-                array_push($newFilePath, public_path($fileLksPath));
+                $newFilePath[]                           = public_path($fileLksPath);
             }
 
             if ($request->hasFile('jadw_file_lks')) {
@@ -263,7 +259,7 @@ class AuPengajuanKomiteController extends Controller
                 $fileRingkas->move($baseFileUpload, $fileRingkasName);
 
                 $updateData['jadw_file_lks'] = $fileRingkasPath;
-                array_push($newFilePath, public_path($fileRingkasPath));
+                $newFilePath[]               = public_path($fileRingkasPath);
             }
 
             DB::beginTransaction();
@@ -358,7 +354,7 @@ class AuPengajuanKomiteController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
             $x['status_komite']        = ($d->status_komite);
-            array_push($result, $x);
+            $result[]                  = $x;
         }
 
         return response()->json(["rows" => $result]);

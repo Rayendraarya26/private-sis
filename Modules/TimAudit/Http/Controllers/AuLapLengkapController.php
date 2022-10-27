@@ -53,9 +53,7 @@ class AuLapLengkapController extends Controller
 
             return view("$this->view.add_or_update_lap_lengkap")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -83,9 +81,7 @@ class AuLapLengkapController extends Controller
 
             return redirect(url($this->url))->with('message', "Data berhasil ditambahkan/diperbarui");
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -102,9 +98,7 @@ class AuLapLengkapController extends Controller
                 default       => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -142,9 +136,7 @@ class AuLapLengkapController extends Controller
             $pdf = PDF::loadView("$this->view.print.lap-lengkap", $parser)->setPaper('a4', 'portrait');
             return $pdf->stream();
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

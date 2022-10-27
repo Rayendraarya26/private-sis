@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
 use Exception;
@@ -102,8 +103,8 @@ class AuDaftarPeriksaController extends Controller
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
 
             $x['dftr_periksa_file'] = ($d->dftr_periksa_file != '') ? '<a target="_blank" href = "' . url($d->dftr_periksa_file) . '"><i class="fas fa-download"></i> Download</a>' : '';
-            $x['status_upload'] = ($d->dftr_periksa_file != '') ? 're-upload' : 'upload';
-            array_push($result, $x);
+            $x['status_upload']     = ($d->dftr_periksa_file != '') ? 're-upload' : 'upload';
+            $result[]               = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -184,7 +185,7 @@ class AuDaftarPeriksaController extends Controller
 
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('dftr_periksa_file')) throw new Exception("Mohon unggah file logbook", 400);
+            if (!$request->hasFile('dftr_periksa_file')) throw new ExpectedException("Mohon unggah file logbook", 400);
 
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
@@ -226,6 +227,7 @@ class AuDaftarPeriksaController extends Controller
             foreach ($uploadedPath as $path) {
                 @unlink(public_path($path));
             }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditObservasi;
 use App\Models\BbkkpSis\SisJadwal;
@@ -49,6 +50,7 @@ class AuLapObservasiController extends Controller
 
             return view("$this->view.add_or_update_lap_observasi")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -72,6 +74,7 @@ class AuLapObservasiController extends Controller
             // foreach ($newFilePath as $path) { // remove new file uploaded
             //     @unlink($path);
             // }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -150,7 +153,7 @@ class AuLapObservasiController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = ucwords($d->jadw_audit_jenis);
             $x['sudah_mengisi']        = $d->sis_audit_observasis?->count() > 0;
-            array_push($result, $x);
+            $result[]                  = $x;
         }
 
 

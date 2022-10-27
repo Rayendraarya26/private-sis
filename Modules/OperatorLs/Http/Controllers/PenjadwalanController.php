@@ -2,6 +2,7 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -24,7 +25,6 @@ use Illuminate\Support\Facades\DB;
 
 class PenjadwalanController extends Controller
 {
-
     public $module = self::class;
     private $url = 'operatorls/penjadwalan';
 
@@ -89,10 +89,10 @@ class PenjadwalanController extends Controller
             $x['ruang_lingkup']      = $d->ruang_lingkup;
             $x['kapasitas_produksi'] = $d->kapasitas_produksi;
             $x['satuan']             = $d->satuan;
-            $result[] = $x;
+            $result[]                = $x;
         }
 
-        return response()->json($x);
+        return response()->json($result);
     }
 
     private function ajax_datagrid_jadwal(Request $request)
@@ -104,16 +104,15 @@ class PenjadwalanController extends Controller
 
         // Filter
         $data->where('jadw_tanggal_status', '!=', 'accepted');
-		$data->where('bill_status', '=', 'aktif');
+        $data->where('bill_status', '=', 'aktif');
         $data->where('sis_jadwal.jadw_is_khusus_komite', '=', 'tidak');
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-				if($f->field == 'jadw_id'){
-					$data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
-				}
-				else{
-					$data->where($f->field, 'LIKE', '%' . $f->value . '%');
-				}
+                if ($f->field == 'jadw_id') {
+                    $data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
+                } else {
+                    $data->where($f->field, 'LIKE', '%' . $f->value . '%');
+                }
             }
         }
         // Sorter
@@ -147,7 +146,7 @@ class PenjadwalanController extends Controller
             $x['jadw_tanggal_status']  = $d->jadw_tanggal_status;
             $x['jadw_tanggal_mulai']   = $d->jadw_tanggal_mulai?->format("Y-m-d");
             $x['jadw_tanggal_selesai'] = $d->jadw_tanggal_selesai?->format("Y-m-d");
-            $result[] = $x;
+            $result[]                  = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -163,7 +162,7 @@ class PenjadwalanController extends Controller
         $data->where('sis_jadwal_audit.jadw_id', '=', $request['jadw_id']);
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
-                if($f->field == 'jadw_id')
+                if ($f->field == 'jadw_id')
                     $data->where('sis_jadwal.jadw_id', 'LIKE', '%' . $f->value . '%');
                 else
                     $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -174,7 +173,7 @@ class PenjadwalanController extends Controller
             $sort  = explode(",", $request->sort);
             $order = explode(",", $request->order);
             for ($i = 0; $i < count($sort); $i++) {
-                if($sort[$i] == 'jadw_id')
+                if ($sort[$i] == 'jadw_id')
                     $data->orderBy('sis_jadwal.jadw_id', $order[$i]);
                 else
                     $data->orderBy($sort[$i], $order[$i]);
@@ -211,7 +210,7 @@ class PenjadwalanController extends Controller
             $x['jadw_audit_merk']             = $d->jadw_audit_merk;
             $x['jadw_audit_tipe']             = $d->jadw_audit_tipe;
             $x['jadw_audit_ukuran']           = $d->jadw_audit_ukuran;
-            $result[] = $x;
+            $result[]                         = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -220,28 +219,28 @@ class PenjadwalanController extends Controller
     private function ajax_combogrid_pelanggan(Request $request)
     {
         $data = SisPelanggan::join('sis_billing', "sis_pelanggan.cust_id", "=", "sis_billing.cust_id")
-			->where('bill_status', '=', 'aktif')
-			->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
+            ->where('bill_status', '=', 'aktif')
+            ->whereRaw("IF (sis_billing.bill_harus_lunas = 'ya', bill_payment_status = 'lunas', bill_payment_status IS NOT NULL)")
             ->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('bill_id')->from('sis_jadwal')->whereNotNull('bill_id');
             })
-			->whereNotIn('bill_id', function ($query) use ($request) {
+            ->whereNotIn('bill_id', function ($query) use ($request) {
                 $query->select('sis_billing.bill_id')->from('sis_billing')
-				->join('sis_billing_items', "sis_billing_items.bill_id", "=", "sis_billing.bill_id")
-				->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
-				->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
-				// ->leftJoin('sis_audit_tahap1', "sis_audit_tahap1.sis_billing", "=", "sis_billing.sis_billing")
-				->where('mohon_det_perlu_tahap1', '=', 'ya')
-				->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
-					$query->select('bill_id')->from('sis_audit_tahap1')->where('aud_thp1_ditutup', 'ya');
-				})
-				 
-				// ->whereNotNull('sis_billing.bill_id')
-				->groupBy('sis_billing.bill_id');
+                    ->join('sis_billing_items', "sis_billing_items.bill_id", "=", "sis_billing.bill_id")
+                    ->join('sis_permohonan', "sis_permohonan.mohon_id", "=", "sis_billing_items.mohon_id")
+                    ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_id", "=", "sis_permohonan.mohon_id")
+                    // ->leftJoin('sis_audit_tahap1', "sis_audit_tahap1.sis_billing", "=", "sis_billing.sis_billing")
+                    ->where('mohon_det_perlu_tahap1', '=', 'ya')
+                    ->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+                        $query->select('bill_id')->from('sis_audit_tahap1')->where('aud_thp1_ditutup', 'ya');
+                    })
+
+                    // ->whereNotNull('sis_billing.bill_id')
+                    ->groupBy('sis_billing.bill_id');
             })
-			->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
-				$query->select('bill_id')->from('sis_audit_tahap1')->where('aud_thp1_ditutup', 'tidak');
-			});
+            ->whereNotIn('sis_billing.bill_id', function ($query) use ($request) {
+                $query->select('bill_id')->from('sis_audit_tahap1')->where('aud_thp1_ditutup', 'tidak');
+            });
         $data->orderBy("cust_nama");
         // Filter
         if (!empty($request->q)) {
@@ -257,10 +256,10 @@ class PenjadwalanController extends Controller
         $result = [];
         foreach ($data->get() as $d) {
             $x['cust_id']            = $d->cust_id;
-			$x['cust_nama']          = $d->cust_nama;
-			$x['bill_nomor_billing'] = $d->bill_nomor_billing;
-			$x['bill_id']            = $d->bill_id;
-			$result[] = $x;
+            $x['cust_nama']          = $d->cust_nama;
+            $x['bill_nomor_billing'] = $d->bill_nomor_billing;
+            $x['bill_id']            = $d->bill_id;
+            $result[]                = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -334,7 +333,6 @@ class PenjadwalanController extends Controller
                 $x['nomor_referensi']  = $d->cust_sert_nomor_referensi;
                 $x['nomor_sni']        = $d->cust_sert_nomor_sni;
                 $x['lingkup']          = $d->cust_sert_lingkup;
-                $x['cust_sert_id']     = $d->cust_sert_id;
                 $x['produksi_tahunan'] = $d->cust_sert_produksi_tahunan;
                 $x['satuan']           = $d->cust_sert_produksi_tahunan_satuan;
             }
@@ -355,7 +353,7 @@ class PenjadwalanController extends Controller
             $x['mohon_jenis_status']       = ($d->mohon_det_jenis_status == 'lama') ? 're-sertifikasi' : 'sertifikasi baru';
             $x['created_at']               = $d->created_at?->format("Y-m-d H:i:s"); // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
             $x['update_at']                = $d->update_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
-            $result[] = $x;
+            $result[]                      = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -394,7 +392,7 @@ class PenjadwalanController extends Controller
             $x['mohon_kmditi_ruang_lingkup']                     = $d->mohon_kmditi_ruang_lingkup;
             $x['mohon_kmditi_kapasitas_produksi_tahunan_satuan'] = $d->mohon_kmditi_kapasitas_produksi_tahunan_satuan;
             $x['mohon_kmditi_kapasitas_produksi_tahunan']        = $d->mohon_kmditi_kapasitas_produksi_tahunan;
-            $result[] = $x;
+            $result[]                                            = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -442,7 +440,7 @@ class PenjadwalanController extends Controller
             $x['cust_sert_nomor_referensi']          = $d->cust_sert_nomor_referensi;
             $x['cust_sert_tgl_sertifikat_awal']      = $d->cust_sert_tgl_sertifikat_awal?->format("Y-m-d");
             $x['cust_sert_tgl_sertifikat_perubahan'] = $d->cust_sert_tgl_sertifikat_perubahan?->format("Y-m-d");
-            $result[] = $x;
+            $result[]                                = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -455,7 +453,7 @@ class PenjadwalanController extends Controller
         foreach ($data->get() as $d) {
             $x['id']   = $d->kode_ea_id;
             $x['nama'] = $d->kode_ea_nama;
-            $result[] = $x;
+            $result[]  = $x;
         }
 
         return response()->json($result);
@@ -468,7 +466,7 @@ class PenjadwalanController extends Controller
         foreach ($data->get() as $d) {
             $x['id']   = $d->kode_nace_id;
             $x['nama'] = $d->kode_nace_nama;
-            $result[] = $x;
+            $result[]  = $x;
         }
 
         return response()->json($result);
@@ -481,9 +479,6 @@ class PenjadwalanController extends Controller
             new BreadcrumbsStruct('Penjadwalan Tanggal'),
             new BreadcrumbsStruct('Input Penjadwalan'),
         ];
-
-        $masterKodeEa   = MasterKodeEa::all();
-        $masterKodeNace = MasterKodeNace::all();
 
         $parser = [
             'module'      => $this->module,
@@ -522,11 +517,11 @@ class PenjadwalanController extends Controller
             $dataItems = json_decode($request['jadwal_items']);
             $mohon_id  = [];
             foreach ($dataItems as $itm) {
-                if (strpos($itm->komodt_id, ';') !== false) {
+                if (str_contains($itm->komodt_id, ';')) {
                     $komoditi_id = DB::table('master_komoditi')->insertGetId([
                         'komodt_nama' => $itm->komodt_nama
                     ]);
-                } else{
+                } else {
                     $komoditi_id = $itm->komodt_id;
                 }
 
@@ -557,7 +552,7 @@ class PenjadwalanController extends Controller
                 ]);
 
                 if ($itm->mohon_id != '') {
-                    if(!in_array($itm->mohon_id, $mohon_id, true)){
+                    if (!in_array($itm->mohon_id, $mohon_id, true)) {
                         $mohon_id[] = $itm->mohon_id;
                     }
                 }
@@ -604,6 +599,7 @@ class PenjadwalanController extends Controller
             return responseJSON(200, null, "Data jadwal berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -662,14 +658,6 @@ class PenjadwalanController extends Controller
         return view("operatorls::penjadwalan.edit_jadwal")->with($parser);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     *
-     * @return Renderable
-     */
     public function update(Request $request)
     {
         $request->validate(['tipe' => 'required']);
@@ -737,6 +725,7 @@ class PenjadwalanController extends Controller
             return responseJSON(200, null, "Data jadwal berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -806,6 +795,7 @@ class PenjadwalanController extends Controller
             return responseJSON(200, null, "Data jadwal berhasil disimpan.");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -823,23 +813,24 @@ class PenjadwalanController extends Controller
     private function delete_data_jadwal(Request $request)
     {
         try {
-            $status_return = TRUE;
+            $status_return = true;
             foreach ($request->ids as $id) {
                 $data = SisJadwal::where("jadw_id", $id)->firstOrFail();
                 if ($data->delete()) {
 
                 } else {
-                    $status_return = FALSE;
+                    $status_return = false;
                     break;
                 }
             }
 
-            if ($status_return == TRUE) {
+            if ($status_return) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -847,23 +838,24 @@ class PenjadwalanController extends Controller
     private function delete_data_jadwal_audit(Request $request)
     {
         try {
-            $status_return = TRUE;
+            $status_return = true;
             foreach ($request->ids as $id) {
                 $data = SisJadwalAudit::where("jadw_audit_id", $id)->firstOrFail();
                 if ($data->delete()) {
 
                 } else {
-                    $status_return = FALSE;
+                    $status_return = false;
                     break;
                 }
             }
 
-            if ($status_return == TRUE) {
+            if ($status_return) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

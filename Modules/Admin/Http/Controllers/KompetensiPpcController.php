@@ -2,6 +2,7 @@
 
 namespace Modules\Admin\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\MasterKomoditi;
 use App\Models\BbkkpSis\MasterPegawai;
@@ -33,7 +34,7 @@ class KompetensiPpcController extends Controller
     {
         try {
             $dataPegawai = MasterPegawai::with('pegawai_kompetensi_ppcs')->find($pegawaiId);
-            if (empty($dataPegawai)) throw new Exception("Data pegawai tidak ditemukan");
+            if (empty($dataPegawai)) throw new ExpectedException("Data pegawai tidak ditemukan");
             $dataKomoditi = MasterKomoditi::get();
 
             $breadcrumbs = [
@@ -57,6 +58,7 @@ class KompetensiPpcController extends Controller
             ];
             return view("$this->view.edit_by_pegawai")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -64,7 +66,7 @@ class KompetensiPpcController extends Controller
     public function saveByPegawai(Request $request)
     {
         try {
-            if (!$request->ajax()) throw new Exception("Endopoint ini utuk ajax");
+            if (!$request->ajax()) throw new ExpectedException("Endopoint ini utuk ajax");
             $request->validate([
                 'peg_id'    => 'required',
                 'komodt_id' => 'required',
@@ -88,6 +90,7 @@ class KompetensiPpcController extends Controller
                 return responseJSON(200, [], sprintf('Izin PPC "%s" berhasil dicabut', $komoditi->komodt_nama));
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

@@ -2,22 +2,17 @@
 
 namespace Modules\KoordinatorSertifikasi\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
-use App\Models\BbkkpSis\SisPelanggan;
-
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use Barryvdh\DomPDF\Facade as PDF;
 
 class VerifLapTahap1Controller extends Controller
 {
@@ -32,7 +27,7 @@ class VerifLapTahap1Controller extends Controller
             new BreadcrumbsStruct('Verifikasi Lap. Tahap 1'),
         ];
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs , 'view' => $this->view];
+        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'view' => $this->view];
         return view("$this->view.index")->with($parser);
     }
 
@@ -48,9 +43,9 @@ class VerifLapTahap1Controller extends Controller
     private function ajax_datagrid_jadwal_audit(Request $request)
     {
         $data = SisAuditTahap1::join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id");
 
         // Filter
         $data->whereIn('sis_audit_tahap1.aud_thp1_status_temuan', ['diajukan', 'setuju']);
@@ -84,17 +79,17 @@ class VerifLapTahap1Controller extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
-            $x['aud_thp1_status_temuan']	= $d->aud_thp1_status_temuan;
-            $x['aud_thp1_status']          = $d->aud_thp1_status;
-            $x['aud_thp1_id']              = $d->aud_thp1_id;
-            $x['aud_thp1_tanggal_mulai']   = $d->aud_thp1_tanggal_mulai;
-            $x['aud_thp1_tanggal_selesai'] = $d->aud_thp1_tanggal_selesai;
-            $x['cust_nama']                = $d->cust_nama;
-            $x['sert_nama']                = $d->sert_nama;
-            $x['jadw_jenis']               = $d->jadw_jenis;
-            $x['aud_thp1_jenis']           = $d->aud_thp1_jenis;
-            $x['aud_thp1_verifikasi_diajukan']           = $d->aud_thp1_verifikasi_diajukan;
-            array_push($result, $x);
+            $x['aud_thp1_status_temuan']       = $d->aud_thp1_status_temuan;
+            $x['aud_thp1_status']              = $d->aud_thp1_status;
+            $x['aud_thp1_id']                  = $d->aud_thp1_id;
+            $x['aud_thp1_tanggal_mulai']       = $d->aud_thp1_tanggal_mulai;
+            $x['aud_thp1_tanggal_selesai']     = $d->aud_thp1_tanggal_selesai;
+            $x['cust_nama']                    = $d->cust_nama;
+            $x['sert_nama']                    = $d->sert_nama;
+            $x['jadw_jenis']                   = $d->jadw_jenis;
+            $x['aud_thp1_jenis']               = $d->aud_thp1_jenis;
+            $x['aud_thp1_verifikasi_diajukan'] = $d->aud_thp1_verifikasi_diajukan;
+            $result[]                          = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -103,60 +98,61 @@ class VerifLapTahap1Controller extends Controller
     public function doVerif(Request $request)
     {
         $request->validate([
-            "aud_thp1_id"           => 'required',
-            "catatan"               => 'nullable',
-            "status"               => 'required',
+            "aud_thp1_id" => 'required',
+            "catatan"     => 'nullable',
+            "status"      => 'required',
         ]);
         try {
             DB::beginTransaction();
-			
+
             DB::table('sis_audit_tahap1')
                 ->where('aud_thp1_id', $request['aud_thp1_id'])
                 ->update([
-                    "aud_thp1_lap_verifikasi_status"    => $request['status'],
-                    "aud_thp1_lap_revisi_note"   => ($request['status'] != 'ya') ? $request['catatan'] : null,
-                    "aud_thp1_verifikasi_tanggal"          => ($request['status'] != 'ya') ? Carbon::now() : null,
-                    "aud_thp1_verifikasi_diajukan"          => ($request['status'] == 'ya') ? 'ya' : 'tidak',
+                    "aud_thp1_lap_verifikasi_status" => $request['status'],
+                    "aud_thp1_lap_revisi_note"       => ($request['status'] != 'ya') ? $request['catatan'] : null,
+                    "aud_thp1_verifikasi_tanggal"    => ($request['status'] != 'ya') ? Carbon::now() : null,
+                    "aud_thp1_verifikasi_diajukan"   => ($request['status'] == 'ya') ? 'ya' : 'tidak',
                 ]);
-			
-			// Send Notification to Auditor
-			$groupAuditor = SisAuditTahap1Tim::join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-			$groupAuditor->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-			$groupAuditor->where('thp1_tim_posisi' ,'=', 'ketua')->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id'])->select(DB::raw('sys_user.user_id AS user_id'), 'thp1_tim_posisi');
-			foreach ($groupAuditor->get() as $auditor) {
-				$notifStruct = new NotifStruct();
-				if ($request['status'] == "ya") {
-					$notifStruct->title   = sprintf("#%d Valid Laporan tahap 1", $request['aud_thp1_id']);
-					$notifStruct->message = sprintf("Jadwal nomor %s pada laporan tahap 1 telah dilakuan verifikasi dengan hasil ter-verifikasi.", $request['aud_thp1_id']);
-				} else {
-					$notifStruct->title   = sprintf("#%d Revisi Laporan tahap 1", $request['aud_thp1_id']);
-					$notifStruct->message = sprintf("Jadwal nomor %s pada laporan tahap 1 telah dilakuan verifikasi dengan hasil direvisi.", $request['aud_thp1_id']);
-				}
-				$notifStruct->click_url = url('/timaudit/auditor/tahap1-lap');
-				$notifStruct->user_id   = $auditor->user_id;
-				sendNotification($notifStruct);
-			}
-			
-			$responseMessage = sprintf("Data berhasil disimpan untuk jadwal #", $request['aud_thp1_id']);
+
+            // Send Notification to Auditor
+            $groupAuditor = SisAuditTahap1Tim::join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+            $groupAuditor->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+            $groupAuditor->where('thp1_tim_posisi', '=', 'ketua')->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id'])->select(DB::raw('sys_user.user_id AS user_id'), 'thp1_tim_posisi');
+            foreach ($groupAuditor->get() as $auditor) {
+                $notifStruct = new NotifStruct();
+                if ($request['status'] == "ya") {
+                    $notifStruct->title   = sprintf("#%d Valid Laporan tahap 1", $request['aud_thp1_id']);
+                    $notifStruct->message = sprintf("Jadwal nomor %s pada laporan tahap 1 telah dilakuan verifikasi dengan hasil ter-verifikasi.", $request['aud_thp1_id']);
+                } else {
+                    $notifStruct->title   = sprintf("#%d Revisi Laporan tahap 1", $request['aud_thp1_id']);
+                    $notifStruct->message = sprintf("Jadwal nomor %s pada laporan tahap 1 telah dilakuan verifikasi dengan hasil direvisi.", $request['aud_thp1_id']);
+                }
+                $notifStruct->click_url = url('/timaudit/auditor/tahap1-lap');
+                $notifStruct->user_id   = $auditor->user_id;
+                sendNotification($notifStruct);
+            }
+
+            $responseMessage = sprintf("Data berhasil disimpan untuk jadwal #%d", $request['aud_thp1_id']);
             DB::commit();
-			return redirect()->back()->with('message', $responseMessage);
+            return redirect()->back()->with('message', $responseMessage);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
-	
-	public function cetak(Request $request)
+
+    public function cetak(Request $request)
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'hasil-tinjauan' => $this->print_hasil_tinjauan($request),
-            'lap_lengkap' => $this->print_lap_lengkap($request),
-            default        => null,
+            'lap_lengkap'    => $this->print_lap_lengkap($request),
+            default          => null,
         };
     }
-	
-	private function print_hasil_tinjauan(Request $request)
-	{
+
+    private function print_hasil_tinjauan(Request $request)
+    {
         $dataJadwal = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
         $dataJadwal->select(
             '*',
@@ -171,53 +167,52 @@ class VerifLapTahap1Controller extends Controller
         );
 
         $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-			->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
-			->groupBy('sis_audit_tahap1.aud_thp1_id');
+            ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+            ->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+            ->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+            ->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
+            ->groupBy('sis_audit_tahap1.aud_thp1_id');
 
         $restAudit = $dataJadwal->get()[0];
 
         $dataAuditKlausul = SisAuditTahap1::join('sis_audit_tahap1_detail', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_detail.aud_thp1_id");
         $dataAuditKlausul->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
-		
+
         $parser = [
-			'module' => $this->module,
-			'url' => $this->url,
-			'restAudit' => $restAudit,
-			'dataAuditKlausul' => $dataAuditKlausul->get(),
-		];
-		
-		$dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
-			$dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-			$dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-			$dataTim->select('*');
-			$dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
-		foreach($dataTim->get() as $tim){
-			if($tim->thp1_tim_posisi == 'ketua'){
-				$parser['ketua_tim'] = $tim->peg_nama;
-				break;
-			}
-		}
-		$parser['dataTim'] = $dataTim->get();
-		if($restAudit['sert_tahap1_jenis'] == 'sni'){
-			// return view("$this->view.print.hasil_tinjauan_sni")->with($parser);
-			$pdf    = PDF::loadView("$this->view.print.hasil_tinjauan_sni", $parser)->setPaper('a4', 'portrait');
-			return $pdf->stream();
-		}
-		else{
-			$pdf    = PDF::loadView("$this->view.print.hasil_tinjauan_pusat", $parser)->setPaper('a4', 'portrait');
-			return $pdf->stream();
-			// return view("$this->view.print.hasil_tinjauan_pusat")->with($parser);
-		}
-	}
-	
-	private function print_lap_lengkap(Request $request)
-	{
+            'module'           => $this->module,
+            'url'              => $this->url,
+            'restAudit'        => $restAudit,
+            'dataAuditKlausul' => $dataAuditKlausul->get(),
+        ];
+
+        $dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
+        $dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+        $dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        $dataTim->select('*');
+        $dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
+        foreach ($dataTim->get() as $tim) {
+            if ($tim->thp1_tim_posisi == 'ketua') {
+                $parser['ketua_tim'] = $tim->peg_nama;
+                break;
+            }
+        }
+        $parser['dataTim'] = $dataTim->get();
+        if ($restAudit['sert_tahap1_jenis'] == 'sni') {
+            // return view("$this->view.print.hasil_tinjauan_sni")->with($parser);
+            $pdf = PDF::loadView("$this->view.print.hasil_tinjauan_sni", $parser)->setPaper('a4', 'portrait');
+            return $pdf->stream();
+        } else {
+            $pdf = PDF::loadView("$this->view.print.hasil_tinjauan_pusat", $parser)->setPaper('a4', 'portrait');
+            return $pdf->stream();
+            // return view("$this->view.print.hasil_tinjauan_pusat")->with($parser);
+        }
+    }
+
+    private function print_lap_lengkap(Request $request)
+    {
         $dataJadwal = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
         $dataJadwal->select(
             '*',
@@ -232,55 +227,55 @@ class VerifLapTahap1Controller extends Controller
         );
 
         $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-			->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
-			->groupBy('sis_audit_tahap1.aud_thp1_id');
+            ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+            ->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+            ->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+            ->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
+            ->groupBy('sis_audit_tahap1.aud_thp1_id');
 
         $restAudit = $dataJadwal->get()[0];
 
         $dataAuditKlausul = SisAuditTahap1::join('sis_audit_tahap1_detail', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_detail.aud_thp1_id");
         $dataAuditKlausul->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
-		
-		$jmlTemuan = 0;
-		foreach($dataAuditKlausul->get() as $kla){
-			if($kla->aud_thp1_det_is_tinjauan == 'ya'){
-				if($kla->aud_thp1_det_hasil_tinjauan == 'no'){
-					$jmlTemuan++;
-				}
-			}
-		}
-		
-		$dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
-		$dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-		$dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-		$dataTim->select('*');
-		$dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
-		
+
+        $jmlTemuan = 0;
+        foreach ($dataAuditKlausul->get() as $kla) {
+            if ($kla->aud_thp1_det_is_tinjauan == 'ya') {
+                if ($kla->aud_thp1_det_hasil_tinjauan == 'no') {
+                    $jmlTemuan++;
+                }
+            }
+        }
+
+        $dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
+        $dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+        $dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        $dataTim->select('*');
+        $dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
+
         $parser = [
-			'module' => $this->module,
-			'url' => $this->url,
-			'restAudit' => $restAudit,
-			'dataAuditKlausul' => $dataAuditKlausul->get(),
-			'dataTim' => $dataTim->get(),
-			'jmlTemuan' => $jmlTemuan,
-		];
-		
-		foreach($dataTim->get() as $tim){
-			if($tim->thp1_tim_posisi == 'ketua'){
-				$parser['ketua_tim'] = $tim->peg_nama;
-				$parser['peg_ttd_base64'] = $tim->peg_ttd_base64;
-				$parser['peg_ttd_file'] = $tim->peg_ttd_file;
-				break;
-			}
-		}
-		
+            'module'           => $this->module,
+            'url'              => $this->url,
+            'restAudit'        => $restAudit,
+            'dataAuditKlausul' => $dataAuditKlausul->get(),
+            'dataTim'          => $dataTim->get(),
+            'jmlTemuan'        => $jmlTemuan,
+        ];
+
+        foreach ($dataTim->get() as $tim) {
+            if ($tim->thp1_tim_posisi == 'ketua') {
+                $parser['ketua_tim']      = $tim->peg_nama;
+                $parser['peg_ttd_base64'] = $tim->peg_ttd_base64;
+                $parser['peg_ttd_file']   = $tim->peg_ttd_file;
+                break;
+            }
+        }
+
         // return view("$this->view.print.lap_lengkap")->with($parser);
-		$pdf    = PDF::loadView("$this->view.print.lap_lengkap", $parser)->setPaper('a4', 'portrait');
-		return $pdf->stream();
-	}
+        $pdf = PDF::loadView("$this->view.print.lap_lengkap", $parser)->setPaper('a4', 'portrait');
+        return $pdf->stream();
+    }
 }

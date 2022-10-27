@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Models\BbkkpSis\SisAuditTahap1;
 use App\Models\BbkkpSis\SisAuditTahap1Tim;
 use App\Models\BbkkpSis\SisAuditTahap1Detail;
@@ -53,12 +54,12 @@ class AuTahap1Controller extends Controller
     private function ajax_datagrid_jadwal_audit(Request $request)
     {
         $data = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
-			->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+            ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+            ->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
+            ->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
 
         // Filter
         $data->where('master_pegawai.user_id', '=', auth()->id());
@@ -92,7 +93,7 @@ class AuTahap1Controller extends Controller
 
         $result = [];
         foreach ($data->get() as $d) {
-            $x['aud_thp1_status_temuan']	= $d->aud_thp1_status_temuan;
+            $x['aud_thp1_status_temuan']   = $d->aud_thp1_status_temuan;
             $x['aud_thp1_status']          = $d->aud_thp1_status;
             $x['aud_thp1_id']              = $d->aud_thp1_id;
             $x['aud_thp1_tanggal_mulai']   = $d->aud_thp1_tanggal_mulai;
@@ -159,19 +160,19 @@ class AuTahap1Controller extends Controller
         );
 
         $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-			->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
-			->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
-			->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
-			->where('master_pegawai.user_id', '=', auth()->id())
-			->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya')
-			->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua')
-			->groupBy('sis_audit_tahap1.aud_thp1_id');
+            ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+            ->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+            ->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+            ->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
+            ->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id")
+            ->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id")
+            ->where('master_pegawai.user_id', '=', auth()->id())
+            ->where('sis_audit_tahap1_tim.thp1_tim_kesanggupan', '=', 'ya')
+            ->where('sis_audit_tahap1_tim.thp1_tim_posisi', '=', 'ketua')
+            ->groupBy('sis_audit_tahap1.aud_thp1_id');
 
         $restAudit = $dataJadwal->get()[0];
 
@@ -181,10 +182,10 @@ class AuTahap1Controller extends Controller
         if ($dataAuditKlausul->exists()) {
             $status_entry = true;
         }
-		
-		$dataRevisi = SisAuditTahap1::join('sis_audit_tahap1_persetujuan_revisi', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_persetujuan_revisi.aud_thp1_id")
-		->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id'])
-        ->select('*')->get();
+
+        $dataRevisi = SisAuditTahap1::join('sis_audit_tahap1_persetujuan_revisi', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_persetujuan_revisi.aud_thp1_id")
+            ->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id'])
+            ->select('*')->get();
 
         $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'dataJadwal' => $dataJadwal->get()[0], 'statusEntry' => $status_entry, 'dataAuditKlausul' => $dataAuditKlausul->get(), 'dataAudit' => $restAudit, 'dataRevisi' => $dataRevisi];
         return view("$this->view.edit_audit_tahap1")->with($parser);
@@ -203,10 +204,10 @@ class AuTahap1Controller extends Controller
     private function update_generate_tahap1(Request $request)
     {
         $request->validate([
-            "aud_thp1_id" => 'required',
-            "sert_id"     => 'required',
-            "mohon_id"    => 'required',
-            "sert_tahap1_jenis"    => 'required',
+            "aud_thp1_id"       => 'required',
+            "sert_id"           => 'required',
+            "mohon_id"          => 'required',
+            "sert_tahap1_jenis" => 'required',
         ]);
 
         try {
@@ -228,48 +229,48 @@ class AuTahap1Controller extends Controller
 
             $restDataDet = DB::table('sis_audit_tahap1_detail')->where('aud_thp1_id', $request['aud_thp1_id'])->first();
             if ($restDataDet === null) {
-				if($request['sert_tahap1_jenis'] == 'sni'){
-					$dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
+                if ($request['sert_tahap1_jenis'] == 'sni') {
+                    $dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
 
-					if ($dts !== null) {
-						foreach ($dts as $dt) {
-							DB::table('sis_audit_tahap1_detail')->insert([
-								'aud_thp1_id'                 => intval($aud_thp1_id),
-								'klausul_thp1_id'             => intval($dt->klausul_thp1_id),
-								'aud_thp1_det_thp1_nomor'     => $dt->klausul_thp1_nomor,
-								'aud_thp1_det_peryataan'      => $dt->klausul_thp1_peryataan,
-								'aud_thp1_det_is_tinjauan'    => $dt->klausul_thp1_is_tinjauan,
-								'aud_thp1_det_kode_dok'       => NULL,
-								'aud_thp1_det_judul_dok'      => NULL,
-								'aud_thp1_det_hasil_tinjauan' => NULL,
-								'aud_thp1_det_keterangan'     => NULL,
-							]);
-						}
-					}
-				}
-				else if($request['sert_tahap1_jenis'] == 'pusat'){
-					$dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
+                    if ($dts !== null) {
+                        foreach ($dts as $dt) {
+                            DB::table('sis_audit_tahap1_detail')->insert([
+                                'aud_thp1_id'                 => intval($aud_thp1_id),
+                                'klausul_thp1_id'             => intval($dt->klausul_thp1_id),
+                                'aud_thp1_det_thp1_nomor'     => $dt->klausul_thp1_nomor,
+                                'aud_thp1_det_peryataan'      => $dt->klausul_thp1_peryataan,
+                                'aud_thp1_det_is_tinjauan'    => $dt->klausul_thp1_is_tinjauan,
+                                'aud_thp1_det_kode_dok'       => null,
+                                'aud_thp1_det_judul_dok'      => null,
+                                'aud_thp1_det_hasil_tinjauan' => null,
+                                'aud_thp1_det_keterangan'     => null,
+                            ]);
+                        }
+                    }
+                } else if ($request['sert_tahap1_jenis'] == 'pusat') {
+                    $dts = DB::table('master_klausul_tahap1')->where('sert_id', '=', $request['sert_id'])->orderBy(DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 1), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 2), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 3), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 4), '.', -1) + 0, SUBSTRING_INDEX(SUBSTRING_INDEX(CONCAT(klausul_thp1_nomor, '.'), '.', 5), '.', -1) + 0"))->get();
 
-					if ($dts !== null) {
-						foreach ($dts as $dt) {
-							DB::table('sis_audit_tahap1_detail')->insert([
-								'aud_thp1_id'                 => intval($aud_thp1_id),
-								'klausul_thp1_id'             => intval($dt->klausul_thp1_id),
-								'aud_thp1_det_thp1_nomor'     => $dt->klausul_thp1_nomor,
-								'aud_thp1_det_persyaratan'      => $dt->klausul_thp1_peryataan,
-								'aud_thp1_det_is_tinjauan'    => $dt->klausul_thp1_is_tinjauan,
-								'aud_thp1_det_nilai'       => NULL,
-								'aud_thp1_det_satuan'      => NULL,
-							]);
-						}
-					}
-				}
-                
+                    if ($dts !== null) {
+                        foreach ($dts as $dt) {
+                            DB::table('sis_audit_tahap1_detail')->insert([
+                                'aud_thp1_id'              => intval($aud_thp1_id),
+                                'klausul_thp1_id'          => intval($dt->klausul_thp1_id),
+                                'aud_thp1_det_thp1_nomor'  => $dt->klausul_thp1_nomor,
+                                'aud_thp1_det_persyaratan' => $dt->klausul_thp1_peryataan,
+                                'aud_thp1_det_is_tinjauan' => $dt->klausul_thp1_is_tinjauan,
+                                'aud_thp1_det_nilai'       => null,
+                                'aud_thp1_det_satuan'      => null,
+                            ]);
+                        }
+                    }
+                }
+
             }
 
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -281,166 +282,164 @@ class AuTahap1Controller extends Controller
             "cust_id"               => 'required',
             "sert_id"               => 'required',
             "user_id"               => 'required',
-            "cust_email"               => 'required',
-            "cust_nama"               => 'required',
+            "cust_email"            => 'required',
+            "cust_nama"             => 'required',
             "mohon_id"              => 'required',
-            "jenis"              => 'required',
+            "jenis"                 => 'required',
             "detail_hasil_tinjauan" => 'required',
             "detail_keterangan"     => 'required',
             "detail_judul_dok"      => 'nullable',
             "detail_kode_dok"       => 'nullable',
-            "detail_nilai"       => 'nullable',
-            "detail_satuan"       => 'nullable',
-            "is_revisi"       => 'required',
+            "detail_nilai"          => 'nullable',
+            "detail_satuan"         => 'nullable',
+            "is_revisi"             => 'required',
         ]);
-		
+
         try {
-			if($request['is_revisi'] == 'ya'){
-				DB::table('sis_audit_tahap1')
-							->where('aud_thp1_id', $request['aud_thp1_id'])
-							->update(['aud_thp1_status_temuan' => 'proses']);
-			}
-			
-			if($request['jenis'] == 'sni'){
-				if (!empty($request['detail_kode_dok'])) {
-					foreach ($request['detail_kode_dok'] as $key => $val) {
-						DB::table('sis_audit_tahap1_detail')
-							->where('aud_thp1_det_id', $key)
-							->update([
-								'aud_thp1_det_kode_dok'       => $val,
-								'aud_thp1_det_judul_dok'      => isset($request['detail_judul_dok'][$key]) ? $request['detail_judul_dok'][$key] : NULL,
-								'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
-								'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-							]);
-							
-						if(isset($request['detail_hasil_tinjauan'][$key])){
-							if($request['detail_hasil_tinjauan'][$key] == 'no'){
-								DB::table('sis_audit_tahap1_detail')
-									->where('aud_thp1_det_id', $key)
-									->update([
-										'aud_thp1_det_is_temuan'	  => 'ya',
-										'aud_thp1_det_status'	  => 'proses',
-									]);
-									
-								
-								$check_data = DB::table('sis_audit_tahap1_revisi')
-									->selectRaw('*')
-									->whereIn('thp1_revisi_status', [ 'open', 'fixed' ])
-									->where('aud_thp1_det_id', $key)
-									->get();
-								if ($check_data->isEmpty()) {
-									DB::table('sis_audit_tahap1_revisi')->insert([
-										'aud_thp1_det_id' => $key,
-										'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-										'thp1_revisi_status' => 'open'
-									]);
-								} else {
-									foreach($check_data as $ck){
-										DB::table('sis_audit_tahap1_revisi')
-										->where('thp1_revisi_id', $ck->thp1_revisi_id)
-										->update([
-											'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-										]);
-									}
-									
-								}
-							}
-							else{
-								DB::table('sis_audit_tahap1_detail')
-									->where('aud_thp1_det_id', $key)
-									->update([
-										'aud_thp1_det_is_temuan'	  => 'tidak',
-										'aud_thp1_det_status'	  => 'closed',
-									]);
-								DB::table('sis_audit_tahap1_revisi')
-										->where('aud_thp1_det_id', $key)
-										->delete();
-							}
-						}
-					}
-				}
-			}
-			else if($request['jenis'] == 'pusat'){
-				if (!empty($request['detail_nilai'])) {
-					foreach ($request['detail_nilai'] as $key => $val) {
-						DB::table('sis_audit_tahap1_detail')
-							->where('aud_thp1_det_id', $key)
-							->update([
-								'aud_thp1_det_nilai'       => $val,
-								'aud_thp1_det_satuan'      => isset($request['detail_satuan'][$key]) ? $request['detail_satuan'][$key] : NULL,
-								'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : NULL,
-								'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-							]);
-							
-						if(isset($request['detail_hasil_tinjauan'][$key])){
-							if($request['detail_hasil_tinjauan'][$key] == 'no'){
-								DB::table('sis_audit_tahap1_detail')
-									->where('aud_thp1_det_id', $key)
-									->update([
-										'aud_thp1_det_is_temuan'	  => 'ya',
-										'aud_thp1_det_status'	  => 'proses',
-									]);
-									
-								
-								$check_data = DB::table('sis_audit_tahap1_revisi')
-									->selectRaw('*')
-									->whereIn('thp1_revisi_status', [ 'open', 'fixed' ])
-									->where('aud_thp1_det_id', $key)
-									->get();
-								if ($check_data->isEmpty()) {
-									DB::table('sis_audit_tahap1_revisi')->insert([
-										'aud_thp1_det_id' => $key,
-										'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-										'thp1_revisi_status' => 'open'
-									]);
-								} else {
-									foreach($check_data as $ck){
-										DB::table('sis_audit_tahap1_revisi')
-										->where('thp1_revisi_id', $ck->thp1_revisi_id)
-										->update([
-											'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : NULL,
-										]);
-									}
-									
-								}
-							}
-							else{
-								DB::table('sis_audit_tahap1_detail')
-									->where('aud_thp1_det_id', $key)
-									->update([
-										'aud_thp1_det_is_temuan'	  => 'tidak',
-										'aud_thp1_det_status'	  => 'closed',
-									]);
-								
-								DB::table('sis_audit_tahap1_revisi')
-										->where('aud_thp1_det_id', $key)
-										->delete();
-							}
-						}
-					}
-				}
-			}
-			
+            if ($request['is_revisi'] == 'ya') {
+                DB::table('sis_audit_tahap1')
+                    ->where('aud_thp1_id', $request['aud_thp1_id'])
+                    ->update(['aud_thp1_status_temuan' => 'proses']);
+            }
+
+            if ($request['jenis'] == 'sni') {
+                if (!empty($request['detail_kode_dok'])) {
+                    foreach ($request['detail_kode_dok'] as $key => $val) {
+                        DB::table('sis_audit_tahap1_detail')
+                            ->where('aud_thp1_det_id', $key)
+                            ->update([
+                                'aud_thp1_det_kode_dok'       => $val,
+                                'aud_thp1_det_judul_dok'      => isset($request['detail_judul_dok'][$key]) ? $request['detail_judul_dok'][$key] : null,
+                                'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : null,
+                                'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : null,
+                            ]);
+
+                        if (isset($request['detail_hasil_tinjauan'][$key])) {
+                            if ($request['detail_hasil_tinjauan'][$key] == 'no') {
+                                DB::table('sis_audit_tahap1_detail')
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->update([
+                                        'aud_thp1_det_is_temuan' => 'ya',
+                                        'aud_thp1_det_status'    => 'proses',
+                                    ]);
+
+
+                                $check_data = DB::table('sis_audit_tahap1_revisi')
+                                    ->selectRaw('*')
+                                    ->whereIn('thp1_revisi_status', ['open', 'fixed'])
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->get();
+                                if ($check_data->isEmpty()) {
+                                    DB::table('sis_audit_tahap1_revisi')->insert([
+                                        'aud_thp1_det_id'     => $key,
+                                        'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : null,
+                                        'thp1_revisi_status'  => 'open'
+                                    ]);
+                                } else {
+                                    foreach ($check_data as $ck) {
+                                        DB::table('sis_audit_tahap1_revisi')
+                                            ->where('thp1_revisi_id', $ck->thp1_revisi_id)
+                                            ->update([
+                                                'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : null,
+                                            ]);
+                                    }
+
+                                }
+                            } else {
+                                DB::table('sis_audit_tahap1_detail')
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->update([
+                                        'aud_thp1_det_is_temuan' => 'tidak',
+                                        'aud_thp1_det_status'    => 'closed',
+                                    ]);
+                                DB::table('sis_audit_tahap1_revisi')
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->delete();
+                            }
+                        }
+                    }
+                }
+            } else if ($request['jenis'] == 'pusat') {
+                if (!empty($request['detail_nilai'])) {
+                    foreach ($request['detail_nilai'] as $key => $val) {
+                        DB::table('sis_audit_tahap1_detail')
+                            ->where('aud_thp1_det_id', $key)
+                            ->update([
+                                'aud_thp1_det_nilai'          => $val,
+                                'aud_thp1_det_satuan'         => isset($request['detail_satuan'][$key]) ? $request['detail_satuan'][$key] : null,
+                                'aud_thp1_det_hasil_tinjauan' => isset($request['detail_hasil_tinjauan'][$key]) ? $request['detail_hasil_tinjauan'][$key] : null,
+                                'aud_thp1_det_keterangan'     => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : null,
+                            ]);
+
+                        if (isset($request['detail_hasil_tinjauan'][$key])) {
+                            if ($request['detail_hasil_tinjauan'][$key] == 'no') {
+                                DB::table('sis_audit_tahap1_detail')
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->update([
+                                        'aud_thp1_det_is_temuan' => 'ya',
+                                        'aud_thp1_det_status'    => 'proses',
+                                    ]);
+
+
+                                $check_data = DB::table('sis_audit_tahap1_revisi')
+                                    ->selectRaw('*')
+                                    ->whereIn('thp1_revisi_status', ['open', 'fixed'])
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->get();
+                                if ($check_data->isEmpty()) {
+                                    DB::table('sis_audit_tahap1_revisi')->insert([
+                                        'aud_thp1_det_id'     => $key,
+                                        'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : null,
+                                        'thp1_revisi_status'  => 'open'
+                                    ]);
+                                } else {
+                                    foreach ($check_data as $ck) {
+                                        DB::table('sis_audit_tahap1_revisi')
+                                            ->where('thp1_revisi_id', $ck->thp1_revisi_id)
+                                            ->update([
+                                                'thp1_revisi_catatan' => isset($request['detail_keterangan'][$key]) ? $request['detail_keterangan'][$key] : null,
+                                            ]);
+                                    }
+
+                                }
+                            } else {
+                                DB::table('sis_audit_tahap1_detail')
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->update([
+                                        'aud_thp1_det_is_temuan' => 'tidak',
+                                        'aud_thp1_det_status'    => 'closed',
+                                    ]);
+
+                                DB::table('sis_audit_tahap1_revisi')
+                                    ->where('aud_thp1_det_id', $key)
+                                    ->delete();
+                            }
+                        }
+                    }
+                }
+            }
+
             DB::commit();
-			if($request['is_revisi'] == 'ya'){
-			}
+            if ($request['is_revisi'] == 'ya') {
+            }
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
-	
-	public function print(Request $request)
+
+    public function print(Request $request)
     {
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'hasil-tinjauan' => $this->print_hasil_tinjauan($request),
-            default        => null,
+            default          => null,
         };
     }
-	
-	private function print_hasil_tinjauan(Request $request)
-	{
+
+    private function print_hasil_tinjauan(Request $request)
+    {
         $dataJadwal = SisAuditTahap1::where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
         $dataJadwal->select(
             '*',
@@ -455,48 +454,46 @@ class AuTahap1Controller extends Controller
         );
 
         $dataJadwal->join('sis_audit_tahap1_tim', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id")
-			->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
-			->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
-			->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
-			->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
-			->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
-			->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
-			->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
-			->groupBy('sis_audit_tahap1.aud_thp1_id');
+            ->join('sis_permohonan', "sis_audit_tahap1.mohon_id", "=", "sis_permohonan.mohon_id")
+            ->join('sis_permohonan_detail', "sis_permohonan_detail.mohon_det_id", "=", "sis_audit_tahap1.mohon_det_id")
+            ->join('sis_permohonan_komoditi', "sis_permohonan_detail.mohon_det_id", "=", "sis_permohonan_komoditi.mohon_det_id")
+            ->join('master_komoditi', "master_komoditi.komodt_id", "=", "sis_permohonan_komoditi.komodt_id")
+            ->join('master_sertifikasi', "sis_permohonan_detail.sert_id", "=", "master_sertifikasi.sert_id")
+            ->join('sis_pelanggan', "sis_pelanggan.cust_id", "=", "sis_permohonan.cust_id")
+            ->join('sis_billing', "sis_billing.bill_id", "=", "sis_audit_tahap1.bill_id")
+            ->groupBy('sis_audit_tahap1.aud_thp1_id');
 
         $restAudit = $dataJadwal->get()[0];
 
         $dataAuditKlausul = SisAuditTahap1::join('sis_audit_tahap1_detail', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_detail.aud_thp1_id");
         $dataAuditKlausul->where('sis_audit_tahap1.aud_thp1_id', $request['aud_thp1_id']);
-		
+
         $parser = [
-			'module' => $this->module,
-			'url' => $this->url,
-			'restAudit' => $restAudit,
-			'dataAuditKlausul' => $dataAuditKlausul->get(),
-		];
-		
-		$dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
-			$dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
-			$dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-			$dataTim->select('*');
-			$dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
-		foreach($dataTim->get() as $tim){
-			if($tim->thp1_tim_posisi == 'ketua'){
-				$parser['ketua_tim'] = $tim->peg_nama;
-				break;
-			}
-		}
-		$parser['dataTim'] = $dataTim->get();
-		if($restAudit['sert_tahap1_jenis'] == 'sni'){
-			// return view("$this->view.print.hasil_tinjauan_sni")->with($parser);
-			$pdf    = PDF::loadView("$this->view.print.hasil_tinjauan_sni", $parser)->setPaper('a4', 'portrait');
-			return $pdf->stream();
-		}
-		else{
-			$pdf    = PDF::loadView("$this->view.print.hasil_tinjauan_pusat", $parser)->setPaper('a4', 'portrait');
-			return $pdf->stream();
-			// return view("$this->view.print.hasil_tinjauan_pusat")->with($parser);
-		}
-	}
+            'module'           => $this->module,
+            'url'              => $this->url,
+            'restAudit'        => $restAudit,
+            'dataAuditKlausul' => $dataAuditKlausul->get(),
+        ];
+
+        $dataTim = SisAuditTahap1Tim::join('sis_audit_tahap1', "sis_audit_tahap1.aud_thp1_id", "=", "sis_audit_tahap1_tim.aud_thp1_id");
+        $dataTim->join('master_pegawai', "sis_audit_tahap1_tim.peg_id", "=", "master_pegawai.peg_id");
+        $dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+        $dataTim->select('*');
+        $dataTim->where('sis_audit_tahap1_tim.aud_thp1_id', '=', $request['aud_thp1_id']);
+        foreach ($dataTim->get() as $tim) {
+            if ($tim->thp1_tim_posisi == 'ketua') {
+                $parser['ketua_tim'] = $tim->peg_nama;
+                break;
+            }
+        }
+        $parser['dataTim'] = $dataTim->get();
+        if ($restAudit['sert_tahap1_jenis'] == 'sni') {
+            // return view("$this->view.print.hasil_tinjauan_sni")->with($parser);
+            $pdf = PDF::loadView("$this->view.print.hasil_tinjauan_sni", $parser)->setPaper('a4', 'portrait');
+        } else {
+            $pdf = PDF::loadView("$this->view.print.hasil_tinjauan_pusat", $parser)->setPaper('a4', 'portrait');
+            // return view("$this->view.print.hasil_tinjauan_pusat")->with($parser);
+        }
+        return $pdf->stream();
+    }
 }

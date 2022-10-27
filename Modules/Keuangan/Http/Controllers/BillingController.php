@@ -2,6 +2,7 @@
 
 namespace Modules\Keuangan\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
@@ -86,7 +87,7 @@ class BillingController extends Controller
             if (!empty($billing->bill_payment_file)) {
                 $oldPath[] = public_path($billing->bill_payment_file);
             }
-            
+
             DB::beginTransaction();
             $dataKuitansi = $request->file("bill_payment_file");
             $kuitansiName = Str::slug("bukti-pembayaran" . $dataKuitansi->getClientOriginalName()) . '-' . time() . '.' . $dataKuitansi->getClientOriginalExtension();
@@ -145,7 +146,7 @@ class BillingController extends Controller
                     @unlink($path);
                 }
             }
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -451,7 +452,7 @@ class BillingController extends Controller
         // Set data uploaded file path (digunakan untuk delete file yang diupload ketika catch error)
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('bill_invoice_file')) throw new Exception("Mohon unggah file billing", 400);
+            if (!$request->hasFile('bill_invoice_file')) throw new ExpectedException("Mohon unggah file billing", 400);
 
             DB::beginTransaction();
             // 3.1 add sis_permohonan
@@ -565,7 +566,9 @@ class BillingController extends Controller
             foreach ($uploadedPath as $delPath) { // delete uploaded file
                 @unlink($delPath);
             }
-            log_error($e, $request->all());
+
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -685,7 +688,7 @@ class BillingController extends Controller
 
             return redirect($this->url)->with('message', "Billing berhasil diubah untuk nomor #" . $request->bill_nomor_billing . " sudah berhasil disimpan.");
         } catch (Exception $e) {
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->with('message', $e->getMessage());
         }
     }
@@ -737,7 +740,7 @@ class BillingController extends Controller
 
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
 
@@ -750,39 +753,43 @@ class BillingController extends Controller
             "cust_id" => 'required',
         ]);
         SisBilling::findOrFail($request['bil_id'])->update(['bill_payment_status' => 'lunas']);
+        try {
+            $data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
+            // Send Push
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = 'Informasi Billing';
+            $notifStruct->message   = sprintf("Billing dengan nomor %s telah dinyatakan LUNAS.", $request['bill_nomor_billing']);
+            $notifStruct->user_id   = $data_pelanggan?->user_id;
+            $notifStruct->click_url = url('/pelanggan/billing');
+            sendNotification($notifStruct);
 
-        $data_pelanggan = SisPelanggan::where('cust_id', $request['cust_id'])->select('user_id', 'cust_nama', 'cust_email')->first();
-        // Send Push
-        $notifStruct            = new NotifStruct();
-        $notifStruct->title     = 'Informasi Billing';
-        $notifStruct->message   = sprintf("Billing dengan nomor %s telah dinyatakan LUNAS.", $request['bill_nomor_billing']);
-        $notifStruct->user_id   = $data_pelanggan?->user_id;
-        $notifStruct->click_url = url('/pelanggan/billing');
-        sendNotification($notifStruct);
+            $dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=', 'user_id');
+            foreach ($dataUser->get() as $us) {
+                $notifUsr            = new NotifStruct();
+                $notifUsr->title     = 'Informasi Billing';
+                $notifUsr->message   = sprintf("Billing dengan nomor %s telah dinyatakan LUNAS, silahkan lakukan penjadwalan.", $request['bill_nomor_billing']);
+                $notifUsr->user_id   = $us->user_id;
+                $notifUsr->click_url = url('/operatorls/penjadwalan');
+                sendNotification($notifUsr);
+            }
 
-        $dataUser = SysUser::whereIn('ug_group_id', ['6'])->select('*')->join('sys_user_group', 'ug_user_id', '=', 'user_id');
-        foreach ($dataUser->get() as $us) {
-            $notifUsr            = new NotifStruct();
-            $notifUsr->title     = 'Informasi Billing';
-            $notifUsr->message   = sprintf("Billing dengan nomor %s telah dinyatakan LUNAS, silahkan lakukan penjadwalan.", $request['bill_nomor_billing']);
-            $notifUsr->user_id   = $us->user_id;
-            $notifUsr->click_url = url('/operatorls/penjadwalan');
-            sendNotification($notifUsr);
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = "Informasi Billing";
+            $structEmail->body    = view('keuangan::billing.mails.publish')
+                ->with([
+                    'nama'       => $data_pelanggan?->cust_nama,
+                    'message'    => sprintf("Billing dengan nomor %s telah dinyatakan LUNAS.", $request['bill_nomor_billing']),
+                    'link_verif' => url('/pelanggan/billing'),
+                ])->render();
+            $structEmail->to      = $data_pelanggan?->cust_email;
+            sendEmail($structEmail);
+
+            return redirect($this->url)->with('message', "Nomor biling #" . $request->bill_nomor_billing . " sudah berhasil dilunaskan.");
+        }catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+            return redirect()->back()->withInput($request->except('_token'));
         }
-
-        // Send Email
-        $structEmail          = new EmailStruct();
-        $structEmail->subject = "Informasi Billing";
-        $structEmail->body    = view('keuangan::billing.mails.publish')
-            ->with([
-                'nama'       => $data_pelanggan?->cust_nama,
-                'message'    => sprintf("Billing dengan nomor %s telah dinyatakan LUNAS.", $request['bill_nomor_billing']),
-                'link_verif' => url('/pelanggan/billing'),
-            ])->render();
-        $structEmail->to      = $data_pelanggan?->cust_email;
-        sendEmail($structEmail);
-
-        return redirect($this->url)->with('message', "Nomor biling #" . $request->bill_nomor_billing . " sudah berhasil dilunaskan.");
     }
 
     private function update_belum_pelunasan(Request $request)
@@ -822,14 +829,13 @@ class BillingController extends Controller
                 $status_return = false;
             }
 
-
             if ($status_return) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data, data belum dipilih atau kesalahan system, silahkan ulangi lagi.");
             }
         } catch (Exception $e) {
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -883,7 +889,7 @@ class BillingController extends Controller
                 return responseJSON(500, [], "Data items billing harus lebih dari 1.");
             }
         } catch (Exception $e) {
-            log_error($e, $request->all());
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

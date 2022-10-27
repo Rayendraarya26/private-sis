@@ -2,19 +2,16 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
-use App\Models\BbkkpSis\SisJadwal;
-use App\Models\BbkkpSis\SisPelanggan;
-
+use App\Exceptions\ExpectedException;
+use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
-use Carbon\Carbon;
+use App\Models\BbkkpSis\SisJadwal;
+use App\Models\BbkkpSis\SisPelanggan;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class AuUploadJadwalController extends Controller
@@ -57,7 +54,7 @@ class AuUploadJadwalController extends Controller
         $data->where('master_pegawai.user_id', '=', auth()->id());
         $data->where('sis_jadwal.jadw_tanggal_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
-        $data->whereIn('sis_jadwal.jadw_setujui_temuan', [ 'revisi', 'none']); 
+        $data->whereIn('sis_jadwal.jadw_setujui_temuan', ['revisi', 'none']);
         $data->where('sis_jadwal_tim.jadw_tim_kesanggupan', '=', 'ya');
         $data->where('sis_jadwal_tim.jadw_tim_posisi', '=', 'ketua');
         if (!empty($request->filterRules)) {
@@ -94,11 +91,11 @@ class AuUploadJadwalController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
-            $x['bill_payment_status']     = $d->bill_payment_status;
-		
+            $x['bill_payment_status']  = $d->bill_payment_status;
+
             $x['jadw_file_jadwal'] = ($d->jadw_file_jadwal != '') ? '<a target="_blank" href = "' . url($d->jadw_file_jadwal) . '"><i class="fas fa-download"></i> Download</div>' : '';
-            $x['status_upload'] = ($d->jadw_file_jadwal != '') ? 're-upload' : 'upload';
-            array_push($result, $x);
+            $x['status_upload']    = ($d->jadw_file_jadwal != '') ? 're-upload' : 'upload';
+            $result[]              = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -170,7 +167,7 @@ class AuUploadJadwalController extends Controller
 
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('jadw_file_jadwal')) throw new Exception("Mohon unggah file jadwal", 400);
+            if (!$request->hasFile('jadw_file_jadwal')) throw new ExpectedException("Mohon unggah file jadwal", 400);
 
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
@@ -182,49 +179,53 @@ class AuUploadJadwalController extends Controller
             $fileJadwalName = Str::slug('file-jadwal-' . $fileJadwal->getClientOriginalName()) . '-' . time() . '.' . $fileJadwal->getClientOriginalExtension();
             $fileJadwalPath = sprintf("%s/%s", $baseFileUpload, $fileJadwalName);
             $fileJadwal->move($baseFileUpload, $fileJadwalName);
-            array_push($uploadedPath, $fileJadwalPath);
+            $uploadedPath[] = $fileJadwalPath;
             DB::beginTransaction();
 
             DB::table('sis_jadwal')
                 ->where('jadw_id', $request['jadw_id'])
                 ->update(['jadw_file_jadwal' => $fileJadwalPath]);
-			
-			$dataJadwalDetail = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")->select('*');
-			foreach ($dataJadwalDetail->get() as $d) {
-				if($d->jadw_audit_jenis == 'surveilans') {
-					if($d->cust_sert_id != '') {
-						DB::table('sis_pelanggan_sertifikasi')
-							->where('cust_sert_id', $d->cust_sert_id)
-							->update(['cust_sert_status_survailen' => 'on-progress']);
-					}
-				}
-			}
-            // Notifikasi
-            // Notifikasi
-			$data_pelanggan = SisPelanggan::where('cust_id', $restJadwal->cust_id)->select('user_id', 'cust_nama', 'cust_email')->first();
-			// Send Push
-			$notifStruct            = new NotifStruct();
-			$notifStruct->title     = "Proses Audit Tahap 2";
-			$notifStruct->message   = sprintf("Jadwal untuk #%s sudah diupload, anda bisa men-download file-nya untuk informasi lebih jelasnya.", $request['jadw_id']);
-			$notifStruct->user_id   = $data_pelanggan?->user_id;
-			$notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
-			sendNotification($notifStruct);
 
-			// Send Email
-			$structEmail          = new EmailStruct();
-			$structEmail->subject = "Proses Audit Tahap 2";
-			$structEmail->body    = view("$this->view.mails.publish")
-				->with([
-					'nama'       => $data_pelanggan?->cust_nama,
-					'message'       => sprintf("Jadwal untuk #%s sudah diupload, anda bisa men-download file-nya untuk informasi lebih jelasnya.", $request['jadw_id']),
-					'link_verif'        => url('/pelanggan/tahap2/jadwal'),
-				])->render();
-			$structEmail->to      = $data_pelanggan?->cust_email;
-			sendEmail($structEmail);
+            $dataJadwalDetail = SisJadwal::where('sis_jadwal.jadw_id', $request['jadw_id'])->join('sis_jadwal_audit', "sis_jadwal.jadw_id", "=", "sis_jadwal_audit.jadw_id")->select('*');
+            foreach ($dataJadwalDetail->get() as $d) {
+                if ($d->jadw_audit_jenis == 'surveilans') {
+                    if ($d->cust_sert_id != '') {
+                        DB::table('sis_pelanggan_sertifikasi')
+                            ->where('cust_sert_id', $d->cust_sert_id)
+                            ->update(['cust_sert_status_survailen' => 'on-progress']);
+                    }
+                }
+            }
+            // Notifikasi
+            // Notifikasi
+            $data_pelanggan = SisPelanggan::where('cust_id', $restJadwal->cust_id)->select('user_id', 'cust_nama', 'cust_email')->first();
+            // Send Push
+            $notifStruct            = new NotifStruct();
+            $notifStruct->title     = "Proses Audit Tahap 2";
+            $notifStruct->message   = sprintf("Jadwal untuk #%s sudah diupload, anda bisa men-download file-nya untuk informasi lebih jelasnya.", $request['jadw_id']);
+            $notifStruct->user_id   = $data_pelanggan?->user_id;
+            $notifStruct->click_url = url('/pelanggan/tahap2/jadwal');
+            sendNotification($notifStruct);
+
+            // Send Email
+            $structEmail          = new EmailStruct();
+            $structEmail->subject = "Proses Audit Tahap 2";
+            $structEmail->body    = view("$this->view.mails.publish")
+                ->with([
+                    'nama'       => $data_pelanggan?->cust_nama,
+                    'message'    => sprintf("Jadwal untuk #%s sudah diupload, anda bisa men-download file-nya untuk informasi lebih jelasnya.", $request['jadw_id']),
+                    'link_verif' => url('/pelanggan/tahap2/jadwal'),
+                ])->render();
+            $structEmail->to      = $data_pelanggan?->cust_email;
+            sendEmail($structEmail);
             DB::commit();
-			
+
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            foreach ($uploadedPath as $path) {
+                @unlink(public_path($path));
+            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

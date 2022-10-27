@@ -137,9 +137,8 @@ class BillingController extends Controller
                     @unlink($path);
                 }
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }

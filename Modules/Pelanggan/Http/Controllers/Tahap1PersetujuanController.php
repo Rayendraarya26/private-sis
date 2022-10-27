@@ -160,9 +160,7 @@ class Tahap1PersetujuanController extends Controller
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -300,9 +298,7 @@ class Tahap1PersetujuanController extends Controller
 
             return view("$this->view.upload_scan")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -359,9 +355,7 @@ class Tahap1PersetujuanController extends Controller
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

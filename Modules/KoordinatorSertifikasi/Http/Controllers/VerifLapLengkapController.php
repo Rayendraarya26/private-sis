@@ -95,6 +95,7 @@ class VerifLapLengkapController extends Controller
             $responseMessage = sprintf("Data berhasil disimpan untuk jadwal #", $request->jadw_id);
             return redirect()->back()->with('message', $responseMessage);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -185,9 +186,8 @@ class VerifLapLengkapController extends Controller
                 default       => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }

@@ -229,9 +229,7 @@ class Tahap2JadwalController extends Controller
             return redirect(url($this->url))->with("message", sprintf("Persetujuan berhasil dikirim (%s)", $request['jadw_tanggal_status']));
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
 
@@ -324,9 +322,7 @@ class Tahap2JadwalController extends Controller
             return redirect(url($this->url))->with("message", sprintf("Persetujuan berhasil dikirim (%s)", $request['jadw_team_status']));
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -350,9 +346,7 @@ class Tahap2JadwalController extends Controller
 
             return view("$this->view.upload_scan")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -433,9 +427,7 @@ class Tahap2JadwalController extends Controller
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
 

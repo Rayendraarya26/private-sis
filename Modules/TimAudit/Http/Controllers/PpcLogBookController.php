@@ -2,11 +2,10 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisJadwal;
-use App\Models\BbkkpSis\SisAuditPpc;
 use App\Models\BbkkpSis\SisPelangganPabrik;
-
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -80,7 +79,7 @@ class PpcLogBookController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-		
+
         $data->select("*", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
@@ -97,8 +96,8 @@ class PpcLogBookController extends Controller
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
 
             $x['logbook_filepath'] = ($d->logbook_filepath != '') ? '<a target="_blank" href = "' . url($d->logbook_filepath) . '"><i class="fas fa-download"></i> Download</a>' : '';
-            $x['status_upload'] = ($d->logbook_filepath != '') ? 're-upload' : 'upload';
-            array_push($result, $x);
+            $x['status_upload']    = ($d->logbook_filepath != '') ? 're-upload' : 'upload';
+            $result[]              = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -159,8 +158,8 @@ class PpcLogBookController extends Controller
         $dataJadwal->selectRaw("GROUP_CONCAT(distinct sis_jadwal_tim.jadw_tim_id) AS jadw_tim_id");
         $dataJadwal->groupBy('sis_jadwal.jadw_id');
         $restJadwal = $dataJadwal->get()[0];
-		
-		$dataPabrik = SisPelangganPabrik::where('cust_id', $restJadwal->cust_id);
+
+        $dataPabrik = SisPelangganPabrik::where('cust_id', $restJadwal->cust_id);
         $dataPabrik->leftJoin('master_kabupaten', 'master_kabupaten.kab_id', '=', 'sis_pelanggan_pabrik.kab_id');
         $dataPabrik->leftJoin('master_kecamatan', 'master_kecamatan.kec_id', '=', 'sis_pelanggan_pabrik.kec_id');
         $dataPabrik->leftJoin('master_provinsi', 'master_provinsi.prov_id', '=', 'sis_pelanggan_pabrik.prov_id');
@@ -190,7 +189,7 @@ class PpcLogBookController extends Controller
 
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('logbook_filepath')) throw new Exception("Mohon unggah file logbook", 400);
+            if (!$request->hasFile('logbook_filepath')) throw new ExpectedException("Mohon unggah file logbook", 400);
 
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
@@ -202,7 +201,7 @@ class PpcLogBookController extends Controller
             $fileLogbookName = Str::slug('file-logbook-ppc-' . $fileLogbook->getClientOriginalName()) . '-' . time() . '.' . $fileLogbook->getClientOriginalExtension();
             $fileLogbookPath = sprintf("%s/%s", $baseFileUpload, $fileLogbookName);
             $fileLogbook->move($baseFileUpload, $fileLogbookName);
-            array_push($uploadedPath, $fileLogbookPath);
+            $uploadedPath[] = $fileLogbookPath;
             DB::beginTransaction();
             if (DB::table('sis_audit_logbook')->where('jadw_tim_id', $request['jadw_tim_id'])->where('logbook_jenis', 'ppc')->exists()) {
                 DB::table('sis_audit_logbook')
@@ -227,6 +226,10 @@ class PpcLogBookController extends Controller
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            foreach ($uploadedPath as $path) {
+                @unlink(public_path($path));
+            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

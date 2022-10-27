@@ -2,6 +2,7 @@
 
 namespace Modules\TimAudit\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Models\BbkkpSis\SisAuditPpc;
 use App\Models\BbkkpSis\SisJadwal;
@@ -77,8 +78,8 @@ class PpcLaporanController extends Controller
                 $data->orderBy($sort[$i], $order[$i]);
             }
         }
-        
-        $data->select("jadw_tanggal_mulai AS jadw_tanggal_mulai","jadw_tanggal_selesai AS jadw_tanggal_selesai", "cust_nama AS cust_nama", "jadw_jenis AS jadw_jenis", "sert_nama AS sert_nama", "sis_jadwal.jadw_id AS jadw_id");
+
+        $data->select("jadw_tanggal_mulai AS jadw_tanggal_mulai", "jadw_tanggal_selesai AS jadw_tanggal_selesai", "cust_nama AS cust_nama", "jadw_jenis AS jadw_jenis", "sert_nama AS sert_nama", "sis_jadwal.jadw_id AS jadw_id");
         $data->selectRaw("GROUP_CONCAT(DISTINCT CONCAT('-', sert_nama, '(' , UPPER(jadw_audit_jenis), ')') SEPARATOR ',<br/>') as sert_nama");
         $data->selectRaw("GROUP_CONCAT(distinct jadw_audit_jenis) AS jadw_audit_jenis");
         $data->selectRaw("COUNT(DISTINCT sis_audit_ppc.audit_ppc_id) as total_file");
@@ -94,8 +95,8 @@ class PpcLaporanController extends Controller
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
             $x['total_file']           = $d->total_file;
-            $x['status_upload']           = $d->total_file > 0 ? 're-upload' : 'upload';
-            array_push($result, $x);
+            $x['status_upload']        = $d->total_file > 0 ? 're-upload' : 'upload';
+            $result[]                  = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -133,7 +134,7 @@ class PpcLaporanController extends Controller
 
             $x['created_at'] = $d->created_at?->format("Y-m-d");
             $x['updated_at'] = $d->updated_at?->format("Y-m-d");
-            array_push($result, $x);
+            $result[]        = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -203,7 +204,7 @@ class PpcLaporanController extends Controller
         $request->validate(['tipe' => 'required']);
         return match ($request['tipe']) {
             'upload-laporan' => $this->update_upload_laporan($request),
-			'delete-laporan' => $this->delete_laporan($request),
+            'delete-laporan' => $this->delete_laporan($request),
             default          => null,
         };
     }
@@ -218,7 +219,7 @@ class PpcLaporanController extends Controller
 
         $uploadedPath = [];
         try {
-            if (!$request->hasFile('audit_ppc_filepath')) throw new Exception("Mohon unggah file jadwal", 400);
+            if (!$request->hasFile('audit_ppc_filepath')) throw new ExpectedException("Mohon unggah file jadwal", 400);
 
             $dataJadwal = SisJadwal::where('jadw_id', $request['jadw_id']);
             $dataJadwal->select('*');
@@ -229,7 +230,7 @@ class PpcLaporanController extends Controller
             $fileLaporanName = Str::slug('file-laporan-ppc-' . $fileLaporan->getClientOriginalName()) . '-' . time() . '.' . $fileLaporan->getClientOriginalExtension();
             $fileLaporanPath = sprintf("%s/%s", $baseFileUpload, $fileLaporanName);
             $fileLaporan->move($baseFileUpload, $fileLaporanName);
-            array_push($uploadedPath, $fileLaporanPath);
+            $uploadedPath[] = $fileLaporanPath;
             DB::beginTransaction();
 
             $restLaporan = DB::table('sis_audit_ppc')->where('jadw_id', $request['jadw_id'])->where('audit_ppc_jenis_file', $request['audit_ppc_jenis_file'])->first();
@@ -255,28 +256,28 @@ class PpcLaporanController extends Controller
             DB::commit();
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            foreach ($uploadedPath as $path) {
+                @unlink(public_path($path));
+            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
 
     private function delete_laporan(Request $request)
     {
+        $request->validate(['ids' => 'required']);
         try {
-            $status_return = TRUE;
             foreach ($request->ids as $audit_ppc_id) {
-				$restLaporan = DB::table('sis_audit_ppc')->where('audit_ppc_id', $audit_ppc_id)->first();
-				if ($restLaporan !== null) {
-					@unlink($restLaporan->audit_ppc_filepath);
-					DB::table('sis_audit_ppc')->where('audit_ppc_id', $audit_ppc_id)->delete();
-				}
+                $restLaporan = DB::table('sis_audit_ppc')->where('audit_ppc_id', $audit_ppc_id)->first();
+                if ($restLaporan !== null) {
+                    @unlink($restLaporan->audit_ppc_filepath);
+                    DB::table('sis_audit_ppc')->where('audit_ppc_id', $audit_ppc_id)->delete();
+                }
             }
-
-            if ($status_return == TRUE) {
-                return responseJSON(200, [], "Berhasil menghapus data");
-            } else {
-                return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
-            }
+            return responseJSON(200, [], "Berhasil menghapus data");
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }

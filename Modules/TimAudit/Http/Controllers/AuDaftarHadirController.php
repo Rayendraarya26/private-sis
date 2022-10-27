@@ -80,6 +80,7 @@ class AuDaftarHadirController extends Controller
 
             return view("$this->view.unggah")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -101,7 +102,7 @@ class AuDaftarHadirController extends Controller
         $oldFilePath = [];
         try {
             $dataJadwal = $this->isKepalaAudit($jadwalID);
-            if (!empty($dataJadwal->jadw_file_kehadiran)) array_push($oldFilePath, $dataJadwal->jadw_file_kehadiran);
+            if (!empty($dataJadwal->jadw_file_kehadiran)) $oldFilePath[] = $dataJadwal->jadw_file_kehadiran;
 
             $baseFileUpload = sprintf(config("app.path_file_audit"), $dataJadwal->jadw_id);
             if ($request->hasFile('jadw_file_kehadiran')) {
@@ -111,7 +112,7 @@ class AuDaftarHadirController extends Controller
                 $fileKehadiran->move($baseFileUpload, $fileKehadiranName);
 
                 $dataJadwal->jadw_file_kehadiran = $fileKehadiranPath;
-                array_push($newFilePath, public_path($fileKehadiranPath));
+                $newFilePath[]                   = public_path($fileKehadiranPath);
             }
 
             $dataJadwal->jadw_setujui_temuan      = $request['jadw_setujui_temuan'];
@@ -147,6 +148,7 @@ class AuDaftarHadirController extends Controller
             foreach ($newFilePath as $path) { // remove new file uploaded
                 @unlink($path);
             }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -267,9 +269,7 @@ class AuDaftarHadirController extends Controller
                 default       => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }

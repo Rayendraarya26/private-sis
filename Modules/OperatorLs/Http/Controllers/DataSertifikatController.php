@@ -45,14 +45,17 @@ class DataSertifikatController extends Controller
             new BreadcrumbsStruct('Upload Sertifikasi #' . $sertifikatId),
         ];
 
-        $qrySertifikat = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi', 'sis_pelanggan'])->where('sis_pelanggan_sertifikasi.cust_sert_id', '=', $sertifikatId);
+        $dataSertifikat = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi', 'sis_pelanggan'])->where('sis_pelanggan_sertifikasi.cust_sert_id', '=', $sertifikatId)->first();
 
-        if (isset($qrySertifikat->get()[0])) {
-            $restSertifikat = $qrySertifikat->get()[0];
-            $parser         = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_sertifikat' => $restSertifikat];
+        if (isset($dataSertifikat)) {
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_sertifikat' => $dataSertifikat];
             return view("$this->view.upload_sertifikat")->with($parser);
         } else {
-            responseJSON(404, null, "Invalid url");
+            return view('errors.custom')->with([
+                'code'    => 404,
+                'info'    => "NOT FOUND",
+                'message' => "Invalid URL",
+            ]);
         }
     }
 
@@ -203,9 +206,9 @@ class DataSertifikatController extends Controller
     private function ajax_datagrid(Request $request)
     {
         // $data = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi', 'sis_pelanggan']);
-		$data = SisPelangganSertifikasi::join('sis_pelanggan', "sis_pelanggan_sertifikasi.cust_id", "=", "sis_pelanggan.cust_id");
-		$data->join('master_sertifikasi', "sis_pelanggan_sertifikasi.sert_id", "=", "master_sertifikasi.sert_id");
-		$data->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_pelanggan_sertifikasi.komodt_id");
+        $data = SisPelangganSertifikasi::join('sis_pelanggan', "sis_pelanggan_sertifikasi.cust_id", "=", "sis_pelanggan.cust_id");
+        $data->join('master_sertifikasi', "sis_pelanggan_sertifikasi.sert_id", "=", "master_sertifikasi.sert_id");
+        $data->leftJoin('master_komoditi', "master_komoditi.komodt_id", "=", "sis_pelanggan_sertifikasi.komodt_id");
         // Filter
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
@@ -216,8 +219,7 @@ class DataSertifikatController extends Controller
                         } else {
                             $data->whereNull('cust_sert_filepath');
                         }
-                    }
-					else {
+                    } else {
                         $data->where($f->field, 'LIKE', '%' . $f->value . '%');
                     }
                 }

@@ -187,6 +187,7 @@ class Tahap2PersetujuanController extends Controller
             foreach ($newUploadedPath as $path) {
                 @unlink($path);
             }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -208,9 +209,7 @@ class Tahap2PersetujuanController extends Controller
                 default        => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 
@@ -285,7 +284,7 @@ class Tahap2PersetujuanController extends Controller
             ]);
             return $pdf->inline('LKS-' . Str::of($dataJadwal->sis_pelanggan->cust_nama)->slug()->upper() . '-' . Str::of($dataJadwal->jadw_tanggal_mulai->isoFormat('LL'))->slug()->upper() . '.pdf');
         } catch (Exception $e) {
-            log_error($e, $request->except("_token"));
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return view('errors.custom')->with([
                 'code'    => 400,
                 'info'    => "BAD REQUEST",

@@ -32,7 +32,7 @@ class Tahap1PerbaikanController extends Controller
         return view("$this->view.index")->with($parser);
     }
 
-    public function revisi($encTahap1Id)
+    public function revisi(Request $request, $encTahap1Id)
     {
         try {
             $breadcrumbs = [
@@ -48,6 +48,7 @@ class Tahap1PerbaikanController extends Controller
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataTahap1];
             return view("$this->view.revisi")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect(url($this->url))->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -112,9 +113,7 @@ class Tahap1PerbaikanController extends Controller
             foreach ($uploadedPath as $path) {
                 @unlink($path);
             }
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }
     }

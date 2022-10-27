@@ -73,6 +73,7 @@ class AuLksController extends Controller
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal, 'is_kepala' => $isKepala];
             return view("$this->view.temuan")->with($parser);
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -107,9 +108,7 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Generate berhasil");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -139,6 +138,7 @@ class AuLksController extends Controller
             return responseJSON(200, [], "LKS berhasil disimpan");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage() . '| err:' . $e->getLine());
         }
     }
@@ -185,9 +185,7 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Rekomendasi berhasil ditambahkan");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -208,9 +206,7 @@ class AuLksController extends Controller
             $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data' => $dataJadwal];
             return view("$this->view.verifikasi")->with($parser);
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }
@@ -249,9 +245,7 @@ class AuLksController extends Controller
             $this->sendNotifToLeadAuditorIfAllClose($jadwalID);
             return responseJSON(200, [], "Verifikasi berhasil");
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -319,9 +313,7 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Revisi berhasil");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -346,9 +338,7 @@ class AuLksController extends Controller
             return responseJSON(200, [], "Delete berhasil");
         } catch (Exception $e) {
             DB::rollBack();
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -365,9 +355,7 @@ class AuLksController extends Controller
                 default      => throw new ExpectedException("Invalid URL"),
             };
         } catch (Exception $e) {
-            if (!($e instanceof ExpectedException)) {
-                log_error($e, $request->except("_token"));
-            }
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
     }

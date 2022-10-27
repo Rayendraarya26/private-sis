@@ -2,21 +2,17 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
+use App\Http\Structs\BreadcrumbsStruct;
+use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\MasterPegawai;
 use App\Models\BbkkpSis\SisAuditTimKomite;
 use App\Models\BbkkpSis\SisJadwal;
-
-use App\Http\Structs\EmailStruct;
-use App\Http\Structs\NotifStruct;
-use App\Http\Structs\BreadcrumbsStruct;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class KomiteController extends Controller
 {
@@ -60,7 +56,7 @@ class KomiteController extends Controller
         $data->where('sis_jadwal.jadw_team_status', '=', 'accepted');
         $data->where('sis_jadwal.jadw_is_tutup', '=', 'tidak');
         $data->where('sis_jadwal_audit.jadw_audit_status_komite', '=', 'submited');
-		
+
         if (!empty($request->filterRules)) {
             foreach (json_decode($request->filterRules) as $f) {
                 $data->where($f->field, 'LIKE', '%' . $f->value . '%');
@@ -97,7 +93,7 @@ class KomiteController extends Controller
             $x['sert_nama']            = $d->sert_nama;
             $x['jadw_jenis']           = $d->jadw_jenis;
             $x['jadw_audit_jenis']     = $d->jadw_audit_jenis;
-            array_push($result, $x);
+            $result[]                  = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -138,7 +134,7 @@ class KomiteController extends Controller
             $x['jadw_id']       = $d->jadw_id;
             $x['komite_posisi'] = $d->komite_posisi;
             // $x['komite_tgl_surat'] = $d->komite_tgl_surat?->format("Y-m-d");
-            array_push($result, $x);
+            $result[] = $x;
         }
 
         return response()->json(["rows" => $result]);
@@ -147,21 +143,21 @@ class KomiteController extends Controller
     private function ajax_combogrid_pegawai(Request $request)
     {
         $data = MasterPegawai::leftJoin('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-		$data->join('pegawai_kompetensi_komite', "pegawai_kompetensi_komite.peg_id", "=", "master_pegawai.peg_id");
-		$data->join('sis_jadwal_audit', "sis_jadwal_audit.sert_id", "=", "pegawai_kompetensi_komite.sert_id");
-			
+        $data->join('pegawai_kompetensi_komite', "pegawai_kompetensi_komite.peg_id", "=", "master_pegawai.peg_id");
+        $data->join('sis_jadwal_audit', "sis_jadwal_audit.sert_id", "=", "pegawai_kompetensi_komite.sert_id");
+
         // Filter
         if (!empty($request->q)) {
             $data->where('master_pegawai.peg_nama', 'LIKE', '%' . $request->q . '%');
         }
-		$data->where('master_pegawai.is_komite', 'yes');
-		/* 
-		$data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
+        $data->where('master_pegawai.is_komite', 'yes');
+        /*
+        $data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
                 $query->select('peg_id')->from('sis_audit_tim_komite')->where('jadw_id', '=', $request['jadw_id']);
-            }); 
-		*/
-		
-		$data->where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
+            });
+        */
+
+        $data->where('sis_jadwal_audit.jadw_id', $request['jadw_id']);
         $data->whereNotIn('master_pegawai.peg_id', function ($query) use ($request) {
             $query->select('peg_id')->from('sis_jadwal_tim')->where('jadw_id', '=', $request['jadw_id']);
         });
@@ -169,7 +165,7 @@ class KomiteController extends Controller
         $total = $data->select(DB::raw('count(distinct master_pegawai.peg_id) as total'))->first()->total;
         // Pagination
         $data->select("*")->skip(($request->page - 1) * $request->rows)->take($request->rows);
-		$data->groupBy("master_pegawai.peg_id");
+        $data->groupBy("master_pegawai.peg_id");
 
         // Result
         $result = [];
@@ -178,7 +174,7 @@ class KomiteController extends Controller
             $x['peg_nama'] = $d->peg_nama;
             $x['peg_telp'] = $d->peg_telp;
             $x['peg_nip']  = $d->peg_nip;
-            array_push($result, $x);
+            $result[]      = $x;
         }
 
         return response()->json(["total" => $total, "rows" => $result]);
@@ -318,6 +314,8 @@ class KomiteController extends Controller
             }
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -348,23 +346,25 @@ class KomiteController extends Controller
             $newSisJadwalLog->save();
              */
             DB::commit();
-			$dataTim = SisAuditTimKomite::join('sis_jadwal', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
-			$dataTim->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
-			$dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
-			$dataTim->where('sis_jadwal.jadw_id', '=', $request['jadw_id']);
-			$dataTim->select("*");
-			$dataTim->groupBy('sis_audit_tim_komite.komite_id');
-			foreach ($dataTim->get() as $d) {
-				$notifStruct            = new NotifStruct();
-				$notifStruct->title     = 'Permohonan Penujukan Tim Komite';;
-				$notifStruct->message   = sprintf("Penyusunan Tim Komite telah diterbitkan , yang telah dilakukan pada tanggal %s s/d %s, untuk jadwal nomor #%s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($restJadwal->jadw_tanggal_mulai)) , date("d-m-Y", strtotime($restJadwal->jadw_tanggal_selesai)), $request['jadw_id'] );
-				$notifStruct->user_id   = $d?->user_id;
-				$notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
-				sendNotification($notifStruct);
-			}
-			
+            $dataTim = SisAuditTimKomite::join('sis_jadwal', "sis_audit_tim_komite.jadw_id", "=", "sis_jadwal.jadw_id");
+            $dataTim->join('master_pegawai', "sis_audit_tim_komite.peg_id", "=", "master_pegawai.peg_id");
+            $dataTim->join('sys_user', "master_pegawai.user_id", "=", "sys_user.user_id");
+            $dataTim->where('sis_jadwal.jadw_id', '=', $request['jadw_id']);
+            $dataTim->select("*");
+            $dataTim->groupBy('sis_audit_tim_komite.komite_id');
+            foreach ($dataTim->get() as $d) {
+                $notifStruct        = new NotifStruct();
+                $notifStruct->title = 'Permohonan Penujukan Tim Komite';;
+                $notifStruct->message   = sprintf("Penyusunan Tim Komite telah diterbitkan , yang telah dilakukan pada tanggal %s s/d %s, untuk jadwal nomor #%s, silahkan konfirmasi tim.", date("d-m-Y", strtotime($restJadwal->jadw_tanggal_mulai)), date("d-m-Y", strtotime($restJadwal->jadw_tanggal_selesai)), $request['jadw_id']);
+                $notifStruct->user_id   = $d?->user_id;
+                $notifStruct->click_url = url('/timaudit/persetujuan-tim/auditor');
+                sendNotification($notifStruct);
+            }
+
             return responseJSON(200, [], 'Berhasil menyimpan data');
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+
             return responseJSON(500, [], $e->getMessage());
         }
     }
@@ -381,23 +381,24 @@ class KomiteController extends Controller
     private function delete_data_komite(Request $request)
     {
         try {
-            $status_return = TRUE;
+            $status_return = true;
             foreach ($request->ids as $id) {
                 $data = SisAuditTimKomite::where("komite_id", $id)->firstOrFail();
                 if ($data->delete()) {
 
                 } else {
-                    $status_return = FALSE;
+                    $status_return = false;
                     break;
                 }
             }
 
-            if ($status_return == TRUE) {
+            if ($status_return) {
                 return responseJSON(200, [], "Berhasil menghapus data");
             } else {
                 return responseJSON(500, [], "Terjadi kesalahan saat menghapus data");
             }
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, [], $e->getMessage());
         }
     }
