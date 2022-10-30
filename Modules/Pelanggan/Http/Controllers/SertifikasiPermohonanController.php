@@ -734,34 +734,42 @@ class SertifikasiPermohonanController extends Controller
 
     public function ajax(Request $request)
     {
-        $request->validate(['action' => 'required']);
-        return match ($request['action']) {
-            'datagrid'                             => $this->ajax_datagrid($request),
-            'combogrid_sertifikat_lama'            => $this->ajax_combogrid_sertifikat_lama($request),
-            'combogrid_sertifikasi'                => $this->ajax_combogrid_sertifikasi($request),
-            'combogrid_komoditas'                  => $this->ajax_combogrid_komoditas($request),
-            'combogrid_negara'                     => $this->ajax_combogrid_negara($request),
-            'combogrid_provinsi'                   => $this->ajax_combogrid_provinsi($request),
-            'combogrid_kabupaten'                  => $this->ajax_combogrid_kabupaten($request),
-            'combogrid_kecamatan'                  => $this->ajax_combogrid_kecamatan($request),
-            'dokumen_sertifikat'                   => $this->ajax_dokumen_sertifikat($request),
-            "upload_dokumen"                       => $this->ajax_upload_dokumen($request),
-            "data_pemohon"                         => $this->ajax_data_pemohon($request),
-            "update_data_pemohon"                  => $this->ajax_update_data_pemohon($request),
-            "pabrik_data"                          => $this->ajax_pabrik_data($request),
-            "pabrik_add"                           => $this->ajax_pabrik_add($request),
-            "pabrik_update"                        => $this->ajax_pabrik_update($request),
-            "pabrik_delete"                        => $this->ajax_pabrik_delete($request),
-            "permohonan_get_dokumen"               => $this->ajax_permohonan_get_dokumen($request),
-            "permohonan_unggah_dokumen"            => $this->ajax_permohonan_unggah_dokumen($request),
-            "permohonan_kondisi_perusahaan"        => $this->ajax_permohonan_kondisi_perusahaan($request),
-            "permohonan_update_kondisi_perusahaan" => $this->ajax_permohonan_update_kondisi_perusahaan($request),
-            "permohonan_pabrik_data"               => $this->ajax_permohonan_pabrik_data($request),
-            "permohonan_pabrik_add"                => $this->ajax_permohonan_pabrik_add($request),
-            "permohonan_pabrik_update"             => $this->ajax_permohonan_pabrik_update($request),
-            "permohonan_pabrik_delete"             => $this->ajax_permohonan_pabrik_delete($request),
-            default                                => responseJSON(404, null, "Invalid url"),
-        };
+        if ($request->ajax()) {
+            $request->validate(['action' => 'required']);
+            return match ($request['action']) {
+                'datagrid'                             => $this->ajax_datagrid($request),
+                'combogrid_sertifikat_lama'            => $this->ajax_combogrid_sertifikat_lama($request),
+                'combogrid_sertifikasi'                => $this->ajax_combogrid_sertifikasi($request),
+                'combogrid_komoditas'                  => $this->ajax_combogrid_komoditas($request),
+                'combogrid_negara'                     => $this->ajax_combogrid_negara($request),
+                'combogrid_provinsi'                   => $this->ajax_combogrid_provinsi($request),
+                'combogrid_kabupaten'                  => $this->ajax_combogrid_kabupaten($request),
+                'combogrid_kecamatan'                  => $this->ajax_combogrid_kecamatan($request),
+                'dokumen_sertifikat'                   => $this->ajax_dokumen_sertifikat($request),
+                "upload_dokumen"                       => $this->ajax_upload_dokumen($request),
+                "data_pemohon"                         => $this->ajax_data_pemohon($request),
+                "update_data_pemohon"                  => $this->ajax_update_data_pemohon($request),
+                "pabrik_data"                          => $this->ajax_pabrik_data($request),
+                "pabrik_add"                           => $this->ajax_pabrik_add($request),
+                "pabrik_update"                        => $this->ajax_pabrik_update($request),
+                "pabrik_delete"                        => $this->ajax_pabrik_delete($request),
+                "permohonan_get_dokumen"               => $this->ajax_permohonan_get_dokumen($request),
+                "permohonan_unggah_dokumen"            => $this->ajax_permohonan_unggah_dokumen($request),
+                "permohonan_kondisi_perusahaan"        => $this->ajax_permohonan_kondisi_perusahaan($request),
+                "permohonan_update_kondisi_perusahaan" => $this->ajax_permohonan_update_kondisi_perusahaan($request),
+                "permohonan_pabrik_data"               => $this->ajax_permohonan_pabrik_data($request),
+                "permohonan_pabrik_add"                => $this->ajax_permohonan_pabrik_add($request),
+                "permohonan_pabrik_update"             => $this->ajax_permohonan_pabrik_update($request),
+                "permohonan_pabrik_delete"             => $this->ajax_permohonan_pabrik_delete($request),
+                default                                => responseJSON(404, null, "Invalid url"),
+            };
+        } else{
+            return view('errors.custom')->with([
+                'code'    => 403,
+                'info'    => "FORBIDDEN",
+                'message' => 'You should use ajax for this endpoint',
+            ]);
+        }
     }
 
     private function ajax_datagrid(Request $request)
@@ -1113,8 +1121,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_dokumen_sertifikat(Request $request)
     {
+        $request->validate(['sert_id' => 'required|integer']);
         try {
-            $request->validate(['sert_id' => 'required|integer']);
             $dataDokumen = MasterSertifikasiDokumen::with("master_jenis_dok_perusahaan")->where("sert_id", $request['sert_id'])->get();
             $results     = [];
             foreach ($dataDokumen as $dt) {
