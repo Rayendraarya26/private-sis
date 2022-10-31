@@ -349,12 +349,12 @@
                         const doc       = el.files[0]
                         const dt_upload = {"id": id, "dokumen": doc};
                         if (dt_upload.dokumen.type !== "application/pdf") {
-                            swalWithBootstrapButtons({
+                            $("#dokumen" + pengajuanIndex + id).val("")
+                            return swalWithBootstrapButtons({
                                 title: `Validasi`,
                                 text: "Dokumen harus bertipe PDF",
                                 type: 'warning'
                             })
-                            $("#dokumen" + pengajuanIndex + id).val("")
                         }
 
                         let formData = new FormData();

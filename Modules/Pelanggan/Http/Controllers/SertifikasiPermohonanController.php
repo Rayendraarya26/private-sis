@@ -1146,11 +1146,11 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_upload_dokumen(Request $request)
     {
+        $request->validate([
+            'sert_dok_id' => 'required|integer',
+            'file'        => 'required|mimetypes:application/pdf',
+        ]);
         try {
-            $request->validate([
-                'sert_dok_id' => 'required|integer',
-                'file'        => 'required|mimetypes:application/pdf',
-            ]);
 
             $dataMasterSertDok = MasterSertifikasiDokumen::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
 
@@ -1189,8 +1189,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_update_data_pemohon(Request $request)
     {
+        $request->validate(["parameter" => "required", "value" => "required"]);
         try {
-            $request->validate(["parameter" => "required", "value" => "required"]);
             $parameter = $request['parameter'];
             $value     = $request['value'] == '--' ? null : $request['value'];
 
@@ -1245,8 +1245,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_pabrik_update(Request $request)
     {
+        $request->validate(['pabrik_id' => 'required|integer', "parameter" => "required", "value" => "required"]);
         try {
-            $request->validate(['pabrik_id' => 'required|integer', "parameter" => "required", "value" => "required"]);
             $parameter = $request['parameter'];
             $value     = $request['value'] == '--' ? null : $request['value'];
 
@@ -1262,8 +1262,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_pabrik_delete(Request $request)
     {
+        $request->validate(['pabrik_id' => 'required|integer']);
         try {
-            $request->validate(['pabrik_id' => 'required|integer']);
 
             $dataPabrik = SisPelangganPabrik::findOrFail($request['pabrik_id']);
             $dataPabrik->delete();
@@ -1276,8 +1276,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_permohonan_get_dokumen(Request $request)
     {
+        $request->validate(['mohon_id' => 'required|integer']);
         try {
-            $request->validate(['mohon_id' => 'required|integer']);
 
             $dataPemohon = SisPermohonan::with(['sis_permohonan_dokumens.master_jenis_dok_perusahaan'])
                 ->where("user_id", auth()->id())->findOrFail($request['mohon_id']);
@@ -1297,6 +1297,7 @@ class SertifikasiPermohonanController extends Controller
 
             return responseJSON(200, $results, "data ditemukan");
         } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
@@ -1304,12 +1305,12 @@ class SertifikasiPermohonanController extends Controller
     private function ajax_permohonan_unggah_dokumen(Request $request)
     {
         $uploadedPath = [];
+        $request->validate([
+            'mohon_id'    => 'required|integer',
+            'sert_dok_id' => 'required|integer',
+            'file'        => 'required|mimetypes:application/pdf', // 10MB
+        ]);
         try {
-            $request->validate([
-                'mohon_id'    => 'required|integer',
-                'sert_dok_id' => 'required|integer',
-                'file'        => 'required|mimetypes:application/pdf', // 10MB
-            ]);
 
             DB::beginTransaction();
             $dataPemohon = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
@@ -1358,8 +1359,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_permohonan_kondisi_perusahaan(Request $request)
     {
+        $request->validate(["mohon_id" => "required|integer"]);
         try {
-            $request->validate(["mohon_id" => "required|integer"]);
             $dataPemohon              = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
             $dataPemohon->negara_nama = $dataPemohon->master_negara->negara_nama;
 
@@ -1372,8 +1373,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_permohonan_update_kondisi_perusahaan(Request $request)
     {
+        $request->validate(["parameter_main" => "required", "parameter_permohonan" => "required", "value" => "required", 'mohon_id' => 'required']);
         try {
-            $request->validate(["parameter_main" => "required", "parameter_permohonan" => "required", "value" => "required", 'mohon_id' => 'required']);
             $parameterPelanggan = $request['parameter_main'];
             $parameterPemohon   = $request['parameter_permohonan'];
             $value              = $request['value'] == '--' ? null : $request['value'];
@@ -1394,14 +1395,15 @@ class SertifikasiPermohonanController extends Controller
             return responseJSON(200, $dataPemohon, "Data diperbarui");
         } catch (Exception $e) {
             DB::rollBack();
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
             return responseJSON(500, null, $e->getMessage());
         }
     }
 
     private function ajax_permohonan_pabrik_data(Request $request)
     {
+        $request->validate(["mohon_id" => "required|integer"]);
         try {
-            $request->validate(["mohon_id" => "required|integer"]);
             $dataPemohon = SisPermohonan::where("user_id", auth()->id())->findOrFail($request['mohon_id']);
             $dataPabrik  = $dataPemohon?->sis_permohonan_pabriks;
             foreach ($dataPabrik as $pabrik) {
@@ -1416,8 +1418,8 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_permohonan_pabrik_add(Request $request)
     {
+        $request->validate(["mohon_id" => "required|integer"]);
         try {
-            $request->validate(["mohon_id" => "required|integer"]);
             DB::beginTransaction();
             $randomName = Str::random(5);
             // Add Permohonan Data
@@ -1463,14 +1465,14 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_permohonan_pabrik_update(Request $request)
     {
+        $request->validate([
+            'mohon_id'             => 'required|integer',
+            'mohon_pabrik_id'      => 'required|integer',
+            "parameter_pelanggan"  => "required",
+            "parameter_permohonan" => "required",
+            "value"                => "required"
+        ]);
         try {
-            $request->validate([
-                'mohon_id'             => 'required|integer',
-                'mohon_pabrik_id'      => 'required|integer',
-                "parameter_pelanggan"  => "required",
-                "parameter_permohonan" => "required",
-                "value"                => "required"
-            ]);
             DB::beginTransaction();
             $parameterPermohonan = $request['parameter_permohonan'];
             $parameterPelanggan  = $request['parameter_pelanggan'];
@@ -1496,11 +1498,11 @@ class SertifikasiPermohonanController extends Controller
 
     private function ajax_permohonan_pabrik_delete(Request $request)
     {
+        $request->validate([
+            'mohon_pabrik_id' => 'required|integer',
+            'mohon_id'        => 'required|integer',
+        ]);
         try {
-            $request->validate([
-                'mohon_pabrik_id' => 'required|integer',
-                'mohon_id'        => 'required|integer',
-            ]);
             DB::beginTransaction();
 
             // Delete pabrik permohonan

@@ -208,7 +208,7 @@
                                     <td>@{{ kom.satuan_produksi }}</td>
                                     <td>
                                         <template
-                                            v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">
+                                                v-if="window.vueStepOne.data_pengajuan[idx].jenis_pengajuan == 'baru'">
                                             @{{ kom.keterangan }}
                                         </template>
                                         <template v-else>
@@ -263,12 +263,12 @@
                             window.vueStepOne.data_pengajuan.map(async (pengajuan, idx) => {
                                 await this.pengajuanAdd();
 
-                                this.data_sertifikat[idx].mohon_det_id                 = pengajuan.mohon_det_id
-                                this.data_sertifikat[idx].jenis_sertifikasi_data       = pengajuan
-                                this.data_sertifikat[idx].jenis_sertifikasi_id         = pengajuan.master_sertifikat_id;
-                                this.data_sertifikat[idx].jenis_sertifikasi_text       = pengajuan.master_sertifikat_text;
+                                this.data_sertifikat[idx].mohon_det_id = pengajuan.mohon_det_id
+                                this.data_sertifikat[idx].jenis_sertifikasi_data = pengajuan
+                                this.data_sertifikat[idx].jenis_sertifikasi_id = pengajuan.master_sertifikat_id;
+                                this.data_sertifikat[idx].jenis_sertifikasi_text = pengajuan.master_sertifikat_text;
                                 this.data_sertifikat[idx].jenis_sertifikasi_is_product = pengajuan.master_sertifikat_is_product;
-                                this.data_sertifikat[idx].komoditas                    = pengajuan.data_komoditas
+                                this.data_sertifikat[idx].komoditas = pengajuan.data_komoditas
 
 
                                 setTimeout(async () => {
@@ -319,17 +319,17 @@
                         })
                     },
                     uploadDokumen(pengajuanIndex, id) {
-                        self            = this;
-                        const el        = document.querySelector("#dokumen" + pengajuanIndex + id);
-                        const doc       = el.files[0]
+                        self = this;
+                        const el = document.querySelector("#dokumen" + pengajuanIndex + id);
+                        const doc = el.files[0]
                         const dt_upload = {"id": id, "dokumen": doc};
                         if (dt_upload.dokumen.type !== "application/pdf") {
-                            swalWithBootstrapButtons({
+                            $("#dokumen" + pengajuanIndex + id).val("")
+                            return swalWithBootstrapButtons({
                                 title: `Validasi`,
                                 text: "Dokumen harus bertipe PDF",
                                 type: 'warning'
                             })
-                            $("#dokumen" + pengajuanIndex + id).val("")
                         }
 
                         let formData = new FormData();
@@ -375,17 +375,17 @@
                         $("#step2_satuan_produksi" + pengajuanIndex).val("");
                         await this.setComboDataKomoditas(pengajuanIndex, null)
                         $("#step2_komoditi_datas" + pengajuanIndex).combogrid('clear');
-                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_form_type      = 'add';
+                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_form_type = 'add';
                         this.data_sertifikat[pengajuanIndex].jenis_komoditas_form_edited_id = null;
 
                     },
                     validateKomoditas(pengajuanIndex) {
-                        let sni              = $.trim($("#step2_komoditi_sni" + pengajuanIndex).val());
-                        let merk             = $.trim($("#step2_komoditi_merk" + pengajuanIndex).val());
-                        let tipe             = $.trim($("#step2_komoditi_tipe" + pengajuanIndex).val());
-                        let ukuran           = $.trim($("#step2_komoditi_ukuran" + pengajuanIndex).val());
+                        let sni = $.trim($("#step2_komoditi_sni" + pengajuanIndex).val());
+                        let merk = $.trim($("#step2_komoditi_merk" + pengajuanIndex).val());
+                        let tipe = $.trim($("#step2_komoditi_tipe" + pengajuanIndex).val());
+                        let ukuran = $.trim($("#step2_komoditi_ukuran" + pengajuanIndex).val());
                         let produksi_tahunan = $.trim($("#step2_produksi_tahunan" + pengajuanIndex).val());
-                        let satuan_produksi  = $.trim($("#step2_satuan_produksi" + pengajuanIndex).val());
+                        let satuan_produksi = $.trim($("#step2_satuan_produksi" + pengajuanIndex).val());
                         if (this.data_sertifikat[pengajuanIndex].jenis_komoditas_id == null) throw `Pilih Komoditas (Pengajuan ${pengajuanIndex + 1})`;
                         if (sni === "") throw `Tuliskan No SNI (Pengajuan ${pengajuanIndex + 1})`;
                         if (merk === "") throw `Tuliskan Merk (Pengajuan ${pengajuanIndex + 1})`;
@@ -429,7 +429,7 @@
                     },
                     async deleteKomoditi(pengajuanIndex, id) {
                         let selectedKomoditasIdx = this.data_sertifikat[pengajuanIndex].komoditas.findIndex(e => e.id == id);
-                        let selectedKomoditas    = this.data_sertifikat[pengajuanIndex].komoditas[selectedKomoditasIdx]
+                        let selectedKomoditas = this.data_sertifikat[pengajuanIndex].komoditas[selectedKomoditasIdx]
 
                         swalWithBootstrapButtons({
                             title: `Hapus Komoditi ?`,
@@ -458,9 +458,9 @@
                         this.setComboDataKomoditas(pengajuanIndex, selectedKomoditas.komoditi_nama);
                         $('#step2_komoditi_datas' + pengajuanIndex).combogrid('setValue', selectedKomoditas.komoditi_nama);
 
-                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_id             = selectedKomoditas.komoditi_id;
-                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_text           = selectedKomoditas.komoditi_nama;
-                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_form_type      = "update";
+                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_id = selectedKomoditas.komoditi_id;
+                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_text = selectedKomoditas.komoditi_nama;
+                        this.data_sertifikat[pengajuanIndex].jenis_komoditas_form_type = "update";
                         this.data_sertifikat[pengajuanIndex].jenis_komoditas_form_edited_id = id;
                     },
                     async updateKomoditi(pengajuanIndex) {
@@ -509,7 +509,7 @@
                     },
                     setComboDataKomoditas(pengajuanIndex, search) {
                         let self = this;
-                        let url  = `{{ url("$url/ajax?action=combogrid_komoditas") }}&is_product=${this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_is_product}`
+                        let url = `{{ url("$url/ajax?action=combogrid_komoditas") }}&is_product=${this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_is_product}`
                         if (search != null) {
                             url += '&q=' + search
                         }
@@ -535,7 +535,7 @@
                                 {field: 'komodt_sni', title: 'No SNI', width: 100, sortable: true,},
                             ]],
                             onSelect: function (index, row) {
-                                self.data_sertifikat[pengajuanIndex].jenis_komoditas_id   = row.komodt_id;
+                                self.data_sertifikat[pengajuanIndex].jenis_komoditas_id = row.komodt_id;
                                 self.data_sertifikat[pengajuanIndex].jenis_komoditas_text = row.komodt_nama;
 
                                 $("#step2_komoditi_sni" + pengajuanIndex).val(row.komodt_sni)
@@ -544,7 +544,7 @@
                     },
                     setComboDataSertifikasi(pengajuanIndex) {
                         let self = this;
-                        let url  = `{{ url("$url/ajax?action=combogrid_sertifikasi") }}`
+                        let url = `{{ url("$url/ajax?action=combogrid_sertifikasi") }}`
                         if (this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_id != null) {
                             url += "&q=" + encodeURI(this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_text);
                         }
@@ -585,9 +585,9 @@
                         }
                     },
                     async comboDataSertifikasiOnSelect(pengajuanIndex, row) {
-                        this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_data       = row
-                        this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_id         = row.sert_id;
-                        this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_text       = row.sert_nama;
+                        this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_data = row
+                        this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_id = row.sert_id;
+                        this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_text = row.sert_nama;
                         this.data_sertifikat[pengajuanIndex].jenis_sertifikasi_is_product = row.sert_is_product;
                         this.resetUploadDokumen(pengajuanIndex);
                         this.getDokumenSertifikasi(pengajuanIndex);

@@ -235,7 +235,7 @@ class UploadTagihanBiayaController extends Controller
                 'mohon_harus_lunas_status'   => 'tidak',
             ];
 
-            if ($request->hasFile("mohon_tagihan_biaya_file")) throw new ExpectedException('File belum diunggah');
+            if (!$request->hasFile("mohon_tagihan_biaya_file")) throw new ExpectedException('File belum diunggah');
             if ($request["mohon_tagihan_biaya_file_lama"] != '') @unlink($request["mohon_tagihan_biaya_file_lama"]);
 
             $file     = $request->file('mohon_tagihan_biaya_file');
