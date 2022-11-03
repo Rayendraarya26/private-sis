@@ -38,11 +38,12 @@
                 url: `{{ url("$url/ajax?action=datagrid-permohonan-biaya") }}`,
                 rownumbers: true,
                 nowrap: false,
-                singleSelect: false,
-                remoteSort: false,
-                remoteFilter: false,
+                singleSelect: true,
+                remoteSort: true,
+                remoteFilter: true,
                 multiSort: true,
-                pagination: false,
+                pagination: true,
+                clientPaging: false,
                 frozenColumns: [[
                     {
                         field: 'action',
