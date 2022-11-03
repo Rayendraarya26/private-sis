@@ -282,7 +282,7 @@ class UploadKajianPermohonanController extends Controller
                 'mohon_kmditi_ea'            => $request->mohon_kmditi_ea,
             ];
 
-            if ($request->hasFile("mohon_kajian_permohonan_file")) throw new ExpectedException('File belum diunggah');
+            if (!$request->hasFile("mohon_kajian_permohonan_file")) throw new ExpectedException('File belum diunggah');
             if ($request["mohon_kajian_permohonan_file_lama"] != '') @unlink($request["mohon_kajian_permohonan_file_lama"]);
 
             $file     = $request->file('mohon_kajian_permohonan_file');
