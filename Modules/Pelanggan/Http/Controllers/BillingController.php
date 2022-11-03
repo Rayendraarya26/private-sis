@@ -71,7 +71,7 @@ class BillingController extends Controller
         try {
             $oldPath     = [];
             $newPath     = [];
-            $paymentDate = Carbon::createFromFormat('m/d/Y, g:i A', $request['bill_payment_date']);
+            $paymentDate = Carbon::createFromFormat('m/d/Y g:i A', Str::of($request['bill_payment_date'])->remove(','));
 
             $filePath = sprintf(config("app.path_file_billing"), $billing->bill_id);
             if (!File::exists($filePath)) {
