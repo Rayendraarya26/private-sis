@@ -437,9 +437,9 @@
                                 "merk": $.trim($("#step2_komoditi_merk" + pengajuanIndex).val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe" + pengajuanIndex).val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran" + pengajuanIndex).val()),
-                                "keterangan": $.trim($("#step2_komoditi_keterangan" + pengajuanIndex).val()),
                                 "produksi_tahunan": $.trim($("#step2_produksi_tahunan" + pengajuanIndex).val()),
                                 "satuan_produksi": $.trim($("#step2_satuan_produksi" + pengajuanIndex).val()),
+                                "keterangan": $.trim($("#step2_komoditi_keterangan" + pengajuanIndex).val()),
                             };
 
                             let dataPermohonanIDB = await idb.pelanggan_permohonan.where({'name': 'jenis_permohonan_' + pengajuanIndex}).first();
@@ -505,6 +505,8 @@
                             let selectedKomoditas    = dataPermohonanIDB.step2.komoditas[selectedKomoditasIdx];
 
                             dataPermohonanIDB.step2.komoditas[selectedKomoditasIdx] = {
+                                "id": (Math.random() + 1).toString(36).substring(7),
+                                "pengajuan_index": pengajuanIndex,
                                 "komoditi_id": selectedKomoditas.komoditi_id,
                                 "komoditi_nama": selectedKomoditas.komoditi_nama,
                                 "sni": $.trim($("#step2_komoditi_sni" + pengajuanIndex).val()),
@@ -513,6 +515,7 @@
                                 "ukuran": $.trim($("#step2_komoditi_ukuran" + pengajuanIndex).val()),
                                 "produksi_tahunan": $.trim($("#step2_produksi_tahunan" + pengajuanIndex).val()),
                                 "satuan_produksi": $.trim($("#step2_satuan_produksi" + pengajuanIndex).val()),
+                                "keterangan": $.trim($("#step2_komoditi_keterangan" + pengajuanIndex).val()),
                             }
                             await idb.pelanggan_permohonan.update(dataPermohonanIDB.id, dataPermohonanIDB);
                             this.data_sertifikat[pengajuanIndex].komoditas = dataPermohonanIDB.step2.komoditas;

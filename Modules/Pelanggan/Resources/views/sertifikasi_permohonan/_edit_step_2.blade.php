@@ -261,7 +261,7 @@
                         setTimeout(async () => {
                             // RENDER DYNAMIC PENGAJUAN
                             window.vueStepOne.data_pengajuan.map(async (pengajuan, idx) => {
-                                await this.pengajuanAdd();
+                                this.pengajuanAdd();
 
                                 this.data_sertifikat[idx].mohon_det_id = pengajuan.mohon_det_id
                                 this.data_sertifikat[idx].jenis_sertifikasi_data = pengajuan
@@ -297,7 +297,7 @@
                             })
                         })
                     },
-                    async pengajuanAdd() {
+                    pengajuanAdd() {
                         this.data_sertifikat.push({
                             mohon_det_id: null,
                             jenis_sertifikasi_data: null,
@@ -470,15 +470,16 @@
                             let selectedKomoditasIdx = this.data_sertifikat[pengajuanIndex].komoditas.findIndex(e => e.id == id);
 
                             this.data_sertifikat[pengajuanIndex].komoditas[selectedKomoditasIdx] = {
+                                "id": (Math.random() + 1).toString(36).substring(7),
                                 "komoditi_id": this.data_sertifikat[pengajuanIndex].jenis_komoditas_id,
                                 "komoditi_nama": this.data_sertifikat[pengajuanIndex].jenis_komoditas_text,
                                 "sni": $.trim($("#step2_komoditi_sni" + pengajuanIndex).val()),
                                 "merk": $.trim($("#step2_komoditi_merk" + pengajuanIndex).val()),
                                 "tipe": $.trim($("#step2_komoditi_tipe" + pengajuanIndex).val()),
                                 "ukuran": $.trim($("#step2_komoditi_ukuran" + pengajuanIndex).val()),
-                                "keterangan": $.trim($("#step2_komoditi_keterangan" + pengajuanIndex).val()),
                                 "produksi_tahunan": $.trim($("#step2_produksi_tahunan" + pengajuanIndex).val()),
                                 "satuan_produksi": $.trim($("#step2_satuan_produksi" + pengajuanIndex).val()),
+                                "keterangan": $.trim($("#step2_komoditi_keterangan" + pengajuanIndex).val()),
                             };
                             await this.resetFormKomoditas(pengajuanIndex);
                         } catch (message) {

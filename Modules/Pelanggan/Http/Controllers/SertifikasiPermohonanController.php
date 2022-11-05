@@ -188,7 +188,7 @@ class SertifikasiPermohonanController extends Controller
                         $newSisPermohonanKomoditas->mohon_kmditi_merk                              = $komoditi->merk;
                         $newSisPermohonanKomoditas->mohon_kmditi_tipe                              = $komoditi->tipe;
                         $newSisPermohonanKomoditas->mohon_kmditi_ukuran                            = $komoditi->ukuran;
-                        $newSisPermohonanKomoditas->mohon_kmditi_keterangan                        = $komoditi?->keterangan;
+                        $newSisPermohonanKomoditas->mohon_kmditi_keterangan                        = $komoditi->keterangan;
                         $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan        = $komoditi->produksi_tahunan;
                         $newSisPermohonanKomoditas->mohon_kmditi_kapasitas_produksi_tahunan_satuan = $komoditi->satuan_produksi;
                         $newSisPermohonanKomoditas->created_at                                     = Carbon::now();
