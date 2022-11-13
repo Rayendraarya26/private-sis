@@ -45,7 +45,7 @@ class CertJpaStruct
         $this->noReg                   = $noReg;
         $this->tglSertifikasiAwal      = $tglSertifikasiAwal;
         $this->lembaga                 = $lembaga;
-        $this->perusahaanNama          = $perusahaanNama;
+        $this->perusahaanNama          = Str::replace("/", "-", $perusahaanNama);
         $this->perusahaanAlamat        = $perusahaanAlamat;
         $this->produkJenis             = $produkJenis;
         $this->produkTipe              = $produkTipe;

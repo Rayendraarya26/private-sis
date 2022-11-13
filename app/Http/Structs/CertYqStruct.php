@@ -38,7 +38,7 @@ class CertYqStruct
         $this->noReg              = $noReg;
         $this->tglSertifikasiAwal = $tglSertifikasiAwal;
         $this->lembaga            = $lembaga;
-        $this->perusahaanNama     = $perusahaanNama;
+        $this->perusahaanNama     = Str::replace("/", "-", $perusahaanNama);
         $this->perusahaanAlamat   = $perusahaanAlamat;
         $this->sertifikasiTipe    = $sertifikasiTipe;
         $this->ruangLingkup       = $ruangLingkup;
