@@ -117,16 +117,15 @@ class DataSertifikatController extends Controller
                 $dataSertifikat = $qrySertifikat->first();
                 $qryPelanggan   = SisPelanggan::with(['master_kecamatan', 'master_kabupaten', 'master_provinsi', 'master_negara', 'master_provinsi'])->where('cust_id', '=', $dataSertifikat->cust_id);
                 $dataPelanggan  = $qryPelanggan->first();
-                if (empty($dataPelanggan->negara_id)) throw new ExpectedException("Tidak dapat mencetak karena data tidak lengkap (Negara tidak ditemukan)");
 
                 $tglTerbit          = $dataSertifikat->cust_sert_tgl_sertifikat_awal->format('d F  Y');
                 $tglPerubahan       = ($dataSertifikat->cust_sert_tgl_sertifikat_perubahan != '') ? $dataSertifikat->cust_sert_tgl_sertifikat_perubahan->format('d F  Y') : '';
                 $tglKadaluarsa      = $dataSertifikat->cust_sert_expired_date->format('d F  Y');
                 $tglSertifikasiAwal = $dataSertifikat->cust_sert_tgl_sertifikat_awal->format('d F Y');
                 if ($dataPelanggan?->master_negara?->negara_nama == 'Indonesia') {
-                    $perusahaanAlamat = $dataPelanggan->cust_alamat . ', ' . $dataPelanggan->master_kecamatan->kec_nama . ', ' . $dataPelanggan->master_kabupaten->kab_nama . ', ' . $dataPelanggan->master_provinsi->prov_nama . ', ' . $dataPelanggan->master_negara->negara_nama;
+                    $perusahaanAlamat = $dataPelanggan?->cust_alamat . ', ' . $dataPelanggan?->master_kecamatan->kec_nama . ', ' . $dataPelanggan?->master_kabupaten?->kab_nama . ', ' . $dataPelanggan->master_provinsi->prov_nama . ', ' . $dataPelanggan->master_negara->negara_nama;
                 } else {
-                    $perusahaanAlamat = $dataPelanggan->cust_alamat . ', ' . $dataPelanggan->master_negara->negara_nama;
+                    $perusahaanAlamat = $dataPelanggan?->cust_alamat . ', ' . $dataPelanggan?->master_negara?->negara_nama;
                 }
 
                 if ($dataSertifikat->master_sertifikasi->sert_id == '1') {

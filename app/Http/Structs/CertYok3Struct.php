@@ -89,7 +89,11 @@ class CertYok3Struct
         $img->text("$this->perusahaanNama", 300, 1210, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
-            $font->size(150);
+            if (Str::length($this->perusahaanNama) > 50) {
+                $font->size(120);
+            } else {
+                $font->size(150);
+            }
             $font->color("#000000");
             $font->align("left");
             $font->valign("middle");

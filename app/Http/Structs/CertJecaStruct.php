@@ -101,7 +101,11 @@ class CertJecaStruct
         $img->text("$this->perusahaanNama", 1250, 1500, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
-            $font->size(160);
+            if (Str::length($this->perusahaanNama) > 20) {
+                $font->size(120);
+            } else {
+                $font->size(160);
+            }
             $font->color("#000000");
             $font->align("center");
             $font->valign("middle");

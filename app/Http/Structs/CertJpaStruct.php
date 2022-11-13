@@ -119,7 +119,11 @@ class CertJpaStruct
         $img->text("$this->perusahaanNama", 1200, 1350, function ($font) {
             $fontType = public_path('/assets/fonts/gothica1/GothicA1-Medium.ttf');
             $font->file($fontType);
-            $font->size(120);
+            if (Str::length($this->perusahaanNama) > 20) {
+                $font->size(90);
+            } else {
+                $font->size(120);
+            }
             $font->color("#000000");
             $font->align("center");
             $font->valign("middle");
