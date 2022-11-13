@@ -1,6 +1,6 @@
 stages:
   - deploy
-deploy-in-staging:
+deploy-to-staging:
   stage: deploy
   tags:
     - dolkode-azure
@@ -20,7 +20,7 @@ deploy-in-staging:
     - >-
       ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd /home/bbkkp/app/test_bbkkp_sis && 
       git checkout master && git pull origin master && exit"
-deploy-in-production:
+deploy-to-production:
   stage: deploy
   tags:
     - dolkode-azure
