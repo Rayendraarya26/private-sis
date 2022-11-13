@@ -31,7 +31,45 @@ deploy-to-production:
     - apt-get install -qq git
     - which ssh-agent || ( apt-get install -qq openssh-client )
     - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY2" | base64 -d)
+    - ssh-add <(echo "-----BEGIN OPENSSH PRIVATE KEY-----
+      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
+      AQIDBA==
+      -----END OPENSSH PRIVATE KEY-----")
     - mkdir -p ~/.ssh
     - >-
       [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
