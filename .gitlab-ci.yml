@@ -1,0 +1,42 @@
+stages:
+  - deploy
+deploy-in-staging:
+  stage: deploy
+  tags:
+    - dolkode-azure
+  only:
+    - main
+  before_script:
+    - apt-get update -qq
+    - apt-get install -qq git
+    - which ssh-agent || ( apt-get install -qq openssh-client )
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - >-
+      [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
+      ~/.ssh/config
+  script:
+    - >-
+      ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd /home/bbkkp/app/test_bbkkp_sis && 
+      git checkout master && git pull origin master && exit"
+deploy-in-production:
+  stage: deploy
+  tags:
+    - dolkode-azure
+  only:
+    - '/v[0-9]+\.[0-9]+\.[0-9]+/'
+  before_script:
+    - apt-get update -qq
+    - apt-get install -qq git
+    - which ssh-agent || ( apt-get install -qq openssh-client )
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - >-
+      [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
+      ~/.ssh/config
+  script:
+    - >-
+      ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd /home/bbkkp/app/test_bbkkp_sis && 
+      git checkout master && git pull origin master && exit"
