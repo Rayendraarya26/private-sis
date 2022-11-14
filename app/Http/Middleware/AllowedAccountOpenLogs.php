@@ -16,7 +16,7 @@ class AllowedAccountOpenLogs
      */
     public function handle(Request $request, Closure $next)
     {
-        $availableEmail = ['dolkodesolutions@gmail.com', 'aldinokemal2104@gmail.com', 'saiful.mmuttaqin@gmail.com'];
+        $availableEmail = config('app.log.allowed_account_open_logs');
         if (auth()->check() && in_array(auth()->user()->user_email, $availableEmail)) {
             return $next($request);
         }

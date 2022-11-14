@@ -43,6 +43,10 @@ return [
     'sihalal_cookie_name'        => 'sihalal_cookie',
     'sihalal_file_upload'        => "files/sihalal/%d",
 
+    'log' => [
+        'allowed_account_open_logs' => explode(',',env('LOG_ALLOWED_EMAILS'))
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

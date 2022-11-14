@@ -9,7 +9,6 @@ deploy-to-production:
     - '/v[0-9]+\.[0-9]+\.[0-9]+/'
   before_script:
     - apt-get update -qq
-    - apt-get install -qq git
     - which ssh-agent || ( apt-get install -qq openssh-client )
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
@@ -32,7 +31,6 @@ deploy-to-staging:
     - master
   before_script:
     - apt-get update -qq
-    - apt-get install -qq git
     - which ssh-agent || ( apt-get install -qq openssh-client )
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
