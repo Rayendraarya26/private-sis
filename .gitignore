@@ -14,7 +14,5 @@ yarn-error.log
 /.idea
 /.vscode
 doc
-*.lock
 .DS_Store
-public/package-lock.json
 storage/fonts

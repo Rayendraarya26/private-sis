@@ -19,7 +19,7 @@ deploy-to-production:
       ~/.ssh/config
   script:
     - >-
-      ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd $APP_FOLDER && 
+      ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd $APP_FOLDER && composer install &&
       git checkout master && git pull origin master && exit"
   environment:
     name: production
@@ -42,7 +42,7 @@ deploy-to-staging:
       ~/.ssh/config
   script:
     - >-
-      ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd $APP_FOLDER && 
+      ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd $APP_FOLDER && composer install &&
       git checkout master && git pull origin master && exit"
   environment:
     name: staging
