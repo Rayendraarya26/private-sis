@@ -106,7 +106,7 @@ trait ServiceSihalalTrait
         if (isset($result['message']) && $result['message'] == "You are not logged in") {
             $this->postLogin();
             return $this->getPermohonan($status_list);
-        } else if (!empty($result) && in_array($result['status'], [200, 201])) {
+        } else if (!empty($result) && isset($result['status']) && in_array($result['status'], [200, 201])) {
             Cache::add($cacheKey, $result, $this->cacheSecond);
             return $result;
         }
@@ -342,7 +342,7 @@ trait ServiceSihalalTrait
         $apiUrl = "/api/v1/invoice/" . config("app.sihalal_lph_maped_id");
 
         $result = $this->http->get($apiUrl)->json();
-        if (!empty($result) && in_array($result['status'], [200, 201])) Cache::add($cacheKey, $result, $this->cacheSecond);
+        if (!empty($result) && isset($result['status']) && in_array($result['status'], [200, 201])) Cache::add($cacheKey, $result, $this->cacheSecond);
 
         return $result;
     }
