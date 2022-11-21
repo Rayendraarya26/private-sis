@@ -103,13 +103,14 @@ trait ServiceSihalalTrait
         $apiUrl = "/api/v1/data_list/$status_list/" . config("app.sihalal_lph_id");
 
         $result = $this->http->get($apiUrl)->json();
-        if (isset($result['message']) == "You are not logged in") {
+        if (isset($result['message']) && $result['message'] == "You are not logged in") {
             $this->postLogin();
             return $this->getPermohonan($status_list);
-        } else {
+        } else if (!empty($result) && in_array($result['status'], [200, 201])) {
             Cache::add($cacheKey, $result, $this->cacheSecond);
             return $result;
         }
+        return [];
     }
 
     public function getPermohonanDetail($reg_id)
@@ -341,7 +342,7 @@ trait ServiceSihalalTrait
         $apiUrl = "/api/v1/invoice/" . config("app.sihalal_lph_maped_id");
 
         $result = $this->http->get($apiUrl)->json();
-        if ($result) Cache::add($cacheKey, $result, $this->cacheSecond);
+        if (!empty($result) && in_array($result['status'], [200, 201])) Cache::add($cacheKey, $result, $this->cacheSecond);
 
         return $result;
     }
