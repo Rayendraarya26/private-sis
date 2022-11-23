@@ -339,7 +339,7 @@ trait ServiceSihalalTrait
 
         // get from Api
         $this->mustLogin();
-        $apiUrl = "/api/v1/invoice/" . config("app.sihalal_lph_maped_id");
+        $apiUrl = "/api/v1/invoice/" . config("app.sihalal_lph_id");
 
         $result = $this->http->get($apiUrl)->json();
         if (!empty($result) && isset($result['status']) && in_array($result['status'], [200, 201])) Cache::add($cacheKey, $result, $this->cacheSecond);
