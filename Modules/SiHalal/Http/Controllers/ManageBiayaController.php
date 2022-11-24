@@ -50,7 +50,7 @@ class ManageBiayaController extends Controller
             return view("$this->view.detail")->with($parser);
         } catch (Exception $e) {
             if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
-            return redirect('/sihalal/biaya')->withErrors(['message' => $e->getMessage()]);
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 
     }

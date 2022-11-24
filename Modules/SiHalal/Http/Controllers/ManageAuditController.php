@@ -2,11 +2,9 @@
 
 namespace Modules\SiHalal\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EasyuiDatagridBuilder;
-use Carbon\Carbon;
-use DateTime;
-use DateTimeInterface;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -39,16 +37,24 @@ class ManageAuditController extends Controller
             new BreadcrumbsStruct('Detail'),
         ];
 
-        $data_permohonan = [];
-        $rest_permohonan = $this->getPermohonanDetail($regId);
-        if (isset($rest_permohonan['payload'])) {
-            $data_permohonan = $rest_permohonan['payload'];
+        try {
+            $data_permohonan = [];
+            $rest_permohonan = $this->getPermohonanDetail($regId);
+            if ($rest_permohonan['status_code'] != 200) throw new ExpectedException("data permohoanan dengan ID $regId tidak ditemukan");
+
+            if (isset($rest_permohonan['payload'])) {
+                $data_permohonan = $rest_permohonan['payload'];
+            }
+
+            $pane_active = ($request->pane_active != '') ? $request->pane_active : 'jadwal';
+
+            $parser = ['pane_active' => $pane_active, 'view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
+            return view("$this->view.detail")->with($parser);
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
         }
 
-        $pane_active = ($request->pane_active != '') ? $request->pane_active : 'jadwal';
-
-        $parser = ['pane_active' => $pane_active, 'view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
-        return view("$this->view.detail")->with($parser);
     }
 
     public function ajax(Request $request)
@@ -123,8 +129,8 @@ class ManageAuditController extends Controller
 
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort  = explode(",", $request->sort);
-            $order = explode(",", $request->order);
+            $sort   = explode(",", $request->sort);
+            $order  = explode(",", $request->order);
             $sorter = [];
             for ($i = 0; $i < count($sort); $i++) {
                 $sorter[] = [$sort[$i], $order[$i]];

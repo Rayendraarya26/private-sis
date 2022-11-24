@@ -2,6 +2,7 @@
 
 namespace Modules\SiHalal\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EasyuiDatagridBuilder;
 use Exception;
@@ -37,24 +38,31 @@ class LaporanAuditController extends Controller
             new BreadcrumbsStruct('Detail Laporan Audit'),
         ];
 
-        $data_permohonan = [];
-        $rest_permohonan = $this->getPermohonanDetail($regId);
-        if (isset($rest_permohonan['payload'])) {
-            $data_permohonan = $rest_permohonan['payload'];
-        }
+        try {
+            $data_permohonan = [];
+            $rest_permohonan = $this->getPermohonanDetail($regId);
+            if ($rest_permohonan['status_code'] != 200) throw new ExpectedException("data permohoanan dengan ID $regId tidak ditemukan");
 
-        $rest_pelaporan = $this->getAuditResult();
-        $data_pelaporan = null;
-        if (isset($rest_pelaporan['payload'])) {
-            foreach ($rest_pelaporan['payload'] as $d) {
-                if ($d['id_reg'] == $regId) {
-                    $data_pelaporan = $d;
+            if (isset($rest_permohonan['payload'])) {
+                $data_permohonan = $rest_permohonan['payload'];
+            }
+
+            $rest_pelaporan = $this->getAuditResult();
+            $data_pelaporan = null;
+            if (isset($rest_pelaporan['payload'])) {
+                foreach ($rest_pelaporan['payload'] as $d) {
+                    if ($d['id_reg'] == $regId) {
+                        $data_pelaporan = $d;
+                    }
                 }
             }
-        }
 
-        $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan, 'data_pelaporan' => $data_pelaporan];
-        return view("$this->view.detail")->with($parser);
+            $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan, 'data_pelaporan' => $data_pelaporan];
+            return view("$this->view.detail")->with($parser);
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function ajax(Request $request)
@@ -88,7 +96,7 @@ class LaporanAuditController extends Controller
                 $x['no_ndpu']           = $d['no_ndpu'];
                 $x['jenis_daftar']      = $d['jenis_daftar'];
                 $x['jenis_produk']      = $d['jenis_produk'];
-                $result[] = $x;
+                $result[]               = $x;
             }
         }
 
@@ -104,8 +112,8 @@ class LaporanAuditController extends Controller
 
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort  = explode(",", $request->sort);
-            $order = explode(",", $request->order);
+            $sort   = explode(",", $request->sort);
+            $order  = explode(",", $request->order);
             $sorter = [];
             for ($i = 0; $i < count($sort); $i++) {
                 $sorter[] = [$sort[$i], $order[$i]];
@@ -186,7 +194,7 @@ class LaporanAuditController extends Controller
                     $x['tgl_selesai']    = $d['tgl_selesai'];
                     $x['keterangan']     = $d['keterangan'];
                     $x['hasil_audit']    = $d['hasil_audit'];
-                    $result[] = $x;
+                    $result[]            = $x;
                 }
             }
         }

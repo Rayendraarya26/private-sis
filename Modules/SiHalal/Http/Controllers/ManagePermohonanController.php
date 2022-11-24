@@ -36,14 +36,21 @@ class ManagePermohonanController extends Controller
             new BreadcrumbsStruct('Detail'),
         ];
 
-        $data_permohonan = [];
-        $rest_permohonan = $this->getPermohonanDetail($regId);
-        if (isset($rest_permohonan['payload'])) {
-            $data_permohonan = $rest_permohonan['payload'];
-        }
+        try {
+            $data_permohonan = [];
+            $rest_permohonan = $this->getPermohonanDetail($regId);
+            if ($rest_permohonan['status_code'] != 200) throw new ExpectedException("data permohoanan dengan ID $regId tidak ditemukan");
 
-        $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
-        return view("$this->view.detail")->with($parser);
+            if (isset($rest_permohonan['payload'])) {
+                $data_permohonan = $rest_permohonan['payload'];
+            }
+
+            $parser = ['module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
+            return view("$this->view.detail")->with($parser);
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+            return redirect($this->url)->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function ajax(Request $request)
@@ -77,7 +84,7 @@ class ManagePermohonanController extends Controller
                 $x['no_ndpu']           = $d['no_ndpu'];
                 $x['jenis_daftar']      = $d['jenis_daftar'];
                 $x['jenis_produk']      = $d['jenis_produk'];
-                $result[] = $x;
+                $result[]               = $x;
             }
         }
 
