@@ -2,6 +2,7 @@
 
 namespace Modules\SiHalal\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\EasyuiDatagridBuilder;
 use Exception;
@@ -36,14 +37,22 @@ class ManageBiayaController extends Controller
             new BreadcrumbsStruct('Detail Biaya'),
         ];
 
-        $data_permohonan = [];
-        $rest_permohonan = $this->getPermohonanDetail($regId);
-        if (isset($rest_permohonan['payload'])) {
-            $data_permohonan = $rest_permohonan['payload'];
+        try {
+            $data_permohonan = [];
+            $rest_permohonan = $this->getPermohonanDetail($regId);
+            if ($rest_permohonan['status_code'] != 200) throw new ExpectedException("data permohoanan dengan ID $regId tidak ditemukan");
+
+            if (isset($rest_permohonan['payload'])) {
+                $data_permohonan = $rest_permohonan['payload'];
+            }
+
+            $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
+            return view("$this->view.detail")->with($parser);
+        } catch (Exception $e) {
+            if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+            return redirect('/sihalal/biaya')->withErrors(['message' => $e->getMessage()]);
         }
 
-        $parser = ['view' => $this->view, 'module' => $this->module, 'url' => $this->url, 'breadcrumbs' => $breadcrumbs, 'data_permohonan' => $data_permohonan];
-        return view("$this->view.detail")->with($parser);
     }
 
     public function ajax(Request $request)
@@ -78,7 +87,7 @@ class ManageBiayaController extends Controller
                 $x['no_ndpu']           = $d['no_ndpu'];
                 $x['jenis_daftar']      = $d['jenis_daftar'];
                 $x['jenis_produk']      = $d['jenis_produk'];
-                $result[] = $x;
+                $result[]               = $x;
             }
         }
 
@@ -94,8 +103,8 @@ class ManageBiayaController extends Controller
 
         // Sorter
         if (!empty($request->sort) && !empty($request->order)) {
-            $sort  = explode(",", $request->sort);
-            $order = explode(",", $request->order);
+            $sort   = explode(",", $request->sort);
+            $order  = explode(",", $request->order);
             $sorter = [];
             for ($i = 0; $i < count($sort); $i++) {
                 $sorter[] = [$sort[$i], $order[$i]];
