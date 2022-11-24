@@ -59,7 +59,7 @@ trait ServiceSihalalTrait
         $body_data    = $login_process->json();
         $headers_data = $login_process->headers();
 
-        if ($body_data['status'] == 'success') {
+        if ($login_process->status() == 200 && !empty($body_data) && isset($body_data['status']) && $body_data['status'] == 'success') {
             $cookie_string = str_replace("\r\n", "", str_replace("; Path=/; HttpOnly", "", implode(';', $headers_data['Set-Cookie'])));
             session()->put(config('app.sihalal_cookie_name'), $cookie_string);
         } else {
