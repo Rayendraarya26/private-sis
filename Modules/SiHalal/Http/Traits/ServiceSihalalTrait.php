@@ -63,7 +63,9 @@ trait ServiceSihalalTrait
             $cookie_string = str_replace("\r\n", "", str_replace("; Path=/; HttpOnly", "", implode(';', $headers_data['Set-Cookie'])));
             session()->put(config('app.sihalal_cookie_name'), $cookie_string);
         } else {
-            throw new ExpectedException('Login Error');
+            $error = new ExpectedException("Login Gagal");
+            log_error($error, ['url' => $apiUrl, 'userid' => $apiPayload['userid'], 'response' => $body_data]);
+            throw $error;
         }
     }
 
