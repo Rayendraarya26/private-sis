@@ -83,7 +83,7 @@
                                         <div class="col-sm-8">
                                             <input class="form-control" placeholder="Masukkan tanggal pembayaran..."
                                                    data-toggle="datetimepicker" type="text" name="bill_payment_date"
-                                                   id="bill_payment_date">
+                                                   id="bill_payment_date" readonly>
                                             <small style="float: right">Klik kolom untuk menampilkan/menghilangkan
                                                 tanggal</small>
                                         </div>
