@@ -17,10 +17,9 @@ deploy-to-production:
       [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
       ~/.ssh/config
   script:
-    - git checkout $CI_COMMIT_TAG
     - >-
       ssh $SSH_USER@$SSH_IP -p $SSH_PORT "cd $APP_FOLDER &&
-      git checkout master && git pull origin master && composer install && exit"
+      git fetch --all --tags && git checkout $CI_COMMIT_TAG && composer install && exit"
   environment:
     name: production
 
