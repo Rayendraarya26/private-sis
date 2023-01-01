@@ -2,6 +2,7 @@
 
 namespace Modules\OperatorLs\Http\Controllers;
 
+use App\Exceptions\ExpectedException;
 use App\Http\Structs\BreadcrumbsStruct;
 use App\Http\Structs\CertJecaStruct;
 use App\Http\Structs\CertJpaStruct;
@@ -11,6 +12,7 @@ use App\Http\Structs\EmailStruct;
 use App\Http\Structs\NotifStruct;
 use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
@@ -110,85 +112,92 @@ class DataSertifikatController extends Controller
     public function cetak(Request $request, $sertifikatId)
     {
         $qrySertifikat = SisPelangganSertifikasi::with(['master_sertifikasi', 'master_komoditi', 'sis_pelanggan'])->where('sis_pelanggan_sertifikasi.cust_sert_id', '=', $sertifikatId);
-        if (isset($qrySertifikat->get()[0])) {
-            $dataSertifikat = $qrySertifikat->get()[0];
-            $qryPelanggan   = SisPelanggan::with(['master_kecamatan', 'master_kabupaten', 'master_provinsi', 'master_negara', 'master_provinsi'])->where('cust_id', '=', $dataSertifikat->cust_id);
-            $dataPelanggan  = $qryPelanggan->get()[0];
+        if ($qrySertifikat->first() !== null) {
+            try {
+                $dataSertifikat = $qrySertifikat->first();
+                $qryPelanggan   = SisPelanggan::with(['master_kecamatan', 'master_kabupaten', 'master_provinsi', 'master_negara', 'master_provinsi'])->where('cust_id', '=', $dataSertifikat->cust_id);
+                $dataPelanggan  = $qryPelanggan->first();
 
-            $tglTerbit          = $dataSertifikat->cust_sert_tgl_sertifikat_awal->format('d F  Y');
-            $tglPerubahan       = ($dataSertifikat->cust_sert_tgl_sertifikat_perubahan != '') ? $dataSertifikat->cust_sert_tgl_sertifikat_perubahan->format('d F  Y') : '';
-            $tglKadaluarsa      = $dataSertifikat->cust_sert_expired_date->format('d F  Y');
-            $tglSertifikasiAwal = $dataSertifikat->cust_sert_tgl_sertifikat_awal->format('d F Y');
-            if ($dataPelanggan->master_negara->negara_nama == 'Indonesia') {
-                $perusahaanAlamat = $dataPelanggan->cust_alamat . ', ' . $dataPelanggan->master_kecamatan->kec_nama . ', ' . $dataPelanggan->master_kabupaten->kab_nama . ', ' . $dataPelanggan->master_provinsi->prov_nama . ', ' . $dataPelanggan->master_negara->negara_nama;
-            } else {
-                $perusahaanAlamat = $dataPelanggan->cust_alamat . ', ' . $dataPelanggan->master_negara->negara_nama;
+                $tglTerbit          = $dataSertifikat->cust_sert_tgl_sertifikat_awal->format('d F  Y');
+                $tglPerubahan       = ($dataSertifikat->cust_sert_tgl_sertifikat_perubahan != '') ? $dataSertifikat->cust_sert_tgl_sertifikat_perubahan->format('d F  Y') : '';
+                $tglKadaluarsa      = $dataSertifikat->cust_sert_expired_date->format('d F  Y');
+                $tglSertifikasiAwal = $dataSertifikat->cust_sert_tgl_sertifikat_awal->format('d F Y');
+                if ($dataPelanggan?->master_negara?->negara_nama == 'Indonesia') {
+                    $perusahaanAlamat = $dataPelanggan?->cust_alamat . ', ' . $dataPelanggan?->master_kecamatan->kec_nama . ', ' . $dataPelanggan?->master_kabupaten?->kab_nama . ', ' . $dataPelanggan->master_provinsi->prov_nama . ', ' . $dataPelanggan->master_negara->negara_nama;
+                } else {
+                    $perusahaanAlamat = $dataPelanggan?->cust_alamat . ', ' . $dataPelanggan?->master_negara?->negara_nama;
+                }
+
+                if ($dataSertifikat->master_sertifikasi->sert_id == '1') {
+                    $cert = new CertYqStruct(
+                        noReg: $dataSertifikat->cust_sert_nomor_referensi,
+                        tglSertifikasiAwal: $tglSertifikasiAwal,
+                        lembaga: $dataSertifikat->cust_sert_nomor_referensi,
+                        perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
+                        perusahaanAlamat: $perusahaanAlamat,
+                        sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
+                        ruangLingkup: $dataSertifikat->cust_sert_lingkup,
+                        kodeEA: $dataSertifikat->kode_ea_nama,
+                        kodeNACE: $dataSertifikat->kode_nace_nama,
+                        tglTerbit: $tglTerbit,
+                        tglPerubahan: $tglPerubahan,
+                        tglKadaluarsa: $tglKadaluarsa,
+                    );
+                } else if ($dataSertifikat->master_sertifikasi->sert_id == '2') {
+                    $cert = new CertJecaStruct(
+                        noReg: $dataSertifikat->cust_sert_nomor_referensi,
+                        tglSertifikasiAwal: $tglSertifikasiAwal,
+                        lembaga: $dataSertifikat->cust_sert_nomor_referensi,
+                        perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
+                        perusahaanAlamat: $perusahaanAlamat,
+                        sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
+                        ruangLingkup: $dataSertifikat->cust_sert_lingkup,
+                        kodeEA: $dataSertifikat->kode_ea_nama,
+                        kodeNACE: $dataSertifikat->kode_nace_nama,
+                        tglTerbit: $tglTerbit,
+                        tglPerubahan: $tglPerubahan,
+                        tglKadaluarsa: $tglKadaluarsa,
+                    );
+                } else if (in_array($dataSertifikat->master_sertifikasi->sert_id, ['5', '6', '9'])) {
+                    $cert = new CertJpaStruct(
+                        noReg: $dataSertifikat->cust_sert_nomor_referensi,
+                        tglSertifikasiAwal: $tglSertifikasiAwal,
+                        lembaga: $dataSertifikat->cust_sert_nomor_referensi,
+                        perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
+                        perusahaanAlamat: $perusahaanAlamat,
+                        produkJenis: $dataSertifikat->master_komoditi->komodt_nama,
+                        produkTipe: $dataSertifikat->cust_sert_tipe,
+                        produkMerk: $dataSertifikat->cust_sert_merk,
+                        produkStandar: $dataSertifikat->cust_sert_nomor_sni,
+                        produkSistemSertifikasi: 'Tipe 5',
+                        tglTerbit: $tglTerbit,
+                        tglPerubahan: $tglPerubahan,
+                        tglKadaluarsa: $tglKadaluarsa,
+                    );
+                } else {
+                    $cert = new CertYok3Struct(
+                        noReg: $dataSertifikat->cust_sert_nomor_referensi,
+                        lembaga: $dataSertifikat->cust_sert_nomor_referensi,
+                        perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
+                        perusahaanAlamat: $perusahaanAlamat,
+                        sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
+                        ruangLingkup: $dataSertifikat->cust_sert_lingkup,
+                        kodeEA: $dataSertifikat->kode_ea_nama,
+                        kodeNACE: $dataSertifikat->kode_nace_nama,
+                        tglTerbit: $tglTerbit,
+                        tglPerubahan: $tglPerubahan,
+                        tglKadaluarsa: $tglKadaluarsa,
+                    );
+                }
+
+
+                $path = $cert->generate();
+                return response()->download($path)->deleteFileAfterSend(true);
+            } catch (Exception $e) {
+                if (!($e instanceof ExpectedException)) log_error($e, $request->except("_token"));
+                return redirect()->back()->withInput($request->all())->withErrors(['message' => $e->getMessage()]);
             }
 
-            if ($dataSertifikat->master_sertifikasi->sert_id == '1') {
-                $cert = new CertYqStruct(
-                    noReg: $dataSertifikat->cust_sert_nomor_referensi,
-                    tglSertifikasiAwal: $tglSertifikasiAwal,
-                    lembaga: $dataSertifikat->cust_sert_nomor_referensi,
-                    perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
-                    perusahaanAlamat: $perusahaanAlamat,
-                    sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
-                    ruangLingkup: $dataSertifikat->cust_sert_lingkup,
-                    kodeEA: $dataSertifikat->kode_ea_nama,
-                    kodeNACE: $dataSertifikat->kode_nace_nama,
-                    tglTerbit: $tglTerbit,
-                    tglPerubahan: $tglPerubahan,
-                    tglKadaluarsa: $tglKadaluarsa,
-                );
-            } else if ($dataSertifikat->master_sertifikasi->sert_id == '2') {
-                $cert = new CertJecaStruct(
-                    noReg: $dataSertifikat->cust_sert_nomor_referensi,
-                    tglSertifikasiAwal: $tglSertifikasiAwal,
-                    lembaga: $dataSertifikat->cust_sert_nomor_referensi,
-                    perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
-                    perusahaanAlamat: $perusahaanAlamat,
-                    sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
-                    ruangLingkup: $dataSertifikat->cust_sert_lingkup,
-                    kodeEA: $dataSertifikat->kode_ea_nama,
-                    kodeNACE: $dataSertifikat->kode_nace_nama,
-                    tglTerbit: $tglTerbit,
-                    tglPerubahan: $tglPerubahan,
-                    tglKadaluarsa: $tglKadaluarsa,
-                );
-            } else if (in_array($dataSertifikat->master_sertifikasi->sert_id, ['5', '6', '9'])) {
-                $cert = new CertJpaStruct(
-                    noReg: $dataSertifikat->cust_sert_nomor_referensi,
-                    tglSertifikasiAwal: $tglSertifikasiAwal,
-                    lembaga: $dataSertifikat->cust_sert_nomor_referensi,
-                    perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
-                    perusahaanAlamat: $perusahaanAlamat,
-                    produkJenis: $dataSertifikat->master_komoditi->komodt_nama,
-                    produkTipe: $dataSertifikat->cust_sert_tipe,
-                    produkMerk: $dataSertifikat->cust_sert_merk,
-                    produkStandar: $dataSertifikat->cust_sert_nomor_sni,
-                    produkSistemSertifikasi: 'Tipe 5',
-                    tglTerbit: $tglTerbit,
-                    tglPerubahan: $tglPerubahan,
-                    tglKadaluarsa: $tglKadaluarsa,
-                );
-            } else {
-                $cert = new CertYok3Struct(
-                    noReg: $dataSertifikat->cust_sert_nomor_referensi,
-                    lembaga: $dataSertifikat->cust_sert_nomor_referensi,
-                    perusahaanNama: $dataSertifikat->sis_pelanggan->cust_nama,
-                    perusahaanAlamat: $perusahaanAlamat,
-                    sertifikasiTipe: $dataSertifikat->cust_sert_nomor_sni,
-                    ruangLingkup: $dataSertifikat->cust_sert_lingkup,
-                    kodeEA: $dataSertifikat->kode_ea_nama,
-                    kodeNACE: $dataSertifikat->kode_nace_nama,
-                    tglTerbit: $tglTerbit,
-                    tglPerubahan: $tglPerubahan,
-                    tglKadaluarsa: $tglKadaluarsa,
-                );
-            }
-
-            $path = $cert->generate();
-            return response()->download($path)->deleteFileAfterSend(true);
         } else {
             return redirect()->back()->withInput($request->all())->withErrors(['message' => 'Data tidak ditemukan.']);
         }

@@ -32,7 +32,7 @@
     <!-- /load styles -->
 
     <script>
-        window.APP_URL = `{{env('APP_URL')}}`
+		window.APP_URL = `{{env('APP_URL')}}`;
     </script>
     @stack("css")
 </head>
@@ -53,8 +53,8 @@
     <!-- Login Container -->
     <div class="dt-login--container dt-app-login--container">
         <!-- Login Content -->
-    @yield('content')
-    <!-- /login content -->
+        @yield('content')
+        <!-- /login content -->
     </div>
     <!-- /login container -->
 </div>
@@ -79,30 +79,30 @@
 <script src="{{ asset('assets/js/dexie.min.js') }}"></script>
 
 <script>
-    window.idb = new Dexie("bbkkp_sis");
-    window.idb.version(80).stores({
-		pelanggan_permohonan: "++id, &name, value",
-		bill_data: "++id, &name, value",
-		bill_data_itms: "++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas",
-		jadwal_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id",
-		jadwal_data_itms: "++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id",
-		tahap1_data: "++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart",
-		tahap1_data_tim: "++id, peg_id, peg_nama, kode, posisi",
-		pencabutan_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id",
-		pencabutan_data_itms: "++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id",
-		pencabutan_data_tim: "++id, peg_id, peg_nama, kode, posisi, user_id",
-    });
+	window.idb = new Dexie('bbkkp_sis');
+	window.idb.version(80).stores({
+		pelanggan_permohonan: '++id, &name, value',
+		bill_data: '++id, &name, value',
+		bill_data_itms: '++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas',
+		jadwal_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id',
+		jadwal_data_itms: '++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id',
+		tahap1_data: '++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart',
+		tahap1_data_tim: '++id, peg_id, peg_nama, kode, posisi',
+		pencabutan_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id',
+		pencabutan_data_itms: '++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id',
+		pencabutan_data_tim: '++id, peg_id, peg_nama, kode, posisi, user_id',
+	});
 
-    idb.pelanggan_permohonan.clear();
-    idb.bill_data.clear();
-    idb.bill_data_itms.clear();
-    idb.jadwal_data.clear();
-    idb.jadwal_data_itms.clear();
-    idb.tahap1_data.clear();
-    idb.tahap1_data_tim.clear();
-    idb.pencabutan_data.clear();
-    idb.pencabutan_data_itms.clear();
-    idb.pencabutan_data_tim.clear();
+	idb.pelanggan_permohonan.clear();
+	idb.bill_data.clear();
+	idb.bill_data_itms.clear();
+	idb.jadwal_data.clear();
+	idb.jadwal_data_itms.clear();
+	idb.tahap1_data.clear();
+	idb.tahap1_data_tim.clear();
+	idb.pencabutan_data.clear();
+	idb.pencabutan_data_itms.clear();
+	idb.pencabutan_data_tim.clear();
 
 </script>
 

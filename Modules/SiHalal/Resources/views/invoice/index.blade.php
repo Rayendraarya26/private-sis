@@ -112,8 +112,8 @@
                 url: `{{ url("$url/ajax?action=datagrid-invoice") }}`,
                 rownumbers: false,
                 nowrap: false,
-                singleSelect: false,
-                remoteSort: false,
+                singleSelect: true,
+                remoteSort: true,
                 remoteFilter: true,
                 multiSort: true,
                 pageSize: 10,
@@ -184,10 +184,10 @@
 							data:[{value:'',text:'Semua'},{value:'SB004',text:'Lunas'}],
 							onChange:function(value){
 								if (value == ''){
-									dg.datagrid('removeFilterRule', 'status');
+									dg.datagrid('removeFilterRule', 'status_payment');
 								} else {
 									dg.datagrid('addFilterRule', {
-										field: 'status',
+										field: 'status_payment',
 										op: 'equal',
 										value: value
 									});

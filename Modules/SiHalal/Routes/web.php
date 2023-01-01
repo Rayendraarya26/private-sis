@@ -11,8 +11,6 @@ use Modules\SiHalal\Http\Controllers\DataAuditorController;
 use Modules\SiHalal\Http\Controllers\ArsipPermohonanController;
 
 Route::prefix('sihalal')->middleware(['auth', 'restrict'])->group(function () {
-    Route::get('/', [SiHalalController::class, 'index']);
-	
 	Route::prefix("permohonan")->group(function () {
         Route::get("/", [ManagePermohonanController::class, 'index']);
         Route::any("/ajax", [ManagePermohonanController::class, 'ajax']);

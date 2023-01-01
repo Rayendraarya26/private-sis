@@ -79,7 +79,7 @@ class BillingController extends Controller
             $oldPath = [];
             $newPath = [];
 
-            $paymentDate = Carbon::createFromFormat('m/d/Y, g:i A', $request['bill_payment_date']);
+            $paymentDate = Carbon::createFromFormat('m/d/Y g:i A', Str::of($request['bill_payment_date'])->remove(','));
             $filePath    = sprintf(config("app.path_file_billing"), $billing_id);
             if (!File::exists($filePath)) {
                 File::makeDirectory($filePath, 0777, true, true);
@@ -190,6 +190,8 @@ class BillingController extends Controller
             for ($i = 0; $i < count($sort); $i++) {
                 $data->orderBy($sort[$i], $order[$i]);
             }
+        }else{
+            $data->orderBy(DB::raw("FIELD(bill_payment_status, 'menunggu konfirmasi', 'menunggu pembayaran', 'lunas')"));
         }
         // Total
         $total = $data->select(DB::raw('count(distinct sis_billing.bill_id) as total'))->first()->total;

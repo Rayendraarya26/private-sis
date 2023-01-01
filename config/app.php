@@ -33,7 +33,6 @@ return [
     'path_file_tahap1'        => "files/tahap1/%d",
     'path_file_sertifikat'    => "files/sertifikat/%d",
 
-
     'sihalal_api_server'         => env('SIHALAL_SERVER'),
     'sihalal_folder_dokumen_url' => env('SIHALAL_URL_FOLDER_DOKUMEN'),
     'sihalal_folder_invoice_url' => env('SIHALAL_URL_FOLDER_INVOICE'),
@@ -41,7 +40,12 @@ return [
     'sihalal_password'           => env('SIHALAL_PASSWORD'),
     'sihalal_lph_id'             => env('SIHALAL_LPH_ID'),
     'sihalal_lph_maped_id'       => env('SIHALAL_LPH_MAPED_ID'),
+    'sihalal_cookie_name'        => 'sihalal_cookie',
     'sihalal_file_upload'        => "files/sihalal/%d",
+
+    'log' => [
+        'allowed_account_open_logs' => explode(',',env('LOG_ALLOWED_EMAILS'))
+    ],
 
     /*
     |--------------------------------------------------------------------------

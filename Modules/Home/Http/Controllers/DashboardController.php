@@ -2,15 +2,15 @@
 
 namespace Modules\Home\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use App\Models\BbkkpSis\MasterJenisPerusahaan;
-use App\Models\BbkkpSis\SisPelanggan;
-use App\Models\BbkkpSis\SisPermohonan;
-use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SisBillingItems;
-use App\Models\BbkkpSis\SisJadwalTim;
 use App\Models\BbkkpSis\SisJadwalAudit;
+use App\Models\BbkkpSis\SisJadwalTim;
+use App\Models\BbkkpSis\SisPelanggan;
+use App\Models\BbkkpSis\SisPelangganSertifikasi;
+use App\Models\BbkkpSis\SisPermohonan;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -426,16 +426,17 @@ class DashboardController extends Controller
                 $results = [];
 
                 if ($year) {
-                    $audits = SisJadwalAudit::join('sis_jadwal', 'sis_jadwal_audit.jadw_id', '=', 'sis_jadwal.jadw_id')
+                    $audits = SisJadwalAudit::with('sis_jadwal')
+                        ->join('sis_jadwal', 'sis_jadwal_audit.jadw_id', '=', 'sis_jadwal.jadw_id')
                         ->whereYear('jadw_tanggal_mulai', '=', $year);
 
                     foreach ($audits->get() as $row) {
-                        $row->master_sertifikasi;
+                        /*$row->master_sertifikasi;
                         $row?->sis_jadwal?->sis_pelanggan;
                         foreach ($row?->sis_jadwal?->sis_jadwal_tims ?? [] as $r) {
                             $r?->master_pegawai;
-                        }
-                        array_push($results, $row);
+                        }*/
+                        $results[] = $row;
                     }
 
                     return response()->json([

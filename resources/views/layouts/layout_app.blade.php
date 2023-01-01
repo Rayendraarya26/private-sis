@@ -1,3 +1,6 @@
+@php use App\Models\BbkkpSis\SysUserNotif; @endphp
+@php use Illuminate\Support\Facades\DB; @endphp
+
 <!doctype html>
 <html lang="en">
 
@@ -58,7 +61,7 @@
     </style>
 
     <script>
-        window.APP_URL = `{{env('APP_URL')}}`
+		window.APP_URL = `{{env('APP_URL')}}`;
     </script>
 
     @stack('css')
@@ -123,15 +126,15 @@
                 <div class="dt-nav-wrapper">
                     <ul class="dt-nav">
                         @php
-                            $notif = \App\Models\BbkkpSis\SysUserNotif::where("notif_user_id", auth()->id())->orderBy('notif_is_read', 'desc')->orderBy('notif_created_at', 'desc')->take(10)->get();
-                            $total = \App\Models\BbkkpSis\SysUserNotif::where("notif_user_id", auth()->id())->where("notif_is_read", 'no')->select(\Illuminate\Support\Facades\DB::RAW("count(*) total"))->first();
+                            $notif = SysUserNotif::where("notif_user_id", auth()->id())->orderBy('notif_is_read', 'desc')->orderBy('notif_created_at', 'desc')->take(10)->get();
+                            $total = SysUserNotif::where("notif_user_id", auth()->id())->where("notif_is_read", 'no')->select(DB::RAW("count(*) total"))->first();
                         @endphp
                         <li class="dt-nav__item dt-notification dropdown">
                             <!-- Dropdown Link -->
                             <a href="#" class="dt-nav__link dropdown-toggle no-arrow" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
                                 <i class="icon icon-notification icon-fw {{$total->total > 0 ? 'dt-icon-alert' : ''}}"
-                                style="font-size: 20px"></i>
+                                   style="font-size: 20px"></i>
                             </a>
                             <!-- /dropdown link -->
 
@@ -139,7 +142,9 @@
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-media">
                                 <!-- Dropdown Menu Header -->
                                 <div class="dropdown-menu-header">
-                                    <h4 class="title">@if($total->total) {{$total->total}} @endif Notifikasi</h4>
+                                    <h4 class="title">@if($total->total)
+                                            {{$total->total}}
+                                        @endif Notifikasi</h4>
 
                                     @if($total->total)
                                         <div class="ml-auto action-area">
@@ -152,16 +157,16 @@
                                 <!-- Dropdown Menu Body -->
                                 <div class="dropdown-menu-body ps-custom-scrollbar">
                                     <div class="h-auto">
-                                    @foreach($notif as $n)
-                                        <!-- Media -->
+                                        @foreach($notif as $n)
+                                            <!-- Media -->
                                             <a href="{{url('notification/open/'.$n->notif_id)}}" class="media">
                                                 @if($n->notif_is_read == "yes")
                                                     <i class="fal fa-bell mr-3 fa-2x" style='color: grey'></i>
                                                 @else
                                                     <i class="fas fa-bell mr-3 fa-2x"></i>
-                                            @endif
+                                                @endif
 
-                                            <!-- avatar -->
+                                                <!-- avatar -->
 
                                                 <!-- Media Body -->
                                                 <span class="media-body">
@@ -209,7 +214,7 @@
                             <!-- Dropdown Option -->
                             <div class="dropdown-menu dropdown-menu-right" style="width: 200px">
                                 <div
-                                    class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
+                                        class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
                                     <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">
                                     <span class="dt-avatar-info">
                                           <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
@@ -250,49 +255,49 @@
             <div class="dt-sidebar__container">
 
                 <!-- Sidebar Notification -->
-            {{--                <div class="dt-sidebar__notification  d-none d-lg-block">--}}
-            {{--                    <!-- Dropdown -->--}}
-            {{--                    <div class="dropdown mb-6" id="user-menu-dropdown">--}}
+                {{--                <div class="dt-sidebar__notification  d-none d-lg-block">--}}
+                {{--                    <!-- Dropdown -->--}}
+                {{--                    <div class="dropdown mb-6" id="user-menu-dropdown">--}}
 
-            {{--                        <!-- Dropdown Link -->--}}
-            {{--                        <a href="#" class="dropdown-toggle dt-avatar-wrapper text-body" data-toggle="dropdown"--}}
-            {{--                           aria-haspopup="true" aria-expanded="false">--}}
-            {{--                            <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">--}}
-            {{--                            <span class="dt-avatar-info"><span class="dt-avatar-name">--}}
-            {{--                                        {{ auth()->user()->user_fullname }}--}}
-            {{--                                    </span></span>--}}
-            {{--                        </a>--}}
-            {{--                        <!-- /dropdown link -->--}}
+                {{--                        <!-- Dropdown Link -->--}}
+                {{--                        <a href="#" class="dropdown-toggle dt-avatar-wrapper text-body" data-toggle="dropdown"--}}
+                {{--                           aria-haspopup="true" aria-expanded="false">--}}
+                {{--                            <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">--}}
+                {{--                            <span class="dt-avatar-info"><span class="dt-avatar-name">--}}
+                {{--                                        {{ auth()->user()->user_fullname }}--}}
+                {{--                                    </span></span>--}}
+                {{--                        </a>--}}
+                {{--                        <!-- /dropdown link -->--}}
 
-            {{--                        <!-- Dropdown Option -->--}}
-            {{--                        <div class="dropdown-menu dropdown-menu-right">--}}
-            {{--                            <div--}}
-            {{--                                class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">--}}
-            {{--                                <img class="dt-avatar" src="{{ auth()->user()->getImage() }}"--}}
-            {{--                                     alt="Domnic Harris">--}}
-            {{--                                <span class="dt-avatar-info">--}}
-            {{--                                        <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>--}}
-            {{--                                        <span class="f-12">{{ ucwords(session('group_selected_name')) }}</span>--}}
-            {{--                                    </span>--}}
-            {{--                            </div>--}}
-            {{--                            @if(count(session('group_available')) > 1)--}}
-            {{--                                <a class="dropdown-item" href="javascript:void(0)"--}}
-            {{--                                   onclick="$('#modalSwitchRole').modal('show')">--}}
-            {{--                                    <i class="fas fa-exchange-alt"></i> Switch Role--}}
-            {{--                                </a>--}}
-            {{--                            @endif--}}
-            {{--                            <a class="dropdown-item" href="javascript:void(0)">--}}
-            {{--                                <i class="icon fas fa-user"></i> Profile--}}
-            {{--                            </a>--}}
-            {{--                            <a class="dropdown-item" href="{{ route('auth.logout') }}">--}}
-            {{--                                <i class="icon fas fa-sign-out-alt"></i> Logout--}}
-            {{--                            </a>--}}
-            {{--                        </div>--}}
-            {{--                        <!-- /dropdown option -->--}}
-            {{--                    </div>--}}
-            {{--                    <!-- /dropdown -->--}}
-            {{--                </div>--}}
-            <!-- /sidebar notification -->
+                {{--                        <!-- Dropdown Option -->--}}
+                {{--                        <div class="dropdown-menu dropdown-menu-right">--}}
+                {{--                            <div--}}
+                {{--                                class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">--}}
+                {{--                                <img class="dt-avatar" src="{{ auth()->user()->getImage() }}"--}}
+                {{--                                     alt="Domnic Harris">--}}
+                {{--                                <span class="dt-avatar-info">--}}
+                {{--                                        <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>--}}
+                {{--                                        <span class="f-12">{{ ucwords(session('group_selected_name')) }}</span>--}}
+                {{--                                    </span>--}}
+                {{--                            </div>--}}
+                {{--                            @if(count(session('group_available')) > 1)--}}
+                {{--                                <a class="dropdown-item" href="javascript:void(0)"--}}
+                {{--                                   onclick="$('#modalSwitchRole').modal('show')">--}}
+                {{--                                    <i class="fas fa-exchange-alt"></i> Switch Role--}}
+                {{--                                </a>--}}
+                {{--                            @endif--}}
+                {{--                            <a class="dropdown-item" href="javascript:void(0)">--}}
+                {{--                                <i class="icon fas fa-user"></i> Profile--}}
+                {{--                            </a>--}}
+                {{--                            <a class="dropdown-item" href="{{ route('auth.logout') }}">--}}
+                {{--                                <i class="icon fas fa-sign-out-alt"></i> Logout--}}
+                {{--                            </a>--}}
+                {{--                        </div>--}}
+                {{--                        <!-- /dropdown option -->--}}
+                {{--                    </div>--}}
+                {{--                    <!-- /dropdown -->--}}
+                {{--                </div>--}}
+                <!-- /sidebar notification -->
 
                 <!-- Sidebar Navigation -->
                 <ul class="dt-side-nav">
@@ -320,7 +325,8 @@
                                class="dt-side-nav__link {{count($menu->children) ? 'dt-side-nav__arrow' :''}}"
                                title="{{$menu->menu_name}}">
                                 <i class="icon {{$menu->menu_icon}}"></i>
-                                <span class="dt-side-nav__text" style="white-space: break-spaces;">{{$menu->menu_name}}</span>
+                                <span class="dt-side-nav__text"
+                                      style="white-space: break-spaces;">{{$menu->menu_name}}</span>
                             </a>
 
                             @if(count($menu->children) > 0)
@@ -352,9 +358,9 @@
                     </div>
                 </div>
             </div>
-        @yield('content')
+            @yield('content')
 
-        <!-- Footer -->
+            <!-- Footer -->
             <footer class="dt-footer">
                 © Hak Cipta Balai Besar Kulit dan Karet {{ date('Y') }}
             </footer>
@@ -363,10 +369,10 @@
         <!-- /site content wrapper -->
 
         <!-- Theme Chooser -->
-    {{--        <div class="dt-customizer-toggle">--}}
-    {{--            <a href="javascript:void(0)" data-toggle="customizer"> <i class="icon icon-spin icon-setting"></i> </a>--}}
-    {{--        </div>--}}
-    <!-- /theme chooser -->
+        {{--        <div class="dt-customizer-toggle">--}}
+        {{--            <a href="javascript:void(0)" data-toggle="customizer"> <i class="icon icon-spin icon-setting"></i> </a>--}}
+        {{--        </div>--}}
+        <!-- /theme chooser -->
 
         <!-- Customizer Sidebar -->
         <aside class="dt-customizer dt-drawer position-right">
@@ -402,8 +408,8 @@
                             <!-- Button Group -->
                             <div class="dt-customizer__btn-group btn-group btn-group-toggle btn-group mb-1"
                                  data-toggle="buttons"><label class="btn btn-outline-light"><input
-                                        class="theme-option" type="radio" name="options" id="theme-option-lite"
-                                        value="lite">Lite</label>
+                                            class="theme-option" type="radio" name="options" id="theme-option-lite"
+                                            value="lite">Lite</label>
                                 <label class="btn btn-outline-light"><input class="theme-option" type="radio"
                                                                             name="options" id="theme-option-semidark"
                                                                             value="semidark">Semi Dark</label>
@@ -507,8 +513,8 @@
     </main>
 
 
-@if(count(session('group_available')) > 1)
-    <!-- Modal Switch Role-->
+    @if(count(session('group_available')) > 1)
+        <!-- Modal Switch Role-->
         <div class="modal fade" id="modalSwitchRole" tabindex="-1" role="dialog"
              aria-labelledby="modalSwitchRole" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -516,8 +522,8 @@
                 <!-- Modal Content -->
                 <div class="modal-content">
                     <form action="{{route('auth.switch_role')}}" method="post">
-                    @csrf
-                    <!-- Modal Header -->
+                        @csrf
+                        <!-- Modal Header -->
                         <div class="modal-header">
                             <h3 class="modal-title" id="modalSwitchRoleTitle">
                                 Switch Role ({{ucwords(session('group_selected_name'))}})
@@ -536,7 +542,7 @@
                             <select name="modal_group_id" id="modal_group_id" class="form form-control">
                                 @foreach(session('group_available') as $group)
                                     <option
-                                        value="{{$group['group_id']}}" {{$group['group_id'] == session('group_selected') ? 'selected' : ''}}>
+                                            value="{{$group['group_id']}}" {{$group['group_id'] == session('group_selected') ? 'selected' : ''}}>
                                         {{ucwords($group['group_name'])}}</option>
                                 @endforeach
                             </select>
@@ -589,118 +595,115 @@
 <script src="{{ asset('assets/plugins/morrisjs/morris.min.js') }}"></script>
 
 <script>
-    const toast = swal.mixin({
-        toast: true,
-        position: 'center',
-        showConfirmButton: false,
-        timer: 3000
-    });
+	const toast = swal.mixin({
+		toast: true,
+		position: 'center',
+		showConfirmButton: false,
+		timer: 3000
+	});
 
-    const toastCenter = swal.mixin({
-        toast: true,
-        position: 'center',
-        showConfirmButton: false,
-        timer: 3000
-    });
+	const toastCenter = swal.mixin({
+		toast: true,
+		position: 'center',
+		showConfirmButton: false,
+		timer: 3000
+	});
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
+	$.ajaxSetup({
+		headers: {
+			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		}
+	});
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
 
 <script>
-    // membuat string kapital diawal kata
-    String.prototype.ucwords = function () {
-        if (this === '') return "";
-        let str = this.toLowerCase();
-        return str.replace(/(^([a-zA-Z{M}]))|([ -][a-zA-Z{M}])/g,
-            function ($1) {
-                return $1.toUpperCase();
-            });
-    };
+	// membuat string kapital diawal kata
+	String.prototype.ucwords = function () {
+		if (this === '') return '';
+		let str = this.toLowerCase();
+		return str.replace(/(^([a-zA-Z{M}]))|([ -][a-zA-Z{M}])/g,
+			function ($1) {
+				return $1.toUpperCase();
+			});
+	};
 
-    // memformat uang
-    String.prototype.formatUang = function (delimiter) {
-        if (this === '') return "";
-        let str = this.toString();
-        delimiter = delimiter || " "
-        return str.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
-    };
+	// memformat uang
+	String.prototype.formatUang = function (delimiter) {
+		if (this === '') return '';
+		let str   = this.toString();
+		delimiter = delimiter || ' ';
+		return str.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+	};
 
-    function syncToken(token) {
-        $.post(`{{url('notification/ajax/sync-token')}}`, {token})
-            .then(response => {
-                console.log(response)
-            });
-    }
+	function syncToken(token) {
+		$.post(`{{url('notification/ajax/sync-token')}}`, { token });
+	}
 
-    async function initIDB() {
-        window.idb = new Dexie("bbkkp_sis");
-        window.idb.version(80).stores({
-            pelanggan_permohonan: "++id, &name, value",
-			bill_data: "++id, &name, value",
-			bill_data_itms: "++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas",
-			jadwal_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id",
-			jadwal_data_itms: "++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id",
-			tahap1_data: "++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart",
-			tahap1_data_tim: "++id, peg_id, peg_nama, kode, posisi",
-			pencabutan_data: "++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id",
-			pencabutan_data_itms: "++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id",
-			pencabutan_data_tim: "++id, peg_id, peg_nama, kode, posisi, user_id",
-        });
-    }
+	async function initIDB() {
+		window.idb = new Dexie('bbkkp_sis');
+		window.idb.version(80).stores({
+			pelanggan_permohonan: '++id, &name, value',
+			bill_data: '++id, &name, value',
+			bill_data_itms: '++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas',
+			jadwal_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id',
+			jadwal_data_itms: '++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id',
+			tahap1_data: '++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart',
+			tahap1_data_tim: '++id, peg_id, peg_nama, kode, posisi',
+			pencabutan_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id',
+			pencabutan_data_itms: '++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id',
+			pencabutan_data_tim: '++id, peg_id, peg_nama, kode, posisi, user_id',
+		});
+	}
 
-    $(function () {
-        initIDB()
+	$(function () {
+		initIDB();
 
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI",
-            authDomain: "balaikulit-yogya.firebaseapp.com",
-            projectId: "balaikulit-yogya",
-            storageBucket: "balaikulit-yogya.appspot.com",
-            messagingSenderId: "54843566382",
-            appId: "1:54843566382:web:76eb5779a911d71d6d72bf"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+		// Your web app's Firebase configuration
+		const firebaseConfig = {
+			apiKey: 'AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI',
+			authDomain: 'balaikulit-yogya.firebaseapp.com',
+			projectId: 'balaikulit-yogya',
+			storageBucket: 'balaikulit-yogya.appspot.com',
+			messagingSenderId: '54843566382',
+			appId: '1:54843566382:web:76eb5779a911d71d6d72bf'
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
 
-        window.FIREBASE_MESSAGING = firebase.messaging();
+		window.FIREBASE_MESSAGING = firebase.messaging();
 
-        if ('serviceWorker' in navigator && 'PushManager' in window) {
-            navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
-                .then(function (swReg) {
-                    // console.log('Service Worker is registered', swReg);
-                    // console.log('ServiceWorker registration successful with scope: ', swReg.scope);
-                    // FIREBASE_MESSAGING.useServiceWorker(swReg);
-                })
-                .catch(function (error) {
-                    console.error('Service Worker Error', error);
-                });
-        }
+		if ('serviceWorker' in navigator && 'PushManager' in window) {
+			navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
+				.then(function (swReg) {
+					// console.log('Service Worker is registered', swReg);
+					// console.log('ServiceWorker registration successful with scope: ', swReg.scope);
+					// FIREBASE_MESSAGING.useServiceWorker(swReg);
+				})
+				.catch(function (error) {
+					console.error('Service Worker Error', error);
+				});
+		}
 
-        // meminta perizinan allow pop up
-        FIREBASE_MESSAGING.requestPermission()
-            .then(() => {
-                FIREBASE_MESSAGING.getToken().then(token => {
-                    syncToken(token)
-                })
+		// meminta perizinan allow pop up
+		FIREBASE_MESSAGING.requestPermission()
+			.then(() => {
+				FIREBASE_MESSAGING.getToken().then(token => {
+					syncToken(token);
+				});
 
-                FIREBASE_MESSAGING.onMessage(payload => {
-                    // console.log(payload)
-                    alert("new notif");
-                });
-            })
-            .catch((err) => {
-                console.log(err);
-                console.log("error getting permission :(");
-            });
-    });
+				FIREBASE_MESSAGING.onMessage(payload => {
+					// console.log(payload)
+					alert('new notif');
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+				console.log('error getting permission :(');
+			});
+	});
 </script>
 
 @stack('javascript')

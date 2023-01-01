@@ -22,6 +22,7 @@
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.5",
         "nwidart/laravel-modules": "8.2",
+        "opcodesio/log-viewer": "^1.6",
         "sentry/sentry-laravel": "^3.0",
         "simplesoftwareio/simple-qrcode": "^4.2"
     },

@@ -38,7 +38,7 @@ class CertYqStruct
         $this->noReg              = $noReg;
         $this->tglSertifikasiAwal = $tglSertifikasiAwal;
         $this->lembaga            = $lembaga;
-        $this->perusahaanNama     = $perusahaanNama;
+        $this->perusahaanNama     = Str::replace("/", "-", $perusahaanNama);
         $this->perusahaanAlamat   = $perusahaanAlamat;
         $this->sertifikasiTipe    = $sertifikasiTipe;
         $this->ruangLingkup       = $ruangLingkup;
@@ -101,7 +101,11 @@ class CertYqStruct
         $img->text("$this->perusahaanNama", 1250, 1400, function ($font) {
             $fontType = public_path('/assets/fonts/garibdttf/G_ari_bd.TTF');
             $font->file($fontType);
-            $font->size(160);
+            if (Str::length($this->perusahaanNama) > 20) {
+                $font->size(120);
+            } else {
+                $font->size(160);
+            }
             $font->color("#000000");
             $font->align("center");
             $font->valign("middle");

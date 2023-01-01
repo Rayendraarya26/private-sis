@@ -121,11 +121,11 @@
                 columns: [[
                     {field: 'bill_status_pembayaran', title: 'Sudah<br>Dibayar?', width: 100, sortable: true},
                     {field: 'bill_payment_status', title: 'Lunas ?', width: 100, sortable: true, styler:statusStyle},
-                    {field: 'bill_nomor_billing', title: 'No.<br/>Billing', width: 120, sortable: true},
+                    {field: 'bill_nomor_billing', title: 'No.<br/>Billing', width: 140, sortable: true},
                     {field: 'bill_billing_date', title: 'Tanggal<br/>Billing', width: 100, sortable: true},
                     {field: 'bill_due_date', title: 'Jatuh<br/>Tempo', width: 100, sortable: true},
                     {field: 'cust_nama', title: 'Nama Perusahaan', width: 320, sortable: true},
-                    {field: 'itms_bil_total', title: 'Total(Rp.)', width: 100, sortable: true},
+                    {field: 'itms_bil_total', title: 'Total(Rp.)', width: 140, sortable: true, align: 'right'},
                     {field: 'bill_harus_lunas', title: 'Harus<br/>Lunas?', width: 80, sortable: true, align:'center'}, 
                 ]],
 				onBeforeLoad: function () {
