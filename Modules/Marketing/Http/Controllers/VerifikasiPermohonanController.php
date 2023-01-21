@@ -100,7 +100,7 @@ class VerifikasiPermohonanController extends Controller
             $x['cust_id']                = $d->cust_id;
             $x['user_id']                = $d->user_id;
             $x['sert_nama']              = $d->sert_nama;
-            $x['mohon_cust_nama']        = $d->mohon_cust_nama;
+            $x['mohon_cust_nama']        = e($d->mohon_cust_nama);
             $x['mohon_approved_status']  = $d->mohon_approved_status;
             $x['mohon_det_jenis_status'] = $d->mohon_det_jenis_status;
             $x['created_at']             = $d->created_at?->format("Y-m-d H:i:s");  // ? adalah nullsafe operator, jika data tidak ada maka akan return NULL (fitur php 8)
