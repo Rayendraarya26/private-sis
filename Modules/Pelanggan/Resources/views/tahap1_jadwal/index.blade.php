@@ -81,7 +81,7 @@
                             }
                         }
                     },
-                    {field: 'tanggal', title: 'Tanggal Pelaksanaan', width: 200, sortable: true},
+                    {field: 'tanggal', title: 'Tanggal Pelaksanaan', width: 200, sortable: false},
                     {
                         field: 'tims', title: 'Tim Auditor', width: 200, sortable: true,
                         formatter: function (val) {

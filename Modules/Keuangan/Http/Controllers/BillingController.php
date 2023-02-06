@@ -445,7 +445,7 @@ class BillingController extends Controller
             "bill_billing_date"  => 'required',
             "bill_due_date"      => 'required',
             "data_billing_item"  => 'required',
-            "bill_invoice_file"  => 'required',
+            "bill_invoice_file"  => 'required|mimetypes:application/pdf,image/png,image/jpeg|max:2048000',
             "bill_harus_lunas"   => 'required',
             "bill_total"         => 'required',
         ]);
@@ -659,7 +659,7 @@ class BillingController extends Controller
             "bill_billing_date"  => 'required',
             "bill_due_date"      => 'required',
             "bill_harus_lunas"   => 'nullable',
-            "bill_invoice_file"  => 'nullable',
+            "bill_invoice_file"  => 'sometimes|nullable|mimetypes:application/pdf,image/png,image/jpeg|max:2048000',
             "bill_total"         => 'required',
             "itms_bil_ids"       => 'nullable',
         ]);

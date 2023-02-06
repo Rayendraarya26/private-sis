@@ -79,7 +79,7 @@ class SertifikasiPermohonanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "pertanyaan_tambahan" => 'required',
+            "pertanyaan_tambahan" => 'required|mimes:pdf|max:2048',
             "data_pengajuan"      => 'required',
             "data_sertifikat"     => 'required',
         ]);

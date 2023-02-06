@@ -354,6 +354,14 @@ class Tahap2JadwalController extends Controller
     public function processUploadScan(Request $request, $jadwalID)
     {
         $newUploadedPath = [];
+        $request->validate([
+            'file_lks'         => 'sometimes|nullable|file|mimes:pdf|max:2048',
+            'file_lap_ringkas' => 'sometimes|nullable|file|mimes:pdf|max:2048',
+            'file_surat_tugas' => 'sometimes|nullable|file|mimes:pdf|max:2048',
+            'file_notulen'     => 'sometimes|nullable|file|mimes:pdf|max:2048',
+            'file_subkon'      => 'sometimes|nullable|file|mimes:pdf|max:2048',
+
+        ]);
         try {
             $data = SisJadwal::where('jadw_id', $jadwalID)
                 ->where('cust_id', auth()->user()?->sis_pelanggan->cust_id)
