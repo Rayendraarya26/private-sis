@@ -224,7 +224,7 @@
     </table>
 
     <br>
-    <div style="padding-left: 200px">
+    <!-- <div style="padding-left: 200px">
         <table>
             <tr>
                 <td>
@@ -331,7 +331,7 @@
                 </tr>
             @endif
         </table>
-    </div>
+    </div> -->
 </section>
 <script type="text/php">
     if (isset($pdf)) {
