@@ -4,7 +4,7 @@ stages:
 deploy-to-production:
   stage: deploy
   tags:
-    - dolkode-azure
+    - dolkode-runner-1
   only:
     - '/v[0-9]+\.[0-9]+\.[0-9]+/'
   before_script:
@@ -26,7 +26,7 @@ deploy-to-production:
 deploy-to-staging:
   stage: deploy
   tags:
-    - dolkode-azure
+    - dolkode-runner-1
   only:
     - master
   before_script:
