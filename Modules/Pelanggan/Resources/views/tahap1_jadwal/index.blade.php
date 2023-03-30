@@ -83,7 +83,7 @@
                     },
                     {field: 'tanggal', title: 'Tanggal Pelaksanaan', width: 200, sortable: false},
                     {
-                        field: 'tims', title: 'Tim Auditor', width: 200, sortable: true,
+                        field: 'tims', title: 'Tim Auditor', width: 200, sortable: false,
                         formatter: function (val) {
                             let htmls = ""
                             if (val.length > 0) {
