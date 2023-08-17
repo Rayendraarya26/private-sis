@@ -6,7 +6,7 @@ use Modules\System\Http\Controllers\ManageMenuActionController;
 use Modules\System\Http\Controllers\ManageMenuController;
 use Modules\System\Http\Controllers\ManageUserController;
 
-Route::prefix('system')->middleware(['auth', 'restrict'])->name("system")->group(function () {
+Route::prefix('system')->middleware(['auth', 'restrict'])->group(function () {
     Route::redirect("/", "/system/menu");
 
     Route::resource("user", ManageUserController::class);
