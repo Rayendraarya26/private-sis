@@ -34,10 +34,10 @@ class SendNotif implements ShouldQueue
 
             foreach ($dataToken as $token) {
                 // add token penerima
-                array_push($registrationIds, $token->fbtoken_token);
+                $registrationIds[] = $token->fbtoken_token;
             }
 
-            $API_ACCESS_KEY = env("GOOGLE_PUSH_KEY");
+            $API_ACCESS_KEY = config("app.firebase_api_key");
 
             $url = 'https://fcm.googleapis.com/fcm/send';
 

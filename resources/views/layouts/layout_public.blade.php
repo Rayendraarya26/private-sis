@@ -18,10 +18,10 @@ $socmed_rows = PublicSocialMedia::all();
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="description" content="Sistem Informasi Sertifikasi Balai Besar Kulit dan Karet">
-    <meta name="keywords" content="{{env('APP_NAME')}}">
+    <meta name="keywords" content="{{config('app.name')}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title') | {{env('APP_NAME')}}</title>
+    <title>@yield('title') | {{config('app.name')}}</title>
 
     <!-- Site favicon -->
     <link rel="shortcut icon" href="{{ asset('images/icon/favicon-16x16-manifest-31222.png') }}">
@@ -78,7 +78,7 @@ $socmed_rows = PublicSocialMedia::all();
                     <div class="">
                         <img height="80" width="auto" style="margin-bottom: 10px; margin-left: 10px;"
                              src="{{$company?->profil_app_icon ?? asset('images/logos/sis_logo.png')}}"
-                             alt="Logo {{env('app_name')}}">
+                             alt="Logo {{config('app.name')}}">
                     </div>
                 </div>
             </a>

@@ -46,7 +46,7 @@
         <div style="color: #A5A5A5; font-size: 12px;">
             <p>
                 Jika anda memiliki pertanyaan, anda dapat menghubungi kami melalui
-                <a href="mailto:{{env('MAIL_FROM_ADDRESS')}}">email</a>
+                <a href="mailto:{{config('mail.from.address')}}">email</a>
             </p>
         </div>
     </div>
@@ -55,11 +55,11 @@
 
         <div style="color: #A5A5A5; font-size: 12px; margin-bottom: 20px; padding: 0 50px;">
             Anda mendapatkan email ini secara otomatis dari
-            <a href="{{env("APP_URL")}}"><b>{{env("APP_NAME")}}</b></a>
+            <a href="{{config('app.url')}}"><b>{{config('app.name')}}</b></a>
         </div>
         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
             <div style="color: #A5A5A5; font-size: 10px; margin-bottom: 5px;">
-                {{env("APP_ADDRESS")}}
+                {{config('app.address')}}
             </div>
         </div>
     </div>

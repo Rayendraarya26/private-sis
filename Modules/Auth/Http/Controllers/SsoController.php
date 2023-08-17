@@ -27,7 +27,7 @@ class SsoController extends Controller
                 try {
                     $errorMessage = json_decode($e->getMessage());
                     if ($errorMessage->code == 403 && $errorMessage->message == "Akun belum login") {
-                        return redirect(env("SSO_SERVER") . "/sso/login?key=" . $broker->getBearerToken());
+                        return redirect(config('app.sso_server') . "/sso/login?key=" . $broker->getBearerToken());
                     }
 
                     $broker->clearToken();

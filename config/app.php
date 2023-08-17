@@ -4,6 +4,7 @@ return [
     'name'  => env('APP_NAME', 'Laravel'),
     'env'   => env('APP_ENV', 'production'),
     'debug' => (bool)env('APP_DEBUG', false),
+    'address' => env('APP_ADDRESS'),
 
     'url'       => env('APP_URL', 'http://localhost'),
     'asset_url' => env('ASSET_URL', null),
@@ -21,6 +22,13 @@ return [
     'sso_server'        => env('SSO_SERVER', 'https://apps.bbkkp.kemenperin.go.id'),
     'sso_broker_id'     => env('SSO_BROKER_ID'),
     'sso_broker_secret' => env('SSO_BROKER_SECRET'),
+
+    'mail' => [
+        'from_addr' => env("MAIL_FROM_ADDRESS"),
+        'from_name' => env("MAIL_FROM_NAME"),
+    ],
+
+    'firebase_api_key' => env("GOOGLE_PUSH_KEY"),
 
     'path_file_tinymce'       => "files/uploaded_tinymce",
     'path_file_master'        => "files/master",

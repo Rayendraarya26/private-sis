@@ -7,9 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Sistem Informasi Sertifikasi Balai Besar Kulit dan Karet">
-    <meta name="keywords" content="{{env('APP_NAME')}}">
+    <meta name="keywords" content="{{config('app.name')}}">
     <!-- /meta tags -->
-    <title>@yield('title') | {{env('APP_NAME')}}</title>
+    <title>@yield('title') | {{config('app.name')}}</title>
 
     <!-- Site favicon -->
     <link rel="shortcut icon" href="{{asset('images/icon/favicon-32x32-manifest-31222.png')}}" type="image/x-icon">
@@ -32,7 +32,7 @@
     <!-- /load styles -->
 
     <script>
-		window.APP_URL = `{{env('APP_URL')}}`;
+		window.APP_URL = `{{config('app.url')}}`;
     </script>
     @stack("css")
 </head>

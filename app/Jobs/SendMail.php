@@ -34,16 +34,16 @@ class SendMail implements ShouldQueue
     {
         Mail::send(new RawMailable($this->struct));
         LogEmailOutbox::create([
-            "outbox_uuid" => $this->struct->getUUID(),
-            "outbox_reply_to" => env("MAIL_FROM_ADDRESS"),
-            "outbox_from_name" => env("MAIL_FROM_NAME"),
-            "outbox_from_email" => env("MAIL_FROM_ADDRESS"),
-            "outbox_to_name" => "",
-            "outbox_to_email" => $this->struct->to,
-            "outbox_title" => $this->struct->subject,
-            "outbox_message" => $this->struct->body,
-            "outbox_read" => "no",
-            "outbox_type" => $this->struct->type,
+            "outbox_uuid"       => $this->struct->getUUID(),
+            "outbox_reply_to"   => config("mail.from.address"),
+            "outbox_from_name"  => config("mail.from.name"),
+            "outbox_from_email" => config("mail.from.address"),
+            "outbox_to_name"    => "",
+            "outbox_to_email"   => $this->struct->to,
+            "outbox_title"      => $this->struct->subject,
+            "outbox_message"    => $this->struct->body,
+            "outbox_read"       => "no",
+            "outbox_type"       => $this->struct->type,
             "outbox_created_at" => date("Y-m-d H:i:s"),
         ]);
     }
