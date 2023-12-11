@@ -147,10 +147,11 @@ class PegawaiController extends Controller
             new BreadcrumbsStruct('Edit'),
         ];
 
-        $data          = SysUser::with('master_pegawai')->findOrFail($id);
+        $data          = SysUser::whereHas('master_pegawai')->with('master_pegawai')->findOrFail($id);
         $groups        = SysGroup::whereNotIn('group_id', [1, 3])->get();
         $defaultGroup  = $data->user_group()->where("ug_is_default", "yes")->first()?->ug_group_id;
         $selectedGroup = $data->user_group->toArray();
+
         $parse         = [
             'breadcrumbs'    => $breadcrumbs,
             'url'            => $this->url,
@@ -309,6 +310,7 @@ class PegawaiController extends Controller
     {
         $data = SysUser::whereNotIn('ug_group_id', [1, 3])
             ->with('master_pegawai')
+            ->whereHas('master_pegawai')
             ->leftJoin('sys_user_group', 'ug_user_id', '=', 'user_id');
         // Filter
         if (!empty($request->filterRules)) {
