@@ -44,7 +44,7 @@ class ReminderSurveilantUser extends Command
      */
     public function handle()
     {
-        echo sprintf("________________________%s________________________ \r\n", Carbon::now());
+        $this->log(sprintf("Pengingat agar pelanggan mengikuti surveilant sesuai jadwal %s", Carbon::now()));
 
         $reminderInMonths = 6;
 
@@ -94,10 +94,15 @@ class ReminderSurveilantUser extends Command
                 $d->cust_sert_survailen_reminder_at    = Carbon::now();
                 $d->save();
 
-                echo sprintf("mengirim ke %s | reminder ke %d | cust_sert_id %d \r\n", $d->sis_pelanggan->sys_user->user_email, $totalReminderSent, $d->cust_sert_id);
+                $this->log(sprintf("mengirim ke %s | reminder ke %d | cust_sert_id %d \r\n", $d->sis_pelanggan->sys_user->user_email, $totalReminderSent, $d->cust_sert_id));
             }
         }
 
         return true;
+    }
+
+    private function log(string $message): void
+    {
+        $this->info("cron:reminder-survailant-user: $message");
     }
 }

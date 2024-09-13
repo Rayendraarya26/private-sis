@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
     imagemagick-doc \
     pdftk \
     iputils-ping \
-    chromium
+    chromium \
+    logrotate
 
 ENV TZ=Asia/Jakarta
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

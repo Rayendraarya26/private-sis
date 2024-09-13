@@ -48,7 +48,7 @@ class ReminderSurveilantInternal extends Command
      */
     public function handle()
     {
-        echo sprintf("________________________%s________________________ \r\n", Carbon::now());
+        $this->info("Pengingat agar internal BBKKP membuat billing untuk surveilant %s", Carbon::now());
 
         try {
             DB::beginTransaction();
@@ -134,8 +134,13 @@ class ReminderSurveilantInternal extends Command
                 sendEmail($struct);
 
                 // ====================================================================================================
-                $this->info(sprintf("mengirim ke %s success", $user->user?->user_email));
+                $this->info(sprintf("mengirim notifikasi email ke %s success", $user->user?->user_email));
             }
         }
+    }
+
+    private function log(string $message): void
+    {
+        $this->info("cron:reminder-survailant-user: $message");
     }
 }

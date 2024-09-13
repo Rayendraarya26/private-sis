@@ -41,7 +41,7 @@ class ReminderInvoiceExpiredFinance extends Command
      */
     public function handle()
     {
-        echo sprintf("________________________%s________________________ \r\n", Carbon::now());
+        $this->log(sprintf("Pengingat invoice expired %s", Carbon::now()));
 
         $dataExpiredInvoice = SisBilling::with('sis_pelanggan')
             ->where('bill_notif_count_finance', '=', 0)
@@ -60,7 +60,7 @@ class ReminderInvoiceExpiredFinance extends Command
 
                     sendNotification($notifStruct);
 
-                    echo sprintf("mengirim invoice expired %s ke %s berhasil\r\n", $invoice->sis_pelanggan->cust_nama, $user->user?->user_email);
+                    $this->log(sprintf("mengirim invoice expired %s ke %s berhasil", $invoice->sis_pelanggan->cust_nama, $user->user?->user_email));
                 }
 
                 $invoice->bill_notif_count_finance += 1;
@@ -68,5 +68,10 @@ class ReminderInvoiceExpiredFinance extends Command
             }
         }
         return 1;
+    }
+
+    private function log(string $message): void
+    {
+        $this->info("cron:reminder-survailant-user: $message");
     }
 }

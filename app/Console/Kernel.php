@@ -25,13 +25,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('cron:reminder-survailant-user')
-            ->appendOutputTo(storage_path('logs/cron-reminder-user.log'))
-            ->dailyAt('09:00');
+            ->appendOutputTo(storage_path('logs/laravel-scheduller-stdout.log'))
+            ->dailyAt('08:00');
         $schedule->command('cron:reminder-survailant-internal')
-            ->appendOutputTo(storage_path('logs/cron-reminder-internal.log'))
+            ->appendOutputTo(storage_path('logs/laravel-scheduller-stdout.log'))
             ->mondays()->at("09:00");
         $schedule->command('cron:reminder-invoice-expired-finance')
-            ->appendOutputTo(storage_path('logs/cron-reminder-invoice-expired-finance.log'))
+            ->appendOutputTo(storage_path('logs/laravel-scheduller-stdout.log'))
             ->dailyAt('10:00');
     }
 
