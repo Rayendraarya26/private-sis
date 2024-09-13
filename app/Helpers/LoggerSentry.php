@@ -15,7 +15,7 @@ if (!function_exists('log_error')) {
             }
 
             $eventId = \Sentry\captureException($error);
-            Log::error($eventId, $context);
+            Log::error($error, ['eventId' => $eventId, 'context' => $context]);
         });
     }
 }

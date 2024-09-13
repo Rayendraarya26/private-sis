@@ -206,7 +206,7 @@
                             <!-- Dropdown Link -->
                             <a href="#" class="dt-nav__link dropdown-toggle no-arrow dt-avatar-wrapper"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="dt-avatar size-40" src="{{ auth()->user()->getImage() }}"
+                                <img class="dt-avatar size-40" src="{{ session('user_sso.picture', auth()->user()->getImage()) }}"
                                      alt="{{ auth()->user()->user_fullname }}">
                             </a>
                             <!-- /dropdown link -->
@@ -215,7 +215,7 @@
                             <div class="dropdown-menu dropdown-menu-right" style="width: 200px">
                                 <div
                                         class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
-                                    <img class="dt-avatar" src="{{ auth()->user()->getImage() }}" alt="Domnic Harris">
+                                    <img class="dt-avatar" src="{{ session('user_sso.picture', auth()->user()->getImage()) }}" alt="Domnic Harris">
                                     <span class="dt-avatar-info">
                                           <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
                                           <span class="f-12">{{ ucwords(session('group_selected_name')) }}</span>
@@ -230,9 +230,15 @@
                                 <a class="dropdown-item" href="{{route('profile')}}">
                                     <i class="icon far fa-user"></i> Profile
                                 </a>
+                                @if(!config('app.sso.is_enabled'))
                                 <a class="dropdown-item" href="{{ route('auth.logout') }}">
                                     <i class="icon far fa-sign-out-alt"></i> Logout
                                 </a>
+                                @else
+                                    <a class="dropdown-item" href="{{ url(config('app.sso.server')) }}">
+                                        <i class="icon far fa-globe"></i> Polimer
+                                    </a>
+                                @endif
                             </div>
 
                             <!-- /dropdown option -->

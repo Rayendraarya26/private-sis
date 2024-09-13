@@ -42,27 +42,11 @@
                             <label class="col-form-label col-sm-3" for="email">Email*</label>
                             <div class="col-sm-8">
                                 <input class="form-control" placeholder="Masukkan email..." type="email"
-                                       name="email" id="email"
+                                       name="email" id="email" readonly
                                        value="{{empty(old('email')) ? auth()->user()->user_email : old('email')}}">
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" for="tgl_lahir">
-                                Foto
-                                <small>(jpg/jpeg/png)</small>
-                            </label>
-                            <div class="col-sm-4">
-                                <input class="form-control" type="file" name="foto" id="foto"
-                                       accept="image/*">
-                            </div>
-                            <div class="col-sm-4">
-                                @if(auth()->user()->user_picture)
-                                    <div style="text-align: center; justify-content: center">
-                                        <img src="{{auth()->user()->user_picture}}" style="width: 200px" alt="foto">
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
+
                         <div class="form-buttons-w">
                             <button class="btn btn-success" type="submit">
                                 <i class="fas fa-save"></i> Simpan

@@ -45,14 +45,14 @@ trait AuthTraits
                     WHERE group_id = '$group_selected'
                 "));
         foreach ($permission as $p) {
-            array_push($menuAction, $p->action_controller);
+            $menuAction[] = $p->action_controller;
         }
         $goupAvailable = [];
         foreach (Auth::user()->user_group as $g) {
-            array_push($goupAvailable, [
-                'group_id' => $g->ug_group_id,
+            $goupAvailable[] = [
+                'group_id'   => $g->ug_group_id,
                 'group_name' => $g->group->group_name,
-            ]);
+            ];
         }
 
         $dataSession = [

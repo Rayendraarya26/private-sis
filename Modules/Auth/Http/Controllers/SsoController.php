@@ -2,75 +2,55 @@
 
 namespace Modules\Auth\Http\Controllers;
 
-use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Jasny\SSO\Broker\Broker;
-use Modules\Auth\Http\Traits\AuthTraits;
-use Modules\Auth\Http\Traits\SsoBrokerTrait;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
+use Modules\Auth\Http\Traits\SsoTrait;
 
 class SsoController extends Controller
 {
-    use SsoBrokerTrait, AuthTraits;
+    use SsoTrait;
 
-    public function login()
+    /**
+     * @throws \Throwable
+     */
+    public function callback(Request $request)
     {
-        $broker = $this->attach();
-        if (!($broker instanceof Broker)) {
-            return $broker;
-        } else {
-            try {
-                $data = $broker->request("GET", "/sso/info");
-                $this->loginSsoSuccess($data['results']);
+        $state = $request->session()->pull('state');
 
-                return redirect()->intended(route('dashboard'));
-            } catch (Exception $e) {
-                try {
-                    $errorMessage = json_decode($e->getMessage());
-                    if ($errorMessage->code == 403 && $errorMessage->message == "Akun belum login") {
-                        return redirect(config('app.sso_server') . "/sso/login?key=" . $broker->getBearerToken());
-                    }
+        throw_unless(
+            strlen($state) > 0 && $state === $request->state,
+            InvalidArgumentException::class,
+            'Invalid state value.'
+        );
 
-                    $broker->clearToken();
-                    return view("errors.custom")->with([
-                        'code'    => 400,
-                        'info'    => "BAD REQUEST",
-                        'message' => 'Please dont worrry :D ' . $e->getMessage(),
-                    ]);
-                } catch (Exception $e) {
-                    $broker->clearToken();
-                    return view("errors.custom")->with([
-                        'code'    => 500,
-                        'info'    => "SERVER ERROR",
-                        'message' => 'Please dont worrry :D ' . $e->getMessage(),
-                    ]);
-                }
-            }
-        }
+        $response = Http::asForm()->post(sprintf('%s/oauth/token', config('app.sso.server')), [
+            'grant_type'    => 'authorization_code',
+            'client_id'     => config('app.sso.client_id'),
+            'client_secret' => config('app.sso.client_secret'),
+            'redirect_uri'  => config('app.sso.redirect_uri'),
+            'code'          => $request->code,
+        ]);
+
+        // get user data
+        return $this->loginSsoSuccess($response->json('access_token'));
     }
 
-    public function logout()
+    public function redirect(Request $request)
     {
-        $broker = $this->attach();
-        if (!($broker instanceof Broker)) {
-            return $broker;
-        } else {
-            try {
-                $broker->request("GET", "/sso/logout");
-                return redirect('/');
-            } catch (Exception $e) {
-                return view("errors.custom")->with([
-                    'code'    => 500,
-                    'info'    => "SERVER ERROR",
-                    'message' => 'Please dont worrry :D ' . $e->getMessage(),
-                ]);
-            }
-        }
-    }
+        $request->session()->put('state', $state = Str::random(40));
 
-    public function redirect()
-    {
-        $url = url('/auth/sso/login');
+        $query = http_build_query([
+            'client_id'     => config('app.sso.client_id'),
+            'redirect_uri'  => config('app.sso.redirect_uri'),
+            'response_type' => 'code',
+            'scope'         => '',
+            'state'         => $state,
+            // 'prompt' => '', // "none", "consent", or "login"
+        ]);
 
-        echo "<script>window.location.href = '$url'</script>";
+        return redirect(sprintf('%s/oauth/authorize?', config('app.sso.server')) . $query);
     }
 }

@@ -13,18 +13,23 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Modules\Auth\Http\Traits\AuthTraits;
+use Modules\Auth\Http\Traits\SsoTrait;
 
 class LoginController extends Controller
 {
-    use AuthTraits;
+    use AuthTraits, SsoTrait;
 
     public function index()
     {
-        if (config('app.sso_is_enabled')) {
-            return view('auth::login_with_sso');
+        if (config('app.sso.is_enabled')) {
+            if (Cookie::get('access_token')) {
+                return $this->loginSsoSuccess(Cookie::get('access_token'));
+            }
+            return redirect('/auth/sso/redirect');
         }
         return view('auth::login');
     }
@@ -41,7 +46,7 @@ class LoginController extends Controller
                 'user_email' => $request['email'],
                 'password'   => $request['password']
             ];
-            $auth = Auth::attempt($credentials);
+            $auth        = Auth::attempt($credentials);
 
             if ($auth) {
                 Auth::user()->user_last_login = date("Y-m-d H:i:s");
@@ -178,9 +183,6 @@ class LoginController extends Controller
         SysUserFbToken::where('fbtoken_user_id', auth()->id())->where("fbtoken_agent", $request->userAgent())->delete();
         session()->flush();
         Auth::logout();
-        if (config('app.sso_is_enabled')) {
-            return redirect('/auth/sso/logout');
-        }
-        return redirect('/auth/login');
+        return redirect('/');
     }
 }

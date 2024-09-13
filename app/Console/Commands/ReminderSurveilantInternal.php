@@ -8,6 +8,7 @@ use App\Models\BbkkpSis\MasterEmailTemplate;
 use App\Models\BbkkpSis\SisPelangganSertifikasi;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Modules\Email\Http\Traits\EmailTrait;
@@ -49,6 +50,21 @@ class ReminderSurveilantInternal extends Command
     {
         echo sprintf("________________________%s________________________ \r\n", Carbon::now());
 
+        try {
+            DB::beginTransaction();
+            $this->sendReminder();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            $this->error($e->getMessage());
+        }
+
+
+        return true;
+    }
+
+    private function sendReminder(): void
+    {
         $reminderInMonths = 6;
 
         $dataTemplate = MasterEmailTemplate::where("template_code", "REMINDERSURVAILANT_INTERNAL")->firstOrFail();
@@ -56,10 +72,17 @@ class ReminderSurveilantInternal extends Command
             ->where("cust_sert_survailen_date", '>=', date("Y-m-d H:i:s"))
             ->where('cust_sert_survailen_date', '<=', Carbon::now()->addMonths($reminderInMonths)->format("Y-m-d H:i:s"))
             ->where('cust_sert_status_survailen', '=', 'passed')
+            ->where('cust_sert_survailen_reminder_count', '<', 3)
             ->whereNull('sis_billing_items.cust_sert_id')
             ->leftJoin('sis_billing_items', 'sis_billing_items.cust_sert_id', '=', 'sis_pelanggan_sertifikasi.cust_sert_id')
             ->orderBy('cust_sert_survailen_date')
+            ->select('sis_pelanggan_sertifikasi.*')
             ->get();
+
+        if ($dataReminder->isEmpty()) {
+            $this->info("Semua surveilant sudah dibuat billing");
+            return;
+        }
 
         $billData = "<table><tr><th>Perusahaan</th><th>Sertifikasi</th><th>Tgl Surveilant</th></tr>";
         $bilCount = 0;
@@ -72,11 +95,15 @@ class ReminderSurveilantInternal extends Command
                 <td>%s</td>
             </tr>
             ", $d?->sis_pelanggan?->cust_nama ?? "Belum diberi nama", $d->master_sertifikasi->sert_nama, $d->cust_sert_survailen_date->isoFormat("LL"));
+
+            $d->cust_sert_survailen_reminder_count += 1;
+            $d->cust_sert_survailen_reminder_at    = Carbon::now();
+            $d->save();
         }
         $billData .= "</table>";
 
         // Send Notification to Marketing, Keuangan, Operator LS
-        $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [4, 6, 7])->get();
+        $groupUsers = SysUserGroup::with('user')->whereIn('ug_group_id', [7])->get();
         if ($groupUsers) {
             foreach ($groupUsers as $user) {
                 $notifStruct = new NotifStruct();
@@ -107,15 +134,8 @@ class ReminderSurveilantInternal extends Command
                 sendEmail($struct);
 
                 // ====================================================================================================
-
-                $d->cust_sert_survailen_reminder_count += 1;
-                $d->cust_sert_survailen_reminder_at    = Carbon::now();
-                $d->save();
-
-                echo sprintf("mengirim ke %s success\r\n", $user->user?->user_email);
+                $this->info(sprintf("mengirim ke %s success", $user->user?->user_email));
             }
         }
-
-        return true;
     }
 }

@@ -4,6 +4,7 @@ namespace Modules\System\Http\Controllers;
 
 
 use App\Http\Structs\BreadcrumbsStruct;
+use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SysGroup;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
@@ -85,6 +86,12 @@ class ManageUserController extends Controller
                     'ug_is_default' => $request->group_default == $group ? 'yes' : 'no'
                 ]);
             }
+
+            // insert into sis_pelanggan
+            $sisPelanggan             = new SisPelanggan();
+            $sisPelanggan->user_id    = $insert->user_id;
+            $sisPelanggan->cust_email = $insert->user_email;
+            $sisPelanggan->save();
         });
 
 

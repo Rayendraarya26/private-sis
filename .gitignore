@@ -16,3 +16,5 @@ yarn-error.log
 doc
 .DS_Store
 storage/fonts
+supervisord*.log
+supervisord*.pid

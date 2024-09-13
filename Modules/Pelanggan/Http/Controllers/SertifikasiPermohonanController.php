@@ -393,7 +393,9 @@ class SertifikasiPermohonanController extends Controller
                     ->where('mohon_id', $request['mohon_id'])->findOrFail($submission['sertifikat']->mohon_det_id);
 
                 if ($mohonDetail->master_sertifikasi->sert_is_product == "ya" &&
-                    count($submission['sertifikat']->komoditas) == 0) throw new ExpectedException("Data komoditas dibutuhkan", 500);
+                    count($submission['sertifikat']->komoditas) == 0) {
+                    throw new ExpectedException("Data komoditas dibutuhkan", 500);
+                }
 
                 SisPermohonanKomoditi::where('mohon_det_id', $mohonDetail->mohon_det_id)->delete(); // Delete ROW
                 foreach ($submission['sertifikat']->komoditas as $komoditas) {
@@ -1126,8 +1128,9 @@ class SertifikasiPermohonanController extends Controller
             $dataDokumen = MasterSertifikasiDokumen::with("master_jenis_dok_perusahaan")->where("sert_id", $request['sert_id'])->get();
             $results     = [];
             foreach ($dataDokumen as $dt) {
-                $findMyDoc = SisPelangganDokumen::where("cust_id", auth()->user()?->sis_pelanggan->cust_id)
-                    ->where("jenis_dok_perusahaan_id", $dt->jenis_dok_perusahaan_id)->first();
+                $findMyDoc = SisPelangganDokumen::where("cust_id", auth()->user()?->sis_pelanggan?->cust_id)
+                    ->where("jenis_dok_perusahaan_id", $dt->jenis_dok_perusahaan_id)
+                    ->first();
                 $results[] = [
                     'dt_id'        => $dt->sert_dok_id,
                     'dt_name'      => $dt->master_jenis_dok_perusahaan->jenis_dok_perusahaan_text,
@@ -1151,11 +1154,20 @@ class SertifikasiPermohonanController extends Controller
             'file'        => 'required|mimetypes:application/pdf',
         ]);
         try {
+            $pelanggan = SisPelanggan::query()->firstOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                ],
+                [
+                    'cust_nama'  => auth()->user()?->user_fullname,
+                    'cust_email' => auth()->user()?->user_email,
+                ]
+            );
 
             $dataMasterSertDok = MasterSertifikasiDokumen::with('master_jenis_dok_perusahaan')->findOrFail($request['sert_dok_id']);
 
             $dataFile = $request->file("file");
-            $filePath = sprintf(config("app.path_file_customer"), auth()->user()?->sis_pelanggan->cust_id);
+            $filePath = sprintf(config("app.path_file_customer"), $pelanggan->cust_id);
             if (!File::exists($filePath)) {
                 File::makeDirectory($filePath, 0777, true, true);
             }
@@ -1163,7 +1175,7 @@ class SertifikasiPermohonanController extends Controller
             $dataFile->move($filePath, $fileName);
 
             $dokumen = SisPelangganDokumen::updateOrCreate(
-                ['cust_id' => auth()->user()->sis_pelanggan->cust_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
+                ['cust_id' => $pelanggan->cust_id, 'jenis_dok_perusahaan_id' => $dataMasterSertDok->jenis_dok_perusahaan_id],
                 ['cust_dok_filepath' => $filePath . '/' . $fileName]
             );
 

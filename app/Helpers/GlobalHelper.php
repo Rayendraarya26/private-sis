@@ -83,7 +83,7 @@ if (!function_exists('sendNotification')) {
 }
 
 if (!function_exists('sendEmail')) {
-    function sendEmail(EmailStruct $struct)
+    function sendEmail(EmailStruct $struct): void
     {
         try {
             $email = filter_var($struct->to, FILTER_SANITIZE_EMAIL);

@@ -123,7 +123,7 @@
                         </div>
                     @endif
 
-                    <div class="pb-2" style="float: right">
+                    {{--<div class="pb-2" style="float: right">
                         <a href="{{route('auth.forget_password')}}" class="text-light-gray">Lupa kata sandi ?</a>
                     </div>
 
@@ -132,7 +132,7 @@
                     <hr>
                     <span class="text-light-gray"> Klik disini untuk melakukan
                         <a href="{{route('auth.register')}}">Registrasi</a>
-                    </span>
+                    </span>--}}
                 </form>
                 <!-- /form -->
             </div>

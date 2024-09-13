@@ -19,7 +19,7 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, ...$guards)
     {
-        if (config('app.sso_is_enabled') && $request->path() != "auth/login") {
+        if (config('app.sso.is_enabled') && $request->path() != "auth/login") {
             abort(404);
         }
         $guards = empty($guards) ? [null] : $guards;

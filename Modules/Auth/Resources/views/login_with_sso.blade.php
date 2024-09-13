@@ -58,7 +58,7 @@
                         Jika anda belum memiliki akun SSO BBKKP
                     </div>
                     <div class="form-group">
-                        <a href="{{url(config('app.sso_server') . '/account/register')}}" id="btn-submit"
+                        <a href="{{url(config('app.sso.server') . '/account/register')}}" id="btn-submit"
                            class="btn btn-primary btn-block text-uppercase">
                             Register SSO
                         </a>
@@ -69,7 +69,7 @@
                 <div class="pb-5"></div>
                 <hr>
                 <span class="text-light-gray">
-                        Semua pendaftaran terpusat pada laman <b>{{ config('app.sso_server') }}</b>
+                        Semua pendaftaran terpusat pada laman <b>{{ config('app.sso.server') }}</b>
                     </span>
 
                 <!-- /form -->

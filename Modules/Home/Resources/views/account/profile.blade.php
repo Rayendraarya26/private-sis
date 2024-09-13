@@ -18,7 +18,7 @@
                     <div class="dt-avatar-wrapper">
                         <!-- Avatar -->
                         <img class="dt-avatar dt-avatar__shadow size-90 mr-sm-4"
-                             src="{{auth()->user()->getImage()}}" alt="Dinesh Suthar">
+                             src="{{session('user_sso.picture', auth()->user()->getImage())}}" alt="Profile Image">
                         <!-- /avatar -->
 
                         <!-- Info -->
@@ -39,34 +39,36 @@
 
 
                     <!-- Dropdown -->
-                    <div class="dropdown pl-3 mt-2 ml-auto">
+                    @if(!config('app.sso.is_enabled'))
+                        <div class="dropdown pl-3 mt-2 ml-auto">
 
-                        <!-- Dropdown Button -->
-                        <a href="#" class="dropdown-toggle no-arrow text-white" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            <i class="icon icon-setting icon-xl mr-2"></i><span class="d-none d-sm-inline-block">Pengaturan</span>
-                        </a>
-                        <!-- /dropdown button -->
+                            <!-- Dropdown Button -->
+                            <a href="#" class="dropdown-toggle no-arrow text-white" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="icon icon-setting icon-xl mr-2"></i><span class="d-none d-sm-inline-block">Pengaturan</span>
+                            </a>
+                            <!-- /dropdown button -->
 
-                        <!-- Dropdown Menu -->
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="{{route('update_profile')}}">
-                                <i class="far fa-user"></i>
-                                Perbarui profile
-                            </a>
-                            <a class="dropdown-item" href="{{route('change_password')}}">
-                                <i class="far fa-unlock-alt"></i>
-                                Perbarui kata sandi
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="customizer">
-                                <i class="far fa-paint-roller"></i>
-                                Ganti Tema
-                            </a>
+                            <!-- Dropdown Menu -->
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="{{route('update_profile')}}">
+                                    <i class="far fa-user"></i>
+                                    Perbarui profile
+                                </a>
+                                <a class="dropdown-item" href="{{route('change_password')}}">
+                                    <i class="far fa-unlock-alt"></i>
+                                    Perbarui kata sandi
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="javascript:void(0)" data-toggle="customizer">
+                                    <i class="far fa-paint-roller"></i>
+                                    Ganti Tema
+                                </a>
+                            </div>
+                            <!-- /dropdown menu -->
+
                         </div>
-                        <!-- /dropdown menu -->
-
-                    </div>
+                    @endif
                     <!-- /dropdown -->
 
                 </div>
@@ -113,8 +115,8 @@
                                             <!-- Media Body -->
                                             <div class="media-body">
                                                 <span class="d-block text-light-gray f-12 mb-1">Mail</span>
-                                                <a href="mailto:{{auth()->user()->user_email}}">
-                                                    {{auth()->user()->user_email}}
+                                                <a href="mailto:{{$pelanggan?->cust_email}}">
+                                                    {{$pelanggan?->cust_email}}
                                                 </a>
                                             </div>
                                             <!-- /media body -->
@@ -124,16 +126,15 @@
 
                                         <!-- Media -->
                                         <div class="media">
-
                                             <i class="icon icon-phone icon-xl mr-5"></i>
-
                                             <!-- Media Body -->
                                             <div class="media-body">
                                                 <span class="d-block text-light-gray f-12 mb-1">Hanphone</span>
-                                                <span class="h5">-</span>
+                                                <span class="h5">
+                                                    {{ $pelanggan?->cust_nomor_hp }}
+                                                </span>
                                             </div>
                                             <!-- /media body -->
-
                                         </div>
                                         <!-- /media -->
                                     </div>
@@ -192,7 +193,9 @@
                                                         <span class="d-block text-light-gray f-12 mb-1">
                                                             Perusahaan
                                                         </span>
-                                                        <h5 class="mb-0">-</h5>
+                                                        <h5 class="mb-0">
+                                                            {{ $pelanggan?->cust_nama }}
+                                                        </h5>
                                                     </div>
                                                     <!-- /media body -->
 
@@ -211,8 +214,10 @@
                                                     <!-- Media Body -->
                                                     <div class="media-body">
                                                         <span
-                                                            class="d-block text-light-gray f-12 mb-1">Tanggal Lahir</span>
-                                                        <h5 class="mb-0">-</h5>
+                                                            class="d-block text-light-gray f-12 mb-1">Alamat</span>
+                                                        <h5 class="mb-0">
+                                                            {{ $pelanggan?->cust_alamat }}
+                                                        </h5>
                                                     </div>
                                                     <!-- /media body -->
 
@@ -253,7 +258,9 @@
                                                     <div class="media-body">
                                                         <span
                                                             class="d-block text-light-gray f-12 mb-1">Negara</span>
-                                                        <h5 class="mb-0">Indonesia</h5>
+                                                        <h5 class="mb-0">
+                                                            {{ $pelanggan?->master_negara?->negara_nama }}
+                                                        </h5>
                                                     </div>
                                                     <!-- /media body -->
 

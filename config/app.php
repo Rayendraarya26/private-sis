@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'name'  => env('APP_NAME', 'Laravel'),
-    'env'   => env('APP_ENV', 'production'),
-    'debug' => (bool)env('APP_DEBUG', false),
+    'name'    => env('APP_NAME', 'Laravel'),
+    'env'     => env('APP_ENV', 'production'),
+    'debug'   => (bool)env('APP_DEBUG', false),
     'address' => env('APP_ADDRESS'),
 
     'url'       => env('APP_URL', 'http://localhost'),
@@ -18,10 +18,13 @@ return [
     'key'    => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 
-    'sso_is_enabled'    => (bool)env('SSO_IS_ENABLED', false),
-    'sso_server'        => env('SSO_SERVER', 'https://apps.bbkkp.kemenperin.go.id'),
-    'sso_broker_id'     => env('SSO_BROKER_ID'),
-    'sso_broker_secret' => env('SSO_BROKER_SECRET'),
+    'sso' => [
+        'is_enabled'    => (bool)env('SSO_IS_ENABLED', false),
+        'server'        => env('SSO_SERVER', 'https://polimer.bbkkp.kemenperin.go.id'),
+        'client_id'     => env('SSO_CLIENT_ID'),
+        'client_secret' => env('SSO_CLIENT_SECRET'),
+        'redirect_uri'  => env('SSO_REDIRECT_URI'),
+    ],
 
     'mail' => [
         'from_addr' => env("MAIL_FROM_ADDRESS"),
@@ -52,7 +55,7 @@ return [
     'sihalal_file_upload'        => "files/sihalal/%d",
 
     'log' => [
-        'allowed_account_open_logs' => explode(',',env('LOG_ALLOWED_EMAILS'))
+        'allowed_account_open_logs' => explode(',', env('LOG_ALLOWED_EMAILS'))
     ],
 
     /*

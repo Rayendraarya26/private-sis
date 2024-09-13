@@ -3,19 +3,18 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Jasny\SSO\Broker\Broker;
-use Modules\Auth\Http\Traits\SsoBrokerTrait;
+use Illuminate\Support\Facades\Cookie;
+use Modules\Auth\Http\Traits\SsoTrait;
 
 class Authenticate
 {
-    use SsoBrokerTrait;
+    use SsoTrait;
 
 
     public function handle(Request $request, Closure $next)
     {
-        if (config('app.sso_is_enabled')) {
+        if (config('app.sso.is_enabled')) {
             return $this->ssoMiddleware($request, $next);
         } else {
             return $this->normalMiddleware($request, $next);
@@ -28,7 +27,7 @@ class Authenticate
             if (auth()->user()->user_is_banned == "yes") {
                 auth()->logout();
                 return redirect(route('auth.login'))->withErrors(['status' => "Akun anda telah di blokir oleh admin"]);
-            } else if (auth()->user()->user_is_active == "yes") {
+            } elseif (auth()->user()->user_is_active == "yes") {
                 return $next($request);
             } else {
                 return redirect(route('auth.resend_validation'));
@@ -40,51 +39,12 @@ class Authenticate
 
     private function ssoMiddleware(Request $request, Closure $next)
     {
-        $broker = $this->attach();
-        if (!($broker instanceof Broker)) {
-            auth()->logout();
-            session()->flush();
-            if ($broker instanceof RedirectResponse) {
-                return redirect($broker->getTargetUrl());
-            } else {
-                return redirect()->guest(route('auth.login'));
-            }
+        if (auth()->check()) {
+            return $this->normalMiddleware($request, $next);
+        } elseif (Cookie::get('access_token')) {
+            return $this->loginSsoSuccess(Cookie::get('access_token'));
         } else {
-            try {
-                $data          = $broker->request("GET", "/sso/info");
-                $isLoginBefore = true;
-                if (!auth()->check()) {
-                    $this->loginSsoSuccess($data['results']);
-                    $isLoginBefore = false;
-                }
-                return $this->checkClientAuth($request, $next, $isLoginBefore);
-            } catch (\Exception $e) {
-                $errorMessage = json_decode($e->getMessage());
-                if ($errorMessage->code == 403 && $errorMessage->message == "Akun belum login") {
-                    return redirect(config('app.sso_server') . "/sso/login?key=" . $broker->getBearerToken());
-                }
-
-                $broker->clearToken();
-                auth()->logout();
-                session()->flush();
-                return redirect(url("/auth/sso/redirect"));
-            }
-        }
-    }
-
-    private function checkClientAuth(Request $request, Closure $next, $isLoginBefore = false)
-    {
-        if (auth()->user()->user_is_banned == "yes") {
-            auth()->logout();
-            return redirect(route('auth.login'))->withErrors(['status' => "Akun anda telah di blokir oleh admin"]);
-        } else if (auth()->user()->user_is_active == "yes") {
-            if ($isLoginBefore) {
-                return $next($request);
-            } else {
-                return redirect()->route('dashboard');
-            }
-        } else {
-            return redirect(route('auth.login'))->withErrors(['status' => "Akun belum aktif, mohon hubungi admin"]);
+            return redirect('/auth/sso/redirect');
         }
     }
 }

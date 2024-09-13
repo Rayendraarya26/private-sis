@@ -8,8 +8,7 @@ use Modules\Auth\Http\Controllers\SsoController;
 
 Route::prefix('auth')->name("auth.")->group(function () {
     Route::prefix('sso')->group(function () {
-        Route::get('login', [SsoController::class, 'login']);
-        Route::get('logout', [SsoController::class, 'logout']);
+        Route::get('callback', [SsoController::class, 'callback']);
         Route::get('redirect', [SsoController::class, 'redirect']);
     });
 
