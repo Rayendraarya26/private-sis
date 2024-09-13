@@ -9,6 +9,7 @@ use App\Models\BbkkpSis\SisPelanggan;
 use App\Models\BbkkpSis\SysUser;
 use App\Models\BbkkpSis\SysUserGroup;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -101,25 +102,32 @@ trait SsoTrait
                 $masterJenisDokPerusahaan = MasterJenisDokPerusahaan::query()->find($docId);
 
                 // download file
-                $download = file_get_contents($url);
+                try {
+                    $download = file_get_contents($url);
 
-                $filePath = sprintf(config("app.path_file_customer"), $sisPelanggan->cust_id);
-                if (!File::exists($filePath)) File::makeDirectory($filePath, 0777, true, true);
+                    $filePath = sprintf(config("app.path_file_customer"), $sisPelanggan->cust_id);
+                    if (!File::exists($filePath)) File::makeDirectory($filePath, 0777, true, true);
 
-                $fileName = Str::slug($masterJenisDokPerusahaan->jenis_dok_perusahaan_text) . '-' . time() . '.pdf';
-                $path     = $filePath . '/' . $fileName;
+                    $fileName = Str::slug($masterJenisDokPerusahaan->jenis_dok_perusahaan_text) . '-' . time() . '.pdf';
+                    $path     = $filePath . '/' . $fileName;
 
-                File::put($path, $download);
+                    File::put($path, $download);
 
-                // get old file path, if exists then delete
-                $oldPath = $sisPelanggan->sis_pelanggan_dokumens()->where('jenis_dok_perusahaan_id', $docId)->value('cust_dok_filepath');
-                if ($oldPath && File::exists($oldPath)) File::delete($oldPath);
+                    // get old file path, if exists then delete
+                    $oldPath = $sisPelanggan->sis_pelanggan_dokumens()->where('jenis_dok_perusahaan_id', $docId)->value('cust_dok_filepath');
+                    if ($oldPath && File::exists($oldPath)) File::delete($oldPath);
 
-                $sisPelanggan->sis_pelanggan_dokumens()->updateOrCreate([
-                    'jenis_dok_perusahaan_id' => $docId,
-                ], [
-                    'cust_dok_filepath' => $path,
-                ]);
+                    $sisPelanggan->sis_pelanggan_dokumens()->updateOrCreate([
+                        'jenis_dok_perusahaan_id' => $docId,
+                    ], [
+                        'cust_dok_filepath' => $path,
+                    ]);
+                } catch (Exception $e) {
+                    log_error($e, [
+                        ...$sisPelanggan->toArray(),
+                    ]);
+                }
+
             }
         }
 
