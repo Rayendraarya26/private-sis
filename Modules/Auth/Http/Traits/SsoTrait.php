@@ -123,7 +123,7 @@ trait SsoTrait
                         'cust_dok_filepath' => $path,
                     ]);
                 } catch (Exception $e) {
-                    log_error($e, $sisPelanggan->toArray());
+                    log_error($e, $data);
                 }
 
             }
