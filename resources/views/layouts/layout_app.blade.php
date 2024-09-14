@@ -1,7 +1,7 @@
 @php use App\Models\BbkkpSis\SysUserNotif; @endphp
 @php use Illuminate\Support\Facades\DB; @endphp
 
-<!doctype html>
+    <!doctype html>
 <html lang="en">
 
 <head>
@@ -61,7 +61,7 @@
     </style>
 
     <script>
-		window.APP_URL = `{{config('app.url')}}`;
+        window.APP_URL = `{{config('app.url')}}`;
     </script>
 
     @stack('css')
@@ -206,7 +206,8 @@
                             <!-- Dropdown Link -->
                             <a href="#" class="dt-nav__link dropdown-toggle no-arrow dt-avatar-wrapper"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="dt-avatar size-40" src="{{ session('user_sso.picture', auth()->user()->getImage()) }}"
+                                <img class="dt-avatar size-40"
+                                     src="{{ session('user_sso.picture', auth()->user()->getImage()) }}"
                                      alt="{{ auth()->user()->user_fullname }}">
                             </a>
                             <!-- /dropdown link -->
@@ -214,8 +215,10 @@
                             <!-- Dropdown Option -->
                             <div class="dropdown-menu dropdown-menu-right" style="width: 200px">
                                 <div
-                                        class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
-                                    <img class="dt-avatar" src="{{ session('user_sso.picture', auth()->user()->getImage()) }}" alt="Domnic Harris">
+                                    class="dt-avatar-wrapper flex-nowrap p-6 mt--5 bg-gradient-purple text-white rounded-top">
+                                    <img class="dt-avatar"
+                                         src="{{ session('user_sso.picture', auth()->user()->getImage()) }}"
+                                         alt="Domnic Harris">
                                     <span class="dt-avatar-info">
                                           <span class="dt-avatar-name">{{ auth()->user()->user_fullname }}</span>
                                           <span class="f-12">{{ ucwords(session('group_selected_name')) }}</span>
@@ -231,11 +234,11 @@
                                     <i class="icon far fa-user"></i> Profile
                                 </a>
                                 @if(!config('app.sso.is_enabled'))
-                                <a class="dropdown-item" href="{{ route('auth.logout') }}">
-                                    <i class="icon far fa-sign-out-alt"></i> Logout
-                                </a>
+                                    <a class="dropdown-item" href="{{ route('auth.logout') }}">
+                                        <i class="icon far fa-sign-out-alt"></i> Logout
+                                    </a>
                                 @else
-                                    <a class="dropdown-item" href="{{ url(config('app.sso.server')) }}">
+                                    <a class="dropdown-item" href="{{ url(config('app.sso.dashboard_url')) }}">
                                         <i class="icon far fa-globe"></i> Polimer
                                     </a>
                                 @endif
@@ -414,8 +417,8 @@
                             <!-- Button Group -->
                             <div class="dt-customizer__btn-group btn-group btn-group-toggle btn-group mb-1"
                                  data-toggle="buttons"><label class="btn btn-outline-light"><input
-                                            class="theme-option" type="radio" name="options" id="theme-option-lite"
-                                            value="lite">Lite</label>
+                                        class="theme-option" type="radio" name="options" id="theme-option-lite"
+                                        value="lite">Lite</label>
                                 <label class="btn btn-outline-light"><input class="theme-option" type="radio"
                                                                             name="options" id="theme-option-semidark"
                                                                             value="semidark">Semi Dark</label>
@@ -548,7 +551,7 @@
                             <select name="modal_group_id" id="modal_group_id" class="form form-control">
                                 @foreach(session('group_available') as $group)
                                     <option
-                                            value="{{$group['group_id']}}" {{$group['group_id'] == session('group_selected') ? 'selected' : ''}}>
+                                        value="{{$group['group_id']}}" {{$group['group_id'] == session('group_selected') ? 'selected' : ''}}>
                                         {{ucwords($group['group_name'])}}</option>
                                 @endforeach
                             </select>
@@ -601,115 +604,115 @@
 <script src="{{ asset('assets/plugins/morrisjs/morris.min.js') }}"></script>
 
 <script>
-	const toast = swal.mixin({
-		toast: true,
-		position: 'center',
-		showConfirmButton: false,
-		timer: 3000
-	});
+    const toast = swal.mixin({
+        toast: true,
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000
+    });
 
-	const toastCenter = swal.mixin({
-		toast: true,
-		position: 'center',
-		showConfirmButton: false,
-		timer: 3000
-	});
+    const toastCenter = swal.mixin({
+        toast: true,
+        position: 'center',
+        showConfirmButton: false,
+        timer: 3000
+    });
 
-	$.ajaxSetup({
-		headers: {
-			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-		}
-	});
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
 
 <script>
-	// membuat string kapital diawal kata
-	String.prototype.ucwords = function () {
-		if (this === '') return '';
-		let str = this.toLowerCase();
-		return str.replace(/(^([a-zA-Z{M}]))|([ -][a-zA-Z{M}])/g,
-			function ($1) {
-				return $1.toUpperCase();
-			});
-	};
+    // membuat string kapital diawal kata
+    String.prototype.ucwords = function () {
+        if (this === '') return '';
+        let str = this.toLowerCase();
+        return str.replace(/(^([a-zA-Z{M}]))|([ -][a-zA-Z{M}])/g,
+            function ($1) {
+                return $1.toUpperCase();
+            });
+    };
 
-	// memformat uang
-	String.prototype.formatUang = function (delimiter) {
-		if (this === '') return '';
-		let str   = this.toString();
-		delimiter = delimiter || ' ';
-		return str.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
-	};
+    // memformat uang
+    String.prototype.formatUang = function (delimiter) {
+        if (this === '') return '';
+        let str = this.toString();
+        delimiter = delimiter || ' ';
+        return str.replace(/\B(?=(\d{3})+(?!\d))/g, delimiter);
+    };
 
-	function syncToken(token) {
-		$.post(`{{url('notification/ajax/sync-token')}}`, { token });
-	}
+    function syncToken(token) {
+        $.post(`{{url('notification/ajax/sync-token')}}`, { token });
+    }
 
-	async function initIDB() {
-		window.idb = new Dexie('bbkkp_sis');
-		window.idb.version(80).stores({
-			pelanggan_permohonan: '++id, &name, value',
-			bill_data: '++id, &name, value',
-			bill_data_itms: '++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas',
-			jadwal_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id',
-			jadwal_data_itms: '++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id',
-			tahap1_data: '++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart',
-			tahap1_data_tim: '++id, peg_id, peg_nama, kode, posisi',
-			pencabutan_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id',
-			pencabutan_data_itms: '++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id',
-			pencabutan_data_tim: '++id, peg_id, peg_nama, kode, posisi, user_id',
-		});
-	}
+    async function initIDB() {
+        window.idb = new Dexie('bbkkp_sis');
+        window.idb.version(80).stores({
+            pelanggan_permohonan: '++id, &name, value',
+            bill_data: '++id, &name, value',
+            bill_data_itms: '++id, bil_tipe, mohon_id, mohon_det_id, bil_desc, bil_total, bil_lunas',
+            jadwal_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id, bill_id',
+            jadwal_data_itms: '++id, jenis, mohon_id, mohon_det_id, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_komoditi_id',
+            tahap1_data: '++id, &name, tanggal_mulai, tanggal_selesai, bill_id, cust_id, mohon_id, tujuan, mohon_det_id, jenis_sertifikasi, standart',
+            tahap1_data_tim: '++id, peg_id, peg_nama, kode, posisi',
+            pencabutan_data: '++id, &name, tanggal_mulai, tanggal_selesai, jenis, cust_id',
+            pencabutan_data_itms: '++id, jenis, sert_id, sert_nama, komodt_id, komodt_nama, cust_sert_id, nomor_sertifikat, nomor_referensi, kode_nace, kode_ea, standart_acuan, ruang_lingkup, kegiatan, tujuan_audit, sni, merk, tipe, ukuran, kapasitas_produksi, satuan, mohon_id',
+            pencabutan_data_tim: '++id, peg_id, peg_nama, kode, posisi, user_id',
+        });
+    }
 
-	$(function () {
-		initIDB();
+    $(function () {
+        initIDB();
 
-		// Your web app's Firebase configuration
-		const firebaseConfig = {
-			apiKey: 'AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI',
-			authDomain: 'balaikulit-yogya.firebaseapp.com',
-			projectId: 'balaikulit-yogya',
-			storageBucket: 'balaikulit-yogya.appspot.com',
-			messagingSenderId: '54843566382',
-			appId: '1:54843566382:web:76eb5779a911d71d6d72bf'
-		};
-		// Initialize Firebase
-		firebase.initializeApp(firebaseConfig);
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: 'AIzaSyB5p-phArvIO4HS9sZ9978zFvaU82TUlCI',
+            authDomain: 'balaikulit-yogya.firebaseapp.com',
+            projectId: 'balaikulit-yogya',
+            storageBucket: 'balaikulit-yogya.appspot.com',
+            messagingSenderId: '54843566382',
+            appId: '1:54843566382:web:76eb5779a911d71d6d72bf'
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
 
-		window.FIREBASE_MESSAGING = firebase.messaging();
+        window.FIREBASE_MESSAGING = firebase.messaging();
 
-		if ('serviceWorker' in navigator && 'PushManager' in window) {
-			navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
-				.then(function (swReg) {
-					// console.log('Service Worker is registered', swReg);
-					// console.log('ServiceWorker registration successful with scope: ', swReg.scope);
-					// FIREBASE_MESSAGING.useServiceWorker(swReg);
-				})
-				.catch(function (error) {
-					console.error('Service Worker Error', error);
-				});
-		}
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.register('<?= url("firebase-messaging-sw.js") ?>')
+                .then(function (swReg) {
+                    // console.log('Service Worker is registered', swReg);
+                    // console.log('ServiceWorker registration successful with scope: ', swReg.scope);
+                    // FIREBASE_MESSAGING.useServiceWorker(swReg);
+                })
+                .catch(function (error) {
+                    console.error('Service Worker Error', error);
+                });
+        }
 
-		// meminta perizinan allow pop up
-		FIREBASE_MESSAGING.requestPermission()
-			.then(() => {
-				FIREBASE_MESSAGING.getToken().then(token => {
-					syncToken(token);
-				});
+        // meminta perizinan allow pop up
+        FIREBASE_MESSAGING.requestPermission()
+            .then(() => {
+                FIREBASE_MESSAGING.getToken().then(token => {
+                    syncToken(token);
+                });
 
-				FIREBASE_MESSAGING.onMessage(payload => {
-					// console.log(payload)
-					alert('new notif');
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-				console.log('error getting permission :(');
-			});
-	});
+                FIREBASE_MESSAGING.onMessage(payload => {
+                    // console.log(payload)
+                    alert('new notif');
+                });
+            })
+            .catch((err) => {
+                console.log(err);
+                console.log('error getting permission :(');
+            });
+    });
 </script>
 
 @stack('javascript')
