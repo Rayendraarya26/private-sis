@@ -36,6 +36,7 @@ RUN install-php-extensions pdo_mysql \
     gd \
     imagick \
     excimer \
+    opcache \
     zip
 
 # Install nodejs and npm
