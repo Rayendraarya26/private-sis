@@ -13,6 +13,9 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+*.code-workspace
+.agents/
+.gemini/
 doc
 .DS_Store
 storage/fonts
